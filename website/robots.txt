@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://saeedx4.github.io/interview-assistant-website/sitemap.xml
