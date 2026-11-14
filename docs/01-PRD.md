@@ -1,0 +1,297 @@
+# 01 — Product Requirements: Windows Commercial Website
+
+> **Commercial v2 candidate.** This is the fully incorporated v1 specification, reconciled against connected GitHub source evidence. It is **not** signed off for a paid public launch. No protected repository files have been modified.
+> **Owner:** Product Lead. **Scope:** Windows commercial product and static marketing website; Android, iOS and dedicated macOS are research-only.
+> **Evidence precedence:** current code and later `docs/release/RELEASE_READINESS.md` for runtime status; `docs/v2/*` for architecture; older prototype documents are historical, not proof of current release.
+
+
+
+- **Product:** Interview Assistant (Windows desktop app + commercial website)
+- **Document status:** Proposed commercial v2 — owner approval pending
+- **Source of truth:** `SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT`
+  (`README.md`, `docs/v2/ARCHITECTURE_V2.md`, `STATUS_REPORT_V2.md`, `BILLING.md`,
+  `ENTITLEMENTS.md`, `COMMERCIALIZATION.md`, `UX_SPEC_V2.md`, `SECURITY_V2.md`,
+  `PRIVACY_IMPLEMENTATION.md`, `DEPLOYMENT.md`, `OPERATIONS.md`, `COACH_MODE.md`,
+  `PREPARATION_PIPELINE.md`, `REPORTS.md`, `LIVE_MEMORY.md`)
+- **Audience:** Saeed (owner), website builders, future Android team, reviewers.
+- **Language:** English (commercial, global audience). The product itself supports
+  10 languages; the website launches in English first.
+
+---
+
+## 1. Problem
+
+Interviews are high-stakes, time-pressured, and mostly unrehearsed. Candidates
+know their own experience, but under pressure they:
+
+- ramble, repeat the same story, or freeze on an unexpected question;
+- answer in the wrong language or register for the interviewer;
+- walk in without a structured bank of likely questions for *that* role, at
+  *that* company, from *their* resume;
+- get no honest debrief afterwards — only a vague feeling about how it went.
+
+Some competing products may offer resume-grounded preparation and live assistance. A defensible competitive comparison is UNKNOWN until a feature-by-feature, dated research audit; the differentiation hypothesis is candidate-confirmed facts combined with concise, visible, permission-based live assistance.
+
+## 2. Product
+
+**Interview Assistant** is a Windows interview preparation and practice coach,
+with a live assist mode for interviews where assistance is permitted.
+
+The flow is four steps, and the website must teach exactly this flow:
+
+1. **Profile** — Import a resume (PDF / DOCX / TXT). The app extracts facts
+   with provenance. Only facts the candidate confirms are ever presented as
+   their experience.
+2. **Prepare** — Add the job title, company, and job description, choose the
+   interview and answer language, press **Prepare**. A 50–150 question bank
+   with answers, stories, and honest gap handling is built for that interview
+   (15-stage preparation pipeline; deterministic local generator, optionally
+   enriched by the backend).
+3. **Live** — Start listening. The app captures the interviewer's audio from
+   the candidate's headset (WASAPI loopback — no browser extension, no tab
+   sharing), transcribes it as it streams, detects when a question is
+   finished (multi-part questions merged), and shows **3 short, speakable
+   bullets** — or, in Coach Mode, **3 keywords and a one-line structure** —
+   built only from confirmed facts. Answers adapt when the interviewer
+   interrupts (Concise / Rapid), avoid repeating the same story, and follow
+   the interviewer's language (10 languages, right-to-left for Arabic and
+   Persian).
+4. **Report** — After Stop, an honest report of the questions asked and the
+   suggestions shown. No scores, no hiring predictions.
+
+> **Authorized use only.** The app is a normal, visible window. It does not
+> hide itself, evade screen capture, record the candidate's microphone, or
+> store audio. Users must use it only where they are allowed to. This is a
+> product constraint, not a footnote — see §9 and `07-SECURITY-PRIVACY-ETHICS.md`.
+
+## 3. Goals (website)
+
+| # | Goal | How we know |
+|---|---|---|
+| G1 | A visitor understands the product in under 10 seconds | Hero states what it is, who it is for, and the 4-step flow; 5-second test with 5 strangers |
+| G2 | A visitor can try the *idea* without installing anything | Interactive hero demo (simulated) completes in < 60 s |
+| G3 | A qualified visitor downloads the Windows app or starts a trial | Download / Get-started click-through rate; trial sign-ups |
+| G4 | A visitor trusts the product before paying | Pricing is plain, privacy is specific (not vague), ethics note is visible, no inflated claims |
+| G5 | A visitor who is on Android is captured, not lost | Coming-soon section with notify-me capture (no fake download button) |
+
+Non-goals for the website launch: selling the Android app, in-browser live
+transcription, account creation on the website itself (sign-in happens in the
+desktop app via the system browser), a blog with daily posts (see §8 content
+plan — launch with a small, honest set).
+
+## 4. Personas
+
+### P1 — The career switcher / job seeker (primary)
+- **Who:** Mid-career professional applying for a new role, often in a second
+  language. Has a resume, a job description, and an interview in days, not months.
+- **Jobs-to-be-done:** "Prepare for *this* interview, from *my* resume and
+  *this* JD, fast." / "Don't freeze when they ask something unexpected."
+- **Fears:** sounding rehearsed or fake; being caught using a tool; paying for
+  something that doesn't work in their language.
+- **Website needs:** a demo in their language direction (RTL example), clear
+  pricing in minutes, an honest privacy statement, a visible ethics note.
+
+### P2 — The new graduate / first-job candidate
+- **Who:** Little interview experience, thin story bank, anxious about
+  behavioural questions ("Tell me about a time…").
+- **Jobs-to-be-done:** "Give me the questions they will actually ask, and
+  help me turn my projects into stories."
+- **Website needs:** the 50–150 question bank explained plainly, example
+  questions, the Report as a learning loop ("prepare → practise → review").
+
+### P3 — The multilingual candidate (incl. Persian / Arabic speakers)
+- **Who:** Interviews in English (or another language) while thinking in
+  Persian, Arabic, or another language; or interviews conducted in their
+  first language.
+- **Jobs-to-be-done:** "Answer in the interviewer's language, without
+  translating in my head."
+- **Website needs:** explicit 10-language support, RTL rendering shown, not
+  just claimed. **Open question:** the full list of the 10 languages is not
+  stated in the source docs reviewed — confirm before printing a list.
+
+### P4 — The cautious evaluator / recommender
+- **Who:** A friend, mentor, or career coach checking the tool before
+  recommending it; also journalists and reviewers.
+- **Jobs-to-be-done:** "Is this legitimate? What does it actually record?
+  What does it cost?"
+- **Website needs:** security/privacy page with specifics, pricing with
+  minutes (not vague "unlimited"), source-level honesty (test counts,
+  what is *not* yet validated).
+
+### P5 — The Android waiter (secondary, future)
+- **Who:** On Android, wants the same preparation and practice on mobile.
+- **Jobs-to-be-done:** "Tell me when Android is ready."
+- **Website needs:** a coming-soon section and a notify-me capture. No
+  download promise, no date promise.
+
+## 5. Jobs-to-be-done (summary)
+
+1. Prepare for a specific interview from my resume + JD.
+2. Practise likely questions before the day.
+3. Get short, speakable help live — only where allowed.
+4. Review honestly afterwards and prepare better next time.
+5. Do all of the above in my language, without my audio being stored.
+
+## 6. Scope — website launch (Phase 2)
+
+### In scope
+
+- Single-page commercial site (see `04-UX-SPEC.md`): hero + interactive
+  simulated demo, features, how-it-works, pricing, Windows download,
+  Android coming soon, FAQ, ethics/privacy note, footer.
+- Static, fast, accessible, responsive; no build step; no external assets.
+- SEO basics: title/meta, Open Graph, JSON-LD (`SoftwareApplication`),
+  semantic HTML, sitemap/robots when hosted.
+- Analytics-ready hooks only (no tracker is bundled in the draft; the
+  provider choice is an open decision — see `02-ARCHITECTURE.md`).
+- Docs in this folder as the single source of truth for claims.
+
+### Out of scope (non-goals — do not build or claim)
+
+- Live transcription in the browser.
+- Account creation, sign-in, or billing on the website (billing is Paddle
+  hosted checkout via the desktop app; account is Supabase via the app).
+- A hidden / undetectable mode, screen-capture evasion, microphone recording,
+  or audio storage — these do not exist and must never be claimed.
+- Hiring-outcome predictions, scores, or "pass guarantee" language.
+- The Android app (Phase 3 planning only).
+- Company research fetched automatically from URLs (the app uses
+  user-provided sources only — do not claim otherwise).
+- Machine translation of report questions (not implemented in the app).
+
+## 7. Functional requirements (website)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| F1 | Hero states product, audience, and 4-step flow above the fold | Must |
+| F2 | Interactive demo: pick/type a question → 3 bullets appear one at a time; Coach Mode toggle switches to keywords + structure | Must |
+| F3 | Demo is labelled SIMULATED; it uses no audio, no microphone, no network | Must |
+| F4 | Features section covers: prepare (question bank), live (bullets/coach), languages/RTL, adaptive answers, report, privacy | Must |
+| F5 | How-it-works: Profile → Prepare → Live → Report, each with one line + one visual cue | Must |
+| F6 | Pricing: Trial vs Pro table with minutes, profiles, prep runs, devices, retention — exactly per `05-PRICING-BILLING.md` | Must |
+| F7 | Download section: Windows 10/11 x64, installer + portable ZIP, SHA-256 note; links are placeholders until launch | Must |
+| F8 | Android section: coming soon, notify-me capture, no date, no APK | Must |
+| F9 | FAQ answers the hard questions (Is it allowed? What is recorded? What does it cost? Which languages? What if I get interrupted?) | Must |
+| F10 | Ethics/privacy note visible on the page, not buried in a footer link | Must |
+| F11 | Footer: product, pricing, privacy, terms (placeholders until legal docs exist), contact/support | Must |
+| F12 | Responsive: usable at 360 px, 768 px, 1280 px+; keyboard navigable; `prefers-reduced-motion` respected | Must |
+| F13 | Performance: no external requests; first paint fast on a slow connection | Should |
+| F14 | Notify-me form: stores nothing in the draft (no backend); on launch it must post to a real endpoint — flag as TODO | Should |
+
+## 8. Content requirements
+
+- Tone: calm, honest, competent. No hype superlatives ("the best", "guaranteed"),
+  no fear tactics, no fake testimonials, no fake logos.
+- Every feature claim must trace to the source repo. A claim without a source
+  line is a bug — see `06-CONTENT-SEO.md` for the claim-to-source table.
+- Numbers used on the site (current, grounded):
+  - 50–150 questions per interview bank; 15-stage preparation pipeline.
+  - 3 bullets per answer; Coach Mode = 3 keywords + 1 structure line.
+  - 10 languages; RTL for Arabic and Persian.
+  - Trial 30 lifetime live minutes; Pro 600 live minutes per billing period.
+  - 201/201 core tests, 44/44 backend tests, 28/28 in-app self-test
+    (internal test evidence — present as "tested", not as a guarantee).
+  - Real-EXE smoke startup 1.3 s (internal evidence, same caveat).
+- Numbers **not** to use until confirmed: the exact public version number
+  (source docs vary — see open questions), the full 10-language list, the
+  final domain, the final download file size.
+
+## 9. Ethics and safety requirements
+
+1. The authorized-use message appears in the hero area or immediately below
+   it, and again in the ethics section. Wording (do not soften): *"Use it
+   only where you are allowed to. Interview Assistant is a visible window —
+   it never hides, never records your microphone, and never stores audio."*
+2. No claim of stealth, undetectability, or evasion — anywhere, including
+   SEO keywords, alt text, and metadata.
+3. No hiring-outcome prediction, no score, no "pass" language.
+4. Privacy claims must match `PRIVACY_IMPLEMENTATION.md` exactly: audio is
+   not stored; resumes/JD stay in a DPAPI-encrypted local workspace by
+   default; payment data lives with Paddle only; no card data touches the
+   app or backend.
+5. Reports are described honestly: they record questions asked and suggestions
+   shown, not what the candidate said; inferences are labelled as inferences.
+
+## 10. Success metrics (website)
+
+| Metric | Target (first 90 days after launch) | Notes |
+|---|---|---|
+| Hero demo completion | ≥ 25% of visitors start the demo; ≥ 60% of starters see all 3 bullets | Demo is the "aha" moment |
+| Download / Get-started CTR | Track; set a baseline in week 1, target in week 4 | No invented target before data |
+| Trial starts (via app) | Track via backend `GET /api/v1/me` cohorts | Website cannot measure this alone |
+| Bounce rate (landing) | < 55% | Honest, specific hero should hold attention |
+| Android notify sign-ups | Track; no target until the waitlist opens | Capture, don't promise |
+| FAQ / ethics scroll depth | ≥ 40% reach the ethics section | Trust signal |
+| Accessibility | 0 critical axe/WAVE issues; keyboard-only task completion | Must, not a target |
+| Performance | Lighthouse performance ≥ 90 on mobile (static site, no external assets) | Should be easy; verify |
+
+## 11. Risks and mitigations
+
+| Risk | Mitigation |
+|---|---|
+| Over-claiming what the app does | Claim-to-source table in `06-CONTENT-SEO.md`; review every sentence against it before launch |
+| Ethics backlash ("cheating tool") | Lead with authorized use; visible-window + no-mic-recording facts; no stealth language anywhere |
+| Paddle / Supabase / OpenAI not yet validated live | Website must not claim "buy now, works instantly" until the sandbox checklist in `docs/v2` is done; download section carries a launch-readiness gate in `08-ROADMAP.md` |
+| Pricing changes before launch | Prices are data in one place (`05-PRICING-BILLING.md` + pricing section); Pro $19.99 is a sandbox price — confirm before launch |
+| Android expectations set too early | Coming-soon section promises notification only, never a date or a download |
+
+## 12. Open questions / decisions needed from Saeed
+
+1. **Product name / brand:** "Interview Assistant" is the working name. Keep
+   it, or choose a distinct commercial brand? (Domain depends on this.)
+2. **Domain + hosting:** final domain and host for the website (see
+   `02-ARCHITECTURE.md` options). GitHub Pages is the simplest; a custom
+   domain needs a decision.
+3. **Pricing confirmation:** confirm Pro at USD 19.99/month and the Trial
+   limits before the site goes live. Any regional pricing?
+4. **Full 10-language list:** confirm the exact list before printing it.
+5. **Public version number:** confirm what version the download section
+   should show (source docs reference 2.0.900/2.0.901 in tests and
+   2.1.0-rc.5 in the project brief — reconcile before launch).
+6. **Legal pages:** Terms, Privacy Policy, refund policy — counsel-drafted,
+   required before Paddle live approval. Who writes them, and when?
+7. **Support contact:** support email / URL for the footer and the app
+   (`Product__SupportEmail` / `SupportUrl` in the backend config).
+8. **Analytics:** which provider, if any? (Privacy-friendly default
+   recommended; no tracker is bundled in the draft.)
+9. **Android scope/timing:** is Android a companion (prepare + practise) or
+   a full live-assist app? That decides Phase 3 planning — see `08-ROADMAP.md`.
+10. **New repo name:** confirm `interview-assistant-website` (proposed).
+
+## 13. Acceptance criteria (Phase 2 launch)
+
+- [ ] Every sentence on the site traces to a source-repo fact or is marked
+      as a clearly labelled demo/placeholder.
+- [ ] Demo works with keyboard only; bullets appear one at a time; Coach
+      Mode toggle works; demo is labelled simulated.
+- [ ] Pricing table matches `05-PRICING-BILLING.md` exactly.
+- [ ] Ethics note is visible without scrolling to the footer.
+- [ ] No external requests on page load (check the Network tab).
+- [ ] Lighthouse accessibility ≥ 95, performance ≥ 90.
+- [ ] Saeed has answered open questions 1–7 (at minimum pricing, version,
+      domain, support contact).
+- [ ] Paddle sandbox checklist (source `BILLING.md`) is complete before any
+      "Buy" button goes live.
+
+
+## Commercial v2 reconciliation and additional acceptance
+
+### V2 verified scope and measurable product gates
+- **Today:** Windows 10/11 x64 client. Android, iOS and a dedicated native macOS client do not ship; all are future studies with no dates or prices.
+- **Readiness split:** a live Railway backend is documented in the later release readiness report; that does not constitute a validated public billing, store, signed installer, or end-to-end customer launch.
+- **Build truth:** source `global.json` pins SDK 10.0.100 with roll-forward; historical `BUILD.md` still says .NET 8 and is not authoritative for current release.
+- **Developer mode:** older docs describe it generally; newer `RELEASE_READINESS.md` restricts own-key mode to Debug/DeveloperBuild. Public customer copy must not imply a visible own-key mode without checking the shipped binary.
+- **Primary JTBD:** Candidate safely prepares role-specific experiences; candidate can choose concise bullets or scaffold and controls use where prohibited.
+- **Baseline measurement proposal:** 5-second comprehension study with 5 new visitors; pass if 4/5 correctly identify Windows, own-fact preparation, simulated website demo and authorized use without prompting. This is a proposed gate, not measured evidence.
+- **Activation measurement proposal:** zero raw resume, answer or interview text in analytics; success is first self-confirmed fact plus prepared pack, measured only after consent and instrumentation review.
+- **Success guardrail:** zero public copy that equates AI-generated report with actual spoken interview performance.
+- **Release non-goal:** no iOS, Android or Mac download CTA; a roadmap entry must say "research" without release date.
+- **User-study evidence:** UNKNOWN until moderated studies with recruited participants have transcripts anonymized and tasks scored.
+- **Detailed link:** see `product/09-PERSONAS-JTBD.md`, `product/10-MEASUREMENT-PLAN.md`, `product/12-LAUNCH-SCOPE-AND-NON-GOALS.md`.
+
+## Document completion contract
+
+- **Purpose and scope:** As stated in this document; no undocumented platform or financial promises.
+- **Acceptance:** Source claims reconciled, P0/P1 audit blockers closed with evidence, legal decisions signed, and user flows tested under the actual release commit.
+- **Dependencies:** Source GitHub repository, active release-readiness evidence, owner product decisions, finance/legal sign-off, and the linked specialist v2 specifications.
+- **Open questions:** See `../audit/07-OWNER-DECISION-LOG.md`; UNKNOWN remains UNKNOWN until evidenced.

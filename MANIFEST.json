@@ -1,0 +1,1091 @@
+{
+  "package": "Interview Assistant Commercial V2 — read-only source audit and proposed documentation",
+  "source_repo": "https://github.com/SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT",
+  "observed_default_branch": "claude/clever-hopper-m8kdai",
+  "repository_modified": false,
+  "website_code_modified": false,
+  "html_source_available": false,
+  "numbered_docs": 71,
+  "estimated_numbered_lines": 13105,
+  "actual_numbered_lines": 16531,
+  "documents": [
+    {
+      "num": 1,
+      "cat": "Product",
+      "path": "docs/01-PRD.md",
+      "title": "Product Requirements: Windows Commercial Website",
+      "owner": "Product Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 297,
+      "bytes": 19234
+    },
+    {
+      "num": 2,
+      "cat": "Architecture",
+      "path": "docs/02-ARCHITECTURE.md",
+      "title": "Static Website and Backend Boundaries",
+      "owner": "Principal Architect",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 209,
+      "bytes": 15722
+    },
+    {
+      "num": 3,
+      "cat": "Design-System",
+      "path": "docs/03-DESIGN-SYSTEM.md",
+      "title": "Premium Dark Design System",
+      "owner": "Design Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 266,
+      "bytes": 14579
+    },
+    {
+      "num": 4,
+      "cat": "UX",
+      "path": "docs/04-UX-SPEC.md",
+      "title": "Website Experience and Flows",
+      "owner": "UX Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 391,
+      "bytes": 21459
+    },
+    {
+      "num": 5,
+      "cat": "Billing",
+      "path": "docs/05-PRICING-BILLING.md",
+      "title": "Pricing Billing and Entitlements",
+      "owner": "Billing Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 206,
+      "bytes": 12730
+    },
+    {
+      "num": 6,
+      "cat": "Content-SEO",
+      "path": "docs/06-CONTENT-SEO.md",
+      "title": "Content SEO and Claims",
+      "owner": "Content Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 226,
+      "bytes": 12376
+    },
+    {
+      "num": 7,
+      "cat": "Security",
+      "path": "docs/07-SECURITY-PRIVACY-ETHICS.md",
+      "title": "Security Privacy and Ethics",
+      "owner": "Security Lead",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 223,
+      "bytes": 14396
+    },
+    {
+      "num": 8,
+      "cat": "Roadmap",
+      "path": "docs/08-ROADMAP.md",
+      "title": "Phased Commercialization Roadmap",
+      "owner": "Program Manager",
+      "deps": [
+        "SOURCE",
+        "OWNER"
+      ],
+      "purpose": "Fully reconciled and testable upgrade of the attached v1 document",
+      "estimated": 260,
+      "actual_lines": 203,
+      "bytes": 12280
+    },
+    {
+      "num": 9,
+      "cat": "Product",
+      "path": "docs/product/09-PERSONAS-JTBD.md",
+      "title": "Personas and Jobs to Be Done",
+      "owner": "Product Lead",
+      "deps": [
+        "01"
+      ],
+      "purpose": "Identify evidence-limited target audiences and their real tasks",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20509
+    },
+    {
+      "num": 10,
+      "cat": "Product",
+      "path": "docs/product/10-MEASUREMENT-PLAN.md",
+      "title": "Product Success Metrics and Instrumentation",
+      "owner": "Product Analytics",
+      "deps": [
+        "01",
+        "06"
+      ],
+      "purpose": "Measure learning and conversion without collecting interview content",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20346
+    },
+    {
+      "num": 11,
+      "cat": "Product",
+      "path": "docs/product/11-CLAIM-VALIDATION.md",
+      "title": "Claims, Evidence and Truth Gates",
+      "owner": "Product Lead",
+      "deps": [
+        "06",
+        "07"
+      ],
+      "purpose": "Prove each statement before it reaches the public site",
+      "estimated": 175,
+      "actual_lines": 241,
+      "bytes": 22085
+    },
+    {
+      "num": 12,
+      "cat": "Product",
+      "path": "docs/product/12-LAUNCH-SCOPE-AND-NON-GOALS.md",
+      "title": "Launch Scope and Explicit Non-Goals",
+      "owner": "Product Lead",
+      "deps": [
+        "01",
+        "08"
+      ],
+      "purpose": "Prevent scope drift and fabricated future promises",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19949
+    },
+    {
+      "num": 13,
+      "cat": "Architecture",
+      "path": "docs/architecture/13-TRUST-BOUNDARIES.md",
+      "title": "System Boundaries and Component Ownership",
+      "owner": "Principal Architect",
+      "deps": [
+        "02",
+        "07"
+      ],
+      "purpose": "Isolate public marketing from service credentials and desktop processes",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20027
+    },
+    {
+      "num": 14,
+      "cat": "Architecture",
+      "path": "docs/architecture/14-INTEGRATION-CONTRACTS.md",
+      "title": "Website and Desktop Integration Contracts",
+      "owner": "Principal Architect",
+      "deps": [
+        "02",
+        "13"
+      ],
+      "purpose": "Define concrete touchpoints that can be tested end-to-end",
+      "estimated": 175,
+      "actual_lines": 244,
+      "bytes": 21733
+    },
+    {
+      "num": 15,
+      "cat": "Architecture",
+      "path": "docs/architecture/15-DATA-FLOW-DIAGRAMS.md",
+      "title": "Data Flows and Trust Boundaries",
+      "owner": "Principal Architect",
+      "deps": [
+        "13",
+        "14"
+      ],
+      "purpose": "Specify sensitive-data routes with observable failure states",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20312
+    },
+    {
+      "num": 16,
+      "cat": "Backend",
+      "path": "docs/backend/16-AUTH-PKCE-SESSION.md",
+      "title": "Authentication, PKCE and Session Integrity",
+      "owner": "Backend Lead",
+      "deps": [
+        "14",
+        "43"
+      ],
+      "purpose": "Describe authenticated flows and unauthorized-state handling",
+      "estimated": 175,
+      "actual_lines": 242,
+      "bytes": 20845
+    },
+    {
+      "num": 17,
+      "cat": "Backend",
+      "path": "docs/backend/17-POSTGRES-SCHEMA-REVIEW.md",
+      "title": "PostgreSQL Schema, Indexes and Migrations",
+      "owner": "Database Lead",
+      "deps": [
+        "15",
+        "16"
+      ],
+      "purpose": "Map entities to isolation, consistency and reversibility rules",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19990
+    },
+    {
+      "num": 18,
+      "cat": "Backend",
+      "path": "docs/backend/18-ERROR-CONTRACTS.md",
+      "title": "API Error Taxonomy and Recovery",
+      "owner": "Backend Lead",
+      "deps": [
+        "14",
+        "16"
+      ],
+      "purpose": "Give clients stable error codes and recoverable next actions",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19927
+    },
+    {
+      "num": 19,
+      "cat": "Backend",
+      "path": "docs/backend/19-ENTITLEMENT-STATE.md",
+      "title": "Entitlements and Plan State Machine",
+      "owner": "Backend Lead",
+      "deps": [
+        "05",
+        "16"
+      ],
+      "purpose": "Ensure limits live on server not in marketing JS",
+      "estimated": 175,
+      "actual_lines": 240,
+      "bytes": 20900
+    },
+    {
+      "num": 20,
+      "cat": "Backend",
+      "path": "docs/backend/20-SESSION-LEASE-METERING.md",
+      "title": "Live Session Leases and Metering",
+      "owner": "Backend Lead",
+      "deps": [
+        "19",
+        "15"
+      ],
+      "purpose": "Bound chargeable time and close audio streams promptly",
+      "estimated": 175,
+      "actual_lines": 241,
+      "bytes": 21146
+    },
+    {
+      "num": 21,
+      "cat": "Backend",
+      "path": "docs/backend/21-AI-PROXY-FAILURE-MODES.md",
+      "title": "AI Proxy, Fallback and Provider Outages",
+      "owner": "AI Lead",
+      "deps": [
+        "20",
+        "61"
+      ],
+      "purpose": "Define provider failures without claiming unsupported multi-vendor redundancy",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20507
+    },
+    {
+      "num": 22,
+      "cat": "Backend",
+      "path": "docs/backend/22-BILLING-WEBHOOK-STATE.md",
+      "title": "Billing Webhook State and Financial Integrity",
+      "owner": "Billing Engineer",
+      "deps": [
+        "05",
+        "19"
+      ],
+      "purpose": "Protect entitlement state from replay, ordering and fraud",
+      "estimated": 175,
+      "actual_lines": 244,
+      "bytes": 21229
+    },
+    {
+      "num": 23,
+      "cat": "Backend",
+      "path": "docs/backend/23-SERVICE-OPERATIONS.md",
+      "title": "Backend Service Operations and SLO Proposals",
+      "owner": "SRE Lead",
+      "deps": [
+        "18",
+        "20"
+      ],
+      "purpose": "Make runtime monitoring and incident actions explicit",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19892
+    },
+    {
+      "num": 24,
+      "cat": "Frontend-Website",
+      "path": "docs/frontend-website/24-HTML-SEMANTICS.md",
+      "title": "Semantic HTML and Content Structure",
+      "owner": "Frontend Lead",
+      "deps": [
+        "04",
+        "03"
+      ],
+      "purpose": "Specify accessible page markup despite missing source HTML",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19902
+    },
+    {
+      "num": 25,
+      "cat": "Frontend-Website",
+      "path": "docs/frontend-website/25-DEMO-STATE-MACHINE.md",
+      "title": "Simulated Demo State Machine and Test Cases",
+      "owner": "Frontend Lead",
+      "deps": [
+        "04",
+        "03"
+      ],
+      "purpose": "Make the interactive demo truthful and deterministically testable",
+      "estimated": 175,
+      "actual_lines": 246,
+      "bytes": 21365
+    },
+    {
+      "num": 26,
+      "cat": "Frontend-Website",
+      "path": "docs/frontend-website/26-WEB-VITALS-BUDGET.md",
+      "title": "Website Core Web Vitals and Payload Budgets",
+      "owner": "Frontend Performance",
+      "deps": [
+        "02",
+        "03"
+      ],
+      "purpose": "Set measured targets before production rollout",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 20716
+    },
+    {
+      "num": 27,
+      "cat": "Frontend-Website",
+      "path": "docs/frontend-website/27-STRUCTURED-SEO.md",
+      "title": "Search Metadata and Structured Data Validation",
+      "owner": "SEO Lead",
+      "deps": [
+        "06",
+        "24"
+      ],
+      "purpose": "Expose only verifiable metadata and crawlable pages",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20044
+    },
+    {
+      "num": 28,
+      "cat": "Frontend-Website",
+      "path": "docs/frontend-website/28-WAITLIST-PRIVACY.md",
+      "title": "Waitlist Submission and Consent Flow",
+      "owner": "Frontend Lead",
+      "deps": [
+        "07",
+        "24"
+      ],
+      "purpose": "Specify an optional real opt-in with no deceptive form",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20157
+    },
+    {
+      "num": 29,
+      "cat": "Design-System",
+      "path": "docs/design-system/29-VISUAL-TOKENS.md",
+      "title": "Premium Visual Tokens and Usage Rules",
+      "owner": "Design Lead",
+      "deps": [
+        "03",
+        "26"
+      ],
+      "purpose": "Make visual decisions reproducible from token to screenshot",
+      "estimated": 175,
+      "actual_lines": 235,
+      "bytes": 20506
+    },
+    {
+      "num": 30,
+      "cat": "Design-System",
+      "path": "docs/design-system/30-COMPONENT-STATE-ATLAS.md",
+      "title": "Component Anatomy and State Atlas",
+      "owner": "Design Lead",
+      "deps": [
+        "03",
+        "29"
+      ],
+      "purpose": "Remove ambiguous states from every important control",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19948
+    },
+    {
+      "num": 31,
+      "cat": "Design-System",
+      "path": "docs/design-system/31-MOTION-AND-A11Y.md",
+      "title": "Motion, Focus and Accessibility Decisions",
+      "owner": "Accessibility Lead",
+      "deps": [
+        "29",
+        "30"
+      ],
+      "purpose": "Balance premium animation with readable reduced motion",
+      "estimated": 175,
+      "actual_lines": 237,
+      "bytes": 20998
+    },
+    {
+      "num": 32,
+      "cat": "UX",
+      "path": "docs/ux/32-ONBOARDING-JOURNEY.md",
+      "title": "First-Session Onboarding and Activation",
+      "owner": "UX Lead",
+      "deps": [
+        "01",
+        "19"
+      ],
+      "purpose": "Document full flow from site to a truthful first preparation",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19833
+    },
+    {
+      "num": 33,
+      "cat": "UX",
+      "path": "docs/ux/33-CONVERSION-FLOWS.md",
+      "title": "Conversion, Pricing and Trust Journeys",
+      "owner": "UX Lead",
+      "deps": [
+        "05",
+        "04"
+      ],
+      "purpose": "Avoid deceptive conversion and abandoned trial flows",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20095
+    },
+    {
+      "num": 34,
+      "cat": "UX",
+      "path": "docs/ux/34-RTL-LOCALIZATION-UX.md",
+      "title": "Internationalization, RTL and Language QA",
+      "owner": "Localization Lead",
+      "deps": [
+        "03",
+        "04"
+      ],
+      "purpose": "Protect Persian Arabic and mixed-script legibility",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19871
+    },
+    {
+      "num": 35,
+      "cat": "Mobile-Android",
+      "path": "docs/mobile-android/35-ANDROID-SHARED-ARCH.md",
+      "title": "Android Companion Architecture Proposal",
+      "owner": "Android Lead",
+      "deps": [
+        "13",
+        "61"
+      ],
+      "purpose": "Plan Android honestly as a future companion first",
+      "estimated": 175,
+      "actual_lines": 232,
+      "bytes": 20883
+    },
+    {
+      "num": 36,
+      "cat": "Mobile-Android",
+      "path": "docs/mobile-android/36-ANDROID-AUDIO-FEASIBILITY.md",
+      "title": "Android Audio Capture Experiment Plan",
+      "owner": "Android Audio Engineer",
+      "deps": [
+        "35",
+        "43"
+      ],
+      "purpose": "Measure whether lawful third-party meeting playback is actually accessible",
+      "estimated": 175,
+      "actual_lines": 243,
+      "bytes": 21901
+    },
+    {
+      "num": 37,
+      "cat": "Mobile-iOS",
+      "path": "docs/mobile-ios/37-IOS-SHARED-ARCH.md",
+      "title": "iOS Companion Architecture Proposal",
+      "owner": "iOS Lead",
+      "deps": [
+        "13",
+        "61"
+      ],
+      "purpose": "Propose an honest iPhone app without assuming background audio access",
+      "estimated": 175,
+      "actual_lines": 233,
+      "bytes": 20503
+    },
+    {
+      "num": 38,
+      "cat": "Mobile-iOS",
+      "path": "docs/mobile-ios/38-IOS-AUDIO-FEASIBILITY.md",
+      "title": "iOS Audio Capture and Store Review Research",
+      "owner": "iOS Audio Engineer",
+      "deps": [
+        "37",
+        "43"
+      ],
+      "purpose": "Define and test platform constraints before promising live help",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 21800
+    },
+    {
+      "num": 39,
+      "cat": "Desktop-Mac",
+      "path": "docs/desktop-mac/39-MAC-NATIVE-ARCH.md",
+      "title": "Dedicated Native macOS App Architecture",
+      "owner": "Mac Lead",
+      "deps": [
+        "13",
+        "61"
+      ],
+      "purpose": "Specify a true native Mac product rather than a WPF port",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 20743
+    },
+    {
+      "num": 40,
+      "cat": "Desktop-Mac",
+      "path": "docs/desktop-mac/40-MAC-AUDIO-FEASIBILITY.md",
+      "title": "macOS System Audio Architecture and Experiments",
+      "owner": "Mac Audio Engineer",
+      "deps": [
+        "39",
+        "43"
+      ],
+      "purpose": "Validate ScreenCaptureKit system audio pathways with permission",
+      "estimated": 175,
+      "actual_lines": 234,
+      "bytes": 21279
+    },
+    {
+      "num": 41,
+      "cat": "Desktop-Windows",
+      "path": "docs/desktop-windows/41-WINDOWS-CURRENT-CAPABILITIES.md",
+      "title": "Windows Product Evidence and Constraints",
+      "owner": "Windows Lead",
+      "deps": [
+        "13",
+        "01"
+      ],
+      "purpose": "Keep the public product tied to the implemented Windows path",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20253
+    },
+    {
+      "num": 42,
+      "cat": "Desktop-Windows",
+      "path": "docs/desktop-windows/42-WINDOWS-RELEASE-INTEGRITY.md",
+      "title": "Windows Installer, Signing and Update Acceptance",
+      "owner": "Release Engineer",
+      "deps": [
+        "41",
+        "58"
+      ],
+      "purpose": "Make installation a verified deliverable not a placeholder CTA",
+      "estimated": 175,
+      "actual_lines": 238,
+      "bytes": 21085
+    },
+    {
+      "num": 43,
+      "cat": "Security",
+      "path": "docs/security/43-THREAT-MODEL.md",
+      "title": "STRIDE Threat Model and Abuse Cases",
+      "owner": "Security Lead",
+      "deps": [
+        "07",
+        "13"
+      ],
+      "purpose": "Prioritize assets, adversaries and concrete controls",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 20831
+    },
+    {
+      "num": 44,
+      "cat": "Security",
+      "path": "docs/security/44-AUTH-AND-API-HARDENING.md",
+      "title": "Security Test Contracts for Auth and APIs",
+      "owner": "Security Lead",
+      "deps": [
+        "16",
+        "43"
+      ],
+      "purpose": "Define exact negative tests for privileged operations",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19772
+    },
+    {
+      "num": 45,
+      "cat": "Security",
+      "path": "docs/security/45-SUPPLY-CHAIN-RELEASE.md",
+      "title": "Dependency, Signing and Supply-Chain Gate",
+      "owner": "AppSec Lead",
+      "deps": [
+        "42",
+        "43"
+      ],
+      "purpose": "Enforce traceable binary provenance before distribution",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19356
+    },
+    {
+      "num": 46,
+      "cat": "Privacy",
+      "path": "docs/privacy/46-DATA-INVENTORY.md",
+      "title": "Personal Data Inventory and Processing Map",
+      "owner": "Privacy Lead",
+      "deps": [
+        "07",
+        "15"
+      ],
+      "purpose": "Define what is local remote transient and retained",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 21376
+    },
+    {
+      "num": 47,
+      "cat": "Privacy",
+      "path": "docs/privacy/47-RETENTION-ERASURE.md",
+      "title": "Retention, Export and Erasure Controls",
+      "owner": "Privacy Lead",
+      "deps": [
+        "46",
+        "19"
+      ],
+      "purpose": "Avoid incomplete delete promises and invented timelines",
+      "estimated": 175,
+      "actual_lines": 238,
+      "bytes": 20559
+    },
+    {
+      "num": 48,
+      "cat": "Privacy",
+      "path": "docs/privacy/48-DPIA-RISK-REGISTER.md",
+      "title": "Privacy Impact and Cross-Border Assessment",
+      "owner": "Privacy Counsel",
+      "deps": [
+        "46",
+        "47"
+      ],
+      "purpose": "Assess risk and document necessary legal decisions",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20004
+    },
+    {
+      "num": 49,
+      "cat": "Legal",
+      "path": "docs/legal/49-TERMS-REQUIREMENTS.md",
+      "title": "Terms of Use Requirements for Counsel",
+      "owner": "Legal Counsel",
+      "deps": [
+        "07",
+        "48"
+      ],
+      "purpose": "Provide enforceable issues for legal drafting without pretending approval",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20059
+    },
+    {
+      "num": 50,
+      "cat": "Legal",
+      "path": "docs/legal/50-PRIVACY-POLICY-REQUIREMENTS.md",
+      "title": "Public Privacy Notice Requirements",
+      "owner": "Legal Counsel",
+      "deps": [
+        "46",
+        "48"
+      ],
+      "purpose": "Produce a traceable policy specification not fake legal language",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20073
+    },
+    {
+      "num": 51,
+      "cat": "Legal",
+      "path": "docs/legal/51-USER-CONSENT-AND-ETHICS.md",
+      "title": "Authorized Use and Informed Choice",
+      "owner": "Policy Lead",
+      "deps": [
+        "49",
+        "50"
+      ],
+      "purpose": "Define user safety boundaries without stealth marketing",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19801
+    },
+    {
+      "num": 52,
+      "cat": "Billing",
+      "path": "docs/billing/52-PRICE-APPROVAL.md",
+      "title": "Pricing Approval, Display and Change Control",
+      "owner": "Finance Lead",
+      "deps": [
+        "05",
+        "19"
+      ],
+      "purpose": "Separate configured sandbox limits from commercially approved prices",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 20975
+    },
+    {
+      "num": 53,
+      "cat": "Billing",
+      "path": "docs/billing/53-REFUNDS-CHARGEBACKS.md",
+      "title": "Refund, Chargeback and Account State Rules",
+      "owner": "Billing Lead",
+      "deps": [
+        "22",
+        "52"
+      ],
+      "purpose": "Specify dispute handling that protects paid access and consumers",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19818
+    },
+    {
+      "num": 54,
+      "cat": "QA-Testing",
+      "path": "docs/qa-testing/54-VERIFICATION-STRATEGY.md",
+      "title": "Verification Pyramid and Test Ownership",
+      "owner": "QA Lead",
+      "deps": [
+        "08",
+        "43"
+      ],
+      "purpose": "Make critical confidence evidence reproducible",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20036
+    },
+    {
+      "num": 55,
+      "cat": "QA-Testing",
+      "path": "docs/qa-testing/55-E2E-ACCEPTANCE-MATRIX.md",
+      "title": "End-to-End Commercial Acceptance Matrix",
+      "owner": "QA Lead",
+      "deps": [
+        "54",
+        "32"
+      ],
+      "purpose": "Gate release on realistic user and failure journeys",
+      "estimated": 175,
+      "actual_lines": 243,
+      "bytes": 20968
+    },
+    {
+      "num": 56,
+      "cat": "QA-Testing",
+      "path": "docs/qa-testing/56-WEB-ACCESSIBILITY-AUDIT.md",
+      "title": "Website Accessibility Manual and Automated QA",
+      "owner": "Accessibility Lead",
+      "deps": [
+        "24",
+        "31"
+      ],
+      "purpose": "Test WCAG 2.2 AA with assistive technology",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19535
+    },
+    {
+      "num": 57,
+      "cat": "QA-Testing",
+      "path": "docs/qa-testing/57-PLATFORM-FEASIBILITY-GATES.md",
+      "title": "Future Platform Proof Experiments",
+      "owner": "Research QA",
+      "deps": [
+        "36",
+        "38",
+        "40"
+      ],
+      "purpose": "Separate confirmed capture evidence from concept demos",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 20292
+    },
+    {
+      "num": 58,
+      "cat": "DevOps-Deployment",
+      "path": "docs/devops-deployment/58-GITHUB-PAGES-OPERATIONS.md",
+      "title": "Static Website Hosting and Release Management",
+      "owner": "DevOps Lead",
+      "deps": [
+        "02",
+        "26"
+      ],
+      "purpose": "Publish a deterministic static folder with verified domain",
+      "estimated": 175,
+      "actual_lines": 246,
+      "bytes": 20936
+    },
+    {
+      "num": 59,
+      "cat": "DevOps-Deployment",
+      "path": "docs/devops-deployment/59-RAILWAY-PRODUCTION-GATES.md",
+      "title": "Railway Backend Deployment and Rollback",
+      "owner": "SRE Lead",
+      "deps": [
+        "23",
+        "58"
+      ],
+      "purpose": "Tie website claims to running backend and payment readiness",
+      "estimated": 175,
+      "actual_lines": 237,
+      "bytes": 20796
+    },
+    {
+      "num": 60,
+      "cat": "DevOps-Deployment",
+      "path": "docs/devops-deployment/60-INCIDENT-PLAYBOOK.md",
+      "title": "Incidents, Alerting and Customer Communication",
+      "owner": "Incident Commander",
+      "deps": [
+        "23",
+        "59"
+      ],
+      "purpose": "Define containment and evidence discipline for incidents",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19712
+    },
+    {
+      "num": 61,
+      "cat": "Data-AI",
+      "path": "docs/data-ai/61-FACT-TRUTH-BOUNDARY.md",
+      "title": "Grounding and Fact Safety Contract",
+      "owner": "AI Lead",
+      "deps": [
+        "01",
+        "46"
+      ],
+      "purpose": "Never allow unconfirmed candidate assertions to be marketed as fact",
+      "estimated": 175,
+      "actual_lines": 239,
+      "bytes": 21496
+    },
+    {
+      "num": 62,
+      "cat": "Data-AI",
+      "path": "docs/data-ai/62-MODEL-EVALUATION.md",
+      "title": "Answer Quality and Latency Evaluation Protocol",
+      "owner": "AI Evaluation Lead",
+      "deps": [
+        "21",
+        "61"
+      ],
+      "purpose": "Measure model usefulness without scores of candidates",
+      "estimated": 175,
+      "actual_lines": 234,
+      "bytes": 21496
+    },
+    {
+      "num": 63,
+      "cat": "Data-AI",
+      "path": "docs/data-ai/63-MULTILINGUAL-VALIDATION.md",
+      "title": "Ten-Language Capability Matrix and Gates",
+      "owner": "Localization Lead",
+      "deps": [
+        "34",
+        "62"
+      ],
+      "purpose": "Avoid equating registry support with native-speech production quality",
+      "estimated": 175,
+      "actual_lines": 241,
+      "bytes": 21179
+    },
+    {
+      "num": 64,
+      "cat": "Content-SEO",
+      "path": "docs/content-seo/64-PUBLIC-COPY-CLAIM-MATRIX.md",
+      "title": "Public Copy Inventory and Proof Rules",
+      "owner": "Content Lead",
+      "deps": [
+        "06",
+        "11"
+      ],
+      "purpose": "Make each sentence traceable to a verification record",
+      "estimated": 175,
+      "actual_lines": 243,
+      "bytes": 21065
+    },
+    {
+      "num": 65,
+      "cat": "Content-SEO",
+      "path": "docs/content-seo/65-LAUNCH-CONTENT-PLAN.md",
+      "title": "SEO, Education and Launch Publishing",
+      "owner": "Content Lead",
+      "deps": [
+        "27",
+        "64"
+      ],
+      "purpose": "Publish honest search content around interview preparation",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19986
+    },
+    {
+      "num": 66,
+      "cat": "Support",
+      "path": "docs/support/66-SUPPORT-PLAYBOOKS.md",
+      "title": "Support Triage and Known Failure Recovery",
+      "owner": "Support Lead",
+      "deps": [
+        "18",
+        "60"
+      ],
+      "purpose": "Provide customer-facing steps with correlation-only diagnostics",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19981
+    },
+    {
+      "num": 67,
+      "cat": "Support",
+      "path": "docs/support/67-PRIVACY-REQUEST-RUNBOOK.md",
+      "title": "Data Rights and Sensitive Support Handling",
+      "owner": "Privacy Operations",
+      "deps": [
+        "47",
+        "66"
+      ],
+      "purpose": "Give support a secure evidence-limited privacy request process",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19899
+    },
+    {
+      "num": 68,
+      "cat": "Growth",
+      "path": "docs/growth/68-EXPERIMENT-PROGRAM.md",
+      "title": "Ethical Conversion Experiment Design",
+      "owner": "Growth Lead",
+      "deps": [
+        "10",
+        "33"
+      ],
+      "purpose": "Test comprehension improvements without deception",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19713
+    },
+    {
+      "num": 69,
+      "cat": "Growth",
+      "path": "docs/growth/69-ANALYTICS-PRIVACY.md",
+      "title": "Privacy-Preserving Analytics and Attribution",
+      "owner": "Growth Analytics",
+      "deps": [
+        "10",
+        "46"
+      ],
+      "purpose": "Make measurement defensible with no transcript collection",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19672
+    },
+    {
+      "num": 70,
+      "cat": "Roadmap",
+      "path": "docs/roadmap/70-PROGRAM-DEPENDENCIES.md",
+      "title": "Milestone Dependencies and Critical Path",
+      "owner": "Program Manager",
+      "deps": [
+        "08",
+        "59"
+      ],
+      "purpose": "Expose the launch critical path and honest mobile gating",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19883
+    },
+    {
+      "num": 71,
+      "cat": "Roadmap",
+      "path": "docs/roadmap/71-OWNER-DECISION-REGISTER.md",
+      "title": "Owner Decision Log and Consequences",
+      "owner": "Program Manager",
+      "deps": [
+        "08",
+        "52"
+      ],
+      "purpose": "Centralize Saeed decisions and prevent implicit sign-off",
+      "estimated": 175,
+      "actual_lines": 223,
+      "bytes": 19856
+    }
+  ],
+  "audit_finding_count": 45,
+  "website_checklist_count": 40,
+  "owner_decision_count": 16,
+  "source_markdown_documents_read": 75,
+  "selected_code_files_inspected": [
+    "global.json",
+    "src/InterviewAssistant.Contracts/ApiContracts.cs",
+    "src/InterviewAssistant.Backend/Program.cs",
+    "src/InterviewAssistant.Backend/appsettings.json",
+    "src/InterviewAssistant.Client/CloudOptions.cs"
+  ],
+  "source_head_sha": "4976e16f5379d38e9b265d3db979d2f8d7d7aa21",
+  "source_code_audit_scope": "Selected entry points and documentation; not all C# source files read line by line."
+}
