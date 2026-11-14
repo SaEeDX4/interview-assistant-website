@@ -44,7 +44,7 @@ something else.)
 | R17 | Large block → large block | 24px | `.interrupt`, `.demo-next`, `.finder`, `.vs-grid`, `.lang-show` |
 | R18 | Grid gaps | cards 20px · small cards 16px · two-col 32px · hero 56px · footer 32px | |
 | R19 | Header | 64px tall · inner gap 12px · brand gap 8px · nav link padding 8px | |
-| R20 | Footer | padding 56px top · 32px bottom · columns 32px · link rows 8px vertical · bottom bar margin-top 40px, padding-top 20px | |
+| R20 | Footer | padding 56px top · 32px bottom · columns 32px · link rows 12px vertical (Step 11: raised from 8px for the 44px touch target) · bottom bar margin-top 40px, padding-top 20px | |
 | R21 | Table cells | 12px 16px · stacked card 8px 16px · label→value 4px | |
 | R22 | Form controls | fieldset 16px · pill 8px 16px · result box 20px · input 12px 16px | |
 | R23 | Accordion rows | button 20px · panel bottom 20px · rows gap 12px | |
@@ -73,11 +73,13 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
   small circle against text, not a spacing decision.
 - `scroll-padding-top: 84px` — functional: header 64px + 20px clearance.
 - `.app-wave { gap: 3px }` — waveform bars are a graphic texture.
+- `margin-top: -10px` on `::-webkit-slider-thumb` — geometry, not spacing:
+  it centres the 24px thumb on the 4px track: (24 − 4) / 2 = 10px.
 - Skeleton / progress heights (`46px`, `26px`, `10px`) — element heights,
   not spacing.
 - Border widths (1px, 2px) and border-radius values.
 - `body.cta-visible { padding-bottom: 96px }` — functional clearance for
-  the fixed bar (bar ≈ 64px + 32px).
+  the fixed bar (bar ≈ 70px + 26px).
 
 ## 5. Audit log
 
@@ -99,6 +101,11 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
     not by eyeballing.
   - No "too much spacing" defects found. Clean components: hero, cards,
     grids, header height, footer frame, next-band, demo stage frame.
+- **Step 11** (accessibility) raised three spacing values above this
+  standard's earlier ones, because the 44px touch target outranks them:
+  `.btn-small` padding 8px→12px vertical, nav links 8px→12px vertical,
+  footer link rows 8px→12px vertical (R20 updated). It also added one
+  exemption: the slider-thumb centring offset `margin-top: -10px`.
 - **Method:** full CSS inventory + visual review of all 10 pages at
   320/360/390/414/430/768/1024/1280 (Step 8 captures) + fresh live
   re-verification after the fix.
