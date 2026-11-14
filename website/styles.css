@@ -255,6 +255,9 @@ kbd {
   background: var(--surface-2); border: 1px solid var(--border-strong);
   border-bottom-width: 2px; border-radius: 6px; padding: 3px 7px; color: var(--text);
 }
+/* Long unbreakable tokens (e.g. API names) must not force the page wider
+   than the viewport on small phones: allow them to break anywhere. */
+code { overflow-wrap: anywhere; }
 
 /* ---------- Languages strip ---------- */
 .languages { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 0; background: var(--bg-soft); }
@@ -737,6 +740,8 @@ body.cta-visible { padding-bottom: 96px; }
   .seg { flex-direction: column; border-radius: var(--radius); width: 100%; }
   .seg-btn { border-right: 0; border-bottom: 1px solid var(--border); text-align: left; }
   .seg-btn:last-child { border-bottom: 0; }
+  .seg-state { flex-wrap: wrap; }
+  .seg-state .seg-label { white-space: nowrap; }
 }
 
 /* Minutes meter (pricing.html) */
