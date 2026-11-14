@@ -49,26 +49,56 @@
   </section>
   <section class="section" aria-labelledby="record-title">
     <div class="container">
-      <div class="two-col">
-        <div>
-          <p class="eyebrow">The short version</p>
-          <h2 id="record-title">What is recorded</h2>
-          <ul class="check-list">
-            <li><strong>Your confirmed profile facts</strong> — the ones you approved, stored encrypted on your PC.</li>
-            <li><strong>Live transcripts</strong> — the interviewer’s questions, transcribed live, kept on your PC by default.</li>
-            <li><strong>Reports</strong> — questions asked and suggestions shown, on your PC by default.</li>
-            <li><strong>Usage ledger</strong> — server-side metering of live minutes, for fair billing only.</li>
-            <li><strong>Payment references</strong> — with Paddle only; the app and backend never see card data.</li>
+      <p class="eyebrow">The short version</p>
+      <h2 id="record-title">Your audio travels one way — then it is gone</h2>
+      <div class="dataflow" aria-label="Data flow: headset audio is transcribed live, never stored, then three points and a report are produced">
+        <div class="flow-node">
+          <span class="flow-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="2" y="13" width="4" height="7" rx="2"/><rect x="18" y="13" width="4" height="7" rx="2"/></svg></span>
+          <h3>Headset audio</h3>
+          <p>Interviewer’s audio from your headset — WASAPI loopback</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-node">
+          <span class="flow-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 7v10M11 4v16M15 7v10M19 10v4"/></svg></span>
+          <h3>Live transcription</h3>
+          <p>Transcribed as it streams, while the question is being asked</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-break">
+          <h3>✕ Audio never stored</h3>
+          <p>The audio ends here. It is never written to disk, never uploaded, never kept.</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-node">
+          <span class="flow-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></span>
+          <h3>3 short points</h3>
+          <p>Built only from your confirmed facts and your question bank</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-node">
+          <span class="flow-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></span>
+          <h3>Report</h3>
+          <p>Questions asked and suggestions shown — on your PC by default</p>
+        </div>
+      </div>
+      <div class="vs-grid">
+        <div class="vs-col">
+          <h3>What is recorded</h3>
+          <ul class="vs-list vs-yes">
+            <li><span class="mk" aria-hidden="true">✓</span><span><strong>Your confirmed profile facts</strong> — the ones you approved, stored encrypted on your PC.</span></li>
+            <li><span class="mk" aria-hidden="true">✓</span><span><strong>Live transcripts</strong> — the interviewer’s questions, transcribed live, kept on your PC by default.</span></li>
+            <li><span class="mk" aria-hidden="true">✓</span><span><strong>Reports</strong> — questions asked and suggestions shown, on your PC by default.</span></li>
+            <li><span class="mk" aria-hidden="true">✓</span><span><strong>Usage ledger</strong> — server-side metering of live minutes, for fair billing only.</span></li>
+            <li><span class="mk" aria-hidden="true">✓</span><span><strong>Payment references</strong> — with Paddle only; the app and backend never see card data.</span></li>
           </ul>
         </div>
-        <div>
-          <p class="eyebrow">The short version</p>
-          <h2 id="not-record-title">What is never recorded</h2>
-          <ul class="check-list">
-            <li><strong>Your microphone is not recorded.</strong> The app listens to the interviewer’s audio from your headset; your mic is not a source.</li>
-            <li><strong>Audio is never stored.</strong> It is transcribed live and never written to disk.</li>
-            <li><strong>No hidden mode.</strong> The app is a normal, visible window. It never hides, never evades screen capture, and never pretends to be something else.</li>
-            <li><strong>No hiring scores or predictions.</strong> There is nothing to record about an outcome the app does not predict.</li>
+        <div class="vs-col never">
+          <h3>What is never recorded</h3>
+          <ul class="vs-list vs-no">
+            <li><span class="mk" aria-hidden="true">✕</span><span><strong>Your microphone is not recorded.</strong> The app listens to the interviewer’s audio from your headset; your mic is not a source.</span></li>
+            <li><span class="mk" aria-hidden="true">✕</span><span><strong>Audio is never stored.</strong> It is transcribed live and never written to disk.</span></li>
+            <li><span class="mk" aria-hidden="true">✕</span><span><strong>No hidden mode.</strong> The app is a normal, visible window. It never hides, never evades screen capture, and never pretends to be something else.</span></li>
+            <li><span class="mk" aria-hidden="true">✕</span><span><strong>No hiring scores or predictions.</strong> There is nothing to record about an outcome the app does not predict.</span></li>
           </ul>
         </div>
       </div>

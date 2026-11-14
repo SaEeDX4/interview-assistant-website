@@ -54,42 +54,85 @@
       </div>
 
       <h2>Troubleshooting</h2>
-      <h3>No audio / wrong playback device</h3>
-      <p>The app captures the interviewer’s audio from your headset via WASAPI loopback. If nothing is transcribed: check that the headset is the <strong>default playback device</strong> in Windows sound settings, that the meeting audio is actually playing through it (not your speakers), and that no other app has exclusive control of the device. If the stream is empty, the app records that as no audio — an empty stream is not a pass, and it will not invent a transcript.</p>
-      <h3>The app hears the wrong app</h3>
-      <p>WASAPI loopback captures what plays through the selected playback device. If music or another call is playing through the same headset, it is in the stream. Close other audio sources before the interview, and use a headset — not speakers — so your own voice does not feed back.</p>
-      <h3>Sign-in problems</h3>
-      <p>Sign-in happens in your system browser (Google, Microsoft, or an email link). If sign-in fails, try a fresh browser sign-in, check that your default browser can reach the sign-in page, and retry. Prepared answers keep working offline with a cached entitlement, so a sign-in problem does not erase your preparation.</p>
-      <h3>Minutes running out</h3>
-      <p>Live minutes are metered by the server. If live listening stops, check how many live minutes you have used — Trial gives 30 lifetime minutes. Preparation and practise do not use live minutes, so a “minutes used up” message only ever concerns live sessions. See <a href="pricing.html">how live minutes work</a>.</p>
-      <h3>Download problems</h3>
-      <p>There is no installer yet — the signed installer and its SHA-256 hash are not published. If a link on this site does not download anything, that is expected for now, not a bug. See <a href="download.html">Download</a>.</p>
+      <div class="trouble-grid">
+        <article class="trouble-card">
+          <span class="status">Audio</span>
+          <h3>No audio / wrong playback device</h3>
+          <p>The app captures the interviewer’s audio from your headset via WASAPI loopback. If nothing is transcribed: check that the headset is the <strong>default playback device</strong> in Windows sound settings, that the meeting audio is actually playing through it (not your speakers), and that no other app has exclusive control of the device. If the stream is empty, the app records that as no audio — an empty stream is not a pass, and it will not invent a transcript.</p>
+        </article>
+        <article class="trouble-card">
+          <span class="status">Audio</span>
+          <h3>The app hears the wrong app</h3>
+          <p>WASAPI loopback captures what plays through the selected playback device. If music or another call is playing through the same headset, it is in the stream. Close other audio sources before the interview, and use a headset — not speakers — so your own voice does not feed back.</p>
+        </article>
+        <article class="trouble-card">
+          <span class="status">Account</span>
+          <h3>Sign-in problems</h3>
+          <p>Sign-in happens in your system browser (Google, Microsoft, or an email link). If sign-in fails, try a fresh browser sign-in, check that your default browser can reach the sign-in page, and retry. Prepared answers keep working offline with a cached entitlement, so a sign-in problem does not erase your preparation.</p>
+        </article>
+        <article class="trouble-card">
+          <span class="status">Billing</span>
+          <h3>Minutes running out</h3>
+          <p>Live minutes are metered by the server. If live listening stops, check how many live minutes you have used — Trial gives 30 lifetime minutes. Preparation and practise do not use live minutes, so a “minutes used up” message only ever concerns live sessions. See <a href="pricing.html">how live minutes work</a>.</p>
+        </article>
+        <article class="trouble-card">
+          <span class="status">Download</span>
+          <h3>Download problems</h3>
+          <p>There is no installer yet — the signed installer and its SHA-256 hash are not published. If a link on this site does not download anything, that is expected for now, not a bug. See <a href="download.html">Download</a>.</p>
+        </article>
+      </div>
 
       <h2>Frequently asked questions</h2>
-      <details><summary>Is it allowed to use Interview Assistant in an interview?</summary>
-        <p>Only where you are allowed to. It is a preparation and practice coach with a live assist mode for interviews where assistance is permitted. Always check the interview’s rules — and the employer’s — first. The app is a visible window; it never hides.</p></details>
-      <details><summary>What does it record?</summary>
-        <p>It does not record your microphone, and it does not store audio. It listens to the interviewer’s audio from your headset to transcribe questions live. Transcripts and reports stay on your PC by default.</p></details>
-      <details><summary>Does it work in my language?</summary>
-        <p>It supports 10 languages, including Persian and Arabic with proper right-to-left display. Answers follow the interviewer’s language. Language support is as listed in the app; live quality is being validated language by language.</p></details>
-      <details><summary>What does it cost?</summary>
-        <p>The Trial gives you 30 lifetime live minutes, 1 profile, and 2 preparation runs a month. Pro is USD 19.99 a month (sandbox reference price — final live price to be confirmed) for 600 live minutes per billing period, 3 profiles, and 20 preparation runs. Billed by Paddle — no card details ever touch the app.</p></details>
-      <details><summary>What happens if the interviewer interrupts me?</summary>
-        <p>The next answer gets shorter automatically (Concise, then Rapid), so you can keep up. You can reset it with Ctrl+Alt+R. Try it in the <a href="demo.html">interruption simulator</a>.</p></details>
-      <details><summary>What is Coach Mode?</summary>
-        <p>Instead of full bullets, Coach Mode shows three keywords and a one-line structure, so you speak in your own words. Toggle it live with Ctrl+Alt+C.</p></details>
-      <details><summary>What do I get after the interview?</summary>
-        <p>An honest report: the questions asked and the suggestions shown, plus what to prepare next time. No scores, no hiring predictions.</p></details>
-      <details><summary>Does it work offline?</summary>
-        <p>Live transcription and AI answers need an internet connection. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC.</p></details>
-      <details><summary>How do I cancel Pro?</summary>
-        <p>Cancel anytime in the Paddle customer portal — you keep Pro until the end of your billing period. Paid checkout is not open yet; the Pro price shown is a Paddle sandbox reference.</p></details>
-      <details><summary>Does it work on Mac or Android?</summary>
-        <p>Not yet. Windows is the only platform today. Android is planned as a companion first, and iOS and a dedicated Mac app are separate research phases — see <a href="platforms.html">Platforms &amp; roadmap</a>. No dates, no downloads for those platforms yet.</p></details>
-      <details><summary>Can it help me cheat?</summary>
-        <p>No. It is a preparation and practice coach. It does not hide, does not evade screen capture, does not record your microphone, and does not present experience that is not yours. Only facts you confirmed are ever used — and live assist is only for interviews where assistance is permitted.</p></details>
-      <details><summary>How do I delete my data?</summary>
-        <p>You can export or delete your workspace from the app. Deleting app data does not delete Paddle’s own payment records, which follow Paddle’s legal retention. A deletion request shows a scoped pending/export/erase status rather than a false “all done” — see <a href="privacy.html">Privacy</a>.</p></details>
+      <div class="acc">
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p1" id="faq-b1">Is it allowed to use Interview Assistant in an interview?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p1" role="region" aria-labelledby="faq-b1"><div><p>Only where you are allowed to. It is a preparation and practice coach with a live assist mode for interviews where assistance is permitted. Always check the interview’s rules — and the employer’s — first. The app is a visible window; it never hides.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p2" id="faq-b2">What does it record?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p2" role="region" aria-labelledby="faq-b2"><div><p>It does not record your microphone, and it does not store audio. It listens to the interviewer’s audio from your headset to transcribe questions live. Transcripts and reports stay on your PC by default.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p3" id="faq-b3">Does it work in my language?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p3" role="region" aria-labelledby="faq-b3"><div><p>It supports 10 languages, including Persian and Arabic with proper right-to-left display. Answers follow the interviewer’s language. Language support is as listed in the app; live quality is being validated language by language.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p4" id="faq-b4">What does it cost?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p4" role="region" aria-labelledby="faq-b4"><div><p>The Trial gives you 30 lifetime live minutes, 1 profile, and 2 preparation runs a month. Pro is USD 19.99 a month (sandbox reference price — final live price to be confirmed) for 600 live minutes per billing period, 3 profiles, and 20 preparation runs. Billed by Paddle — no card details ever touch the app.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p5" id="faq-b5">What happens if the interviewer interrupts me?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p5" role="region" aria-labelledby="faq-b5"><div><p>The next answer gets shorter automatically (Concise, then Rapid), so you can keep up. You can reset it with Ctrl+Alt+R. Try it in the <a href="demo.html">interruption simulator</a>.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p6" id="faq-b6">What is Coach Mode?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p6" role="region" aria-labelledby="faq-b6"><div><p>Instead of full bullets, Coach Mode shows three keywords and a one-line structure, so you speak in your own words. Toggle it live with Ctrl+Alt+C.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p7" id="faq-b7">What do I get after the interview?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p7" role="region" aria-labelledby="faq-b7"><div><p>An honest report: the questions asked and the suggestions shown, plus what to prepare next time. No scores, no hiring predictions.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p8" id="faq-b8">Does it work offline?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p8" role="region" aria-labelledby="faq-b8"><div><p>Live transcription and AI answers need an internet connection. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p9" id="faq-b9">How do I cancel Pro?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p9" role="region" aria-labelledby="faq-b9"><div><p>Cancel anytime in the Paddle customer portal — you keep Pro until the end of your billing period. Paid checkout is not open yet; the Pro price shown is a Paddle sandbox reference.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p10" id="faq-b10">Does it work on Mac or Android?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p10" role="region" aria-labelledby="faq-b10"><div><p>Not yet. Windows is the only platform today. Android is planned as a companion first, and iOS and a dedicated Mac app are separate research phases — see <a href="platforms.html">Platforms &amp; roadmap</a>. No dates, no downloads for those platforms yet.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p11" id="faq-b11">Can it help me cheat?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p11" role="region" aria-labelledby="faq-b11"><div><p>No. It is a preparation and practice coach. It does not hide, does not evade screen capture, does not record your microphone, and does not present experience that is not yours. Only facts you confirmed are ever used — and live assist is only for interviews where assistance is permitted.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p12" id="faq-b12">How do I delete my data?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-p12" role="region" aria-labelledby="faq-b12"><div><p>You can export or delete your workspace from the app. Deleting app data does not delete Paddle’s own payment records, which follow Paddle’s legal retention. A deletion request shows a scoped pending/export/erase status rather than a false “all done” — see <a href="privacy.html">Privacy</a>.</p></div></div>
+        </div>
+      </div>
 
       <h2>Privacy-request runbook (summary)</h2>
       <p>When the support channel opens, a privacy request (export or erasure) will follow these steps, from the product’s own runbook: <strong>1.</strong> you submit the request through the support channel; <strong>2.</strong> your identity is verified, so nobody can request your data; <strong>3.</strong> the request is traced across the local workspace, the backend, and Paddle, field by field; <strong>4.</strong> export or erasure is carried out, with Paddle invoices explicitly outside app deletion; <strong>5.</strong> you receive a scoped confirmation — what was done, and what is still pending if anything is. A partial removal is never presented as a complete one.</p>

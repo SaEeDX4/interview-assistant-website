@@ -414,6 +414,7 @@
   // (1 line). Simulated; in the real app the shortening is automatic.
   var intAnswer = document.getElementById("int-answer");
   var intStatus = document.getElementById("int-status");
+  var intState = document.getElementById("int-state");
   var intBtns = ["int-normal", "int-concise", "int-rapid"].map(function (id) {
     return document.getElementById(id);
   });
@@ -436,6 +437,10 @@
       intAnswer.classList.remove("coach");
       intStatus.textContent = "Preparing the shorter version…";
       var items = INT[key];
+      intBtns.forEach(function (b, i) {
+        b.setAttribute("aria-pressed", String(["normal", "concise", "rapid"][i] === key));
+      });
+      if (intState) { intState.textContent = label.replace(" (", " — ").replace(")", ""); }
       if (isReducedMotion()) {
         items.forEach(function (text, i) { intAnswer.appendChild(makeBullet(text, i)); });
         intStatus.textContent = label + " ready — simulated.";
@@ -583,7 +588,9 @@
   // Hero (.hero-copy, .hero-visual) is deliberately NOT a reveal target:
   // it must be fully bright on load, with no dim phase at all.
   var targets = document.querySelectorAll(
-    ".card, .steps li, details, .callout, .table-wrap, .ethics-strip"
+    ".card, .steps li, details, .callout, .table-wrap, .ethics-strip, " +
+    ".pipe-phase, .tl-item, .acc-item, .trouble-card, .vs-col, .roadmap-node, " +
+    ".flow-node, .flow-break, .meter-card, .installer, .lang-card, .req-item"
   );
   if (!targets.length) { return; }
   if (reduced || !("IntersectionObserver" in window)) {
@@ -791,4 +798,27 @@
     });
   }
   update();
+})();
+
+/* Step 3 — FAQ accordion (support.html only). Smooth open/close with
+   aria-expanded; keyboard accessible (native buttons). Progressive
+   enhancement: without JS the panels stay visible (the js-acc class is
+   only added by JS, and only then does CSS collapse the panels).
+   Reduced motion: the global prefers-reduced-motion rule kills the
+   grid-template-rows transition, so panels open instantly. */
+(function () {
+  "use strict";
+  var items = document.querySelectorAll(".acc-item");
+  if (!items.length) { return; }
+  document.documentElement.classList.add("js-acc");
+  items.forEach(function (item) {
+    var btn = item.querySelector(".acc-btn");
+    var panel = item.querySelector(".acc-panel");
+    if (!btn || !panel) { return; }
+    btn.setAttribute("aria-expanded", "false");
+    btn.addEventListener("click", function () {
+      var open = panel.classList.toggle("open");
+      btn.setAttribute("aria-expanded", String(open));
+    });
+  });
 })();

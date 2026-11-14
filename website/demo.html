@@ -49,6 +49,7 @@
   </section>
   <section class="section" aria-label="Demo">
     <div class="container">
+      <div class="demo-stage">
       <div class="demo" id="demo" aria-labelledby="demo-title">
         <div class="demo-head">
           <span class="demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -74,7 +75,8 @@
             <button class="btn btn-primary btn-small" type="submit">Show answer</button>
           </form>
 
-          <div class="chips" role="group" aria-label="Sample questions">
+          <p class="chip-group-label">English samples</p>
+          <div class="chips chips-big" role="group" aria-label="Sample questions in English">
             <button type="button" class="chip" data-q="tell">Tell me about yourself</button>
             <button type="button" class="chip" data-q="hire">Why should we hire you?</button>
             <button type="button" class="chip" data-q="weakness">Biggest weakness?</button>
@@ -83,6 +85,9 @@
             <button type="button" class="chip" data-q="salary">What salary are you expecting?</button>
             <button type="button" class="chip" data-q="conflict">A conflict with a coworker</button>
             <button type="button" class="chip" data-q="why">Why do you want to work here?</button>
+          </div>
+          <p class="chip-group-label">Persian &amp; Arabic samples</p>
+          <div class="chips chips-big" role="group" aria-label="Sample questions in Persian and Arabic">
             <button type="button" class="chip" data-q="fa" lang="fa" dir="rtl">درباره خودتان بگویید</button>
             <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
           </div>
@@ -92,6 +97,8 @@
             question of your own, you get the honest answer <em>shape</em> — outcome,
             example, connection to the role — not a fake specific answer.</p>
         </div>
+      </div>
+      <p class="demo-stage-caption">The app window, as you would see it in an interview — simulated, no audio, no microphone.</p>
       </div>
 
       <div class="demo-next" id="demo-next" hidden>
@@ -112,11 +119,12 @@
         <h2 id="interrupt-title">Interruption simulator</h2>
         <p>In the real app, a fast follow-up shortens the next answer automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Try the three lengths on the same follow-up question:</p>
         <p><strong>Interviewer (follow-up):</strong> “Can you give me the shorter version?”</p>
-        <p class="cta-row" role="group" aria-label="Answer length">
-          <button class="btn btn-secondary btn-small" type="button" id="int-normal">Normal — 3 points</button>
-          <button class="btn btn-secondary btn-small" type="button" id="int-concise">Concise — 2 short points</button>
-          <button class="btn btn-secondary btn-small" type="button" id="int-rapid">Rapid — 1 line</button>
-        </p>
+        <div class="seg" role="group" aria-label="Answer length">
+          <button class="seg-btn" type="button" id="int-normal" aria-pressed="true">Normal — 3 points</button>
+          <button class="seg-btn" type="button" id="int-concise" aria-pressed="false">Concise — 2 short points</button>
+          <button class="seg-btn" type="button" id="int-rapid" aria-pressed="false">Rapid — 1 line</button>
+        </div>
+        <p class="seg-state"><span class="dot" aria-hidden="true"></span>Current length: <strong id="int-state">Normal — 3 points</strong></p>
         <ul class="demo-answer" id="int-answer" aria-live="polite"></ul>
         <p class="demo-status" id="int-status" role="status"></p>
         <p class="demo-note">Simulated. In the real app the shortening is automatic, driven by how fast the follow-up arrives, and <kbd>Ctrl+Alt+R</kbd> resets it.</p>

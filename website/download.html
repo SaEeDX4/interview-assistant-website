@@ -58,6 +58,23 @@
       </p>
       <p class="download-note" id="download-note" role="status">Download links go live with the first signed release — this draft has no installer yet.</p>
 
+      <div class="installer app-window" role="img" aria-label="Preview of the installer window: no download is available yet, the progress bar is empty and the SHA-256 hash is not published.">
+        <div class="app-window-bar">
+          <span class="app-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="app-window-title">Interview Assistant — Setup</span>
+          <span class="app-controls" aria-hidden="true"><i>–</i><i>▢</i><i>×</i></span>
+        </div>
+        <div class="inst-body" aria-hidden="true">
+          <div class="inst-file">
+            <span class="inst-ic">IA</span>
+            <div><strong>InterviewAssistant-Setup.exe</strong><span>Signed installer · not yet published</span></div>
+          </div>
+          <div class="inst-progress"><i></i></div>
+          <p class="inst-status">Waiting for the first signed release — nothing to download yet.</p>
+          <div class="inst-sha"><span>SHA-256</span><code>Not published yet</code></div>
+        </div>
+      </div>
+
       <h2>Two ways to run it</h2>
       <div class="grid grid-2">
         <article class="card">
@@ -71,11 +88,23 @@
       </div>
 
       <h2>You’ll need</h2>
-      <ul class="check-list">
-        <li><strong>Windows 10 or 11, 64-bit</strong></li>
-        <li><strong>A headset</strong> — the app listens to the interviewer’s audio from your headset (WASAPI loopback)</li>
-        <li><strong>An internet connection</strong> for live transcription and AI answers. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC.</li>
-      </ul>
+      <div class="req-grid">
+        <div class="req-item">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div>
+          <h3>Windows 10 or 11, 64-bit</h3>
+          <p>Per-user install — no admin needed.</p>
+        </div>
+        <div class="req-item">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="2" y="13" width="4" height="7" rx="2"/><rect x="18" y="13" width="4" height="7" rx="2"/></svg></div>
+          <h3>A headset</h3>
+          <p>The app listens to the interviewer’s audio from your headset (WASAPI loopback).</p>
+        </div>
+        <div class="req-item">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9S14.5 18.4 12 21c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg></div>
+          <h3>An internet connection</h3>
+          <p>For live transcription and AI answers. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC.</p>
+        </div>
+      </div>
 
       <h2>Installing</h2>
       <ol class="numbered">
