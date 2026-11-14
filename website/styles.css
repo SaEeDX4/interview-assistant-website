@@ -29,7 +29,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+section[id] { scroll-margin-top: 84px; }
 
 body {
   margin: 0;
@@ -51,7 +52,8 @@ p { margin: 0 0 16px; }
 
 .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 .narrow { max-width: 760px; }
-.section { padding: 120px 0; }
+.section { padding: 96px 0; }
+.section + .section { padding-top: 0; }
 .section-soft { background: var(--bg-soft); }
 .section-intro { color: var(--muted); max-width: 68ch; font-size: 18px; }
 
@@ -87,17 +89,17 @@ p { margin: 0 0 16px; }
   background: rgba(10, 12, 16, .82);
   box-shadow: 0 8px 32px rgba(0, 0, 0, .35);
 }
-.header-inner { display: flex; align-items: center; gap: 20px; height: 64px; }
-.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; }
+.header-inner { display: flex; align-items: center; gap: 12px; min-height: 64px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: 16px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .brand-mark {
   display: inline-grid; place-items: center; width: 32px; height: 32px;
   border-radius: 9px; background: var(--accent); color: #0a0c10; /* dark text for AA */
   font-size: 13px; font-weight: 800; letter-spacing: .02em;
 }
-.site-nav { display: flex; gap: 4px; margin-left: auto; }
+.site-nav { display: flex; gap: 2px; margin-left: auto; flex-shrink: 0; }
 .site-nav a {
-  color: var(--muted); text-decoration: none; font-size: 15px;
-  padding: 8px 12px; border-radius: 8px;
+  color: var(--muted); text-decoration: none; font-size: 14.5px;
+  padding: 8px 8px; border-radius: 8px; white-space: nowrap; flex-shrink: 0;
 }
 .site-nav a:hover { color: var(--text); background: var(--surface-2); }
 .nav-toggle { display: none; margin-left: auto; background: none; border: 1px solid var(--border-strong); color: var(--text); border-radius: 8px; padding: 8px 12px; font-size: 16px; cursor: pointer; }
@@ -115,6 +117,7 @@ p { margin: 0 0 16px; }
 .btn-secondary { background: rgba(255, 255, 255, .04); border-color: var(--border-strong); color: var(--text); }
 .btn-secondary:hover { background: var(--surface-2); color: var(--text); box-shadow: 0 8px 24px rgba(0, 0, 0, .3); }
 .btn-small { padding: 9px 16px; font-size: 15px; }
+.site-header .btn { white-space: nowrap; flex-shrink: 0; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 12px; }
 
 /* ---------- Hero ---------- */
@@ -482,7 +485,7 @@ table.compare tbody tr:hover td { background: var(--surface); }
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
 /* ---------- Step 1: scroll reveal ---------- */
-html.js .reveal { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s cubic-bezier(.2, .7, .3, 1); }
+html.js .reveal { opacity: .35; transform: translateY(12px); transition: opacity .45s ease, transform .45s cubic-bezier(.2, .7, .3, 1); }
 html.js .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal { opacity: 1; transform: none; transition: none; }
