@@ -208,11 +208,15 @@ p { margin: 0 0 16px; }
 .nowrap { white-space: nowrap; }
 
 /* Demo skeleton lines — lively staging state while points are prepared.
-   Stops are deliberately lighter than the surface so the shimmer reads
-   on a dark background (the old #232c3d midpoint was nearly invisible). */
+   The bar itself must always be visible: a solid base clearly lighter
+   than the dark surface, with a white sheen sweeping over it. The old
+   gradient-only version failed live twice — its bright band spent most
+   of the 1.2s cycle off-screen (background-size 200% + position sweep),
+   and the bar's base was too dark to read on its own. */
 .demo-answer li.skel {
   display: block; height: 46px; padding: 0;
-  background: linear-gradient(90deg, #1b2230 25%, #36435c 50%, #1b2230 75%);
+  background-color: #2a3547;
+  background-image: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, .12) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 1.2s ease-in-out infinite;
 }
