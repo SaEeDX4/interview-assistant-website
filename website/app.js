@@ -190,6 +190,13 @@
 
   function setStatus(text) { statusEl.textContent = text; }
 
+  // Step 2 — reveal the demo next-step card once an answer has completed.
+  var nextEl = document.getElementById("demo-next");
+  function showDemoNext() {
+    if (!nextEl || !nextEl.hidden) { return; }
+    nextEl.hidden = false;
+  }
+
   function makeBullet(text, i) {
     var li = document.createElement("li");
     var num = document.createElement("span");
@@ -207,6 +214,7 @@
     if (myRun !== runId) { return; }
     answerEl.setAttribute("aria-busy", "false");
     setStatus(statusText);
+    showDemoNext();
   }
 
   // Answer mode: exactly 3 bullets, inserted one at a time into the DOM.
@@ -587,4 +595,165 @@
     });
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
   targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+})();
+
+/* Step 2 — plan finder (pricing.html only). Recommends Trial or Pro from
+   the real plan limits only: Trial 30 lifetime minutes / 1 profile /
+   1 device; Pro 600 minutes per billing period / 3 profiles / 2 devices.
+   Pro's USD 19.99/month is a Paddle sandbox reference price. */
+(function () {
+  "use strict";
+  var form = document.getElementById("plan-finder");
+  var result = document.getElementById("finder-result");
+  if (!form || !result) { return; }
+
+  function val(name) {
+    var el = form.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  function update() {
+    var interviews = val("pf-interviews");
+    var profiles = val("pf-profiles");
+    var devices = val("pf-devices");
+    if (!interviews || !profiles || !devices) {
+      result.innerHTML = "<p>Answer all three questions to see a recommendation.</p>";
+      return;
+    }
+    var reasons = [];
+    var plan = "trial";
+    if (interviews === "2-4") {
+      plan = "pro";
+      reasons.push("<strong>2–4 interviews a month</strong> will use the Trial\u2019s 30 lifetime minutes quickly — those minutes are lifetime, not monthly.");
+    } else if (interviews === "5+") {
+      plan = "pro";
+      reasons.push("<strong>5 or more interviews a month</strong> will use the Trial\u2019s 30 lifetime minutes in the first month or two.");
+    }
+    if (profiles === "2-3") {
+      plan = "pro";
+      reasons.push("<strong>You need 2–3 profiles</strong> — Trial allows 1, Pro allows 3.");
+    } else if (profiles === "4+") {
+      plan = "pro";
+      reasons.push("<strong>You need 4 or more profiles</strong> — neither plan covers that; Pro allows 3, Trial allows 1. Pro is the closest fit.");
+    }
+    if (devices === "2") {
+      plan = "pro";
+      reasons.push("<strong>You need 2 devices</strong> — Trial allows 1, Pro allows 2.");
+    }
+    if (plan === "trial") {
+      reasons.push("<strong>0–1 interviews a month</strong> — 30 lifetime minutes should last a while.");
+      reasons.push("<strong>1 profile</strong> — Trial allows 1.");
+      reasons.push("<strong>1 device</strong> — Trial allows 1.");
+      result.innerHTML =
+        "<h3>Trial fits you — for now</h3>" +
+        "<ul><li>" + reasons.join("</li><li>") + "</li></ul>" +
+        "<p>Start free in the app. Move to Pro when you need more minutes, " +
+        "profiles, or a second device — Pro is USD 19.99/month, sandbox " +
+        "reference price, final live price to be confirmed.</p>";
+    } else {
+      result.innerHTML =
+        "<h3>Pro fits you</h3>" +
+        "<ul><li>" + reasons.join("</li><li>") + "</li></ul>" +
+        "<p>Pro gives you 600 live minutes per billing period, 3 profiles, " +
+        "20 preparation runs a month, and 2 devices. Pro is USD 19.99/month — " +
+        "a Paddle sandbox reference price; the final live price will be " +
+        "confirmed before paid checkout opens, and there is no checkout on " +
+        "this website yet.</p>";
+    }
+  }
+
+  form.addEventListener("change", update);
+  update();
+})();
+
+/* Step 2 — minutes calculator (pricing.html only). Interviews/month x
+   average live minutes per interview, compared with the real limits:
+   Trial 30 lifetime minutes; Pro 600 per billing period (assuming a
+   monthly billing period). Preparation, practise and reports use no
+   live minutes. Single live sessions are capped at 120 minutes. */
+(function () {
+  "use strict";
+  var interviewsEl = document.getElementById("calc-interviews");
+  var avgEl = document.getElementById("calc-minutes");
+  var outI = document.getElementById("calc-interviews-out");
+  var outA = document.getElementById("calc-minutes-out");
+  var result = document.getElementById("calc-result");
+  if (!interviewsEl || !avgEl || !outI || !outA || !result) { return; }
+
+  function update() {
+    var n = +interviewsEl.value;
+    var m = +avgEl.value;
+    outI.textContent = String(n);
+    outA.textContent = String(m);
+    var need = n * m;
+    var html = "<p><strong>You would need about " + need +
+      " live minutes a month</strong> (assuming a monthly billing period).</p>";
+    if (need === 0) {
+      html += "<p>The Trial\u2019s 30 lifetime live minutes cover that.</p>";
+    } else {
+      var trialFull = Math.floor(30 / m);
+      if (trialFull < 1) {
+        html += "<p><strong>Trial (30 lifetime minutes):</strong> covers less than one " +
+          "full interview of " + m + " minutes — then live listening stops until " +
+          "you move to Pro.</p>";
+      } else {
+        html += "<p><strong>Trial (30 lifetime minutes):</strong> covers about " +
+          trialFull + " interview" + (trialFull === 1 ? "" : "s") + " of " + m +
+          " minutes — then live listening stops until you move to Pro.</p>";
+      }
+      if (need <= 600) {
+        html += "<p><strong>Pro (600 minutes per billing period):</strong> covers this " +
+          "with " + (600 - need) + " minutes to spare.</p>";
+      } else {
+        html += "<p><strong>Pro (600 minutes per billing period):</strong> does not " +
+          "cover " + need + " minutes a month — you would need to plan around " +
+          "the 600-minute allowance.</p>";
+      }
+    }
+    if (m >= 120) {
+      html += "<p>Note: a single live session is capped at 120 minutes.</p>";
+    }
+    html += "<p class=\"calc-note\">Preparation, practise, and reading reports " +
+      "use no live minutes.</p>";
+    result.innerHTML = html;
+  }
+
+  interviewsEl.addEventListener("input", update);
+  avgEl.addEventListener("input", update);
+  update();
+})();
+
+/* Step 2 — sticky CTA bar. Appears only after scrolling past the hero,
+   hides while the download section is in view, dismissible for the
+   session. Never shown on download.html (no bar markup there). No
+   focus is stolen when it appears; reduced motion shows it statically. */
+(function () {
+  "use strict";
+  var bar = document.getElementById("sticky-cta");
+  if (!bar) { return; }
+  var dismissed = false;
+  try { dismissed = window.sessionStorage.getItem("ia-sticky-dismissed") === "1"; } catch (e) {}
+  var downloadEl = document.getElementById("download");
+  var downloadInView = false;
+  if (downloadEl && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      downloadInView = entries[0].isIntersecting;
+      update();
+    }, { threshold: 0.05 }).observe(downloadEl);
+  }
+  function update() {
+    var show = !dismissed && window.scrollY > 560 && !downloadInView;
+    bar.hidden = !show;
+    document.body.classList.toggle("cta-visible", show);
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  var close = document.getElementById("sticky-cta-close");
+  if (close) {
+    close.addEventListener("click", function () {
+      dismissed = true;
+      try { window.sessionStorage.setItem("ia-sticky-dismissed", "1"); } catch (e) {}
+      update();
+    });
+  }
+  update();
 })();

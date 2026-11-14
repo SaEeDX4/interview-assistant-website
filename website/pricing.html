@@ -77,6 +77,53 @@
     </div>
   </section>
 
+  <section class="section" aria-labelledby="finder-title">
+    <div class="container narrow">
+      <p class="eyebrow">Find your plan</p>
+      <h2 id="finder-title">Which plan fits you?</h2>
+      <p>Three quick questions. The recommendation uses only the real plan limits — nothing else.</p>
+      <form id="plan-finder" class="finder">
+        <fieldset>
+          <legend>How many interviews a month?</legend>
+          <label class="radio-pill"><input type="radio" name="pf-interviews" value="0-1"> 0–1</label>
+          <label class="radio-pill"><input type="radio" name="pf-interviews" value="2-4"> 2–4</label>
+          <label class="radio-pill"><input type="radio" name="pf-interviews" value="5+"> 5 or more</label>
+        </fieldset>
+        <fieldset>
+          <legend>How many candidate profiles?</legend>
+          <label class="radio-pill"><input type="radio" name="pf-profiles" value="1"> 1</label>
+          <label class="radio-pill"><input type="radio" name="pf-profiles" value="2-3"> 2–3</label>
+          <label class="radio-pill"><input type="radio" name="pf-profiles" value="4+"> 4 or more</label>
+        </fieldset>
+        <fieldset>
+          <legend>How many devices?</legend>
+          <label class="radio-pill"><input type="radio" name="pf-devices" value="1"> 1</label>
+          <label class="radio-pill"><input type="radio" name="pf-devices" value="2"> 2</label>
+        </fieldset>
+      </form>
+      <noscript><p class="muted">The plan finder needs JavaScript; the comparison table above lists both plans.</p></noscript>
+      <div class="finder-result" id="finder-result" aria-live="polite">
+        <p>Answer all three questions to see a recommendation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="calc-title">
+    <div class="container narrow">
+      <p class="eyebrow">Minutes calculator</p>
+      <h2 id="calc-title">How many live minutes will you need?</h2>
+      <p>Move the sliders. The maths uses only the real plan limits, assuming a monthly billing period.</p>
+      <div class="calc">
+        <label for="calc-interviews">Interviews a month: <output id="calc-interviews-out" for="calc-interviews">4</output></label>
+        <input type="range" id="calc-interviews" min="0" max="20" step="1" value="4">
+        <label for="calc-minutes">Average live minutes per interview: <output id="calc-minutes-out" for="calc-minutes">45</output></label>
+        <input type="range" id="calc-minutes" min="10" max="120" step="5" value="45">
+      </div>
+      <noscript><p class="muted">The calculator needs JavaScript; the plan limits are in the table above.</p></noscript>
+      <div class="calc-result" id="calc-result" aria-live="polite"></div>
+    </div>
+  </section>
+
   <section class="section section-soft" aria-labelledby="minutes-title">
     <div class="container narrow">
       <p class="eyebrow">Live minutes, explained</p>
@@ -116,6 +163,13 @@
     </div>
   </section>
 
+  <section class="next-band" aria-label="Next step">
+    <div class="container">
+      <p><strong>Next step:</strong> Download for Windows — the Trial is included, no card needed.</p>
+      <a class="btn btn-primary" href="download.html">Download for Windows →</a>
+    </div>
+  </section>
+
 </main>
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -152,6 +206,12 @@
     <p class="muted">Made for candidates, in 10 languages.</p>
   </div>
 </footer>
+<div class="sticky-cta" id="sticky-cta" hidden>
+  <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
+  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
+  <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
