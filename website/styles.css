@@ -285,8 +285,6 @@ p { margin: 0 0 16px; }
 
 /* ---------- Steps ---------- */
 .step-num { display: block; color: var(--accent); font-weight: 800; font-size: 14px; letter-spacing: .08em; margin-bottom: 12px; }
-.hotkeys { color: var(--muted); font-size: 15px; }
-.hotkeys-label { color: var(--text); font-weight: 600; }
 kbd {
   font: 600 13px/1 ui-monospace, "Cascadia Code", Consolas, monospace;
   background: var(--surface-2); border: 1px solid var(--border-strong);
@@ -297,19 +295,11 @@ kbd {
 code { overflow-wrap: anywhere; }
 
 /* ---------- Languages strip ---------- */
-.languages { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 0; background: var(--bg-soft); }
-.languages p { margin: 0; color: var(--muted); font-size: 17px; }
-.languages strong { color: var(--text); }
 
 /* ---------- Pricing ---------- */
-.price-card { display: flex; flex-direction: column; }
-.price-card .btn { margin-top: auto; }
 .price { margin: 8px 0 0; }
 .price-amount { font-size: 44px; font-weight: 700; letter-spacing: -.02em; }
 .price-per { color: var(--muted); font-size: 17px; }
-.price-note { color: var(--muted); margin-bottom: 16px; }
-.price-featured { border-color: var(--accent); position: relative; }
-.price-featured .pill-accent { align-self: flex-start; margin-bottom: 12px; }
 .check-list { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; color: var(--muted); }
 .check-list li::before { content: "✓ "; color: var(--good); font-weight: 700; }
 .check-list strong { color: var(--text); }
@@ -317,7 +307,6 @@ code { overflow-wrap: anywhere; }
 
 /* ---------- Download / Android ---------- */
 .download-note { color: var(--muted); font-size: 15px; }
-.h3-small { font-size: 17px; margin-top: 28px; }
 
 /* ---------- FAQ ---------- */
 
@@ -734,7 +723,6 @@ body.cta-visible { padding-bottom: 96px; }
 .mini { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; max-width: 560px; }
 .mini-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
 .mini-row:last-child { border-bottom: 0; }
-.mini-row .mini-sub { color: var(--muted-2); font-size: 14px; }
 .mini-avatar { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--focus); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
 .mini-check { flex: none; width: 20px; height: 20px; border-radius: 50%; background: rgba(52,211,153,.16); color: var(--good); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
 .mini-tag { margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
@@ -796,7 +784,6 @@ body.cta-visible { padding-bottom: 96px; }
 .meter-fill.trial { width: 5%; background: linear-gradient(90deg, var(--accent-2), var(--accent-2-light)); }
 .meter-fill.pro { width: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
 .meter-note { color: var(--muted); font-size: 14px; margin: 16px 0 0; }
-.price-featured { box-shadow: 0 0 0 1px var(--accent), 0 20px 48px rgba(124,108,255,.22); }
 
 /* Installer mockup + requirements (download.html) */
 .installer { max-width: 680px; margin: 0 auto 24px; }
