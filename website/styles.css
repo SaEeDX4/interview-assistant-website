@@ -55,7 +55,7 @@ p { margin: 0 0 16px; }
 .narrow-legal { max-width: 760px; } /* legal prose stays narrow for readability */
 .section { padding: 72px 0; }
 .section + .section { padding-top: 0; }
-.page-hero + .section { padding-top: 40px; }
+.page-hero + .section { padding-top: 24px; }
 .section-soft { background: var(--bg-soft); }
 .section-intro { color: var(--muted); max-width: 68ch; font-size: 18px; }
 
@@ -207,10 +207,12 @@ p { margin: 0 0 16px; }
 .demo-note { color: var(--muted-2); font-size: 13px; margin: 14px 0 0; }
 .nowrap { white-space: nowrap; }
 
-/* Demo skeleton lines — lively staging state while points are prepared */
+/* Demo skeleton lines — lively staging state while points are prepared.
+   Stops are deliberately lighter than the surface so the shimmer reads
+   on a dark background (the old #232c3d midpoint was nearly invisible). */
 .demo-answer li.skel {
   display: block; height: 46px; padding: 0;
-  background: linear-gradient(90deg, var(--surface-2) 25%, #232c3d 50%, var(--surface-2) 75%);
+  background: linear-gradient(90deg, #1b2230 25%, #36435c 50%, #1b2230 75%);
   background-size: 200% 100%;
   animation: shimmer 1.2s ease-in-out infinite;
 }
