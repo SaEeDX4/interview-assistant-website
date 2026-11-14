@@ -54,7 +54,7 @@
       <a href="privacy.html">Privacy</a>
       <a href="support.html">Support</a>
     </nav>
-    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+    <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
   </div>
 </header>
 <main id="main" tabindex="-1">
@@ -81,8 +81,12 @@
         <div class="demo-body">
           <p class="demo-label">Interviewer</p>
           <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
-          <div class="demo-answer" id="demo-answer" aria-busy="false"></div>
-          <p class="demo-status" id="demo-status" role="status"></p>
+          <ul class="demo-answer" id="demo-answer" aria-busy="false">
+            <li><span class="num" aria-hidden="true">1</span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+            <li><span class="num" aria-hidden="true">2</span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+            <li><span class="num" aria-hidden="true">3</span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+          </ul>
+          <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
           <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
         </div>
         <div class="demo-foot">
@@ -120,16 +124,16 @@
       </div>
 
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong id="demo-next-title">You just saw 3 points — now try it with your own resume.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">Those 3 points took about 2 minutes — here’s what 30 trial minutes buys.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>
           <li><span aria-hidden="true">3</span> Download</li>
         </ol>
-        <p class="demo-next-text" id="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
+        <p class="demo-next-text" id="demo-next-text">The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one.</p>
         <p class="cta-row">
-          <a class="btn btn-primary" href="download.html">Download for Windows — Trial included</a>
-          <a class="btn btn-secondary" href="pricing.html">See pricing</a>
+          <a class="btn btn-primary" href="pricing.html#plan-finder">Find your plan →</a>
+          <a class="btn btn-secondary" href="download.html">Download for Windows</a>
         </p>
       </div>
 
@@ -143,8 +147,12 @@
           <button class="seg-btn" type="button" id="int-rapid" aria-pressed="false">Rapid — 1 line</button>
         </div>
         <p class="seg-state"><span class="dot" aria-hidden="true"></span>Current length: <strong id="int-state">Normal — 3 points</strong></p>
-        <ul class="demo-answer" id="int-answer"></ul>
-        <p class="demo-status" id="int-status" role="status"></p>
+        <ul class="demo-answer" id="int-answer">
+          <li><span class="num" aria-hidden="true">1</span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+          <li><span class="num" aria-hidden="true">2</span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+          <li><span class="num" aria-hidden="true">3</span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+        </ul>
+        <p class="demo-status" id="int-status" role="status">Normal — 3 points ready — simulated.</p>
         <p class="demo-note">Simulated. In the real app the shortening is automatic, driven by how fast the follow-up arrives, and <kbd>Ctrl+Alt+R</kbd> resets it.</p>
       </div>
 
@@ -197,7 +205,7 @@
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="pricing.html">Billing — via Paddle</a>
+      <a href="support.html#faq-b9">Billing — via Paddle</a>
     </nav>
   </div>
   <div class="container footer-bottom">
@@ -207,8 +215,8 @@
 </footer>
 <div class="sticky-cta" id="sticky-cta" hidden>
   <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
-  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
-  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
+  <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+  <a class="btn btn-secondary btn-small" href="download.html">Download for Windows</a>
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>

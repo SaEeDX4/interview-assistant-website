@@ -55,7 +55,7 @@
       <a href="privacy.html">Privacy</a>
       <a href="support.html">Support</a>
     </nav>
-    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+    <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
   </div>
 </header>
 
@@ -71,8 +71,8 @@
           built only from facts you confirmed. In 10 languages, including Persian
           and Arabic.</p>
         <p class="cta-row">
-          <a class="btn btn-primary" href="download.html">Download for Windows</a>
-          <a class="btn btn-secondary" href="demo.html">Try the full live demo ↓</a>
+          <a class="btn btn-primary" href="demo.html">Try the live demo</a>
+          <a class="btn btn-secondary" href="download.html">Download for Windows</a>
         </p>
         <p class="trust-line">Free Trial — 30 live minutes. Use only where you are allowed to.</p>
       </div>
@@ -92,6 +92,7 @@
             <p class="app-question">“Tell me about yourself.”</p>
             <ul class="app-answer" id="mock-answer"></ul>
             <p class="app-status" id="mock-status"></p>
+            <noscript><p class="app-status">Animated preview needs JavaScript — the interactive demo below shows the same three points.</p></noscript>
             <p class="app-coach-mini"><strong>Coach Mode</strong> — EXPERIENCE · OUTCOME · FIT · Present role → one result → why this role</p>
           </div>
         </div>
@@ -129,8 +130,12 @@
         <div class="demo-body">
           <p class="demo-label">Interviewer</p>
           <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
-          <div class="demo-answer" id="demo-answer" aria-busy="false"></div>
-          <p class="demo-status" id="demo-status" role="status"></p>
+          <ul class="demo-answer" id="demo-answer" aria-busy="false">
+            <li><span class="num" aria-hidden="true">1</span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+            <li><span class="num" aria-hidden="true">2</span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+            <li><span class="num" aria-hidden="true">3</span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+          </ul>
+          <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
           <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
         </div>
         <div class="demo-foot">
@@ -146,7 +151,11 @@
             <button type="button" class="chip" data-q="weakness">Biggest weakness?</button>
             <button type="button" class="chip" data-q="story">A time you led a difficult project</button>
             <button type="button" class="chip" data-q="five">Where in five years?</button>
+            <button type="button" class="chip" data-q="salary">What salary are you expecting?</button>
+            <button type="button" class="chip" data-q="conflict">A conflict with a coworker</button>
+            <button type="button" class="chip" data-q="why">Why do you want to work here?</button>
             <button type="button" class="chip" data-q="fa" lang="fa" dir="rtl">درباره خودتان بگویید</button>
+            <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
           </div>
           <p class="demo-note">Simulated demo — no audio, no microphone, no recording.
             Sample answers are illustrative. In the real app, points are built from
@@ -154,16 +163,16 @@
         </div>
       </div>
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong id="demo-next-title">You just saw 3 points — now try it with your own resume.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">Those 3 points took about 2 minutes — here’s what 30 trial minutes buys.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>
           <li><span aria-hidden="true">3</span> Download</li>
         </ol>
-        <p class="demo-next-text" id="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
+        <p class="demo-next-text" id="demo-next-text">The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one.</p>
         <p class="cta-row">
-          <a class="btn btn-primary" href="download.html">Download for Windows — Trial included</a>
-          <a class="btn btn-secondary" href="pricing.html">See pricing</a>
+          <a class="btn btn-primary" href="pricing.html#plan-finder">Find your plan →</a>
+          <a class="btn btn-secondary" href="download.html">Download for Windows</a>
         </p>
       </div>
     </div>
@@ -192,7 +201,7 @@
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div>
           <h3>Coach Mode</h3>
           <p>Prefer a nudge over a script? Coach Mode shows three keywords and a
-            one-line structure, so the words stay yours. Toggle it live with <span class="nowrap"><kbd>Ctrl+Alt+C</kbd>.</span></p>
+            one-line structure, so the words stay yours. Toggle it live with the <kbd>Ctrl+Alt+C</kbd> shortcut.</p>
         </article>
       </div>
       <p class="cta-row"><a class="btn btn-secondary" href="features.html">See all features →</a></p>
@@ -223,13 +232,13 @@
           <div class="teaser-plan">
             <p class="pill pill-accent">Recommended</p>
             <h3>Pro</h3>
-            <p class="price"><span class="price-amount">$19.99</span><span class="price-per"> / month</span></p>
+            <p class="price"><span class="price-amount">$19.99</span> <span class="price-per">/ month</span></p>
             <p><strong>600</strong> live minutes per billing period · <strong>3</strong> profiles · <strong>20</strong> preparation runs / month · <strong>2</strong> devices</p>
           </div>
         </div>
         <p class="cta-row">
-          <a class="btn btn-primary" href="pricing.html">See full pricing →</a>
-          <a class="btn btn-secondary" href="demo.html">Try the demo first</a>
+          <a class="btn btn-primary" href="demo.html">Try the live demo</a>
+          <a class="btn btn-secondary" href="pricing.html">See full pricing →</a>
         </p>
         <p class="fineprint">Prices in USD. The Pro price shown is a Paddle sandbox
           reference — the final live price will be confirmed before paid checkout
@@ -286,11 +295,11 @@
   <!-- FINAL CTA -->
   <section class="section cta-final" aria-labelledby="cta-title">
     <div class="container narrow">
-      <h2 id="cta-title">Get Interview Assistant for Windows</h2>
-      <p class="section-intro">Windows 10/11, 64-bit. Free Trial — 30 live minutes. The signed installer is not published yet; the download page says so plainly.</p>
+      <h2 id="cta-title">See it work before you install it</h2>
+      <p class="section-intro">Try the live demo — ten sample questions, Answer and Coach modes. Windows 10/11, 64-bit. Free Trial — 30 live minutes. The signed installer is not published yet; the download page says so plainly.</p>
       <p class="cta-row">
-        <a class="btn btn-primary" href="download.html">Download for Windows</a>
-        <a class="btn btn-secondary" href="demo.html">Try the live demo</a>
+        <a class="btn btn-primary" href="demo.html">Try the live demo</a>
+        <a class="btn btn-secondary" href="download.html">Download for Windows</a>
       </p>
     </div>
   </section>
@@ -328,7 +337,7 @@
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="pricing.html">Billing — via Paddle</a>
+      <a href="support.html#faq-b9">Billing — via Paddle</a>
     </nav>
   </div>
   <div class="container footer-bottom">
@@ -339,8 +348,8 @@
 
 <div class="sticky-cta" id="sticky-cta" hidden>
   <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
-  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
-  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
+  <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+  <a class="btn btn-secondary btn-small" href="download.html">Download for Windows</a>
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>

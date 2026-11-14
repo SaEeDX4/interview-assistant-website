@@ -194,6 +194,11 @@
 
   // Step 2 — reveal the demo next-step card once an answer has completed.
   // Copy is mode-aware: Coach mode shows keywords, not 3 points.
+  // Step 5 — the card is the demo-to-plan handoff: the 3 points took
+  // about 2 minutes, and the Trial's 30 lifetime minutes buy about 15
+  // answers like this one. It also surfaces the bounded-memory story:
+  // the app remembers the stories already used, so the next answer
+  // reaches for a fresh one (source: docs/v2/LIVE_MEMORY.md).
   var nextEl = document.getElementById("demo-next");
   function showDemoNext() {
     if (!nextEl) { return; }
@@ -201,13 +206,13 @@
     var textEl = document.getElementById("demo-next-text");
     if (titleEl) {
       titleEl.textContent = mode === "coach"
-        ? "You just saw the Coach keywords — now try it with your own resume."
-        : "You just saw 3 points — now try it with your own resume.";
+        ? "Those Coach keywords took about a minute — here\u2019s what 30 trial minutes buys."
+        : "Those 3 points took about 2 minutes — here\u2019s what 30 trial minutes buys.";
     }
     if (textEl) {
       textEl.textContent = mode === "coach"
-        ? "The demo used sample answers. In the real app, the same Coach keywords and structure are built from your confirmed resume facts and your prepared question bank."
-        : "The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.";
+        ? "The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same Coach keywords and structure are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one."
+        : "The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one.";
     }
     nextEl.hidden = false;
   }
@@ -459,18 +464,38 @@
         b.setAttribute("aria-pressed", String(["normal", "concise", "rapid"][i] === key));
       });
       if (intState) { intState.textContent = label.replace(" (", " — ").replace(")", ""); }
+      // Step 5 — same skeleton pattern as the main demo: one skeleton per
+      // staged row, each replaced by its bullet as it lands, so the area
+      // never goes dead while the shorter version prepares. Reduced motion
+      // skips the skeletons and renders all at once.
+      if (!isReducedMotion()) {
+        for (var s = 0; s < items.length; s++) {
+          var sk = document.createElement("li");
+          sk.className = "skel";
+          sk.setAttribute("aria-hidden", "true");
+          intAnswer.appendChild(sk);
+        }
+      }
       if (isReducedMotion()) {
         items.forEach(function (text, i) { intAnswer.appendChild(makeBullet(text, i)); });
         intStatus.textContent = label + " ready — simulated.";
         return;
       }
+      var skels = Array.prototype.slice.call(intAnswer.querySelectorAll("li.skel"));
       items.forEach(function (text, i) {
         intTimers.push(setTimeout(function () {
           if (myRun !== intRun) { return; }
           var li = makeBullet(text, i);
           li.classList.add("is-new");
-          intAnswer.appendChild(li);
+          if (skels[i] && skels[i].parentNode === intAnswer) {
+            intAnswer.replaceChild(li, skels[i]);
+          } else {
+            intAnswer.appendChild(li);
+          }
           if (i === items.length - 1) {
+            Array.prototype.slice.call(intAnswer.querySelectorAll("li.skel")).forEach(function (sk) {
+              intAnswer.removeChild(sk);
+            });
             intStatus.textContent = label + " ready — simulated.";
           }
         }, i * STAGE_MS));
@@ -645,8 +670,8 @@
   // Hero (.hero-copy, .hero-visual) is deliberately NOT a reveal target:
   // it must be fully bright on load, with no dim phase at all.
   var targets = document.querySelectorAll(
-    ".card, .steps li, details, .callout, .table-wrap, .ethics-strip, " +
-    ".pipe-phase, .tl-item, .acc-item, .trouble-card, .vs-col, .roadmap-node, " +
+    ".card, .callout, .table-wrap, .ethics-strip, " +
+    ".pipe-list li, .tl-item, .acc-item, .trouble-card, .vs-col, .roadmap-node, " +
     ".flow-node, .flow-break, .meter-card, .installer, .lang-card, .req-item"
   );
   if (!targets.length) { return; }
@@ -698,7 +723,8 @@
 
 /* Step 2 — plan finder (pricing.html only). Recommends Trial or Pro from
    the real plan limits only: Trial 30 lifetime minutes / 1 profile /
-   1 device; Pro 600 minutes per billing period / 3 profiles / 2 devices.
+   2 preparation runs a month / 1 device; Pro 600 minutes per billing
+   period / 3 profiles / 20 preparation runs a month / 2 devices.
    Pro's USD 19.99/month is a Paddle sandbox reference price. */
 (function () {
   "use strict";
@@ -715,8 +741,9 @@
     var interviews = val("pf-interviews");
     var profiles = val("pf-profiles");
     var devices = val("pf-devices");
-    if (!interviews || !profiles || !devices) {
-      result.innerHTML = "<p>Answer all three questions to see a recommendation.</p>";
+    var prep = val("pf-prep");
+    if (!interviews || !profiles || !devices || !prep) {
+      result.innerHTML = "<p>Answer all four questions to see a recommendation.</p>";
       return;
     }
     var reasons = [];
@@ -739,16 +766,27 @@
       plan = "pro";
       reasons.push("<strong>You need 2 devices</strong> — Trial allows 1, Pro allows 2.");
     }
+    // Step 5 — preparation runs are their own quota: a light interviewer
+    // who prepares heavily hits the Trial's 2 runs a month fast.
+    if (prep === "3-20") {
+      plan = "pro";
+      reasons.push("<strong>3–20 preparation runs a month</strong> — Trial allows 2, Pro allows 20.");
+    } else if (prep === "21+") {
+      plan = "pro";
+      reasons.push("<strong>21 or more preparation runs a month</strong> — neither plan covers that; Pro allows 20, Trial allows 2. Pro is the closest fit.");
+    }
     if (plan === "trial") {
       reasons.push("<strong>0–1 interviews a month</strong> — 30 lifetime minutes should last a while.");
       reasons.push("<strong>1 profile</strong> — Trial allows 1.");
       reasons.push("<strong>1 device</strong> — Trial allows 1.");
+      reasons.push("<strong>0–2 preparation runs a month</strong> — Trial allows 2.");
       result.innerHTML =
         "<h3>Trial fits you — for now</h3>" +
         "<ul><li>" + reasons.join("</li><li>") + "</li></ul>" +
-        "<p>Start free in the app. Move to Pro when you need more minutes, " +
-        "profiles, or a second device — Pro is USD 19.99/month, sandbox " +
-        "reference price, final live price to be confirmed.</p>";
+        "<p>Try the live demo to see it work, and start free in the app when " +
+        "the installer ships — the Trial is included. Move to Pro when you need " +
+        "more minutes, profiles, preparation runs, or a second device — Pro is " +
+        "USD 19.99/month, sandbox reference price, final live price to be confirmed.</p>";
     } else {
       result.innerHTML =
         "<h3>Pro fits you</h3>" +
@@ -823,23 +861,15 @@
 })();
 
 /* Step 2 — sticky CTA bar. Appears only after scrolling past the hero,
-   hides while the download section is in view, dismissible for the
-   session. Never shown on download.html (no bar markup there). No
-   focus is stolen when it appears; reduced motion shows it statically. */
+   dismissible for the session. Never shown on download.html (no bar markup
+   there). No focus is stolen when it appears; reduced motion shows it
+   statically. */
 (function () {
   "use strict";
   var bar = document.getElementById("sticky-cta");
   if (!bar) { return; }
   var dismissed = false;
   try { dismissed = window.sessionStorage.getItem("ia-sticky-dismissed") === "1"; } catch (e) {}
-  var downloadEl = document.getElementById("download");
-  var downloadInView = false;
-  if (downloadEl && "IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      downloadInView = entries[0].isIntersecting;
-      update();
-    }, { threshold: 0.05 }).observe(downloadEl);
-  }
   // Never cover the footer: hide the bar while the footer is in view.
   // (The body bottom-padding reserve alone was not enough when the bar
   // wrapped to two lines at narrower widths.)
@@ -852,7 +882,7 @@
     }, { threshold: 0.05 }).observe(footerEl);
   }
   function update() {
-    var show = !dismissed && window.scrollY > 560 && !downloadInView && !footerInView;
+    var show = !dismissed && window.scrollY > 560 && !footerInView;
     bar.hidden = !show;
     document.body.classList.toggle("cta-visible", show);
   }

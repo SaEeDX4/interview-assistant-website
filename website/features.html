@@ -54,7 +54,7 @@
       <a href="privacy.html">Privacy</a>
       <a href="support.html">Support</a>
     </nav>
-    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+    <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
   </div>
 </header>
 <main id="main" tabindex="-1">
@@ -96,52 +96,24 @@
     <div class="container">
       <p class="eyebrow">The preparation pipeline</p>
       <h2 id="pipeline-title">Fifteen stages. One calm plan.</h2>
-      <p class="section-intro">The product documentation describes a 15-stage preparation pipeline. This schematic groups those stages into four phases — every stage works only from facts you confirmed.</p>
-      <div class="pipe">
-        <div class="pipe-phase">
-          <span class="pipe-node" aria-hidden="true">1</span>
-          <h3>Profile &amp; resume</h3>
-          <p>Stages 1–4 — who you are, confirmed by you.</p>
-          <ul class="pipe-chips">
-            <li class="pipe-chip"><span class="num">1</span>Import resume</li>
-            <li class="pipe-chip"><span class="num">2</span>Extract facts</li>
-            <li class="pipe-chip"><span class="num">3</span>You confirm</li>
-            <li class="pipe-chip"><span class="num">4</span>Build profile</li>
-          </ul>
-        </div>
-        <div class="pipe-phase">
-          <span class="pipe-node" aria-hidden="true">2</span>
-          <h3>Job &amp; company</h3>
-          <p>Stages 5–8 — the role, matched to your profile.</p>
-          <ul class="pipe-chips">
-            <li class="pipe-chip"><span class="num">5</span>Read job description</li>
-            <li class="pipe-chip"><span class="num">6</span>Match role &amp; skills</li>
-            <li class="pipe-chip"><span class="num">7</span>Classify questions</li>
-            <li class="pipe-chip"><span class="num">8</span>Flag gaps</li>
-          </ul>
-        </div>
-        <div class="pipe-phase">
-          <span class="pipe-node" aria-hidden="true">3</span>
-          <h3>Question bank</h3>
-          <p>Stages 9–12 — your 50–150 questions, labelled honestly.</p>
-          <ul class="pipe-chips">
-            <li class="pipe-chip"><span class="num">9</span>Generate questions</li>
-            <li class="pipe-chip"><span class="num">10</span>Verify against facts</li>
-            <li class="pipe-chip"><span class="num">11</span>Mark Hypothetical</li>
-            <li class="pipe-chip"><span class="num">12</span>Build bank · 50–150</li>
-          </ul>
-        </div>
-        <div class="pipe-phase">
-          <span class="pipe-node" aria-hidden="true">4</span>
-          <h3>Practise</h3>
-          <p>Stages 13–15 — rehearse, review, improve.</p>
-          <ul class="pipe-chips">
-            <li class="pipe-chip"><span class="num">13</span>Practise answers</li>
-            <li class="pipe-chip"><span class="num">14</span>Review structure</li>
-            <li class="pipe-chip"><span class="num">15</span>Prepare better</li>
-          </ul>
-        </div>
-      </div>
+      <p class="section-intro">The product’s preparation pipeline names fifteen stages, in order — every stage works only from facts you confirmed.</p>
+      <ol class="pipe-list">
+        <li><span class="num" aria-hidden="true">1</span><span><strong>Verify profile</strong> — at least one confirmed fact required; unconfirmed facts raise a warning.</span></li>
+        <li><span class="num" aria-hidden="true">2</span><span><strong>JD extraction</strong> — multilingual headings; injection lines removed.</span></li>
+        <li><span class="num" aria-hidden="true">3</span><span><strong>Candidate↔role match map</strong> — token overlap per requirement.</span></li>
+        <li><span class="num" aria-hidden="true">4</span><span><strong>Gap analysis</strong> — the gaps between your profile and the role, named so they can be bridged honestly.</span></li>
+        <li><span class="num" aria-hidden="true">5</span><span><strong>Terminology</strong> — acronyms and capitalised terms, preserved verbatim across languages.</span></li>
+        <li><span class="num" aria-hidden="true">6</span><span><strong>Company/product context</strong> — from your sources only, labelled as such, plus domain playbooks.</span></li>
+        <li><span class="num" aria-hidden="true">7</span><span><strong>Story ranking by role relevance</strong> — your strongest stories, ranked for this role.</span></li>
+        <li><span class="num" aria-hidden="true">8</span><span><strong>Likely questions</strong> — the questions this interview is most likely to ask.</span></li>
+        <li><span class="num" aria-hidden="true">9</span><span><strong>Fast answers</strong> — verified answers shown instantly.</span></li>
+        <li><span class="num" aria-hidden="true">10</span><span><strong>Coach keywords/structure</strong> — three keywords and a one-line structure per question.</span></li>
+        <li><span class="num" aria-hidden="true">11</span><span><strong>Playbook</strong> — the interview playbook for this role.</span></li>
+        <li><span class="num" aria-hidden="true">12</span><span><strong>Truth policy</strong> — verified, hypothetical, or bridge; a guess is never shown as a fact.</span></li>
+        <li><span class="num" aria-hidden="true">13</span><span><strong>Difficult questions</strong> — the hard ones, prepared in advance.</span></li>
+        <li><span class="num" aria-hidden="true">14</span><span><strong>Questions to ask</strong> — at least ten questions for the interviewer.</span></li>
+        <li><span class="num" aria-hidden="true">15</span><span><strong>Runtime cache</strong> — the compact pack the live engine actually uses.</span></li>
+      </ol>
       <p class="pipe-note">Verified, Hypothetical and Bridge labels mark what is grounded in your confirmed facts and what is not — so the app never presents a guess as a fact.</p>
     </div>
   </section>
@@ -162,6 +134,8 @@
           <p class="muted">Coach Mode is included in both Trial and Pro.</p>
           <h3>It adapts when you’re interrupted</h3>
           <p>If the interviewer follows up fast, the next answer shortens automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Reset it any time with the <kbd>Ctrl+Alt+R</kbd> shortcut.</p>
+          <h3>It doesn’t repeat your stories</h3>
+          <p>The app remembers what you already said in the interview: a story used in the last two answers is set aside, and the next answer reaches for a fresh one. Memory stays bounded — the last twelve records in detail, older ones compacted into a rolling summary — so it works the same in a long interview as in a short one.</p>
         </div>
       </div>
     </div>
@@ -277,7 +251,7 @@
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="pricing.html">Billing — via Paddle</a>
+      <a href="support.html#faq-b9">Billing — via Paddle</a>
     </nav>
   </div>
   <div class="container footer-bottom">
@@ -287,8 +261,8 @@
 </footer>
 <div class="sticky-cta" id="sticky-cta" hidden>
   <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
-  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
-  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
+  <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+  <a class="btn btn-secondary btn-small" href="download.html">Download for Windows</a>
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>

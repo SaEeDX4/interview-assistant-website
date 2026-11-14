@@ -54,7 +54,7 @@
       <a href="privacy.html">Privacy</a>
       <a href="support.html">Support</a>
     </nav>
-    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+    <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
   </div>
 </header>
 <main id="main" tabindex="-1">
@@ -103,8 +103,8 @@
       </div>
       <p class="fineprint">* Sandbox reference price — final live price to be confirmed before checkout opens.</p>
       <p class="cta-row">
-        <a class="btn btn-primary" href="download.html">Download for Windows — Trial included</a>
-        <a class="btn btn-secondary" href="demo.html">Try the demo first</a>
+        <a class="btn btn-primary" href="demo.html">Try the live demo</a>
+        <a class="btn btn-secondary" href="download.html">Download for Windows</a>
       </p>
     </div>
   </section>
@@ -113,7 +113,7 @@
     <div class="container narrow">
       <p class="eyebrow">Find your plan</p>
       <h2 id="finder-title">Which plan fits you?</h2>
-      <p>Three quick questions. The recommendation uses only the real plan limits — nothing else.</p>
+      <p>Four quick questions. The recommendation uses only the real plan limits — nothing else.</p>
       <form id="plan-finder" class="finder">
         <fieldset>
           <legend>How many interviews a month?</legend>
@@ -132,10 +132,16 @@
           <label class="radio-pill"><input type="radio" name="pf-devices" value="1"> 1</label>
           <label class="radio-pill"><input type="radio" name="pf-devices" value="2"> 2</label>
         </fieldset>
+        <fieldset>
+          <legend>How many preparation runs a month?</legend>
+          <label class="radio-pill"><input type="radio" name="pf-prep" value="0-2"> 0–2</label>
+          <label class="radio-pill"><input type="radio" name="pf-prep" value="3-20"> 3–20</label>
+          <label class="radio-pill"><input type="radio" name="pf-prep" value="21+"> 21 or more</label>
+        </fieldset>
       </form>
       <noscript><p class="muted">The plan finder needs JavaScript; the comparison table above lists both plans.</p></noscript>
       <div class="finder-result" id="finder-result" aria-live="polite">
-        <p>Answer all three questions to see a recommendation.</p>
+        <p>Answer all four questions to see a recommendation.</p>
       </div>
     </div>
   </section>
@@ -176,8 +182,8 @@
       <p>Paddle collects the payment, calculates and remits VAT and sales tax, issues invoices, and handles refunds and chargebacks. <strong>Card data never touches the desktop app or the backend</strong> — checkout and the customer portal are Paddle-hosted pages opened in your browser.</p>
       <h3>Cancel, downgrade, refunds</h3>
       <ul class="check-list">
-        <li><strong>Cancel</strong> in the Paddle customer portal. You keep Pro until the end of your paid period — access is not cut off immediately — then fall back to Trial.</li>
-        <li><strong>Downgrade</strong> (Pro → Trial) also goes through the Paddle portal; the exact effective date is the one shown in the portal — we do not invent a downgrade date here.</li>
+        <li><strong>Cancel</strong> — paid checkout is not open yet, so there is no live subscription to cancel. When it opens, you will cancel in the Paddle customer portal. You keep Pro until the end of your paid period — access is not cut off immediately — then fall back to Trial.</li>
+        <li><strong>Downgrade</strong> (Pro → Trial) will also go through the Paddle portal once paid checkout opens; the exact effective date is the one shown in the portal — we do not invent a downgrade date here.</li>
         <li><strong>Refunds</strong> are handled by Paddle as Merchant of Record. Refund terms will be stated in the final Terms; the draft on this site points to Paddle for the same reason — we do not write refund rules we cannot enforce.</li>
       </ul>
       <h2>Pricing FAQ</h2>
@@ -206,7 +212,7 @@
   <section class="next-band" aria-label="Next step">
     <div class="container">
       <p><strong>Next step:</strong> Download for Windows — the Trial is included.</p>
-      <a class="btn btn-primary" href="download.html">Download for Windows →</a>
+      <a class="btn btn-secondary" href="download.html">Download for Windows →</a>
     </div>
   </section>
 
@@ -235,7 +241,7 @@
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="pricing.html">Billing — via Paddle</a>
+      <a href="support.html#faq-b9">Billing — via Paddle</a>
     </nav>
   </div>
   <div class="container footer-bottom">
@@ -245,8 +251,8 @@
 </footer>
 <div class="sticky-cta" id="sticky-cta" hidden>
   <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
-  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
-  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
+  <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+  <a class="btn btn-secondary btn-small" href="download.html">Download for Windows</a>
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>
