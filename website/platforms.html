@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Platforms & roadmap — Interview Assistant</title>
+<meta name="description" content="Windows now. Android companion-first planning, iOS and native Mac as phased research. Five gated phases, no dates, no promises we cannot keep.">
+<meta property="og:title" content="Platforms & roadmap — Interview Assistant">
+<meta property="og:description" content="Windows now. Android companion-first planning, iOS and native Mac as phased research. Five gated phases, no dates, no promises we cannot keep.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Interview Assistant — home">
+      <span class="brand-mark" aria-hidden="true">IA</span>
+      <span class="brand-name">Interview Assistant</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html" aria-current="page">Platforms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <section class="page-hero">
+    <div class="container narrow">
+      <p class="eyebrow">Platforms & roadmap</p>
+      <h1>Windows now. Android, iOS and Mac as honest, phased research.</h1>
+      <p class="lead">One platform exists today: Windows. The others are plans with real technical questions still open — most of them about audio. We would rather tell you what is UNKNOWN than promise a date we cannot keep.</p>
+    </div>
+  </section>
+  <section class="section" aria-label="Platforms">
+    <div class="container">
+      <div class="grid grid-2">
+        <article class="card platform-card">
+          <p><span class="badge badge-now">Available — Windows</span></p>
+          <h2>Windows 10 / 11, 64-bit</h2>
+          <p>The only shipping platform. The desktop app captures the interviewer’s audio from your headset via <strong>WASAPI loopback</strong> — the Windows audio path this product was built on. Preparation, live assist, Coach Mode, reports, and the 10-language support all live here.</p>
+          <p class="muted">The signed installer is not published yet — see <a href="download.html">Download</a>.</p>
+        </article>
+        <article class="card platform-card">
+          <p><span class="badge badge-plan">Planning — Phase 3</span></p>
+          <h2>Android — companion first</h2>
+          <p>Android is planned as a <strong>companion first</strong>: preparation and practise on the go, with the same question bank and the same honest report. Whether full live assist is possible on Android is still being tested — Android cannot use WASAPI loopback, and Android’s audio-capture API (<code>AudioPlaybackCaptureConfiguration</code>, Android 10+) only works for allowed usages (media, game) under the other app’s capture policy. Third-party voice-communication audio is often excluded. That is not equivalent to Windows loopback, and we will not promise live assist on Android until real devices prove it.</p>
+          <p class="muted">No date. No APK. No waitlist yet — the real waitlist will name its processor and privacy policy at launch.</p>
+        </article>
+        <article class="card platform-card">
+          <p><span class="badge badge-unknown">Feasibility UNKNOWN — Phase 4</span></p>
+          <h2>iOS — planning</h2>
+          <p>iOS is a separate, independent research phase after Android. Whether other-app audio can be captured at all on iOS, and how the app behaves in the background, is <strong>UNKNOWN</strong> until tested on device. The default scope is the same as Android: a companion for preparation and practise. No date, no TestFlight promise, no store listing.</p>
+        </article>
+        <article class="card platform-card">
+          <p><span class="badge badge-unknown">Feasibility UNKNOWN — Phase 4</span></p>
+          <h2>Mac — dedicated native app, planning</h2>
+          <p>A dedicated native Mac app is planned — not a port, a native shell. The audio candidate is <strong>ScreenCaptureKit</strong>, but permissions, hardware behaviour, notarization, and distribution are all still to be tested on device. Until that is done, Mac live assist is UNKNOWN and the scope is a native preparation app with manual question fallback.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="roadmap-title">
+    <div class="container narrow">
+      <p class="eyebrow">Roadmap — five gated phases</p>
+      <h2 id="roadmap-title">The plan, with gates — not dates</h2>
+      <p>Each phase has pass/fail exit criteria and pause criteria. A phase does not start until the one before it has evidence. No phase carries a calendar promise.</p>
+      <ol class="numbered">
+        <li><strong>Phase 1 — Documentation v2.</strong> The planning package behind this site: 71 documents, an audit, and a website checklist. <span class="badge badge-now">Done</span></li>
+        <li><strong>Phase 2 — Website and Windows commercial launch.</strong> This site, the signed Windows installer, live Paddle checkout tested end to end, and final legal and support pages. <span class="badge badge-plan">In progress</span></li>
+        <li><strong>Phase 3 — Android companion and audio feasibility.</strong> Research artifacts and tests on 10+ devices/apps. Kill criterion: if real meeting-audio capture is not stable, permitted, and approved, the live-assist promise for Android is dropped. <span class="badge badge-plan">Planned</span></li>
+        <li><strong>Phase 4 — iOS and native Mac feasibility.</strong> Independent sign-off for each: a SwiftUI companion prototype and OS-level audio tests for iOS; a Swift-native Mac shell concept with ScreenCaptureKit tested on device. <span class="badge badge-unknown">Planned</span></li>
+        <li><strong>Phase 5 — Growth, support, and product quality.</strong> Support, quality, and growth work on top of a launched, tested product. <span class="badge badge-plan">Planned</span></li>
+      </ol>
+      <p class="muted">Full detail lives in the planning docs in the project repository — including the pause/kill criteria for each phase.</p>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand"><span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Interview Assistant</span></p>
+      <p class="muted">Prepare from your resume. Speak from your experience.</p>
+    </div>
+    <nav aria-label="Product">
+      <h3>Product</h3>
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Live demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+    </nav>
+    <nav aria-label="Resources">
+      <h3>Resources</h3>
+      <a href="support.html">Support &amp; FAQ</a>
+      <a href="privacy.html">Privacy &amp; ethics</a>
+      <a href="terms.html">Terms (draft)</a>
+      <a href="demo.html">Live demo</a>
+    </nav>
+    <nav aria-label="Legal">
+      <h3>Legal</h3>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms — draft, pending legal review</a>
+      <a href="pricing.html">Billing — via Paddle</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 Interview Assistant. Use only where you are allowed to.</p>
+    <p class="muted">Made for candidates, in 10 languages.</p>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

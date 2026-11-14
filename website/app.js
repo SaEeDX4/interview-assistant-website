@@ -111,6 +111,55 @@
         keys: ["تجربه", "نتیجه", "تناسب"],
         structure: "نقش فعلی ← یک نتیجه ← چرا این نقش"
       }
+    },
+    ar: {
+      q: "حدّثني عن نفسك.",
+      rtl: true,
+      answer: [
+        "أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.",
+        "ثم أذكر مثالاً حقيقياً من تجربتي، لا كلاماً عاماً.",
+        "وأختم بتوضيح سبب ملاءمة هذا الدور لي."
+      ],
+      coach: {
+        keys: ["الخبرة", "النتيجة", "الملاءمة"],
+        structure: "الدور الحالي ← نتيجة واحدة ← لماذا هذا الدور"
+      }
+    },
+    salary: {
+      q: "What salary are you expecting?",
+      answer: [
+        "I’d rather anchor on the range for this role — what I’ve seen is around this level, for this scope.",
+        "What matters most to me is the full picture: the work, the growth, and the total package.",
+        "I’m flexible on the number if the role and the package are right — here’s the range I had in mind."
+      ],
+      coach: {
+        keys: ["RANGE", "PACKAGE", "FLEXIBLE"],
+        structure: "Market range → full package → your range, flexibly"
+      }
+    },
+    conflict: {
+      q: "Tell me about a conflict with a coworker.",
+      answer: [
+        "We disagreed on the approach — I wanted the simpler plan, they wanted the thorough one.",
+        "I asked for their reasoning first, then named the trade-off openly instead of arguing past each other.",
+        "We shipped the simpler plan, and we kept the decision log — the relationship was stronger afterwards."
+      ],
+      coach: {
+        keys: ["DISAGREEMENT", "LISTENED", "RESOLVED"],
+        structure: "Disagreement → what you did → outcome, with the relationship intact"
+      }
+    },
+    why: {
+      q: "Why do you want to work here?",
+      answer: [
+        "This team ships carefully and reviews honestly — that is the environment I do my best work in.",
+        "The product itself matters to me: it helps people at a moment that actually counts.",
+        "And the role fits what I do well — here is the one result that shows it."
+      ],
+      coach: {
+        keys: ["TEAM", "PRODUCT", "FIT"],
+        structure: "Why this team → why this product → why you fit"
+      }
     }
   };
 
@@ -350,6 +399,56 @@
       if (!email) { return; }
       notifyNote.textContent = "Thanks — this is a demo form, so nothing was sent. The real waitlist opens at launch.";
     });
+  }
+
+  // Interruption simulator (demo.html only): same follow-up question at
+  // three lengths — Normal (3 points), Concise (2 short points), Rapid
+  // (1 line). Simulated; in the real app the shortening is automatic.
+  var intAnswer = document.getElementById("int-answer");
+  var intStatus = document.getElementById("int-status");
+  var intBtns = ["int-normal", "int-concise", "int-rapid"].map(function (id) {
+    return document.getElementById(id);
+  });
+  if (intAnswer && intStatus && intBtns.every(Boolean)) {
+    var INT = {
+      normal: ["Five years building web products — most recently leading a small team on a customer-facing tool.",
+        "I start from the outcome, then the trade-off I made to get there.",
+        "What draws me here is this team’s focus on honest, useful software."],
+      concise: ["Five years building web products, most recently leading a small team.",
+        "Drawn here by this team’s focus on honest, useful software."],
+      rapid: ["Five years building web products — and this team’s focus is why I’m here."]
+    };
+    var intTimers = [];
+    var intRun = 0;
+    function showInt(key, label) {
+      intTimers.forEach(function (t) { clearTimeout(t); });
+      intTimers = [];
+      var myRun = ++intRun;
+      intAnswer.innerHTML = "";
+      intAnswer.classList.remove("coach");
+      intStatus.textContent = "Preparing the shorter version…";
+      var items = INT[key];
+      if (isReducedMotion()) {
+        items.forEach(function (text, i) { intAnswer.appendChild(makeBullet(text, i)); });
+        intStatus.textContent = label + " ready — simulated.";
+        return;
+      }
+      items.forEach(function (text, i) {
+        intTimers.push(setTimeout(function () {
+          if (myRun !== intRun) { return; }
+          var li = makeBullet(text, i);
+          li.classList.add("is-new");
+          intAnswer.appendChild(li);
+          if (i === items.length - 1) {
+            intStatus.textContent = label + " ready — simulated.";
+          }
+        }, i * STAGE_MS));
+      });
+    }
+    intBtns[0].addEventListener("click", function () { showInt("normal", "Normal (3 points)"); });
+    intBtns[1].addEventListener("click", function () { showInt("concise", "Concise (2 points)"); });
+    intBtns[2].addEventListener("click", function () { showInt("rapid", "Rapid (1 line)"); });
+    showInt("normal", "Normal (3 points)");
   }
 
   // Mobile nav.

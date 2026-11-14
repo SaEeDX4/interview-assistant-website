@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Privacy & ethics — Interview Assistant</title>
+<meta name="description" content="What is recorded, what is never recorded, where your data lives, retention, export and erasure.">
+<meta property="og:title" content="Privacy & ethics — Interview Assistant">
+<meta property="og:description" content="What is recorded, what is never recorded, where your data lives, retention, export and erasure.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Interview Assistant — home">
+      <span class="brand-mark" aria-hidden="true">IA</span>
+      <span class="brand-name">Interview Assistant</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+      <a href="privacy.html" aria-current="page">Privacy</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <section class="page-hero">
+    <div class="container narrow">
+      <p class="eyebrow">Privacy & ethics</p>
+      <h1>What we record. What we never record. What happens to your data.</h1>
+      <p class="lead">Use only where you are allowed to. This page states the facts plainly — including the parts that are still undecided, marked as such.</p>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="record-title">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="eyebrow">The short version</p>
+          <h2 id="record-title">What is recorded</h2>
+          <ul class="check-list">
+            <li><strong>Your confirmed profile facts</strong> — the ones you approved, stored encrypted on your PC.</li>
+            <li><strong>Live transcripts</strong> — the interviewer’s questions, transcribed live, kept on your PC by default.</li>
+            <li><strong>Reports</strong> — questions asked and suggestions shown, on your PC by default.</li>
+            <li><strong>Usage ledger</strong> — server-side metering of live minutes, for fair billing only.</li>
+            <li><strong>Payment references</strong> — with Paddle only; the app and backend never see card data.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">The short version</p>
+          <h2 id="not-record-title">What is never recorded</h2>
+          <ul class="check-list">
+            <li><strong>Your microphone is not recorded.</strong> The app listens to the interviewer’s audio from your headset; your mic is not a source.</li>
+            <li><strong>Audio is never stored.</strong> It is transcribed live and never written to disk.</li>
+            <li><strong>No hidden mode.</strong> The app is a normal, visible window. It never hides, never evades screen capture, and never pretends to be something else.</li>
+            <li><strong>No hiring scores or predictions.</strong> There is nothing to record about an outcome the app does not predict.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="inventory-title">
+    <div class="container">
+      <p class="eyebrow">Data inventory</p>
+      <h2 id="inventory-title">Where your data lives</h2>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th scope="col">Data</th><th scope="col">Where it lives</th><th scope="col">Why</th><th scope="col">Retention</th></tr></thead>
+          <tbody>
+            <tr><td>Confirmed profile facts</td><td>Your PC, DPAPI-encrypted</td><td>Grounded suggestions</td><td>Until you delete them</td></tr>
+            <tr><td>Job description</td><td>Your PC, DPAPI-encrypted</td><td>Role matching</td><td>Until you delete it</td></tr>
+            <tr><td>Transcripts &amp; reports</td><td>Your PC by default</td><td>Review and preparation</td><td>Trial 14 days · Pro 365 days</td></tr>
+            <tr><td>Usage ledger (live minutes)</td><td>Backend (PostgreSQL)</td><td>Fair billing</td><td><strong>UNKNOWN</strong> — long-term retention policy not yet signed</td></tr>
+            <tr><td>Payment references</td><td>Paddle only</td><td>Subscription</td><td>Paddle’s legal retention, separate from us</td></tr>
+            <tr><td>Sign-in tokens</td><td>Your PC, DPAPI-encrypted</td><td>Staying signed in</td><td>Until sign-out or revocation</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Sign-in happens in your system browser — Google, Microsoft, or an email link. The service holds the AI key; you never paste a key yourself. Developer mode (your own OpenAI key) exists for internal testing and is not a selling point of this site.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="rights-title">
+    <div class="container narrow">
+      <p class="eyebrow">Your rights</p>
+      <h2 id="rights-title">Export, delete, and ask</h2>
+      <p>You can export or delete your workspace from the app. Account-owned documents can be exported and deleted; a deletion request is not replaced with an unconditional success message if part of it is still pending — you see a scoped pending/export/erase status instead. Paddle invoices sit outside app deletion: deleting your app data does not delete Paddle’s own records, which follow Paddle’s legal retention.</p>
+      <p>To request your data or its deletion once the support channel opens, see the <a href="support.html">privacy-request runbook summary on the Support page</a>. The support channel is still TBD — we do not invent a contact address here.</p>
+      <h2>Consent and ethics</h2>
+      <p>Live assist is for interviews where assistance is permitted. Always check the interview’s rules — and the employer’s — first. The app is a preparation and practice coach; it does not help you deceive anyone, and it must not be used to present experience that is not yours. Only facts you confirmed are ever presented as your experience.</p>
+      <p><a href="terms.html">Read the draft Terms →</a></p>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand"><span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Interview Assistant</span></p>
+      <p class="muted">Prepare from your resume. Speak from your experience.</p>
+    </div>
+    <nav aria-label="Product">
+      <h3>Product</h3>
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Live demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+    </nav>
+    <nav aria-label="Resources">
+      <h3>Resources</h3>
+      <a href="support.html">Support &amp; FAQ</a>
+      <a href="privacy.html">Privacy &amp; ethics</a>
+      <a href="terms.html">Terms (draft)</a>
+      <a href="demo.html">Live demo</a>
+    </nav>
+    <nav aria-label="Legal">
+      <h3>Legal</h3>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms — draft, pending legal review</a>
+      <a href="pricing.html">Billing — via Paddle</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 Interview Assistant. Use only where you are allowed to.</p>
+    <p class="muted">Made for candidates, in 10 languages.</p>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

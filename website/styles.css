@@ -303,3 +303,55 @@ details p { color: var(--muted); margin: 12px 0 0; }
   :focus-visible { outline: 3px solid Highlight; }
   .card, .demo, .demo-answer li, details { border-color: ButtonBorder; }
 }
+
+/* ---------- Multi-page additions ---------- */
+.site-nav a[aria-current="page"] { color: var(--text); background: var(--surface-2); }
+@media (max-width: 860px) {
+  .site-nav a[aria-current="page"] { background: var(--surface-2); }
+}
+.page-hero { padding: 64px 0 8px; }
+.page-hero h1 { font-size: clamp(32px, 4.4vw, 46px); }
+.lead { color: var(--muted); font-size: 18px; max-width: 68ch; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+@media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+.numbered { margin: 0 0 16px; padding-left: 22px; display: grid; gap: 10px; color: var(--muted); }
+.numbered li::marker { color: var(--accent); font-weight: 700; }
+.numbered strong { color: var(--text); }
+.steps-expanded { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+.steps-expanded .card { padding: 28px; }
+.steps-expanded h2 { font-size: 24px; }
+.steps-expanded p { color: var(--muted); }
+.steps-expanded p strong { color: var(--text); }
+.badge {
+  display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: 5px 10px; border-radius: 999px;
+  border: 1px solid var(--border-strong); color: var(--muted);
+}
+.badge-now { background: rgba(45,212,191,.14); border-color: var(--accent-2); color: #7df0dd; }
+.badge-plan { background: rgba(245,185,78,.12); border-color: var(--coach); color: #f8cd7d; }
+.badge-unknown { background: var(--surface-2); border-color: var(--warn); color: #fcd34d; }
+.callout {
+  border: 1px solid var(--border); border-left: 4px solid var(--accent);
+  border-radius: var(--radius); background: var(--surface);
+  padding: 18px 20px; margin: 0 0 28px;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout-warn { border-left-color: var(--warn); }
+.callout-draft { border-left-color: var(--coach); }
+.callout-info { border-left-color: var(--accent-2); }
+.table-wrap { overflow-x: auto; margin: 0 0 16px; }
+table.compare { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+table.compare th, table.compare td {
+  text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+table.compare thead th { color: var(--text); border-bottom: 2px solid var(--border-strong); }
+table.compare tbody td { color: var(--muted); }
+table.compare tbody td strong { color: var(--text); }
+table.compare tbody tr:hover td { background: var(--surface); }
+.platform-card h2 { font-size: 24px; }
+.interrupt { margin-top: 24px; padding: 28px; }
+.interrupt h2 { font-size: 24px; }
+.interrupt .demo-answer { margin-top: 16px; }
+.card h3 a { color: var(--text); text-decoration: none; }
+.card h3 a:hover { color: var(--focus); text-decoration: underline; }

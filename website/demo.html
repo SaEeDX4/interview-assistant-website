@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Live demo — Interview Assistant</title>
+<meta name="description" content="Try the simulated live demo: ten sample questions, Answer and Coach modes, and an interruption simulator. No audio, no microphone, no sign-up.">
+<meta property="og:title" content="Live demo — Interview Assistant">
+<meta property="og:description" content="Try the simulated live demo: ten sample questions, Answer and Coach modes, and an interruption simulator. No audio, no microphone, no sign-up.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Interview Assistant — home">
+      <span class="brand-mark" aria-hidden="true">IA</span>
+      <span class="brand-name">Interview Assistant</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html" aria-current="page">Demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <section class="page-hero">
+    <div class="container narrow">
+      <p class="eyebrow">Live demo — simulated</p>
+      <h1>Try the demo. No audio, no microphone, no sign-up.</h1>
+      <p class="lead">This is a simulation of what the app shows in a live interview. The questions are samples; the answers are illustrative — in the real app, every point is built from facts you confirmed and your prepared question bank. Nothing here listens, records, or sends anything anywhere.</p>
+    </div>
+  </section>
+  <section class="section" aria-label="Demo">
+    <div class="container">
+      <div class="demo" id="demo" aria-labelledby="demo-title">
+        <div class="demo-head">
+          <span class="demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="pill pill-live"><span class="dot" aria-hidden="true"></span> Live demo — simulated</span>
+          <span class="demo-title-visually-hidden" id="demo-title">Live demo</span>
+          <div class="mode-toggle" role="group" aria-label="Answer mode">
+            <button type="button" class="mode-btn is-active" id="mode-answer" aria-pressed="true">Answer</button>
+            <button type="button" class="mode-btn" id="mode-coach" aria-pressed="false">Coach</button>
+          </div>
+        </div>
+        <div class="demo-body">
+          <p class="demo-label">Interviewer</p>
+          <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+          <div class="demo-answer" id="demo-answer" aria-busy="false"></div>
+          <p class="demo-status" id="demo-status" role="status"></p>
+          <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
+        </div>
+        <div class="demo-foot">
+          <form id="demo-form">
+            <label class="visually-hidden" for="demo-input">Type an interview question</label>
+            <input id="demo-input" type="text" autocomplete="off"
+              placeholder="Type a question, or pick a sample below…">
+            <button class="btn btn-primary btn-small" type="submit">Show answer</button>
+          </form>
+
+          <div class="chips" role="group" aria-label="Sample questions">
+            <button type="button" class="chip" data-q="tell">Tell me about yourself</button>
+            <button type="button" class="chip" data-q="hire">Why should we hire you?</button>
+            <button type="button" class="chip" data-q="weakness">Biggest weakness?</button>
+            <button type="button" class="chip" data-q="story">A time you led a difficult project</button>
+            <button type="button" class="chip" data-q="five">Where in five years?</button>
+            <button type="button" class="chip" data-q="salary">What salary are you expecting?</button>
+            <button type="button" class="chip" data-q="conflict">A conflict with a coworker</button>
+            <button type="button" class="chip" data-q="why">Why do you want to work here?</button>
+            <button type="button" class="chip" data-q="fa" lang="fa" dir="rtl">درباره خودتان بگویید</button>
+            <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
+          </div>
+          <p class="demo-note">Simulated demo — no audio, no microphone, no recording, no network.
+            Sample answers are illustrative. In the real app, points are built from
+            your confirmed facts and your prepared question bank. If you type a
+            question of your own, you get the honest answer <em>shape</em> — outcome,
+            example, connection to the role — not a fake specific answer.</p>
+        </div>
+      </div>
+
+      <div class="card interrupt" aria-labelledby="interrupt-title">
+        <h2 id="interrupt-title">Interruption simulator</h2>
+        <p>In the real app, a fast follow-up shortens the next answer automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Try the three lengths on the same follow-up question:</p>
+        <p><strong>Interviewer (follow-up):</strong> “Can you give me the shorter version?”</p>
+        <p class="cta-row" role="group" aria-label="Answer length">
+          <button class="btn btn-secondary btn-small" type="button" id="int-normal">Normal — 3 points</button>
+          <button class="btn btn-secondary btn-small" type="button" id="int-concise">Concise — 2 short points</button>
+          <button class="btn btn-secondary btn-small" type="button" id="int-rapid">Rapid — 1 line</button>
+        </p>
+        <ul class="demo-answer" id="int-answer" aria-live="polite"></ul>
+        <p class="demo-status" id="int-status" role="status"></p>
+        <p class="demo-note">Simulated. In the real app the shortening is automatic, driven by how fast the follow-up arrives, and <kbd>Ctrl+Alt+R</kbd> resets it.</p>
+      </div>
+
+      <div class="grid grid-3" style="margin-top: 24px;">
+        <article class="card">
+          <h3>Answer Mode</h3>
+          <p>Three short, speakable bullets, appearing one at a time. Short enough to say — not to read out.</p>
+        </article>
+        <article class="card">
+          <h3>Coach Mode</h3>
+          <p>Three keywords and a one-line structure, so the words stay yours. Toggle it above, or live with <kbd>Ctrl+Alt+C</kbd>.</p>
+        </article>
+        <article class="card">
+          <h3>What this demo is not</h3>
+          <p>It does not transcribe, listen, or know anything about you. It cannot answer for you — and it does not pretend to. <a href="features.html">How the real app works →</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand"><span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Interview Assistant</span></p>
+      <p class="muted">Prepare from your resume. Speak from your experience.</p>
+    </div>
+    <nav aria-label="Product">
+      <h3>Product</h3>
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Live demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+    </nav>
+    <nav aria-label="Resources">
+      <h3>Resources</h3>
+      <a href="support.html">Support &amp; FAQ</a>
+      <a href="privacy.html">Privacy &amp; ethics</a>
+      <a href="terms.html">Terms (draft)</a>
+      <a href="demo.html">Live demo</a>
+    </nav>
+    <nav aria-label="Legal">
+      <h3>Legal</h3>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms — draft, pending legal review</a>
+      <a href="pricing.html">Billing — via Paddle</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 Interview Assistant. Use only where you are allowed to.</p>
+    <p class="muted">Made for candidates, in 10 languages.</p>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

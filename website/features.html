@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Features — Interview Assistant</title>
+<meta name="description" content="Prepare from your resume, get three speakable points live, Coach Mode, 10 languages with RTL, adaptive answers, and an honest report — with the evidence behind each claim.">
+<meta property="og:title" content="Features — Interview Assistant">
+<meta property="og:description" content="Prepare from your resume, get three speakable points live, Coach Mode, 10 languages with RTL, adaptive answers, and an honest report — with the evidence behind each claim.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Interview Assistant — home">
+      <span class="brand-mark" aria-hidden="true">IA</span>
+      <span class="brand-name">Interview Assistant</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <a href="features.html" aria-current="page">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <section class="page-hero">
+    <div class="container narrow">
+      <p class="eyebrow">Features</p>
+      <h1>Everything it does, and the evidence for each claim.</h1>
+      <p class="lead">Interview Assistant is a preparation and practice coach first, and a live assist tool second. Every feature below traces to the source product — the claim table in our planning docs lists the source for each one. Where something is internal test evidence rather than a guarantee, we say so.</p>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="prepare-title">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="eyebrow">1 · Prepare</p>
+          <h2 id="prepare-title">A question bank built for this interview, not a generic list</h2>
+          <p>Import your resume (PDF, DOCX or TXT) and the job description. The app extracts facts about your experience — and then you review every single one. <strong>Only facts you confirm are ever used.</strong> Nothing inferred, nothing guessed, nothing presented as your experience unless you said so.</p>
+          <p>From your confirmed facts and the role, a <strong>15-stage preparation pipeline</strong> builds a bank of <strong>50–150 questions</strong> for that interview: role-specific, behavioural, and follow-up questions, matched to what the job actually asks for.</p>
+          <p>Questions are classified as <strong>Verified</strong> (grounded in a confirmed fact), <strong>Hypothetical</strong> (a reasonable scenario to practise), or <strong>Bridge</strong> (connecting your experience to the role) — so you always know which answers rest on your real history and which are practice.</p>
+        </div>
+        <div class="card">
+          <h3>What the pipeline does with your resume</h3>
+          <ul class="check-list">
+            <li><strong>Import</strong> — PDF, DOCX or TXT resume, plus the job description.</li>
+            <li><strong>Extract</strong> — facts, roles, results, and skills, as candidates — not as truth.</li>
+            <li><strong>Confirm</strong> — you approve, edit, or reject every fact before it is used.</li>
+            <li><strong>Match</strong> — the role and job description shape which questions matter.</li>
+            <li><strong>Build</strong> — a 50–150 question bank, classified Verified / Hypothetical / Bridge.</li>
+            <li><strong>Practise</strong> — work through the bank before the day, and review afterwards.</li>
+          </ul>
+          <p class="muted">Preparation runs are metered: 2 per month on Trial, 20 per month on Pro. Preparation itself never uses live minutes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="live-title">
+    <div class="container">
+      <p class="eyebrow">2 · Live</p>
+      <h2 id="live-title">Three short, speakable points — when the question ends</h2>
+      <div class="two-col">
+        <div>
+          <p>In the interview, the app listens to the interviewer’s audio from your headset (WASAPI loopback on Windows — no browser extension, no meeting-app plugin). It transcribes the question as it streams, detects the end of the question, and merges multi-part questions into one.</p>
+          <p>Then it shows <strong>three short, speakable bullets, one at a time</strong>. Short enough to say in your own words — not a script to read out. Every point is built only from facts you confirmed and your prepared question bank.</p>
+          <p><a class="btn btn-secondary" href="demo.html">Try it in the simulated demo →</a></p>
+        </div>
+        <div class="card">
+          <h3>Coach Mode</h3>
+          <p>Prefer a nudge over full points? Coach Mode shows <strong>three keywords and a one-line structure</strong> instead — so the words stay yours. Toggle it live, mid-interview, with <kbd>Ctrl+Alt+C</kbd>.</p>
+          <p class="muted">Coach Mode is included in both Trial and Pro.</p>
+          <h3>It adapts when you’re interrupted</h3>
+          <p>If the interviewer follows up fast, the next answer shortens automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Reset it any time with <kbd>Ctrl+Alt+R</kbd>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="lang-title">
+    <div class="container">
+      <p class="eyebrow">3 · Languages</p>
+      <h2 id="lang-title">Ten languages. Arabic and Persian, properly right-to-left.</h2>
+      <p class="section-intro">Answers follow the interviewer’s language. Arabic and Persian render right-to-left — as a first-class layout, not as an afterthought. The full list of the ten languages is not stated in the source docs we reviewed, so we do not print a list we cannot source; language support is as listed in the app, and live quality is being validated language by language.</p>
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>Persian — فارسی</h3>
+          <p lang="fa" dir="rtl">«درباره خودتان بگویید.»</p>
+          <p class="muted">“Tell me about yourself.” — answered in Persian, laid out right-to-left, with the structure of the answer preserved.</p>
+        </article>
+        <article class="card">
+          <h3>Arabic — العربية</h3>
+          <p lang="ar" dir="rtl">«حدّثني عن نفسك.»</p>
+          <p class="muted">“Tell me about yourself.” — answered in Arabic, laid out right-to-left. Try both in the <a href="demo.html">live demo</a>.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="report-title">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <p class="eyebrow">4 · Report</p>
+          <h2 id="report-title">An honest report. No scores, no hiring predictions.</h2>
+          <p>After you stop, you get the questions that were asked and the suggestions that were shown — plus what to prepare next time. That is all. There is no score, no grade, no pass/fail, and no prediction about whether you will be hired, because the app does not know that and never claims to.</p>
+          <p>Reports stay on your PC by default. Trial reports are kept 14 days; Pro reports 365 days.</p>
+        </div>
+        <div>
+          <p class="eyebrow">5 · Privacy, built in</p>
+          <h2 id="report-title-2">A visible window. Nothing hidden, nothing stored.</h2>
+          <p>Interview Assistant is a normal, visible window. It never hides, never evades screen capture, and never pretends to be something else. It does not record your microphone, and it does not store audio — audio is transcribed live and never written to disk.</p>
+          <p>Your workspace is encrypted on your PC (DPAPI). Payment data lives with Paddle only. <a href="privacy.html">Read the full privacy page →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="evidence-title">
+    <div class="container narrow">
+      <p class="eyebrow">Evidence, not promises</p>
+      <h2 id="evidence-title">Tested — not guaranteed</h2>
+      <p>These are internal test results from the source product’s own status report. We label them as tested evidence, not as a guarantee of what you will experience on your machine.</p>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th scope="col">What was tested</th><th scope="col">Result</th></tr></thead>
+          <tbody>
+            <tr><td>Core tests</td><td><strong>201 / 201</strong> passing</td></tr>
+            <tr><td>Backend tests</td><td><strong>44 / 44</strong> passing</td></tr>
+            <tr><td>In-app self-test</td><td><strong>28 / 28</strong> passing</td></tr>
+            <tr><td>Real-EXE smoke startup</td><td><strong>1.3 s</strong> (internal evidence)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">A 1.3&nbsp;s startup in a test environment is not end-to-end speech latency, and test counts do not promise your interview will go well. What they do show is that the product is tested, not just described.</p>
+      <p><a class="btn btn-primary" href="demo.html">See it working — simulated demo</a>
+      <a class="btn btn-secondary" href="pricing.html">See pricing</a></p>
+    </div>
+  </section>
+
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand"><span class="brand-mark" aria-hidden="true">IA</span>
+        <span class="brand-name">Interview Assistant</span></p>
+      <p class="muted">Prepare from your resume. Speak from your experience.</p>
+    </div>
+    <nav aria-label="Product">
+      <h3>Product</h3>
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="demo.html">Live demo</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="download.html">Download</a>
+      <a href="platforms.html">Platforms</a>
+    </nav>
+    <nav aria-label="Resources">
+      <h3>Resources</h3>
+      <a href="support.html">Support &amp; FAQ</a>
+      <a href="privacy.html">Privacy &amp; ethics</a>
+      <a href="terms.html">Terms (draft)</a>
+      <a href="demo.html">Live demo</a>
+    </nav>
+    <nav aria-label="Legal">
+      <h3>Legal</h3>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms — draft, pending legal review</a>
+      <a href="pricing.html">Billing — via Paddle</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 Interview Assistant. Use only where you are allowed to.</p>
+    <p class="muted">Made for candidates, in 10 languages.</p>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
