@@ -502,6 +502,16 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timers = [];
 
+  // Clear every pending mockup timer. A cycle must never run twice at
+  // once: without this, a visibilitychange back to visible started a
+  // second cycle alongside the first and every point rendered twice
+  // (rows numbered 1, 1, 2, 2, 3, 3), and both loops then replayed
+  // forever because each cycle schedules its own next run.
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); });
+    timers = [];
+  }
+
   function makeBullet(text, i) {
     var li = document.createElement("li");
     var num = document.createElement("span");
@@ -516,6 +526,7 @@
   }
 
   function renderAll() {
+    clearTimers();
     list.innerHTML = "";
     POINTS.forEach(function (text, i) { list.appendChild(makeBullet(text, i)); });
     status.textContent = "3 points ready — preview.";
@@ -524,6 +535,7 @@
   if (reduced) { renderAll(); return; }
 
   function cycle() {
+    clearTimers();
     list.innerHTML = "";
     status.textContent = "Listening…";
     POINTS.forEach(function (text, i) {
@@ -541,8 +553,7 @@
 
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
-      timers.forEach(function (t) { clearTimeout(t); });
-      timers = [];
+      clearTimers();
     } else {
       cycle();
     }
@@ -552,7 +563,12 @@
 })();
 
 /* Step 1 — scroll reveal + header shadow. Elements get .reveal via JS
-   (no-JS keeps everything visible); reduced motion shows all at once. */
+   (no-JS keeps everything visible); reduced motion shows all at once.
+   Fixed after live-browser re-check: the old reveal started at opacity
+   .35 with a .45s transition and up to 140ms stagger, so sections sat
+   visibly dimmed for seconds after scrolling in. The new reveal starts
+   at .85, runs .25s, staggers at most 40ms, triggers earlier, and the
+   hero is never dimmed at all — it must be fully bright on first paint. */
 (function () {
   "use strict";
   var header = document.querySelector(".site-header");
@@ -564,37 +580,56 @@
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.documentElement.classList.add("js");
+  // Hero (.hero-copy, .hero-visual) is deliberately NOT a reveal target:
+  // it must be fully bright on load, with no dim phase at all.
   var targets = document.querySelectorAll(
-    ".hero-copy, .hero-visual, .card, .steps li, details, .callout, .table-wrap, .ethics-strip"
+    ".card, .steps li, details, .callout, .table-wrap, .ethics-strip"
   );
   if (!targets.length) { return; }
   if (reduced || !("IntersectionObserver" in window)) {
     targets.forEach(function (el) { el.classList.add("is-visible"); });
     return;
   }
-  // Stagger siblings: up to 3 columns, 70 ms apart.
+  function show(el) {
+    el.classList.add("is-visible");
+    // Hand control back to the element's own hover transition once done.
+    // Transition is .25s + at most 40ms stagger, so 400ms is ample.
+    setTimeout(function () {
+      el.classList.remove("reveal");
+      el.style.transitionDelay = "";
+    }, 400);
+  }
+  // Stagger siblings: at most 2 steps of 40 ms, so the last element in a
+  // row is fully bright within ~0.3s of entering view.
   var groups = {};
   targets.forEach(function (el) {
     var parent = el.parentElement;
     var key = parent.tagName + ":" + Array.prototype.indexOf.call(parent.parentElement ? parent.parentElement.children : [], parent);
     if (!groups[key]) { groups[key] = 0; }
-    el.style.transitionDelay = (groups[key] % 3) * 70 + "ms";
+    el.style.transitionDelay = (groups[key] % 2) * 40 + "ms";
     groups[key]++;
   });
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
+        show(entry.target);
         io.unobserve(entry.target);
-        // Hand control back to the element's own hover transition.
-        setTimeout(function () {
-          entry.target.classList.remove("reveal");
-          entry.target.style.transitionDelay = "";
-        }, 850);
       }
     });
-  }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-  targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+  }, { threshold: 0.05, rootMargin: "0px 0px -16px 0px" });
+  targets.forEach(function (el) {
+    el.classList.add("reveal");
+    // Already in view on load: show in the same tick, before first paint,
+    // so there is no dim flash while waiting for the observer's first
+    // (async) callback.
+    var r = (typeof el.getBoundingClientRect === "function")
+      ? el.getBoundingClientRect() : null;
+    if (r && r.top < window.innerHeight && r.bottom > 0) {
+      show(el);
+    } else {
+      io.observe(el);
+    }
+  });
 })();
 
 /* Step 2 — plan finder (pricing.html only). Recommends Trial or Pro from
