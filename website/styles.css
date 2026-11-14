@@ -580,6 +580,12 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
 }
 .sticky-cta[hidden] { display: none; }
 .sticky-cta-text { margin: 0; font-weight: 650; font-size: 15px; }
+/* Below ~900px the text + two buttons no longer fit one row: the bar
+   wraps to two rows and covers page content. Hide the text (the buttons
+   carry the action) so the bar stays a single slim row at any width. */
+@media (max-width: 900px) {
+  .sticky-cta-text { display: none; }
+}
 .sticky-cta-close {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   background: none; border: 1px solid var(--border-strong); color: var(--muted);
@@ -754,7 +760,7 @@ body.cta-visible { padding-bottom: 96px; }
 /* Data-flow diagram + recorded/never (privacy.html) */
 .dataflow { display: flex; align-items: stretch; gap: 0; margin: 28px 0; }
 .flow-node {
-  flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border);
+  flex: 1 1 140px; background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 18px; text-align: center;
 }
 .flow-node .flow-ic { display: grid; place-items: center; width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 12px; background: var(--accent-soft); color: var(--focus); }
@@ -763,12 +769,14 @@ body.cta-visible { padding-bottom: 96px; }
 .flow-node p { color: var(--muted); font-size: 13.5px; margin-bottom: 0; }
 .flow-arrow { align-self: center; color: var(--accent-2); font-size: 22px; font-weight: 700; padding: 0 8px; flex: none; }
 .flow-break {
-  flex: 1 1 150px; border: 2px dashed rgba(248,113,113,.65); border-radius: var(--radius-lg);
+  flex: 1 1 140px; border: 2px dashed rgba(248,113,113,.65); border-radius: var(--radius-lg);
   padding: 18px; text-align: center; background: rgba(248,113,113,.07);
 }
 .flow-break h3 { font-size: 16px; color: #fca5a5; margin-bottom: 4px; }
 .flow-break p { color: var(--muted); font-size: 13.5px; margin-bottom: 0; }
-@media (max-width: 640px) {
+/* The row needs ~850px for five cards + arrows, so it stacks below 1024px
+   (the old 640px switch left it overflowing with a scrollbar at ~725px). */
+@media (max-width: 1024px) {
   .dataflow { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); padding: 6px 0; align-self: center; }
 }
