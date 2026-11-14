@@ -9,11 +9,29 @@
 <meta property="og:title" content="Live demo — Interview Assistant">
 <meta property="og:description" content="Try the simulated live demo: ten sample questions, Answer and Coach modes, and an interruption simulator. No audio, no microphone, no sign-up.">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<meta name="twitter:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Interview Assistant",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "inLanguage": "en",
+  "description": "Interview preparation and practice coach for Windows, with a live assist mode for interviews where assistance is permitted.",
+  "offers": [
+    {"@type": "Offer", "name": "Trial", "price": "0", "priceCurrency": "USD"},
+    {"@type": "Offer", "description": "Indicative Paddle sandbox reference price. Final live price to be confirmed before checkout opens.", "name": "Pro", "price": "19.99", "priceCurrency": "USD"}
+  ]
+}
+</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -102,13 +120,13 @@
       </div>
 
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong>You just saw 3 points — now try it with your own resume.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">You just saw 3 points — now try it with your own resume.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>
           <li><span aria-hidden="true">3</span> Download</li>
         </ol>
-        <p class="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
+        <p class="demo-next-text" id="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
         <p class="cta-row">
           <a class="btn btn-primary" href="download.html">Download for Windows — Trial included</a>
           <a class="btn btn-secondary" href="pricing.html">See pricing</a>
@@ -125,7 +143,7 @@
           <button class="seg-btn" type="button" id="int-rapid" aria-pressed="false">Rapid — 1 line</button>
         </div>
         <p class="seg-state"><span class="dot" aria-hidden="true"></span>Current length: <strong id="int-state">Normal — 3 points</strong></p>
-        <ul class="demo-answer" id="int-answer" aria-live="polite"></ul>
+        <ul class="demo-answer" id="int-answer"></ul>
         <p class="demo-status" id="int-status" role="status"></p>
         <p class="demo-note">Simulated. In the real app the shortening is automatic, driven by how fast the follow-up arrives, and <kbd>Ctrl+Alt+R</kbd> resets it.</p>
       </div>
@@ -137,11 +155,11 @@
         </article>
         <article class="card">
           <h3>Coach Mode</h3>
-          <p>Three keywords and a one-line structure, so the words stay yours. Toggle it above, or live with <kbd>Ctrl+Alt+C</kbd>.</p>
+          <p>Three keywords and a one-line structure, so the words stay yours. Toggle it above, or live with <span class="nowrap"><kbd>Ctrl+Alt+C</kbd>.</span></p>
         </article>
         <article class="card">
           <h3>What this demo is not</h3>
-          <p>It does not transcribe, listen, or know anything about you. It cannot answer for you — and it does not pretend to. <a href="features.html">How the real app works →</a></p>
+          <p>It does not transcribe, listen, or know anything about you. It cannot answer for you — and it does not pretend to. <a href="features.html" class="nowrap">How the real app works&nbsp;→</a></p>
         </article>
       </div>
     </div>
@@ -176,12 +194,9 @@
       <a href="support.html">Support &amp; FAQ</a>
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
-      <a href="demo.html">Live demo</a>
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms — draft, pending legal review</a>
       <a href="pricing.html">Billing — via Paddle</a>
     </nav>
   </div>

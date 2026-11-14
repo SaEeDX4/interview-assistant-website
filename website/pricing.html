@@ -9,11 +9,29 @@
 <meta property="og:title" content="Pricing — Interview Assistant">
 <meta property="og:description" content="Trial $0 with 30 lifetime live minutes vs Pro $19.99/month (sandbox reference) with 600 minutes per billing period. Billed by Paddle.">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<meta name="twitter:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Interview Assistant",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "inLanguage": "en",
+  "description": "Interview preparation and practice coach for Windows, with a live assist mode for interviews where assistance is permitted.",
+  "offers": [
+    {"@type": "Offer", "name": "Trial", "price": "0", "priceCurrency": "USD"},
+    {"@type": "Offer", "description": "Indicative Paddle sandbox reference price. Final live price to be confirmed before checkout opens.", "name": "Pro", "price": "19.99", "priceCurrency": "USD"}
+  ]
+}
+</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -162,24 +180,32 @@
         <li><strong>Downgrade</strong> (Pro → Trial) also goes through the Paddle portal; the exact effective date is the one shown in the portal — we do not invent a downgrade date here.</li>
         <li><strong>Refunds</strong> are handled by Paddle as Merchant of Record. Refund terms will be stated in the final Terms; the draft on this site points to Paddle for the same reason — we do not write refund rules we cannot enforce.</li>
       </ul>
-      <h3>Pricing FAQ</h3>
-      <details><summary>Is the Trial really free?</summary>
-        <p>Yes — $0, with 30 lifetime live minutes, 1 profile, and 2 preparation runs a month. No card is needed for the Trial.</p></details>
-      <details><summary>Do unused Pro minutes roll over?</summary>
-        <p>The plan catalog gives 600 live minutes per billing period. The source does not state a rollover rule, so we do not claim one — the final Terms will say so explicitly.</p></details>
-      <details><summary>Can I use Pro on two computers?</summary>
-        <p>Yes — Pro allows 2 devices; Trial allows 1.</p></details>
-      <details><summary>What if I only interview once a month?</summary>
-        <p>Then the Trial’s 30 lifetime minutes may be enough for a while. Pro is for a serious job search — several interviews a month, several roles, several profiles.</p></details>
-      <details><summary>When can I actually pay?</summary>
-        <p>Not yet. Paid checkout opens only after the Paddle live price is confirmed and the checkout flow is tested end to end. Until then, the price on this page is a sandbox reference, and the Trial is the way in.</p></details>
+      <h2>Pricing FAQ</h2>
+      <div class="acc">
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp1" id="faq-pb1">Do unused Pro minutes roll over?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-pp1" role="region" aria-labelledby="faq-pb1"><div><p>The plan catalog gives 600 live minutes per billing period. The source does not state a rollover rule, so we do not claim one — the final Terms will say so explicitly.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp2" id="faq-pb2">Can I use Pro on two computers?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-pp2" role="region" aria-labelledby="faq-pb2"><div><p>Yes — Pro allows 2 devices; Trial allows 1.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp3" id="faq-pb3">What if I only interview once a month?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-pp3" role="region" aria-labelledby="faq-pb3"><div><p>Then the Trial’s 30 lifetime minutes may be enough for a while. Pro is for a serious job search — several interviews a month, several roles, several profiles.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp4" id="faq-pb4">When can I actually pay?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-pp4" role="region" aria-labelledby="faq-pb4"><div><p>Not yet. Paid checkout opens only after the Paddle live price is confirmed and the checkout flow is tested end to end. Until then, the price on this page is a sandbox reference, and the Trial is the way in.</p></div></div>
+        </div>
+      </div>
       <p><a href="terms.html">Read the draft Terms →</a></p>
     </div>
   </section>
 
   <section class="next-band" aria-label="Next step">
     <div class="container">
-      <p><strong>Next step:</strong> Download for Windows — the Trial is included, no card needed.</p>
+      <p><strong>Next step:</strong> Download for Windows — the Trial is included.</p>
       <a class="btn btn-primary" href="download.html">Download for Windows →</a>
     </div>
   </section>
@@ -206,12 +232,9 @@
       <a href="support.html">Support &amp; FAQ</a>
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
-      <a href="demo.html">Live demo</a>
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms — draft, pending legal review</a>
       <a href="pricing.html">Billing — via Paddle</a>
     </nav>
   </div>

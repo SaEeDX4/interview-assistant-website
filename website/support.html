@@ -9,11 +9,29 @@
 <meta property="og:title" content="Support & FAQ — Interview Assistant">
 <meta property="og:description" content="Troubleshooting for audio, sign-in and minutes, an expanded FAQ, and the privacy-request runbook summary.">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<meta name="twitter:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Interview Assistant",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "inLanguage": "en",
+  "description": "Interview preparation and practice coach for Windows, with a live assist mode for interviews where assistance is permitted.",
+  "offers": [
+    {"@type": "Offer", "name": "Trial", "price": "0", "priceCurrency": "USD"},
+    {"@type": "Offer", "description": "Indicative Paddle sandbox reference price. Final live price to be confirmed before checkout opens.", "name": "Pro", "price": "19.99", "priceCurrency": "USD"}
+  ]
+}
+</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -85,28 +103,8 @@
       <h2>Frequently asked questions</h2>
       <div class="acc">
         <div class="acc-item">
-          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p1" id="faq-b1">Is it allowed to use Interview Assistant in an interview?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-p1" role="region" aria-labelledby="faq-b1"><div><p>Only where you are allowed to. It is a preparation and practice coach with a live assist mode for interviews where assistance is permitted. Always check the interview’s rules — and the employer’s — first. The app is a visible window; it never hides.</p></div></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p2" id="faq-b2">What does it record?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-p2" role="region" aria-labelledby="faq-b2"><div><p>It does not record your microphone, and it does not store audio. It listens to the interviewer’s audio from your headset to transcribe questions live. Transcripts and reports stay on your PC by default.</p></div></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p3" id="faq-b3">Does it work in my language?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-p3" role="region" aria-labelledby="faq-b3"><div><p>It supports 10 languages, including Persian and Arabic with proper right-to-left display. Answers follow the interviewer’s language. Language support is as listed in the app; live quality is being validated language by language.</p></div></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p4" id="faq-b4">What does it cost?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-p4" role="region" aria-labelledby="faq-b4"><div><p>The Trial gives you 30 lifetime live minutes, 1 profile, and 2 preparation runs a month. Pro is USD 19.99 a month (sandbox reference price — final live price to be confirmed) for 600 live minutes per billing period, 3 profiles, and 20 preparation runs. Billed by Paddle — no card details ever touch the app.</p></div></div>
-        </div>
-        <div class="acc-item">
           <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p5" id="faq-b5">What happens if the interviewer interrupts me?<span class="chev" aria-hidden="true">＋</span></button>
           <div class="acc-panel" id="faq-p5" role="region" aria-labelledby="faq-b5"><div><p>The next answer gets shorter automatically (Concise, then Rapid), so you can keep up. You can reset it with Ctrl+Alt+R. Try it in the <a href="demo.html">interruption simulator</a>.</p></div></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p6" id="faq-b6">What is Coach Mode?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-p6" role="region" aria-labelledby="faq-b6"><div><p>Instead of full bullets, Coach Mode shows three keywords and a one-line structure, so you speak in your own words. Toggle it live with Ctrl+Alt+C.</p></div></div>
         </div>
         <div class="acc-item">
           <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-p7" id="faq-b7">What do I get after the interview?<span class="chev" aria-hidden="true">＋</span></button>
@@ -135,7 +133,15 @@
       </div>
 
       <h2>Privacy-request runbook (summary)</h2>
-      <p>When the support channel opens, a privacy request (export or erasure) will follow these steps, from the product’s own runbook: <strong>1.</strong> you submit the request through the support channel; <strong>2.</strong> your identity is verified, so nobody can request your data; <strong>3.</strong> the request is traced across the local workspace, the backend, and Paddle, field by field; <strong>4.</strong> export or erasure is carried out, with Paddle invoices explicitly outside app deletion; <strong>5.</strong> you receive a scoped confirmation — what was done, and what is still pending if anything is. A partial removal is never presented as a complete one.</p>
+      <p>When the support channel opens, a privacy request (export or erasure) will follow these steps, from the product’s own runbook:</p>
+      <ol class="numbered">
+        <li><strong>You submit the request</strong> through the support channel.</li>
+        <li><strong>Your identity is verified</strong>, so nobody can request your data.</li>
+        <li><strong>The request is traced</strong> across the local workspace, the backend, and Paddle, field by field.</li>
+        <li><strong>Export or erasure is carried out</strong>, with Paddle invoices explicitly outside app deletion.</li>
+        <li><strong>You receive a scoped confirmation</strong> — what was done, and what is still pending if anything is.</li>
+      </ol>
+      <p>A partial removal is never presented as a complete one.</p>
       <p><a class="btn btn-primary" href="demo.html">Try the demo</a>
       <a class="btn btn-secondary" href="download.html">Download for Windows</a></p>
     </div>
@@ -143,8 +149,8 @@
 
   <section class="next-band" aria-label="Next step">
     <div class="container">
-      <p><strong>Next step:</strong> Ready to try it? Download for Windows — Trial included.</p>
-      <a class="btn btn-primary" href="download.html">Download for Windows →</a>
+      <p><strong>Next step:</strong> Ready to try it? Ten sample questions, Answer and Coach modes.</p>
+      <a class="btn btn-primary" href="demo.html">Open the live demo →</a>
     </div>
   </section>
 
@@ -170,12 +176,9 @@
       <a href="support.html">Support &amp; FAQ</a>
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
-      <a href="demo.html">Live demo</a>
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms — draft, pending legal review</a>
       <a href="pricing.html">Billing — via Paddle</a>
     </nav>
   </div>

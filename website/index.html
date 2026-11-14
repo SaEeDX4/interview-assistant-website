@@ -14,6 +14,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
+<meta name="twitter:image" content="https://saeedx4.github.io/interview-assistant-website/og-image.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -80,7 +83,6 @@
         <span class="glow glow-teal" aria-hidden="true"></span>
         <div class="app-window" role="img" aria-label="Preview of the Interview Assistant app window: an interviewer question with three short answer points appearing one at a time, plus a Coach Mode preview.">
           <div class="app-window-bar">
-            <span class="app-dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="app-window-title">Interview Assistant</span>
             <span class="app-controls" aria-hidden="true"><i>–</i><i>▢</i><i>×</i></span>
           </div>
@@ -152,13 +154,13 @@
         </div>
       </div>
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong>You just saw 3 points — now try it with your own resume.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">You just saw 3 points — now try it with your own resume.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>
           <li><span aria-hidden="true">3</span> Download</li>
         </ol>
-        <p class="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
+        <p class="demo-next-text" id="demo-next-text">The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.</p>
         <p class="cta-row">
           <a class="btn btn-primary" href="download.html">Download for Windows — Trial included</a>
           <a class="btn btn-secondary" href="pricing.html">See pricing</a>
@@ -167,7 +169,7 @@
     </div>
   </section>
 
-  <!-- FEATURES -->
+  <!-- FEATURES TEASER -->
   <section class="section" id="features" aria-labelledby="features-title">
     <div class="container">
       <p class="eyebrow">What it does</p>
@@ -190,201 +192,50 @@
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div>
           <h3>Coach Mode</h3>
           <p>Prefer a nudge over a script? Coach Mode shows three keywords and a
-            one-line structure, so the words stay yours. Toggle it live with Ctrl+Alt+C.</p>
-        </article>
-        <article class="card">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg></div>
-          <h3>Ten languages, including RTL</h3>
-          <p>Answers follow the interviewer’s language. Arabic and Persian render
-            right-to-left, properly — not as an afterthought.</p>
-        </article>
-        <article class="card">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></div>
-          <h3>Adapts when you’re interrupted</h3>
-          <p>A fast follow-up shortens the next answer automatically — Concise, then
-            Rapid — so you can keep up. Reset it with one hotkey.</p>
-        </article>
-        <article class="card">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg></div>
-          <h3>An honest report</h3>
-          <p>Afterwards, see the questions asked and the suggestions shown. No scores,
-            no hiring predictions — just what happened, so you can prepare better
-            next time.</p>
+            one-line structure, so the words stay yours. Toggle it live with <span class="nowrap"><kbd>Ctrl+Alt+C</kbd>.</span></p>
         </article>
       </div>
+      <p class="cta-row"><a class="btn btn-secondary" href="features.html">See all features →</a></p>
     </div>
   </section>
 
-  <!-- EXPLORE -->
-  <section class="section section-soft" aria-labelledby="explore-title">
+  <!-- HONEST STRIP -->
+  <section class="honest-strip" aria-label="Honest by design">
     <div class="container">
-      <p class="eyebrow">Explore the site</p>
-      <h2 id="explore-title">Go deeper, page by page</h2>
-      <div class="grid grid-3">
-        <article class="card">
-          <h3><a href="features.html">Features in depth →</a></h3>
-          <p>The 15-stage preparation pipeline, live answers, Coach Mode, languages, and the honest report — with the evidence behind each claim.</p>
-        </article>
-        <article class="card">
-          <h3><a href="how-it-works.html">How it works →</a></h3>
-          <p>Profile → Prepare → Live → Report, step by step, with hotkeys and the full onboarding journey.</p>
-        </article>
-        <article class="card">
-          <h3><a href="demo.html">Live demo →</a></h3>
-          <p>The full simulated demo: ten sample questions, Answer and Coach modes, and an interruption simulator.</p>
-        </article>
-        <article class="card">
-          <h3><a href="pricing.html">Pricing →</a></h3>
-          <p>Trial vs Pro, side by side, with live minutes explained and billing via Paddle.</p>
-        </article>
-        <article class="card">
-          <h3><a href="platforms.html">Platforms &amp; roadmap →</a></h3>
-          <p>Windows now; Android, iOS and Mac as honest, phased research — no dates, no promises we cannot keep.</p>
-        </article>
-        <article class="card">
-          <h3><a href="privacy.html">Privacy &amp; ethics →</a></h3>
-          <p>What is recorded, what is never recorded, and how your data is kept, exported, and deleted.</p>
-        </article>
-      </div>
+      <p><strong>Honest by design.</strong> A visible window — it never hides, never records your microphone, never stores audio. Answers in 10 languages, including Persian and Arabic, rendered right-to-left. <a href="privacy.html">How we handle privacy →</a></p>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="section section-soft" id="how" aria-labelledby="how-title">
-    <div class="container">
-      <p class="eyebrow">How it works</p>
-      <h2 id="how-title">Profile → Prepare → Live → Report</h2>
-      <ol class="steps">
-        <li>
-          <span class="step-num" aria-hidden="true">01</span>
-          <h3>Profile</h3>
-          <p>Import your resume. Confirm the facts.</p>
-        </li>
-        <li>
-          <span class="step-num" aria-hidden="true">02</span>
-          <h3>Prepare</h3>
-          <p>Add the role and job description. Get your question bank.</p>
-        </li>
-        <li>
-          <span class="step-num" aria-hidden="true">03</span>
-          <h3>Live</h3>
-          <p>Start listening. Three points appear as questions end.</p>
-        </li>
-        <li>
-          <span class="step-num" aria-hidden="true">04</span>
-          <h3>Report</h3>
-          <p>Stop, review, and prepare better next time.</p>
-        </li>
-      </ol>
-      <p class="hotkeys"><span class="hotkeys-label">In the app:</span>
-        <kbd>Ctrl+Alt+L</kbd> start / pause ·
-        <kbd>Ctrl+Alt+C</kbd> Answer / Coach ·
-        <kbd>Ctrl+Alt+R</kbd> reset ·
-        <kbd>Ctrl+Alt+Space</kbd> show / hide</p>
-    </div>
-  </section>
-
-  <!-- LANGUAGES -->
-  <section class="languages" aria-label="Languages">
-    <div class="container">
-      <p><strong>10 languages.</strong> Answers follow the interviewer —
-        including Arabic and Persian, rendered right-to-left. Language support
-        is as listed in the app; live quality is being validated language
-        by language.</p>
-    </div>
-  </section>
-
-  <!-- PRICING -->
+  <!-- PRICING TEASER -->
   <section class="section" id="pricing" aria-labelledby="pricing-title">
     <div class="container">
       <p class="eyebrow">Pricing</p>
       <h2 id="pricing-title">Start free. Pay only when it earns its keep.</h2>
       <p class="section-intro">Minutes are live interview minutes — the time you spend in a live
         session. Preparation, practise, and reports don’t use live minutes.</p>
-      <div class="grid grid-2 pricing">
-        <article class="card price-card">
-          <h3>Trial</h3>
-          <p class="price"><span class="price-amount">$0</span></p>
-          <p class="price-note">Free — to try it properly</p>
-          <ul class="check-list">
-            <li><strong>30</strong> lifetime live minutes</li>
-            <li><strong>1</strong> candidate profile</li>
-            <li><strong>2</strong> preparation runs / month</li>
-            <li><strong>1</strong> device</li>
-            <li>Reports kept <strong>14 days</strong></li>
-            <li>Coach Mode included</li>
-          </ul>
-          <a class="btn btn-secondary" href="download.html">Download for Windows</a>
-        </article>
-        <article class="card price-card price-featured">
-          <p class="pill pill-accent">Most popular</p>
-          <h3>Pro</h3>
-          <p class="price"><span class="price-amount">$19.99</span><span class="price-per"> / month</span></p>
-          <p class="price-note">For a serious job search — sandbox reference price, see note below</p>
-          <ul class="check-list">
-            <li><strong>600</strong> live minutes per billing period</li>
-            <li><strong>3</strong> candidate profiles</li>
-            <li><strong>20</strong> preparation runs / month</li>
-            <li><strong>2</strong> devices</li>
-            <li>Reports kept <strong>365 days</strong></li>
-            <li>Coach Mode included</li>
-          </ul>
-          <a class="btn btn-primary" href="download.html">Download for Windows</a>
-        </article>
+      <div class="pricing-teaser">
+        <div class="teaser-plans">
+          <div class="teaser-plan">
+            <h3>Trial</h3>
+            <p class="price"><span class="price-amount">$0</span></p>
+            <p><strong>30</strong> lifetime live minutes · <strong>1</strong> profile · <strong>2</strong> preparation runs / month · <strong>1</strong> device</p>
+          </div>
+          <div class="teaser-plan">
+            <p class="pill pill-accent">Recommended</p>
+            <h3>Pro</h3>
+            <p class="price"><span class="price-amount">$19.99</span><span class="price-per"> / month</span></p>
+            <p><strong>600</strong> live minutes per billing period · <strong>3</strong> profiles · <strong>20</strong> preparation runs / month · <strong>2</strong> devices</p>
+          </div>
+        </div>
+        <p class="cta-row">
+          <a class="btn btn-primary" href="pricing.html">See full pricing →</a>
+          <a class="btn btn-secondary" href="demo.html">Try the demo first</a>
+        </p>
+        <p class="fineprint">Prices in USD. The Pro price shown is a Paddle sandbox
+          reference — the final live price will be confirmed before paid checkout
+          opens, and there is no checkout on this page yet. Billed by Paddle, the
+          Merchant of Record. Your card details never touch the app.</p>
       </div>
-      <p class="fineprint">Prices in USD. The Pro price shown is a Paddle sandbox
-        reference — the final live price will be confirmed before paid checkout
-        opens, and there is no checkout on this page yet. Billed by Paddle, the
-        Merchant of Record. Cancel anytime — you keep Pro until the end of your
-        billing period. Your card details never touch the app.</p>
-    </div>
-  </section>
-
-  <!-- DOWNLOAD -->
-  <section class="section section-soft" id="download" aria-labelledby="download-title">
-    <div class="container narrow">
-      <p class="eyebrow">Download</p>
-      <h2 id="download-title">Get Interview Assistant for Windows</h2>
-      <p>Windows 10/11, 64-bit. Per-user install — no admin needed. Updates are
-        delta-based and never install during an interview.</p>
-      <p class="cta-row">
-        <button class="btn btn-primary" type="button" id="dl-installer">Download the installer</button>
-        <button class="btn btn-secondary" type="button" id="dl-portable">Portable ZIP</button>
-      </p>
-      <p class="download-note" id="download-note" role="status">Download links go live with the
-        first signed release — this draft has no installer yet.</p>
-      <p class="download-note">Signed installer + SHA-256: not yet published.</p>
-      <h3 class="h3-small">You’ll need</h3>
-      <ul class="check-list">
-        <li>Windows 10 or 11, 64-bit</li>
-        <li>A headset — the app listens to the interviewer’s audio from your headset</li>
-        <li>An internet connection for live transcription and AI answers
-          (prepared answers keep working offline with a cached entitlement)</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ANDROID -->
-  <section class="section" id="android" aria-labelledby="android-title">
-    <div class="container narrow">
-      <p class="eyebrow">Android</p>
-      <h2 id="android-title">Android is planned.</h2>
-      <p>Preparation and practise on the go — the same question bank, the same
-        honest report — as a companion first. Whether full live assist is
-        possible on Android is still being tested, because Android cannot use
-        the Windows audio capture the desktop app relies on. iOS and a dedicated
-        Mac app are planned for the future too — roadmap only, no dates or
-        download links yet. Leave your email and we’ll tell you when Android
-        is ready — and only then.</p>
-      <form id="notify-form" class="notify-form">
-        <label class="visually-hidden" for="notify-email">Email address</label>
-        <input id="notify-email" type="email" required autocomplete="email"
-          placeholder="you@example.com">
-        <button class="btn btn-primary" type="submit">Notify me</button>
-      </form>
-      <p class="notify-note" id="notify-note" role="status"></p>
-      <p class="notify-note">This is a demo form in the draft — nothing is sent yet.
-        The real waitlist will name its processor and privacy policy at launch.</p>
     </div>
   </section>
 
@@ -393,91 +244,57 @@
     <div class="container narrow">
       <p class="eyebrow">FAQ</p>
       <h2 id="faq-title">The hard questions, answered plainly</h2>
-      <details>
-        <summary>Is it allowed to use Interview Assistant in an interview?</summary>
-        <p>Only where you are allowed to. It is a preparation and practice coach
-          with a live assist mode for interviews where assistance is permitted.
-          Always check the interview’s rules — and the employer’s — first. The
-          app is a visible window; it never hides.</p>
-      </details>
-      <details>
-        <summary>What does it record?</summary>
-        <p>It does not record your microphone, and it does not store audio. It
-          listens to the interviewer’s audio from your headset to transcribe
-          questions live. Transcripts and reports stay on your PC by default.</p>
-      </details>
-      <details>
-        <summary>Does it work in my language?</summary>
-        <p>It supports 10 languages, including Persian and Arabic with proper
-          right-to-left display. Answers follow the interviewer’s language.
-          Language support is as listed in the app; live quality is being
-          validated language by language.</p>
-      </details>
-      <details>
-        <summary>Does it work offline?</summary>
-        <p>Live transcription and AI answers need an internet connection.
-          Prepared answers keep working offline with a cached entitlement,
-          and your reports stay on your PC.</p>
-      </details>
-      <details>
-        <summary>How do I cancel Pro?</summary>
-        <p>Cancel anytime — you keep Pro until the end of your billing period.
-          Paid checkout is not open yet; the Pro price shown is a Paddle
-          sandbox reference, and the final live price will be confirmed
-          before checkout opens.</p>
-      </details>
-      <details>
-        <summary>What does it cost?</summary>
-        <p>The Trial gives you 30 lifetime live minutes, 1 profile, and 2
-          preparation runs a month. Pro is USD 19.99 a month for 600 live
-          minutes per billing period, 3 profiles, and 20 preparation runs.
-          Billed by Paddle — no card details ever touch the app.</p>
-      </details>
-      <details>
-        <summary>What happens if the interviewer interrupts me?</summary>
-        <p>The next answer gets shorter automatically (Concise, then Rapid), so
-          you can keep up. You can reset it with Ctrl+Alt+R.</p>
-      </details>
-      <details>
-        <summary>What is Coach Mode?</summary>
-        <p>Instead of full bullets, Coach Mode shows three keywords and a
-          one-line structure, so you speak in your own words. Toggle it live
-          with Ctrl+Alt+C.</p>
-      </details>
-      <details>
-        <summary>What do I get after the interview?</summary>
-        <p>An honest report: the questions asked and the suggestions shown,
-          plus what to prepare next time. No scores, no hiring predictions.</p>
-      </details>
+      <div class="acc">
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-hp1" id="faq-hb1">Is it allowed to use Interview Assistant in an interview?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-hp1" role="region" aria-labelledby="faq-hb1"><div><p>Only where you are allowed to. It is a preparation and practice coach
+            with a live assist mode for interviews where assistance is permitted.
+            Always check the interview’s rules — and the employer’s — first. The
+            app is a visible window; it never hides.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-hp2" id="faq-hb2">What does it record?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-hp2" role="region" aria-labelledby="faq-hb2"><div><p>It does not record your microphone, and it does not store audio. It
+            listens to the interviewer’s audio from your headset to transcribe
+            questions live. Transcripts and reports stay on your PC by default.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-hp3" id="faq-hb3">Does it work in my language?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-hp3" role="region" aria-labelledby="faq-hb3"><div><p>It supports 10 languages, including Persian and Arabic with proper
+            right-to-left display. Answers follow the interviewer’s language.
+            Language support is as listed in the app; live quality is being
+            validated language by language.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-hp4" id="faq-hb4">What does it cost?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-hp4" role="region" aria-labelledby="faq-hb4"><div><p>The Trial gives you 30 lifetime live minutes, 1 profile, and 2
+            preparation runs a month. Pro is USD 19.99 a month for 600 live
+            minutes per billing period, 3 profiles, and 20 preparation runs.
+            Billed by Paddle — no card details ever touch the app.</p></div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-hp5" id="faq-hb5">What is Coach Mode?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-hp5" role="region" aria-labelledby="faq-hb5"><div><p>Instead of full bullets, Coach Mode shows three keywords and a
+            one-line structure, so you speak in your own words. Toggle it live
+            with Ctrl+Alt+C.</p></div></div>
+        </div>
+      </div>
+      <p><a href="support.html">More questions — see Support &amp; FAQ →</a></p>
     </div>
   </section>
 
-  <!-- ETHICS -->
-  <section class="section" id="ethics" aria-labelledby="ethics-title">
-    <div class="container">
-      <p class="eyebrow">Ethics &amp; privacy</p>
-      <h2 id="ethics-title">Use only where you are allowed to.</h2>
-      <div class="grid grid-3">
-        <article class="card">
-          <h3>Visible, always</h3>
-          <p>Interview Assistant is a normal, visible window. It never hides,
-            never evades screen capture, and never pretends to be something else.</p>
-        </article>
-        <article class="card">
-          <h3>Your audio is not stored</h3>
-          <p>It does not record your microphone. Audio is transcribed live and
-            never written to disk. Transcripts and reports stay on your PC
-            by default.</p>
-        </article>
-        <article class="card">
-          <h3>Your facts are yours</h3>
-          <p>Only facts you confirmed are ever presented as your experience.
-            Your workspace is encrypted on your PC; you can export or delete
-            it. Payment data lives with Paddle only.</p>
-        </article>
-      </div>
+  <!-- FINAL CTA -->
+  <section class="section cta-final" aria-labelledby="cta-title">
+    <div class="container narrow">
+      <h2 id="cta-title">Get Interview Assistant for Windows</h2>
+      <p class="section-intro">Windows 10/11, 64-bit. Free Trial — 30 live minutes. The signed installer is not published yet; the download page says so plainly.</p>
+      <p class="cta-row">
+        <a class="btn btn-primary" href="download.html">Download for Windows</a>
+        <a class="btn btn-secondary" href="demo.html">Try the live demo</a>
+      </p>
     </div>
   </section>
+
   <section class="next-band" aria-label="Next step">
     <div class="container">
       <p><strong>Next step:</strong> Try the full demo — ten sample questions, Answer and Coach modes.</p>
@@ -508,12 +325,9 @@
       <a href="support.html">Support &amp; FAQ</a>
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
-      <a href="demo.html">Live demo</a>
     </nav>
     <nav aria-label="Legal">
       <h3>Legal</h3>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms — draft, pending legal review</a>
       <a href="pricing.html">Billing — via Paddle</a>
     </nav>
   </div>

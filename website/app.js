@@ -102,6 +102,7 @@
     fa: {
       q: "درباره خودتان بگویید.",
       rtl: true,
+      lang: "fa",
       answer: [
         "با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.",
         "بعد یک مثال واقعی از تجربه‌ام می‌آورم، نه حرف کلی.",
@@ -115,6 +116,7 @@
     ar: {
       q: "حدّثني عن نفسك.",
       rtl: true,
+      lang: "ar",
       answer: [
         "أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.",
         "ثم أذكر مثالاً حقيقياً من تجربتي، لا كلاماً عاماً.",
@@ -191,9 +193,22 @@
   function setStatus(text) { statusEl.textContent = text; }
 
   // Step 2 — reveal the demo next-step card once an answer has completed.
+  // Copy is mode-aware: Coach mode shows keywords, not 3 points.
   var nextEl = document.getElementById("demo-next");
   function showDemoNext() {
-    if (!nextEl || !nextEl.hidden) { return; }
+    if (!nextEl) { return; }
+    var titleEl = document.getElementById("demo-next-title");
+    var textEl = document.getElementById("demo-next-text");
+    if (titleEl) {
+      titleEl.textContent = mode === "coach"
+        ? "You just saw the Coach keywords — now try it with your own resume."
+        : "You just saw 3 points — now try it with your own resume.";
+    }
+    if (textEl) {
+      textEl.textContent = mode === "coach"
+        ? "The demo used sample answers. In the real app, the same Coach keywords and structure are built from your confirmed resume facts and your prepared question bank."
+        : "The demo used sample answers. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank.";
+    }
     nextEl.hidden = false;
   }
 
@@ -220,11 +235,11 @@
   // Answer mode: exactly 3 bullets, inserted one at a time into the DOM.
   // At t=0/400/800 ms after render starts, visible counts are 1/2/3.
   // Reduced motion: all three at once, nothing hidden.
-  function renderBullets(items, rtl, myRun) {
+  function renderBullets(items, rtl, lang, myRun) {
     answerEl.innerHTML = "";
     answerEl.classList.remove("coach");
     answerEl.dir = rtl ? "rtl" : "ltr";
-    answerEl.lang = rtl ? "fa" : "en";
+    answerEl.lang = lang || (rtl ? "fa" : "en");
     answerEl.setAttribute("aria-busy", "true");
     if (isReducedMotion()) {
       items.forEach(function (text, i) {
@@ -247,11 +262,11 @@
   }
 
   // Coach mode: exactly 3 keywords, then 1 structure line, staged.
-  function renderCoach(coach, rtl, myRun) {
+  function renderCoach(coach, rtl, lang, myRun) {
     answerEl.innerHTML = "";
     answerEl.classList.add("coach");
     answerEl.dir = rtl ? "rtl" : "ltr";
-    answerEl.lang = rtl ? "fa" : "en";
+    answerEl.lang = lang || (rtl ? "fa" : "en");
     answerEl.setAttribute("aria-busy", "true");
 
     var keys = document.createElement("li");
@@ -301,9 +316,20 @@
     currentQuestion = questionText;
     questionEl.textContent = "“" + questionText + "”";
     questionEl.dir = sample && sample.rtl ? "rtl" : "ltr";
-    questionEl.lang = sample && sample.rtl ? "fa" : "en";
+    questionEl.lang = sample && sample.lang ? sample.lang : "en";
     answerEl.innerHTML = "";
     answerEl.setAttribute("aria-busy", "true");
+    // Lively staging state: three skeleton lines so the answer area never
+    // looks dead while the first point is prepared. Reduced motion skips
+    // the skeleton (the full answer renders immediately instead).
+    if (!isReducedMotion()) {
+      for (var s = 0; s < 3; s++) {
+        var sk = document.createElement("li");
+        sk.className = "skel";
+        sk.setAttribute("aria-hidden", "true");
+        answerEl.appendChild(sk);
+      }
+    }
     if (sample) {
       sampleTagEl.textContent = "Illustrative sample — in the real app, points come from your confirmed facts.";
       sampleTagEl.hidden = false;
@@ -311,15 +337,16 @@
       sampleTagEl.hidden = true;
     }
     setStatus("Preparing your points…");
-    var delay = isReducedMotion() ? 0 : 400;
+    var lang = sample && sample.lang ? sample.lang : "en";
+    var delay = isReducedMotion() ? 0 : 120;
     timers.push(setTimeout(function () {
       if (myRun !== runId) { return; }
       if (mode === "coach") {
         var coach = sample ? sample.coach : FALLBACK.coach;
-        renderCoach(coach, !!(sample && sample.rtl), myRun);
+        renderCoach(coach, !!(sample && sample.rtl), lang, myRun);
       } else {
         var items = sample ? sample.answer : FALLBACK.answer;
-        renderBullets(items, !!(sample && sample.rtl), myRun);
+        renderBullets(items, !!(sample && sample.rtl), lang, myRun);
       }
       if (!sample) {
         // Generic structure only — announced once, with the render.
@@ -376,39 +403,6 @@
     inputEl.removeAttribute("aria-invalid");
   });
 
-  var tryDemoLink = document.getElementById("try-demo-link");
-  if (tryDemoLink) {
-    tryDemoLink.addEventListener("click", function () {
-      setTimeout(function () { inputEl.focus(); }, 400);
-    });
-  }
-
-  // Download buttons (draft): no installer yet — say so, don't 404.
-  var note = document.getElementById("download-note");
-  ["dl-installer", "dl-portable"].forEach(function (id) {
-    var btn = document.getElementById(id);
-    if (btn) {
-      btn.addEventListener("click", function () {
-        if (note) {
-          note.textContent = "Downloads open with the first signed release — this draft has no installer yet. Check back soon.";
-          if (note.focus) { note.focus(); }
-        }
-      });
-    }
-  });
-
-  // Notify-me form (draft): no backend — say so, don't silently discard.
-  var notifyForm = document.getElementById("notify-form");
-  var notifyNote = document.getElementById("notify-note");
-  if (notifyForm && notifyNote) {
-    notifyForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var email = document.getElementById("notify-email").value.trim();
-      if (!email) { return; }
-      notifyNote.textContent = "Thanks — this is a demo form, so nothing was sent. The real waitlist opens at launch.";
-    });
-  }
-
   // Interruption simulator (demo.html only): same follow-up question at
   // three lengths — Normal (3 points), Concise (2 short points), Rapid
   // (1 line). Simulated; in the real app the shortening is automatic.
@@ -464,30 +458,55 @@
     showInt("normal", "Normal (3 points)");
   }
 
-  // Mobile nav.
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.getElementById("site-nav");
-  if (toggle && nav) {
-    toggle.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", String(open));
-    });
-    nav.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-      });
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-      }
-    });
-  }
-
   // Initial state: default sample, bullets staged on load.
   showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);
+})();
+
+/* Download buttons (draft): no installer yet — say so, don't 404.
+   Own IIFE: these buttons live on download.html, which has no demo, so
+   they must not sit behind the demo guard above. (The buttons are
+   currently disabled, so this never fires — it stays for the first
+   signed release, when they are enabled.) */
+(function () {
+  "use strict";
+  var note = document.getElementById("download-note");
+  ["dl-installer", "dl-portable"].forEach(function (id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener("click", function () {
+        if (note) {
+          note.textContent = "Downloads open with the first signed release — this draft has no installer yet. Check back soon.";
+          if (note.focus) { note.focus(); }
+        }
+      });
+    }
+  });
+})();
+
+/* Mobile nav. Own IIFE (Step 4 fix): this used to live inside the demo
+   IIFE after its early-return guard, so the nav toggle was dead on every
+   page without a demo. It must bind on all 10 pages. */
+(function () {
+  "use strict";
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("site-nav");
+  if (!toggle || !nav) { return; }
+  toggle.addEventListener("click", function () {
+    var open = nav.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+  nav.querySelectorAll("a").forEach(function (a) {
+    a.addEventListener("click", function () {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
 })();
 
 /* Step 1 — hero app-window preview animator (visual only; the real
@@ -563,6 +582,20 @@
       cycle();
     }
   });
+
+  // Pause when scrolled off-screen: the mockup timer used to keep running
+  // whenever the hero was out of view (only tab-visibility paused it).
+  // IntersectionObserver pauses it and resumes the cycle on return.
+  var visual = list.closest ? list.closest(".hero-visual") : null;
+  if (visual && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        cycle();
+      } else {
+        clearTimers();
+      }
+    }, { threshold: 0 }).observe(visual);
+  }
 
   cycle();
 })();
@@ -783,8 +816,19 @@
       update();
     }, { threshold: 0.05 }).observe(downloadEl);
   }
+  // Never cover the footer: hide the bar while the footer is in view.
+  // (The body bottom-padding reserve alone was not enough when the bar
+  // wrapped to two lines at narrower widths.)
+  var footerEl = document.querySelector(".site-footer");
+  var footerInView = false;
+  if (footerEl && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      footerInView = entries[0].isIntersecting;
+      update();
+    }, { threshold: 0.05 }).observe(footerEl);
+  }
   function update() {
-    var show = !dismissed && window.scrollY > 560 && !downloadInView;
+    var show = !dismissed && window.scrollY > 560 && !downloadInView && !footerInView;
     bar.hidden = !show;
     document.body.classList.toggle("cta-visible", show);
   }
