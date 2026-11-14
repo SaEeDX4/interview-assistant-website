@@ -47,6 +47,29 @@ h1, h2, h3 { line-height: 1.12; letter-spacing: -.02em; margin: 0 0 12px; }
 h1 { font-size: clamp(44px, 6vw, 72px); font-weight: 800; letter-spacing: -.03em; line-height: 1.04; }
 h2 { font-size: clamp(30px, 3.6vw, 40px); font-weight: 750; letter-spacing: -.02em; }
 h3 { font-size: 22px; font-weight: 650; line-height: 1.3; }
+/* Step 8 — section rhythm. A heading that starts a new block inside a
+   section needs real air above it. Base headings carry no top margin, so
+   an h2 after a grid, card row or list sat flush against it — on the
+   download page "You'll need" touched the Portable ZIP card (about 7px).
+   Apple / Google / Microsoft rhythm: a major subheading gets ~48px above
+   it on desktop, ~40px on phones; a minor subheading gets ~28px. The rule
+   only touches headings that are direct children of a section container,
+   so headings inside cards, timelines, the demo stage and the terms doc
+   keep their own spacing. */
+.section > .container:not(.doc) > h2 { margin-top: 48px; }
+.section > .container:not(.doc) > h3 { margin-top: 28px; }
+/* Same treatment one level deeper: the how-it-works two-column layout puts
+   its "Hotkeys" h3 inside a plain column div, not directly under the
+   container. Features' two-column right sides are cards, whose h3s are
+   first children of the card and are not matched by this selector. */
+.section > .container:not(.doc) > .two-col > div > h3 { margin-top: 28px; }
+.section > .container:not(.doc) > h2:first-child,
+.section > .container:not(.doc) > h3:first-child,
+.section > .container:not(.doc) > .eyebrow + h2,
+.section > .container:not(.doc) > .eyebrow + h3 { margin-top: 0; }
+@media (max-width: 640px) {
+  .section > .container:not(.doc) > h2 { margin-top: 40px; }
+}
 p { margin: 0 0 16px; }
 .muted { color: var(--muted); }
 
