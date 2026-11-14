@@ -10,6 +10,9 @@
 <meta property="og:description" content="A 50–150 question bank built from your resume and the job description. Three short, speakable points live — built only from facts you confirmed.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script type="application/ld+json">
 {
@@ -71,7 +74,46 @@
         <p class="trust-line">Free Trial — 30 live minutes. Use only where you are allowed to.</p>
       </div>
 
-      <!-- LIVE DEMO (simulated) -->
+      <!-- APP PREVIEW (animated visual; the interactive demo is below) -->
+      <div class="hero-visual">
+        <span class="glow glow-violet" aria-hidden="true"></span>
+        <span class="glow glow-teal" aria-hidden="true"></span>
+        <div class="app-window" role="img" aria-label="Preview of the Interview Assistant app window: an interviewer question with three short answer points appearing one at a time, plus a Coach Mode preview.">
+          <div class="app-window-bar">
+            <span class="app-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="app-window-title">Interview Assistant</span>
+            <span class="app-controls" aria-hidden="true"><i>–</i><i>▢</i><i>×</i></span>
+          </div>
+          <div class="app-window-body" aria-hidden="true">
+            <div class="app-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <p class="app-label">Interviewer · Listening</p>
+            <p class="app-question">“Tell me about yourself.”</p>
+            <ul class="app-answer" id="mock-answer"></ul>
+            <p class="app-status" id="mock-status"></p>
+            <p class="app-coach-mini"><strong>Coach Mode</strong> — EXPERIENCE · OUTCOME · FIT · Present role → one result → why this role</p>
+          </div>
+        </div>
+        <ul class="float-chips" aria-hidden="true">
+          <li>50–150 question bank</li>
+          <li>10 languages</li>
+          <li>30-min free trial</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+      <p class="ethics-strip">A visible window. It never hides, never records your microphone,
+        and never stores audio. <a href="privacy.html">How we handle privacy →</a></p>
+    </div>
+  </section>
+
+  <!-- LIVE DEMO (simulated, interactive) -->
+  <section class="section demo-section" id="demo-section" aria-labelledby="demo-section-title">
+    <div class="container">
+      <div class="demo-section-head">
+        <p class="eyebrow">Try it live</p>
+        <h2 id="demo-section-title">See three points appear, one at a time</h2>
+        <p>Pick a question or type your own. This is the same simulated demo — no audio, no microphone, no recording.</p>
+      </div>
       <div class="demo" id="demo" aria-labelledby="demo-title">
         <div class="demo-head">
           <span class="demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -110,10 +152,6 @@
         </div>
       </div>
     </div>
-    <div class="container">
-      <p class="ethics-strip">A visible window. It never hides, never records your microphone,
-        and never stores audio. <a href="privacy.html">How we handle privacy →</a></p>
-    </div>
   </section>
 
   <!-- FEATURES -->
@@ -123,38 +161,38 @@
       <h2 id="features-title">Prepared before. Steady during. Honest after.</h2>
       <div class="grid grid-3">
         <article class="card">
-          <div class="icon" aria-hidden="true">▤</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></div>
           <h3>Prepare from your resume</h3>
           <p>Import your resume and the job description. Review every extracted fact —
             only facts you confirm are ever used. A 50–150 question bank is built for
             that interview.</p>
         </article>
         <article class="card">
-          <div class="icon" aria-hidden="true">◉</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.6A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg></div>
           <h3>Three points, live</h3>
           <p>When a question ends, three short, speakable bullets appear one at a time.
             Short enough to say — not to read out.</p>
         </article>
         <article class="card">
-          <div class="icon" aria-hidden="true">✦</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div>
           <h3>Coach Mode</h3>
           <p>Prefer a nudge over a script? Coach Mode shows three keywords and a
             one-line structure, so the words stay yours. Toggle it live with Ctrl+Alt+C.</p>
         </article>
         <article class="card">
-          <div class="icon" aria-hidden="true">🌐</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg></div>
           <h3>Ten languages, including RTL</h3>
           <p>Answers follow the interviewer’s language. Arabic and Persian render
             right-to-left, properly — not as an afterthought.</p>
         </article>
         <article class="card">
-          <div class="icon" aria-hidden="true">↯</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></div>
           <h3>Adapts when you’re interrupted</h3>
           <p>A fast follow-up shortens the next answer automatically — Concise, then
             Rapid — so you can keep up. Reset it with one hotkey.</p>
         </article>
         <article class="card">
-          <div class="icon" aria-hidden="true">✓</div>
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg></div>
           <h3>An honest report</h3>
           <p>Afterwards, see the questions asked and the suggestions shown. No scores,
             no hiring predictions — just what happened, so you can prepare better

@@ -476,3 +476,115 @@
   // Initial state: default sample, bullets staged on load.
   showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);
 })();
+
+/* Step 1 — hero app-window preview animator (visual only; the real
+   interactive demo is the #demo panel). Cycles the three sample points
+   one at a time, pauses, then replays. Reduced motion: static. */
+(function () {
+  "use strict";
+  var list = document.getElementById("mock-answer");
+  var status = document.getElementById("mock-status");
+  if (!list || !status) { return; }
+
+  var POINTS = [
+    "Five years building web products — most recently leading a small team.",
+    "I start from the outcome, then the trade-off I made to get there.",
+    "What draws me here is this team’s focus on honest, useful software."
+  ];
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+
+  function makeBullet(text, i) {
+    var li = document.createElement("li");
+    var num = document.createElement("span");
+    num.className = "num";
+    num.setAttribute("aria-hidden", "true");
+    num.textContent = String(i + 1);
+    li.appendChild(num);
+    var span = document.createElement("span");
+    span.textContent = text;
+    li.appendChild(span);
+    return li;
+  }
+
+  function renderAll() {
+    list.innerHTML = "";
+    POINTS.forEach(function (text, i) { list.appendChild(makeBullet(text, i)); });
+    status.textContent = "3 points ready — preview.";
+  }
+
+  if (reduced) { renderAll(); return; }
+
+  function cycle() {
+    list.innerHTML = "";
+    status.textContent = "Listening…";
+    POINTS.forEach(function (text, i) {
+      timers.push(setTimeout(function () {
+        var li = makeBullet(text, i);
+        li.classList.add("is-new");
+        list.appendChild(li);
+        if (i === POINTS.length - 1) {
+          status.textContent = "3 points ready — preview.";
+        }
+      }, 500 + i * 450));
+    });
+    timers.push(setTimeout(cycle, 500 + (POINTS.length - 1) * 450 + 4200));
+  }
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      timers.forEach(function (t) { clearTimeout(t); });
+      timers = [];
+    } else {
+      cycle();
+    }
+  });
+
+  cycle();
+})();
+
+/* Step 1 — scroll reveal + header shadow. Elements get .reveal via JS
+   (no-JS keeps everything visible); reduced motion shows all at once. */
+(function () {
+  "use strict";
+  var header = document.querySelector(".site-header");
+  function onScroll() {
+    if (header) { header.classList.toggle("is-scrolled", window.scrollY > 8); }
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.documentElement.classList.add("js");
+  var targets = document.querySelectorAll(
+    ".hero-copy, .hero-visual, .card, .steps li, details, .callout, .table-wrap, .ethics-strip"
+  );
+  if (!targets.length) { return; }
+  if (reduced || !("IntersectionObserver" in window)) {
+    targets.forEach(function (el) { el.classList.add("is-visible"); });
+    return;
+  }
+  // Stagger siblings: up to 3 columns, 70 ms apart.
+  var groups = {};
+  targets.forEach(function (el) {
+    var parent = el.parentElement;
+    var key = parent.tagName + ":" + Array.prototype.indexOf.call(parent.parentElement ? parent.parentElement.children : [], parent);
+    if (!groups[key]) { groups[key] = 0; }
+    el.style.transitionDelay = (groups[key] % 3) * 70 + "ms";
+    groups[key]++;
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        io.unobserve(entry.target);
+        // Hand control back to the element's own hover transition.
+        setTimeout(function () {
+          entry.target.classList.remove("reveal");
+          entry.target.style.transitionDelay = "";
+        }, 850);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+  targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+})();
