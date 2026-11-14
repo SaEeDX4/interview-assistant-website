@@ -55,6 +55,7 @@ p { margin: 0 0 16px; }
 .narrow-legal { max-width: 760px; } /* legal prose stays narrow for readability */
 .section { padding: 72px 0; }
 .section + .section { padding-top: 0; }
+.page-hero + .section { padding-top: 40px; }
 .section-soft { background: var(--bg-soft); }
 .section-intro { color: var(--muted); max-width: 68ch; font-size: 18px; }
 
@@ -745,7 +746,7 @@ body.cta-visible { padding-bottom: 96px; }
 .inst-status { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
 .inst-sha { display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; font-size: 14px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 14px; }
 .inst-sha code { color: var(--muted-2); font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
-.req-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; align-items: start; }
+.req-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; align-items: stretch; }
 @media (max-width: 640px) { .req-grid { grid-template-columns: 1fr; } }
 .req-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
 .req-item h3 { font-size: 17px; margin-bottom: 6px; }

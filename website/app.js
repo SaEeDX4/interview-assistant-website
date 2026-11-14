@@ -236,12 +236,15 @@
   // At t=0/400/800 ms after render starts, visible counts are 1/2/3.
   // Reduced motion: all three at once, nothing hidden.
   function renderBullets(items, rtl, lang, myRun) {
-    answerEl.innerHTML = "";
+    // Keep the skeleton lines as placeholders: each staged bullet replaces
+    // one skeleton, so the area never goes dead while points 2-3 prepare.
+    var skels = Array.prototype.slice.call(answerEl.querySelectorAll("li.skel"));
     answerEl.classList.remove("coach");
     answerEl.dir = rtl ? "rtl" : "ltr";
     answerEl.lang = lang || (rtl ? "fa" : "en");
     answerEl.setAttribute("aria-busy", "true");
     if (isReducedMotion()) {
+      answerEl.innerHTML = "";
       items.forEach(function (text, i) {
         answerEl.appendChild(makeBullet(text, i));
       });
@@ -253,8 +256,15 @@
         if (myRun !== runId) { return; }
         var li = makeBullet(text, i);
         li.classList.add("is-new");
-        answerEl.appendChild(li);
+        if (skels[i] && skels[i].parentNode === answerEl) {
+          answerEl.replaceChild(li, skels[i]);
+        } else {
+          answerEl.appendChild(li);
+        }
         if (i === items.length - 1) {
+          Array.prototype.slice.call(answerEl.querySelectorAll("li.skel")).forEach(function (sk) {
+            answerEl.removeChild(sk);
+          });
           finishRender(myRun, "3 points ready.");
         }
       }, i * STAGE_MS));
@@ -263,7 +273,8 @@
 
   // Coach mode: exactly 3 keywords, then 1 structure line, staged.
   function renderCoach(coach, rtl, lang, myRun) {
-    answerEl.innerHTML = "";
+    // Same skeleton rule as renderBullets: staged rows replace skeletons.
+    var skels = Array.prototype.slice.call(answerEl.querySelectorAll("li.skel"));
     answerEl.classList.add("coach");
     answerEl.dir = rtl ? "rtl" : "ltr";
     answerEl.lang = lang || (rtl ? "fa" : "en");
@@ -291,6 +302,7 @@
     structure.appendChild(s);
 
     if (isReducedMotion()) {
+      answerEl.innerHTML = "";
       answerEl.appendChild(keys);
       answerEl.appendChild(structure);
       finishRender(myRun, "Coach points ready.");
@@ -299,12 +311,24 @@
     timers.push(setTimeout(function () {
       if (myRun !== runId) { return; }
       keys.classList.add("is-new");
-      answerEl.appendChild(keys);
+      if (skels[0] && skels[0].parentNode === answerEl) {
+        answerEl.replaceChild(keys, skels[0]);
+      } else {
+        answerEl.appendChild(keys);
+      }
+      // Coach has only 2 rows — drop the third skeleton line.
+      if (skels[2] && skels[2].parentNode === answerEl) {
+        answerEl.removeChild(skels[2]);
+      }
     }, 0));
     timers.push(setTimeout(function () {
       if (myRun !== runId) { return; }
       structure.classList.add("is-new");
-      answerEl.appendChild(structure);
+      if (skels[1] && skels[1].parentNode === answerEl) {
+        answerEl.replaceChild(structure, skels[1]);
+      } else {
+        answerEl.appendChild(structure);
+      }
       finishRender(myRun, "Coach points ready.");
     }, STAGE_MS));
   }
