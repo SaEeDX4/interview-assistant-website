@@ -208,12 +208,25 @@ p { margin: 0 0 16px; }
 .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 56px; align-items: center; }
 .lede { color: var(--muted); font-size: 19px; line-height: 1.6; max-width: 56ch; }
 .trust-line { color: var(--muted); font-size: 14px; }
+/* Step 27 — the privacy note, rebuilt as a "three nevers" trust block
+   (Google Safety Center principles style): eyebrow + bold headline, the
+   three promises as scannable icon chips, and the link as a real tonal
+   button — never an underlined inline link inside a grey bordered box
+   (borders say "warning", tints say "feature"). */
 .ethics-strip {
-  margin: 40px 0 0; padding: 16px; border: 1px solid var(--border);
-  border-radius: var(--radius); background: var(--surface);
-  color: var(--muted); font-size: 15px;
+  margin: 40px 0 0; padding: 24px; border-radius: var(--radius);
+  background: var(--accent-soft); border: 1px solid rgba(124, 108, 255, .16);
 }
-.ethics-strip a { color: var(--focus); }
+.ethics-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-light); }
+.ethics-headline { margin: 0 0 16px; font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--text); max-width: 68ch; }
+.ethics-nevers { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ethics-nevers li { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; white-space: nowrap; }
+.ethics-nevers svg { width: 16px; height: 16px; flex: none; color: var(--accent-light); }
+.ethics-link { display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 999px; background: rgba(124, 108, 255, .12); color: var(--accent-light); font-size: 14px; font-weight: 600; text-decoration: none; transition: background .15s ease; }
+.ethics-link:hover { background: rgba(124, 108, 255, .22); }
+@media (max-width: 480px) {
+  .ethics-strip { padding: 20px 16px; }
+}
 
 /* ---------- Demo panel ---------- */
 .demo {
@@ -397,6 +410,7 @@ code { overflow-wrap: anywhere; }
 @media (forced-colors: active) {
   .btn-primary, .mode-btn.is-active, .brand-mark { forced-color-adjust: none; }
   :focus-visible { outline: 3px solid Highlight; }
+  .app-replay:focus-visible .app-replay-box { outline-color: Highlight; }
   .card, .demo, .demo-answer li { border-color: ButtonBorder; }
 }
 
@@ -701,19 +715,31 @@ html.story-player .story-window {
   background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
   padding: 8px 12px; white-space: nowrap;
 }
-/* Step 25 — Replay, icon-only (↻), pinned at the right end of the hero's
-   action row (was a standalone "↻ Replay" button below the window, Step 20,
-   centred Step 24). Same surface/border/radius as the chips, 44px square
-   (Step 11 target). It is is-hidden until the moment has played once, so
-   it reserves its 44px from the start and the row never grows when it
-   appears; the stats strip below the window moves up by its height. */
+/* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
+   row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
+   centred Step 24). The BUTTON is 44×44 (the Step 11 target) but its visible
+   box is 36×30 — the same height as the chips and the same width as the blue
+   send button — centred inside the button, so the visible row is one clean
+   30px line while the tap target stays 44px. That is the Apple HIG "hit
+   region" / Material 3 "target size" distinction: the hit region and the
+   visual container are different numbers. The glyph is a 16px SVG, not the
+   ↻ text character, so its weight and centring are exact. The focus ring
+   lands on the visible box, not the 44px button. It is is-hidden until the
+   moment has played once, so it reserves its 44px from the start and the row
+   never grows when it appears. */
 .app-replay {
-  flex: none; width: 44px; height: 44px; display: inline-grid; place-items: center;
-  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
-  color: var(--app-dim); font-family: inherit; font-size: 18px; line-height: 1;
-  cursor: pointer; transition: color .15s ease, border-color .15s ease;
+  flex: none; width: 44px; height: 44px; padding: 0; display: inline-grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
 }
-.app-replay:hover { color: var(--app-text); border-color: var(--app-text); }
+.app-replay-box {
+  width: 36px; height: 30px; display: grid; place-items: center;
+  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
+  color: var(--app-dim); transition: color .15s ease, border-color .15s ease;
+}
+.app-replay-box svg { width: 16px; height: 16px; display: block; }
+.app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
+.app-replay:focus-visible { outline: none; }
+.app-replay:focus-visible .app-replay-box { outline: 3px solid var(--focus); outline-offset: 2px; }
 .app-history { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1; color: var(--app-faint); }
 .app-history[hidden] { display: none; }
 .app-manual { display: flex; gap: 8px; margin-top: 12px; }
@@ -938,7 +964,7 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
 .sticky-cta {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
   display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
-  gap: 8px 16px; padding: 12px 56px 12px 20px;
+  gap: 12px; padding: 12px 16px 12px 20px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   background: rgba(14, 18, 24, .94);
   backdrop-filter: blur(16px) saturate(1.4);
@@ -949,6 +975,10 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
   transition: transform .3s ease;
 }
 .sticky-cta[hidden] { display: none; }
+/* Step 27 — the bar's buttons are NOT pills: a full-width bar has small
+   corner radii, so the button inside it does too (Apple HIG concentric
+   radii; M3 Square-S is 12px). The site's other .btn stay 999px. */
+.sticky-cta .btn { border-radius: 12px; }
 .sticky-cta-text { margin: 0; font-weight: 600; font-size: 15px; }
 /* Below ~900px the text + two buttons no longer fit one row: the bar
    wraps to two rows and covers page content. Hide the text (the buttons
@@ -956,16 +986,22 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
 @media (max-width: 900px) {
   .sticky-cta-text { display: none; }
 }
+/* Step 27 — the dismiss is an in-flow flex item, never an absolute overlay:
+   with a 12px gap the primary button can only ever shrink to the gap, so
+   overlap is structurally impossible (the old absolute × sat at exactly
+   0px from the pill's right edge — measured live at 390/420/360/320).
+   It is a contained 44×44 rounded square with a subtle surface fill, the
+   iOS 26 / Fluent pattern, not a bare glyph floating on the bar. */
 .sticky-cta-close {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  background: none; border: 1px solid var(--border-strong); color: var(--muted);
-  border-radius: 8px; width: 44px; height: 44px; font-size: 18px; line-height: 1;
+  flex: none;
+  background: var(--surface-2); border: 1px solid var(--border-strong); color: var(--muted);
+  border-radius: 12px; width: 44px; height: 44px; font-size: 18px; line-height: 1;
   cursor: pointer; display: grid; place-items: center;
 }
 .sticky-cta-close:hover { color: var(--text); border-color: var(--text); }
 body.cta-visible { padding-bottom: 96px; }
 @media (max-width: 640px) {
-  .sticky-cta { justify-content: flex-start; padding: 12px 56px 12px 16px; }
+  .sticky-cta { padding: 12px 16px; }
   .sticky-cta-text { font-size: 14px; }
   body.cta-visible { padding-bottom: 96px; }
 }
@@ -1221,6 +1257,7 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
 /* ---------- Step 4: honest strip + pricing teaser (home) ---------- */
 .honest-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 28px 0; background: var(--bg-soft); }
 .honest-strip p { margin: 0; color: var(--muted); font-size: 17px; max-width: 68ch; }
+.honest-strip .ethics-link { margin-top: 16px; }
 .honest-strip strong { color: var(--text); }
 .pricing-teaser {
   background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, 0) 45%), var(--surface);

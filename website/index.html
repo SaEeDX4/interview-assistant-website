@@ -107,7 +107,7 @@
               <div class="app-actions-scroll" aria-hidden="true">
                 <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
               </div>
-              <button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview">↻</button>
+              <button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview"><span class="app-replay-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span></button>
             </div>
             <div class="app-manual" aria-hidden="true">
               <span class="app-manual-input">Type or paste a question and press Enter</span>
@@ -133,8 +133,16 @@
       </div>
     </div>
     <div class="container">
-      <p class="ethics-strip">A visible window. It never hides, never records your microphone,
-        and never stores audio. <a href="privacy.html">How we handle privacy →</a></p>
+      <div class="ethics-strip">
+        <p class="ethics-eyebrow">Privacy, by design</p>
+        <p class="ethics-headline">A visible window. Nothing hidden, nothing recorded, nothing stored.</p>
+        <ul class="ethics-nevers">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>Never hides</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>Never records</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>Never stores audio</li>
+        </ul>
+        <a class="ethics-link" href="privacy.html">How we handle privacy <span aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>
 
@@ -571,7 +579,8 @@
   <!-- HONEST STRIP -->
   <section class="honest-strip" aria-label="Honest by design">
     <div class="container">
-      <p><strong>Honest by design.</strong> A visible window — it never hides, never records your microphone, never stores audio. Answers in 10 languages, including Persian and Arabic, rendered right-to-left. <a href="privacy.html">How we handle privacy →</a></p>
+      <p><strong>Honest by design.</strong> A visible window — it never hides, never records your microphone, never stores audio. Answers in 10 languages, including Persian and Arabic, rendered right-to-left.</p>
+      <a class="ethics-link" href="privacy.html">How we handle privacy <span aria-hidden="true">→</span></a>
     </div>
   </section>
 

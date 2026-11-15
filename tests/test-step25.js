@@ -19,7 +19,8 @@
    — the only fidelity departure — and must stay out.
    (3) Replay: the standalone "↻ Replay" button below the window is gone;
    only the ↻ icon sits at the right end of the hero's action row, and
-   the stats strip sits directly under the window. */
+   the stats strip sits directly under the window. Step 27: the glyph is a
+   16px SVG inside a 36×30 visible box, centred in the 44×44 button. */
 const fs = require("fs");
 const path = require("path");
 
@@ -79,10 +80,11 @@ check("fade JS listens to scroll (passive) and resize, and runs once at load",
 
 // 5. The pinned control is a sibling of the scroller, never inside it.
 check("Replay is a sibling of the hero's scroller (pinned, never scrolls away)",
-  /<\/div>\s*<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview">↻<\/button>\s*<\/div>/.test(html));
-check("Replay is icon-only (↻, no \"Replay\" text) and a 44px square",
-  !/>↻ Replay</.test(html) &&
-  /\.app-replay \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/.test(clean));
+  /<\/div>\s*<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview"><span class="app-replay-box">/.test(html));
+check("Replay is icon-only (SVG, no \"Replay\" text), button 44px, visible box 36x30 (Step 27)",
+  !/>↻ Replay</.test(html) && !/id="hero-replay"[^>]*>↻</.test(html) &&
+  /\.app-replay \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/.test(clean) &&
+  /\.app-replay-box \{[\s\S]*?width: 36px;[\s\S]*?height: 30px;/.test(clean));
 check("the story/demo history is a sibling of its scroller (pinned)",
   /<\/div>\s*<span class="app-history" id="story-history" hidden/.test(html) &&
   /<\/div>\s*<span class="app-history"><span>‹<\/span><span>2 \/ 2<\/span><span>›<\/span><\/span>/.test(html));

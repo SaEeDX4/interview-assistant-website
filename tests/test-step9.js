@@ -85,8 +85,8 @@ check("R11 flow-node padding 20px, icon -> title 12px",
 check("R9 small cards padding 24px",
   /\.req-item\s*\{[^}]*padding:\s*24px;/s.test(css)
   && /\.trouble-card\s*\{[^}]*padding:\s*24px;/s.test(css));
-check("sticky CTA gap 8px 16px, right reserve 56px",
-  /gap:\s*8px 16px;\s*padding:\s*12px 56px 12px 20px;/.test(css));
+check("sticky CTA gap 12px, 16px side padding, no 56px reserve (Step 27)",
+  /gap:\s*12px;\s*padding:\s*12px 16px 12px 20px;/.test(css));
 
 // 4. Step 8 regression: section rhythm still in force.
 check("step8 rhythm: h2 48px / h3 28px still present",

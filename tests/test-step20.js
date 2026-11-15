@@ -23,11 +23,12 @@ const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. Replay button: real button, labelled, hidden until the moment plays.
 // Step 23: hidden with visibility (is-hidden), not display — its space is
-// reserved, so the row never grows when it appears. Step 25: icon-only
-// (↻), pinned at the right end of the hero's action row (was a standalone
-// "↻ Replay" button below the window).
-check("hero Replay button exists, type=button, labelled, starts hidden, icon-only",
-  /<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="[^"]+">↻<\/button>/.test(html));
+// reserved, so the row never grows when it appears. Step 25: icon-only,
+// pinned at the right end of the hero's action row (was a standalone
+// "↻ Replay" button below the window). Step 27: the glyph is a 16px SVG
+// inside a 36×30 visible box, centred in the 44×44 button.
+check("hero Replay button exists, type=button, labelled, starts hidden, icon-only SVG",
+  /<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="[^"]+"><span class="app-replay-box"><svg[^>]*>[\s\S]*?<\/svg><\/span><\/button>/.test(html));
 
 // 2. Player hooks exist in the mockup (pill + transcript + thinking).
 check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, #mock-thinking, #mock-answer, #mock-meta)",

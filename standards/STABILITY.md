@@ -299,5 +299,12 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
 - **Replay (Saeed):** the standalone button below the window is gone;
   only the ↻ icon sits at the right end of the hero's action row, and
   the stats strip sits directly under the window.
+- **Step 27 (Saeed, phone):** Replay's visible box is 36×30 (chips' height,
+  send button's width) inside its 44×44 button, so the action row reads as
+  one clean 30px line; the row stays 44px tall, so no hero height moves.
+  The sticky bar's dismiss is an in-flow flex item with a 12px gap and the
+  bar's button radius is 12px (was an absolute × at 0px from a 999px pill).
+  The ethics strip is rebuilt as a "three nevers" trust block (eyebrow +
+  headline + icon chips + link as a tonal button).
 - Tests: step25 (27 checks: chips + fade + Replay + entrance); full
   suite 319; sims 41 (story, incl. 2 entrance checks) + 17 (demo).

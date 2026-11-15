@@ -14,6 +14,11 @@ toggle button, radio group).
 
 Every interactive target is at least **44×44 CSS px**. (WCAG 2.2 AA asks
 only 24px; we hold Apple's 44px because the site is used on phones.)
+The 44px is the **target** (hit region), not necessarily the visible box:
+a control may draw smaller when its real tap target is 44×44 — Apple HIG
+calls it a "hit region", Material 3 a "target size". Step 27: the hero
+Replay button is 44×44, but its visible box is 36×30 (the chips' height,
+the send button's width), centred inside the button.
 
 | # | Target | Height | How it meets 44px |
 |---|--------|--------|-------------------|
@@ -29,9 +34,9 @@ only 24px; we hold Apple's 44px because the site is used on phones.)
 | A10 | `.seg-btn` (answer length) | 44px | `min-height: 44px` (guard; computed 44.2px) |
 | A11 | `.site-nav a` | ~49px | padding 12px 8px + 15px/1.65 |
 | A12 | `.site-footer nav a` | ~49px | padding 12px 0 + 15px/1.65 |
-| A13 | `.sticky-cta-close` | 44×44px | width/height 44px (fits the bar's 56px right padding) |
+| A13 | `.sticky-cta-close` | 44×44px | width/height 44px (Step 27: in-flow flex item, 12px gap from the primary button) |
 | A14 | Range thumb (minutes calculator) | 24px | custom thumb, webkit + moz (the track is also clickable) |
-| A15 | `.app-replay` (hero Replay icon) | 44×44px | width/height 44px (Step 25: icon-only ↻ button in the action row, `aria-label="Replay the animated preview"`) |
+| A15 | `.app-replay` (hero Replay icon) | 44×44px | button width/height 44px; visible box 36×30 (Step 27: same height as the chips, same width as the send button; 16px SVG glyph; focus ring on the visible box) |
 
 **Rule:** prefer padding for standalone controls (A1–A6, A11–A13) and
 `min-height: 44px` for grouped/compact controls (A7–A10) where bigger
@@ -44,7 +49,12 @@ paragraph link cannot be 44px tall without breaking the line.
   never a `<div>` with a click handler.
 - Global `:focus-visible` outline: **3px solid, 2px offset** (line 106 of
   styles.css) + a forced-colors fallback. **`outline: none` is forbidden
-  anywhere.**
+  anywhere — except one documented case:** the hero Replay button, whose
+  visible box (36×30) is smaller than its 44×44 hit region: the button's
+  own outline is suppressed and the identical 3px/2px ring is drawn on the
+  visible box instead (`.app-replay:focus-visible .app-replay-box`), so
+  focus is still always visible, on the thing the eye sees. (Step 27;
+  enforced by test-step11.)
 - Skip link is the first tab stop on every page.
 
 ## 3. Names — every control tells a screen reader what it is
