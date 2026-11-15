@@ -558,28 +558,43 @@
   });
 })();
 
-/* Step 1 — hero app-window preview animator (visual only; the real
-   interactive demo is the #demo panel). Cycles the three sample points
-   one at a time, pauses, then replays. Reduced motion: static. */
+/* Step 20 — hero app-window player: the "living hero". One staged
+   moment, played once when the hero is first seen, then only on Replay:
+   the question types itself while the waveform listens, a beat of
+   silence, the three points rise one at a time, then the Coach Mode bar
+   flips in. This replaces the Step 1 animator, which looped the points
+   forever; play-once + Replay is quieter, and the whole sequence is
+   ~4s of motion per play. Reduced motion: the full final state renders
+   statically, no Replay button. */
 (function () {
   "use strict";
   var list = document.getElementById("mock-answer");
   var status = document.getElementById("mock-status");
-  if (!list || !status) { return; }
+  var wave = document.getElementById("mock-wave");
+  var questionEl = document.getElementById("mock-question");
+  var coachEl = document.getElementById("mock-coach");
+  var replayBtn = document.getElementById("hero-replay");
+  var appWindow = list && list.closest ? list.closest(".app-window") : null;
+  if (!list || !status || !wave || !questionEl || !coachEl || !replayBtn || !appWindow) { return; }
 
+  var QUESTION = "Tell me about yourself.";
   var POINTS = [
     "Five years building web products — most recently leading a small team.",
     "I start from the outcome, then the trade-off I made to get there.",
     "What draws me here is this team’s focus on honest, useful software."
   ];
+  var TYPE_MS = 45;     // per typed character (~1.1s for the question)
+  var SILENCE_MS = 700; // beat between the question ending and point 1
+  var STAGE_MS = 450;   // interval between points (same as the demo)
+  var COACH_MS = 400;   // delay before the Coach bar flips in
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timers = [];
+  var played = false; // auto-play runs once; after that, only Replay
 
-  // Clear every pending mockup timer. A cycle must never run twice at
-  // once: without this, a visibilitychange back to visible started a
-  // second cycle alongside the first and every point rendered twice
-  // (rows numbered 1, 1, 2, 2, 3, 3), and both loops then replayed
-  // forever because each cycle schedules its own next run.
+  // Clear every pending mockup timer. A play must never run twice at
+  // once: without this, a visibilitychange back to visible would start
+  // a second sequence alongside the first and every point would render
+  // twice (rows numbered 1, 1, 2, 2, 3, 3).
   function clearTimers() {
     timers.forEach(function (t) { clearTimeout(t); });
     timers = [];
@@ -600,6 +615,7 @@
 
   function renderAll() {
     clearTimers();
+    questionEl.textContent = "“" + QUESTION + "”";
     list.innerHTML = "";
     POINTS.forEach(function (text, i) { list.appendChild(makeBullet(text, i)); });
     status.textContent = "3 points ready — preview.";
@@ -607,46 +623,82 @@
 
   if (reduced) { renderAll(); return; }
 
-  function cycle() {
+  // Pause: stop the timers and settle the waveform. Called when the hero
+  // scrolls out of view or the tab hides mid-play; the sequence restarts
+  // from the beginning on return (played stays false until it completes).
+  function pause() {
     clearTimers();
+    wave.classList.remove("is-live");
+    appWindow.classList.remove("hero-playing");
+  }
+
+  function play() {
+    clearTimers();
+    appWindow.classList.add("hero-playing");
+    wave.classList.add("is-live");
+    coachEl.classList.remove("is-new");
+    questionEl.textContent = "“";
     list.innerHTML = "";
     status.textContent = "Listening…";
-    POINTS.forEach(function (text, i) {
+    replayBtn.hidden = true;
+    var typed = 0;
+    (function typeNext() {
       timers.push(setTimeout(function () {
-        var li = makeBullet(text, i);
-        li.classList.add("is-new");
-        list.appendChild(li);
-        if (i === POINTS.length - 1) {
-          status.textContent = "3 points ready — preview.";
+        typed++;
+        questionEl.textContent = typed < QUESTION.length
+          ? "“" + QUESTION.slice(0, typed)
+          : "“" + QUESTION + "”";
+        if (typed < QUESTION.length) {
+          typeNext();
+          return;
         }
-      }, 500 + i * 450));
-    });
-    timers.push(setTimeout(cycle, 500 + (POINTS.length - 1) * 450 + 4200));
+        // The question ended: the waveform goes quiet for one beat.
+        wave.classList.remove("is-live");
+        timers.push(setTimeout(function () {
+          POINTS.forEach(function (text, i) {
+            timers.push(setTimeout(function () {
+              var li = makeBullet(text, i);
+              li.classList.add("is-new");
+              list.appendChild(li);
+              if (i === POINTS.length - 1) {
+                status.textContent = "3 points ready — preview.";
+                timers.push(setTimeout(function () {
+                  coachEl.classList.add("is-new");
+                  appWindow.classList.remove("hero-playing");
+                  replayBtn.hidden = false;
+                  played = true;
+                }, COACH_MS));
+              }
+            }, i * STAGE_MS));
+          });
+        }, SILENCE_MS));
+      }, TYPE_MS));
+    })();
   }
+
+  replayBtn.addEventListener("click", function () { play(); });
 
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
-      clearTimers();
-    } else {
-      cycle();
+      pause();
+    } else if (!played) {
+      play();
     }
   });
 
-  // Pause when scrolled off-screen: the mockup timer used to keep running
-  // whenever the hero was out of view (only tab-visibility paused it).
-  // IntersectionObserver pauses it and resumes the cycle on return.
+  // Pause when scrolled off-screen; play once when first seen.
   var visual = list.closest ? list.closest(".hero-visual") : null;
   if (visual && "IntersectionObserver" in window) {
     new IntersectionObserver(function (entries) {
       if (entries[0].isIntersecting) {
-        cycle();
+        if (!played) { play(); }
       } else {
-        clearTimers();
+        pause();
       }
     }, { threshold: 0 }).observe(visual);
+  } else {
+    play();
   }
-
-  cycle();
 })();
 
 /* Step 1 — scroll reveal + header shadow. Elements get .reveal via JS

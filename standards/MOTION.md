@@ -35,6 +35,10 @@ interactions): shimmer 1.2s, equalizer 1.1s, float 5s.
 | `eq` | 1.1s | waveform bars in the app mockup |
 | `floaty` | 5s | floating chips on the hero |
 
+The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
+(waveform, gated by `.is-live` — it runs only while the interviewer is
+"speaking", then settles flat for the silence beat). No new keyframes.
+
 ## 4. Reduced motion — everything stops, content stays
 
 - CSS: a global `@media (prefers-reduced-motion: reduce)` block kills
@@ -52,6 +56,9 @@ interactions): shimmer 1.2s, equalizer 1.1s, float 5s.
 
 - Reveal stagger: 40ms between groups.
 - Demo cadence: 450ms per point, 4200ms hold before cycling.
+- Hero player (Step 20): type 45ms/char, silence beat 700ms, points
+  450ms apart, Coach flip 400ms after the last point. Plays once when
+  the hero is first seen, then only on Replay — no infinite loop.
 - These are content rhythms, not motion; they stay as-is.
 
 ## 6. Audit log
@@ -68,5 +75,12 @@ interactions): shimmer 1.2s, equalizer 1.1s, float 5s.
     is fully covered (global kill + tilt reset + JS gates); the four
     keyframes each have one job; ambient loops are the only long
     durations.
+- **Step 20 — living hero:** the hero mockup plays one staged moment
+  (question types itself → waveform listens → 700ms silence beat →
+  3 points rise one at a time → Coach bar flips in), once when first
+  seen, then only on Replay. Replaces the Step 1 animator, which looped
+  the points forever. Waveform gated by `.is-live`; Coach bar hidden
+  while playing (`.hero-playing`); reduced motion renders the full
+  final state statically with no Replay button.
 - **Method:** full transition/animation inventory + reduced-motion
   coverage check + fresh live re-verification after the fix.
