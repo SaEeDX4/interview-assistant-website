@@ -8,10 +8,11 @@
 width from 320 to 1280px). Desktop-first CSS with mobile overrides;
 one direction only.
 
-## 1. The breakpoint set — closed, five widths
+## 1. The breakpoint set — closed, six widths
 
 | Width | Name | Purpose | Blocks |
 |-------|------|---------|--------|
+| 384px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row (Step 29) | 1 |
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
@@ -25,8 +26,8 @@ check to confirm the fit.
 
 ## 2. Rules
 
-- **B1 — closed set:** every `max-width` is one of 480 / 640 / 860 /
-  900 / 1024.
+- **B1 — closed set:** every `max-width` is one of 384 / 480 / 640 /
+  860 / 900 / 1024.
 - **B2 — one direction:** `max-width` only. No `min-width` media
   queries anywhere.
 - **B3 — blocks stay with their component:** media queries live next to
@@ -85,3 +86,20 @@ check to confirm the fit.
   320px, but the same two rows on every beat — constant per width, so
   nothing jumps. The grid-stack rules live outside any media block (the
   stage is fixed at every width). Enforced by `tests/test-step23.js`.
+- **Step 29** adds the set's sixth width, 384px — the first new width
+  since the set was closed, admitted because it is a *computed*
+  threshold, not a device guess: live measurement (2026-11-15) showed
+  the app header's longest status word ("Question detected", a 197.23px
+  pill + 12px gap + 110.41px controls = 319.64px) fits the header
+  content (viewport − 64px) only from a 383.64px viewport up, so every
+  narrower phone — 360px, 375px — wrapped the header to two rows
+  mid-play (+40px hero growth) whenever a long status word showed.
+  Below 385px the header now sheds the 48px level meter (the real app
+  sheds chrome as its window narrows — Step 21 research) and tightens
+  its gaps and horizontal padding, which keeps the header one row for
+  all eight status words at every width in the block (worst-case margin
+  +18.36px at 320px, measured). This supersedes the Step 23 note above:
+  at 320px the header is now one row on every beat (the window is a
+  constant 746.59px there, was 786.59px). The block sits after the base
+  header rules so its same-specificity overrides win by order (the
+  Step 24 lesson). Enforced by `tests/test-step29.js`.

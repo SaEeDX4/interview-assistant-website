@@ -322,3 +322,43 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   the Step 27 check did not reproduce.
 - Tests: step25 (27 checks: chips + fade + Replay + entrance); full
   suite 319; sims 41 (story, incl. 2 entrance checks) + 17 (demo).
+
+## Audit — Step 29 (2026-11-15)
+
+- **The 360px mid-play +40px bump (Saeed: "find it precisely and fix
+  it"):** seen in the Step 27 live check, absent in the Step 28 check,
+  back in the Step 28 fix-up check — intermittent because the samples
+  were wall-clock and the play starts on scroll. Root-caused by live
+  measurement at 100ms sampling: at 360px the header content is
+  294.00px, and the status pill exceeds it for three of the eight
+  status words — "Hearing audio" by 2.70px, "Preparing answer" by
+  21.64px, "Question detected" by 25.64px — so the header
+  (flex-wrap: wrap) dropped the controls to a second row (54px →
+  94px) and the hero window grew 666.81px → 706.81px. 24 of 50
+  samples were wrapped, all on those three words. The Step 23 shed
+  (icon-only Start + badge off at ≤640px) only guaranteed one row
+  down to a 383.64px viewport — the guarantee was measured at 390px,
+  where the longest word fits by 4.36px — so 360px and 375px phones
+  still flipped. At 320px the header was two rows on *every* word
+  (constant 786.59px window): no jump, but not the one-row header the
+  standard promises.
+- **Fix:** below 385px the header sheds the 48px level meter — the
+  next chrome shed in the real app's own pattern (Step 21 research) —
+  and tightens its gaps (12px → 8px, 8px → 4px) and the pill/Start
+  horizontal padding (12px → 8px). Measured with the fix injected:
+  all eight words stay one row at 320/360/375/382px (worst-case margin
+  +18.36px at 320px, +58.36px at 360px, +80.36px at 382px), a full
+  360px auto-play holds 666.81px in 51/51 samples, and 390px is
+  untouched (the meter stays; the longest word still fits by 4.36px).
+  Hiding the meter alone was NOT enough: at 320px two words still
+  wrapped, which would have *created* a mid-play jump there. The
+  384px width joins the breakpoint set (BREAKPOINTS.md) — a computed
+  threshold (the longest word fits from a 383.64px viewport), not a
+  device guess. The block sits after the base header rules so its
+  same-specificity overrides win by order.
+- **Rule this adds:** the header is one row at *every* width from
+  320px up, for *every* status word — the fixed stage now includes
+  the header at the narrowest widths, not just from 390px.
+- Tests: step29 (12 checks: the shed block, its five rules, the base
+  meter untouched, the breakpoint documented); full suite 377; sims
+  41 (story) + 17 (demo).

@@ -639,6 +639,33 @@ html.story-player .story-window {
   font-size: 11px; font-weight: 600; line-height: 1; white-space: nowrap;
 }
 .app-badge[hidden] { display: none; }
+/* Step 29 — below 385px the header sheds the level meter and tightens,
+   so the longest status word keeps the header at one row. Measured live
+   (2026-11-15): at 360px the header content is 294px, and the pill for
+   "Hearing audio" (+2.70px), "Preparing answer" (+21.64px) and
+   "Question detected" (+25.64px) exceeds it — the header
+   (flex-wrap: wrap) dropped the controls to a second row mid-play,
+   54px -> 94px, and the hero window grew +40px (666.81 -> 706.81).
+   The Step 23 shed (icon-only Start + badge off at <=640px) only
+   guaranteed one row down to a 383.64px viewport, so 375px phones had
+   the same jump. The meter is the shed chrome here, as the real app
+   sheds chrome as its window narrows (Step 21 research). With the
+   meter gone (56px) and the gaps + pill/Start horizontal padding
+   tightened, the longest word fits with margin at every width in this
+   block: +18.36px at 320px, +58.36px at 360px, +80.36px at 382px
+   (measured). At 320px the header is now one row on every beat too
+   (window a constant 746.59px there, was a constant 786.59px with a
+   two-row header). Above 384px nothing changes: the meter stays and
+   the longest word fits by 4.36px. This block sits after the base
+   header rules on purpose — same-specificity overrides must come
+   later in the file (the Step 24 lesson). */
+@media (max-width: 384px) {
+  .app-meter { display: none; }
+  .app-header { gap: 8px; }
+  .app-header-controls { gap: 4px; }
+  .app-pill { padding-left: 8px; padding-right: 8px; }
+  .app-start { padding-left: 8px; padding-right: 8px; }
+}
 /* Step 21 — two labelled cards (G12): QUESTION and ANSWER, each Surface
    bg, 1px border, radius 12, 12px apart. The answer is bigger than the
    question (G4): 19px vs 15px, the real 22:17 ratio at mockup scale. */
