@@ -719,7 +719,10 @@ html.story-player .story-window {
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
    centred Step 24). The BUTTON is 44×44 (the Step 11 target) but its visible
    box is 36×30 — the same height as the chips and the same width as the blue
-   send button — centred inside the button, so the visible row is one clean
+   send button — right-aligned inside the button (Step 28: its right edge —
+   and therefore its centre, both boxes 36px wide — coincides with the blue
+   send button's right edge one row below; centred it sat 4px left of the
+   send's centre, measured live at 390px), so the visible row is one clean
    30px line while the tap target stays 44px. That is the Apple HIG "hit
    region" / Material 3 "target size" distinction: the hit region and the
    visual container are different numbers. The glyph is a 16px SVG, not the
@@ -728,7 +731,7 @@ html.story-player .story-window {
    moment has played once, so it reserves its 44px from the start and the row
    never grows when it appears. */
 .app-replay {
-  flex: none; width: 44px; height: 44px; padding: 0; display: inline-grid; place-items: center;
+  flex: none; width: 44px; height: 44px; padding: 0; display: inline-grid; place-items: center end;
   background: none; border: 0; cursor: pointer;
 }
 .app-replay-box {
@@ -990,12 +993,16 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
    with a 12px gap the primary button can only ever shrink to the gap, so
    overlap is structurally impossible (the old absolute × sat at exactly
    0px from the pill's right edge — measured live at 390/420/360/320).
-   It is a contained 44×44 rounded square with a subtle surface fill, the
-   iOS 26 / Fluent pattern, not a bare glyph floating on the bar. */
+   It stretches to the primary button's height (Step 28: align-self:
+   stretch + aspect-ratio: 1, so it is always a square the same height as
+   the button, ~51px today, with a 44px floor — a measured 51px would drift
+   the moment the button's font or padding changes), with a subtle surface
+   fill, the iOS 26 / Fluent pattern, not a bare glyph floating on the bar. */
 .sticky-cta-close {
-  flex: none;
+  flex: none; align-self: stretch; aspect-ratio: 1;
+  width: auto; height: auto; min-width: 44px; min-height: 44px;
   background: var(--surface-2); border: 1px solid var(--border-strong); color: var(--muted);
-  border-radius: 12px; width: 44px; height: 44px; font-size: 18px; line-height: 1;
+  border-radius: 12px; font-size: 18px; line-height: 1;
   cursor: pointer; display: grid; place-items: center;
 }
 .sticky-cta-close:hover { color: var(--text); border-color: var(--text); }

@@ -306,5 +306,12 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   bar's button radius is 12px (was an absolute × at 0px from a 999px pill).
   The ethics strip is rebuilt as a "three nevers" trust block (eyebrow +
   headline + icon chips + link as a tonal button).
+- **Step 28 (Saeed, phone):** the hero Replay's visible box is
+  right-aligned inside its 44px button, so its centre matches the blue
+  send button's centre one row below (centred it sat 4px left, measured
+  live at 390px); the row stays 44px tall and the hero height cannot move.
+  The sticky bar's dismiss stretches to the primary button's height
+  (align-self: stretch + aspect-ratio: 1, 44px floor), so the two are
+  always the same height, square — no measured 51px to drift.
 - Tests: step25 (27 checks: chips + fade + Replay + entrance); full
   suite 319; sims 41 (story, incl. 2 entrance checks) + 17 (demo).

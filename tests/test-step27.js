@@ -4,11 +4,13 @@
    (from ~/workspace/interview-assistant-website).
    (1) Replay: the BUTTON stays 44×44 (the Step 11 target) but its visible
    box is 36×30 — the same height as the chips, the same width as the blue
-   send button — centred inside the button, so the visible row is one clean
-   30px line. Apple HIG "hit region" / Material 3 "target size": the hit
-   region and the visual container are different numbers. The glyph is a
-   16px SVG, not the ↻ text character. The focus ring lands on the visible
-   box. The row stays 44px tall, so no hero height moves (STABILITY).
+   send button — right-aligned inside the button (Step 28; centred it sat
+   4px left of the send button's centre, measured live at 390px), so the
+   visible row is one clean 30px line. Apple HIG "hit region" / Material 3
+   "target size": the hit region and the visual container are different
+   numbers. The glyph is a 16px SVG, not the ↻ text character. The focus
+   ring lands on the visible box. The row stays 44px tall, so no hero
+   height moves (STABILITY).
    (2) Sticky bar: the dismiss is an in-flow flex item with a 12px gap —
    overlap becomes structurally impossible. Measured live before the fix:
    the absolute × sat at exactly 0.00px from the pill's right edge at
@@ -58,9 +60,11 @@ check("Replay focus ring lands on the visible box, not the 44px button",
 const closeRule = (clean.match(/\.sticky-cta-close \{[\s\S]*?\}/) || [""])[0];
 check("sticky dismiss is in-flow (no absolute positioning)",
   !/position:\s*absolute/.test(closeRule) && /flex: none;/.test(closeRule));
-check("sticky dismiss is a contained 44×44 rounded square with surface fill",
+check("sticky dismiss stretches to the primary button's height (Step 28: square via aspect-ratio, 44px floor, no fixed 44px)",
   /border-radius: 12px;/.test(closeRule) && /background: var\(--surface-2\);/.test(closeRule) &&
-  /width: 44px;[\s\S]*?height: 44px;/.test(closeRule));
+  /align-self: stretch;/.test(closeRule) && /aspect-ratio: 1;/.test(closeRule) &&
+  /min-width: 44px;/.test(closeRule) && /min-height: 44px;/.test(closeRule) &&
+  !/(^|[\s;{])width: 44px;/.test(closeRule) && !/(^|[\s;{])height: 44px;/.test(closeRule));
 check("sticky bar has a 12px gap and 16px side padding (no 56px reserve)",
   /\.sticky-cta \{[\s\S]*?gap: 12px;[\s\S]*?padding: 12px 16px/.test(clean) &&
   !/\.sticky-cta \{[^}]*56px/.test(clean));

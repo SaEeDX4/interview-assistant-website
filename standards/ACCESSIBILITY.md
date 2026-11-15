@@ -18,7 +18,8 @@ The 44px is the **target** (hit region), not necessarily the visible box:
 a control may draw smaller when its real tap target is 44×44 — Apple HIG
 calls it a "hit region", Material 3 a "target size". Step 27: the hero
 Replay button is 44×44, but its visible box is 36×30 (the chips' height,
-the send button's width), centred inside the button.
+the send button's width), right-aligned inside the button (Step 28: its
+centre then matches the blue send button's centre one row below).
 
 | # | Target | Height | How it meets 44px |
 |---|--------|--------|-------------------|
@@ -34,9 +35,9 @@ the send button's width), centred inside the button.
 | A10 | `.seg-btn` (answer length) | 44px | `min-height: 44px` (guard; computed 44.2px) |
 | A11 | `.site-nav a` | ~49px | padding 12px 8px + 15px/1.65 |
 | A12 | `.site-footer nav a` | ~49px | padding 12px 0 + 15px/1.65 |
-| A13 | `.sticky-cta-close` | 44×44px | width/height 44px (Step 27: in-flow flex item, 12px gap from the primary button) |
+| A13 | `.sticky-cta-close` | = primary height, ≥44px | stretches to the primary button's height, square via aspect-ratio: 1, 44px floor (Step 28: in-flow flex item, 12px gap from the primary button) |
 | A14 | Range thumb (minutes calculator) | 24px | custom thumb, webkit + moz (the track is also clickable) |
-| A15 | `.app-replay` (hero Replay icon) | 44×44px | button width/height 44px; visible box 36×30 (Step 27: same height as the chips, same width as the send button; 16px SVG glyph; focus ring on the visible box) |
+| A15 | `.app-replay` (hero Replay icon) | 44×44px | button width/height 44px; visible box 36×30 (Step 27: same height as the chips, same width as the send button; 16px SVG glyph; focus ring on the visible box; Step 28: the box is right-aligned inside the button, so its centre matches the send button's centre) |
 
 **Rule:** prefer padding for standalone controls (A1–A6, A11–A13) and
 `min-height: 44px` for grouped/compact controls (A7–A10) where bigger

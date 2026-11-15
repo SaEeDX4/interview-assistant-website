@@ -69,8 +69,9 @@ for (const [sel, opts, min] of targets) {
 check("every interactive target >= 44px tall (computed from CSS)",
   heightsOk, heightsNotes.join(" | "));
 const close = decls(".sticky-cta-close");
-check("sticky close button is 44x44px",
-  close && px(close.width) === 44 && px(close.height) === 44);
+check("sticky close button matches the primary button's height and is never below 44px (Step 28: stretch + aspect-ratio 1 + 44px floor)",
+  close && close["align-self"] === "stretch" && close["aspect-ratio"] === "1" &&
+  px(close["min-width"]) === 44 && px(close["min-height"]) === 44);
 
 // Range thumb: 24px, webkit + moz, custom track (input appearance: none).
 check("range thumb is 24px (webkit + moz) with a styled track",
