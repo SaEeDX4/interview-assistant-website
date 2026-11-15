@@ -7,3 +7,11 @@ tests/*-captures/
 tests/*.log
 tests/__pycache__/
 tests/mobile-verify/
+
+# Local working files (never committed)
+GPT-EVALUATION-PROMPT.md
+build_site.py
+website-multipage.zip
+website-preview.html
+REPO-CLEANUP-PLAN.md
+verify-v2-scratch/
