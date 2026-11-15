@@ -590,6 +590,7 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timers = [];
   var played = false; // auto-play runs once; after that, only Replay
+  var shown = 0; // points rendered in the current play
 
   // Clear every pending mockup timer. A play must never run twice at
   // once: without this, a visibilitychange back to visible would start
@@ -623,17 +624,32 @@
 
   if (reduced) { renderAll(); return; }
 
+  // Finish: the moment is over — Coach bar in, Replay shown. Used both
+  // at the end of play() and when pausing after all three points are
+  // already on screen, so a scroll-away in the last 400ms can never
+  // leave the mockup finished-looking with no Replay button.
+  function finish() {
+    coachEl.classList.add("is-new");
+    appWindow.classList.remove("hero-playing");
+    replayBtn.hidden = false;
+    played = true;
+  }
+
   // Pause: stop the timers and settle the waveform. Called when the hero
   // scrolls out of view or the tab hides mid-play; the sequence restarts
   // from the beginning on return (played stays false until it completes).
+  // Exception: if all three points are already shown, the moment is
+  // over — finish it instead of restarting from scratch on return.
   function pause() {
     clearTimers();
     wave.classList.remove("is-live");
     appWindow.classList.remove("hero-playing");
+    if (shown === 3) { finish(); }
   }
 
   function play() {
     clearTimers();
+    shown = 0;
     appWindow.classList.add("hero-playing");
     wave.classList.add("is-live");
     coachEl.classList.remove("is-new");
@@ -660,14 +676,10 @@
               var li = makeBullet(text, i);
               li.classList.add("is-new");
               list.appendChild(li);
+              shown++;
               if (i === POINTS.length - 1) {
                 status.textContent = "3 points ready — preview.";
-                timers.push(setTimeout(function () {
-                  coachEl.classList.add("is-new");
-                  appWindow.classList.remove("hero-playing");
-                  replayBtn.hidden = false;
-                  played = true;
-                }, COACH_MS));
+                timers.push(setTimeout(function () { finish(); }, COACH_MS));
               }
             }, i * STAGE_MS));
           });

@@ -81,6 +81,8 @@ The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
   seen, then only on Replay. Replaces the Step 1 animator, which looped
   the points forever. Waveform gated by `.is-live`; Coach bar hidden
   while playing (`.hero-playing`); reduced motion renders the full
-  final state statically with no Replay button.
+  final state statically with no Replay button. Pause after all three
+  points finishes the moment instead of restarting (no stranded final
+  state without a Replay button).
 - **Method:** full transition/animation inventory + reduced-motion
   coverage check + fresh live re-verification after the fix.

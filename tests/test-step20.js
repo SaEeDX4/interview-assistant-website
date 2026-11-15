@@ -76,5 +76,12 @@ check("new transitions use standard durations only",
   /\.app-coach-mini \{[^}]*transition: opacity \.25s ease;/.test(clean) &&
   /\.hero-replay \{[^}]*transition: color \.15s ease, border-color \.15s ease;/.test(clean));
 
+// 11. Pause after all three points finishes the moment (no stranded
+// final state: points + status + Coach visible, but no Replay button).
+check("pause() finishes the moment once all 3 points are shown",
+  /function finish\(\) \{/.test(js) &&
+  /if \(shown === 3\) \{ finish\(\); \}/.test(js) &&
+  (js.match(/finish\(\);/g) || []).length >= 2);
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
