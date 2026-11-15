@@ -119,4 +119,5 @@ paragraph link cannot be 44px tall without breaking the line.
   announced on change; arrow keys work on the segment group. The player
   window keeps the story's `role="img"` label. Reduced motion: every beat
   renders instantly, so the player is fully usable by tap, swipe and
-  keyboard without animation.
+  keyboard without animation. The two shortened segment labels (Prep,
+  Adapt) carry `aria-label`s with the full beat names (Prepare, Concise).

@@ -27,15 +27,23 @@ check("<=860px grid track is minmax(0, 1fr), not 1fr",
 check("story steps list has min-width: 0",
   /\.story-steps \{\s*min-width: 0;\s*\}/.test(clean));
 
-// 2. The app header wraps on narrow windows instead of clipping.
+// 2. The app header wraps on narrow windows instead of clipping, and its
+// [hidden] state works: showView() hides the live header on the Home beat,
+// but .app-header { display: flex } overrode the UA [hidden] rule, so the
+// Home view showed BOTH headers (found in live verification, Step 22).
 check("app header wraps (flex-wrap) at <=860px",
   /@media \(max-width: 860px\) \{[\s\S]*?\.app-header \{\s*flex-wrap: wrap;\s*\}/.test(clean));
+check("app header [hidden] hides it (no double header on the Home beat)",
+  /\.app-header\[hidden\] \{\s*display: none;\s*\}/.test(clean));
 
 // 3. Player chrome exists: seven labelled segments, caption, nav.
 const segs = [...html.matchAll(/<button type="button" class="story-seg[^"]*" data-beat="(\d)"[^>]*>([^<]+)<\/button>/g)];
-check("seven labelled segments in order (Prepare Start Q1 Concise Coach Q2 Report)",
+check("seven labelled segments in order (Prep Start Q1 Adapt Coach Q2 Report)",
   segs.map((m) => m[1]).join(",") === "0,1,2,3,4,5,6"
-  && segs.map((m) => m[2]).join(" ") === "Prepare Start Q1 Concise Coach Q2 Report");
+  && segs.map((m) => m[2]).join(" ") === "Prep Start Q1 Adapt Coach Q2 Report");
+check("shortened segment labels keep their full names as aria-labels",
+  /data-beat="0" aria-current="true" aria-label="Prepare">Prep</.test(html)
+  && /data-beat="3" aria-label="Concise">Adapt</.test(html));
 check("caption has title + text ids, starts at beat 0",
   /<h3 id="story-caption-title">Before the interview — Prepare<\/h3>/.test(html)
   && /<p id="story-caption-text">In Home, four steps/.test(html));

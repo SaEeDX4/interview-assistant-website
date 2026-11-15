@@ -497,6 +497,9 @@ table.compare tbody tr:hover td { background: var(--surface); }
 }
 .app-window-title { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
 .app-window-bar[hidden] { display: none; }
+.app-header[hidden] { display: none; } /* Step 22 fix: showView() hides the
+  live header on the Home beat, but .app-header { display: flex } overrode
+  the UA [hidden] rule — the Home view showed BOTH headers. */
 .app-controls { margin-left: auto; display: inline-flex; gap: 16px; color: var(--muted-2); font-size: 13px; line-height: 1; }
 .app-controls i { font-style: normal; }
 .app-window-body { padding: 16px; }
