@@ -14,9 +14,9 @@ one direction only.
 |-------|------|---------|--------|
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 14 |
-| 860px | Nav / tablet portrait | mobile nav dropdown, two-column grids go single-column, roadmap stacks | 4 |
+| 860px | Tablet portrait | two-column grids go single-column, roadmap stacks | 3 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
-| 1024px | Tablet landscape | app-window 3D tilt off, wide layouts tighten | 4 |
+| 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 5 |
 
 No other width may appear in a media query. 480px and 900px are
 single-rule, component-specific breakpoints — they stay, because folding
@@ -48,3 +48,15 @@ check to confirm the fit.
   - The 14 scattered 640px blocks stay scattered (rule B3): each sits
     next to its component.
 - **Method:** full media-query inventory + JS width-logic check.
+- **Step 19** found a real breakpoint bug the earlier widths had missed:
+  the sticky header row (brand + 8 nav links + CTA, all `flex-shrink: 0` /
+  `nowrap`) is a fixed ~1016px wide, so the page scrollWidth is a constant
+  1040px for every viewport 861–1039px (measured: 139px overflow at 900px,
+  39px at 1000px, 16px at 1024px, 0 at 1040px) — the CTA button slid
+  off-screen on tablet-landscape / small-laptop widths. Fix: the mobile-nav
+  dropdown block moved from 860px to 1024px (the hamburger now covers
+  ≤1024px), and the nav-link padding tightened 12px 8px → 12px 4px so the
+  desktop nav fits at 1025px (952px row vs 977px available). 860px stays in
+  the set (three blocks still use it); 1024px gains the nav. No JS change.
+  Enforced by two new regression checks in `tests/test-step15.js` and by
+  the 900px + 1025px captures in `tests/review19.py`.
