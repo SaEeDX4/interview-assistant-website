@@ -35,7 +35,7 @@ centre then matches the blue send button's centre one row below).
 | A10 | `.seg-btn` (answer length) | 44px | `min-height: 44px` (guard; computed 44.2px) |
 | A11 | `.site-nav a` | ~49px | padding 12px 8px + 15px/1.65 |
 | A12 | `.site-footer nav a` | ~49px | padding 12px 0 + 15px/1.65 |
-| A13 | `.sticky-cta-close` | = primary height, ≥44px | stretches to the primary button's height, square via aspect-ratio: 1, 44px floor (Step 28: in-flow flex item, 12px gap from the primary button) |
+| A13 | `.sticky-cta-close` | 51×51px | width/height from the shared --sticky-control-h token (51px), 44px floor (Step 28 fix-up: in-flow flex item, 12px gap from the primary button; stretch + aspect-ratio did not transfer on a flex item — the live check caught 44×50.75) |
 | A14 | Range thumb (minutes calculator) | 24px | custom thumb, webkit + moz (the track is also clickable) |
 | A15 | `.app-replay` (hero Replay icon) | 44×44px | button width/height 44px; visible box 36×30 (Step 27: same height as the chips, same width as the send button; 16px SVG glyph; focus ring on the visible box; Step 28: the box is right-aligned inside the button, so its centre matches the send button's centre) |
 

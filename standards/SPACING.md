@@ -61,7 +61,7 @@ something else.)
 | Number / check marker | 22px circle | 12px | 8px beside (R13) |
 | Mini marker | 20px circle | 11px | 8px beside (R13) |
 | Flow icon | 44px, radius 12px | — | 12px below (R11) |
-| Sticky-bar close | square, side = primary button height (~51px today), radius 12px | 18px | 12px gap to the primary button (Step 28: stretch + aspect-ratio 1, 44px floor) |
+| Sticky-bar close | 51px square (shared --sticky-control-h token with the buttons), radius 12px | 18px | 12px gap to the primary button (Step 28 fix-up) |
 | Nav toggle | ~44px touch target | 16px | 12px 16px padding |
 
 Rule: an icon never touches the text next to it — at least 8px beside it,

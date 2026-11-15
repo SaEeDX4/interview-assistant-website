@@ -17,10 +17,14 @@
    — a fixed 51px would drift the moment the button's font or padding
    changes, and no platform stretches a dismiss to match a primary
    (research: M3 snackbar and Fluent InfoBar use fixed-size dismisses;
-   equality there comes from a shared fixed height). Fix: the dismiss
-   stretches to the bar's content height (align-self: stretch) with
-   aspect-ratio: 1, so it is always a square the same height as the
-   button, with a 44px floor. */
+   equality there comes from a shared fixed height). Fix-up: one token,
+   --sticky-control-h: 51px, declared on the bar — the buttons and the
+   dismiss all read it, so they are always the same height and the
+   dismiss is always square. The first attempt (align-self: stretch +
+   aspect-ratio: 1) did NOT work: on a flex item the cross size becomes
+   definite only via stretch, after the main size is already resolved, so
+   the ratio never transferred — the live check caught the close rendering
+   44×50.75, tall but not square. */
 const fs = require("fs");
 const path = require("path");
 
@@ -58,14 +62,16 @@ check("Replay focus ring still lands on the visible box (it moves with the box)"
 
 // 2. Sticky dismiss: same height as the primary button, always a square.
 const closeRule = (clean.match(/\.sticky-cta-close \{[\s\S]*?\}/) || [""])[0];
-check("sticky dismiss stretches to the bar's content height",
-  /align-self: stretch;/.test(closeRule));
-check("sticky dismiss stays square via aspect-ratio: 1",
-  /aspect-ratio: 1;/.test(closeRule));
+check("sticky bar declares one shared control height (51px, the buttons' natural height rounded)",
+  /\.sticky-cta \{[\s\S]*?--sticky-control-h: 51px;/.test(clean));
+check("sticky dismiss reads the token for both sides, so it is always a square the button's height",
+  /width: var\(--sticky-control-h\);/.test(closeRule) && /height: var\(--sticky-control-h\);/.test(closeRule));
+check("sticky bar buttons read the same token for their height",
+  /\.sticky-cta \.btn \{[\s\S]*?height: var\(--sticky-control-h\);/.test(clean));
+check("sticky dismiss has no stretch/aspect-ratio left (the flex quirk that rendered 44x50.75)",
+  !/align-self: stretch;/.test(closeRule) && !/aspect-ratio: 1;/.test(closeRule));
 check("sticky dismiss has a 44px floor (never below the Step 11 target)",
   /min-width: 44px;/.test(closeRule) && /min-height: 44px;/.test(closeRule));
-check("sticky dismiss has no fixed 44px width/height to drift from (a measured 51px would be stale)",
-  !/(^|[\s;{])width: 44px;/.test(closeRule) && !/(^|[\s;{])height: 44px;/.test(closeRule));
 check("sticky dismiss is still in-flow, 12px radius, surface fill, centred glyph",
   !/position:\s*absolute/.test(closeRule) && /flex: none;/.test(closeRule) &&
   /border-radius: 12px;/.test(closeRule) && /background: var\(--surface-2\);/.test(closeRule) &&

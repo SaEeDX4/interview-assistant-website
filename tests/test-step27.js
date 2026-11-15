@@ -60,11 +60,11 @@ check("Replay focus ring lands on the visible box, not the 44px button",
 const closeRule = (clean.match(/\.sticky-cta-close \{[\s\S]*?\}/) || [""])[0];
 check("sticky dismiss is in-flow (no absolute positioning)",
   !/position:\s*absolute/.test(closeRule) && /flex: none;/.test(closeRule));
-check("sticky dismiss stretches to the primary button's height (Step 28: square via aspect-ratio, 44px floor, no fixed 44px)",
+check("sticky dismiss is a 51px square from the shared token, 44px floor (Step 28 fix-up)",
   /border-radius: 12px;/.test(closeRule) && /background: var\(--surface-2\);/.test(closeRule) &&
-  /align-self: stretch;/.test(closeRule) && /aspect-ratio: 1;/.test(closeRule) &&
+  /width: var\(--sticky-control-h\);/.test(closeRule) && /height: var\(--sticky-control-h\);/.test(closeRule) &&
   /min-width: 44px;/.test(closeRule) && /min-height: 44px;/.test(closeRule) &&
-  !/(^|[\s;{])width: 44px;/.test(closeRule) && !/(^|[\s;{])height: 44px;/.test(closeRule));
+  !/align-self: stretch;/.test(closeRule) && !/aspect-ratio: 1;/.test(closeRule));
 check("sticky bar has a 12px gap and 16px side padding (no 56px reserve)",
   /\.sticky-cta \{[\s\S]*?gap: 12px;[\s\S]*?padding: 12px 16px/.test(clean) &&
   !/\.sticky-cta \{[^}]*56px/.test(clean));

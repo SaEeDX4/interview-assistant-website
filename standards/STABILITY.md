@@ -313,5 +313,12 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   The sticky bar's dismiss stretches to the primary button's height
   (align-self: stretch + aspect-ratio: 1, 44px floor), so the two are
   always the same height, square — no measured 51px to drift.
+- **Step 28 fix-up (live check):** the sticky dismiss rendered 44×50.75 —
+  tall but not square. Root cause: aspect-ratio does not transfer on a
+  flex item whose cross size becomes definite only via stretch, after the
+  main size is already resolved. Fix: one token, --sticky-control-h:
+  51px, read by the buttons and the dismiss alike. The Replay centring
+  passed (0.00px at every width) and the 360px mid-play +40px bump from
+  the Step 27 check did not reproduce.
 - Tests: step25 (27 checks: chips + fade + Replay + entrance); full
   suite 319; sims 41 (story, incl. 2 entrance checks) + 17 (demo).
