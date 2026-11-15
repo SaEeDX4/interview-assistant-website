@@ -4,7 +4,9 @@
 (self-hosted Inter). **Method:** `tests/review19.py` (all test suites,
 link audit, content audit, multi-size renders, PageSpeed) + visual
 inspection of the captures. Raw results: `tests/step19-report.json`,
-`tests/step19-run3.log`; captures: `tests/step19-captures/`.
+`tests/step19-run3.log`; captures: `tests/step19-captures/`
+(`step19-report.json` is in the repo; the run logs and screenshot captures
+are local-only by design — see `tests/README.md`).
 
 ## Verdict: PASS — one real finding, fixed and re-verified
 

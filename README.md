@@ -21,9 +21,12 @@ native Mac app are future research.
 | `tests/` | Automated checks that enforce the standards, the applied fix scripts, and the full review (`review19.py` + `step19-report.json`). |
 | `docs/` | The V2 documentation package: 71 numbered specialist docs (01–08 at root, 09–71 in topic folders). |
 | `audit/` | The V2 source audit: verdict, source proof, scorecard, findings, decision log. |
+| `evidence/` | Audit traceability inputs: the original V1 attachments, preserved unmodified, plus platform references and PDF observations. |
+| `website-review/` | The input-status note: what website source was (and was not) provided for the V2 review. |
 | `00-MASTER-DOCUMENT-INDEX.md` | Index of all 71 V2 docs with owners and dependencies. |
 | `MANIFEST.json`, `SHA256SUMS.txt`, `VERIFY_PACKAGE.py` | The V2 package manifest, checksums, and verifier (see below). |
 | `.github/workflows/static.yml` | The GitHub Pages deploy (Static HTML, artifact `website/`). |
+| `.gitignore` | Local-only artifacts (test screenshots, run logs) that are never committed. |
 
 ## The website
 
@@ -62,7 +65,9 @@ The review's latest results are in `tests/step19-report.json`
 `docs/`, `audit/`, `00-MASTER-DOCUMENT-INDEX.md`, `MANIFEST.json`,
 `SHA256SUMS.txt`, and `VERIFY_PACKAGE.py` are the Commercial V2 package:
 71 numbered docs (16,531 lines), 45 audit findings, 40 website checklist
-items, 16 owner decisions. Reading order:
+items, 16 owner decisions. The package also includes `evidence/` (the
+original V1 attachments, preserved unmodified, for audit traceability)
+and `website-review/` (the input-status note). Reading order:
 
 1. `audit/01-EXECUTIVE-VERDICT.md` — launch verdict and top blockers.
 2. `audit/02-SOURCE-PROOF.md` — what was actually inspected.
