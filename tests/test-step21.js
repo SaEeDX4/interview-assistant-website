@@ -22,8 +22,9 @@ const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 const heroHtml = html.split('id="story"')[0];
 const storyHtml = html.split('id="story"')[1] || "";
 
-// 1. Seven beats, in order.
-const beats = [...html.matchAll(/data-beat="(\d)"/g)].map((m) => m[1]);
+// 1. Seven beats, in order (the story steps; the player segments below the
+// layout carry their own data-beat and are not counted here).
+const beats = [...html.matchAll(/<li class="story-step" data-beat="(\d)">/g)].map((m) => m[1]);
 check("story has seven beats 0-6 in order",
   beats.join(",") === "0,1,2,3,4,5,6");
 
@@ -75,7 +76,7 @@ check("live window hidden at <=860px and under reduced motion; snapshots shown",
 
 // 7. Activation: centre band, timed beats play once, finals render fully.
 check("beats activate at the viewport centre band, timed beats play once",
-  /rootMargin: "-45% 0px -45% 0px", threshold: 0/.test(js) &&
+  /rootMargin: "-40% 0px -40% 0px", threshold: 0/.test(js) &&
   /var playedBeats = \{\};/.test(js) &&
   /if \(beat === 0 && !playedBeats\[0\]\)/.test(js) &&
   /if \(beat === 2 && !playedBeats\[2\]\)/.test(js) &&

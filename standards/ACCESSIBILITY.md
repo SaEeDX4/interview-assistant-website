@@ -112,3 +112,11 @@ paragraph link cannot be 44px tall without breaking the line.
     `aria-expanded` correctly in JS.
 - **Method:** CSS measurement of every target + ARIA census of all 10
   pages + fresh live re-verification after the fix.
+- **Step 22 — mobile story player:** all seven segments are buttons with
+  `min-height: 44px`; the ‹ › arrows are 44×44px buttons with `aria-label`s
+  and `disabled` at the ends; the active segment carries `aria-current`;
+  the caption has `aria-live="polite"` so the beat's title and text are
+  announced on change; arrow keys work on the segment group. The player
+  window keeps the story's `role="img"` label. Reduced motion: every beat
+  renders instantly, so the player is fully usable by tap, swipe and
+  keyboard without animation.

@@ -69,7 +69,9 @@ are retired with the waveform itself: the real app has no waveform.
   infinite loop. The Step 20 timings (type 45ms/char, silence beat 700ms,
   Coach flip 400ms) are retired with the typing effect and the Coach bar.
 - Scroll story (Step 21): a beat activates as it crosses the middle 10%
-  of the viewport (IO centre band, `-45% 0px -45% 0px`). Prepare stages
+  of the viewport (IO centre band, `-40% 0px -40% 0px` — the middle 20%: a
+  fast 150px scroll jump cannot skip a beat, since skipping needs a jump
+  larger than step height + band height). Prepare stages
   tick 150ms apart; the first question reuses the hero cadence
   (transcript 160ms/word, thinking 500ms, points 450ms apart). Timed
   beats play once; revisiting a beat renders its final state at once.
@@ -115,3 +117,12 @@ are retired with the waveform itself: the real app has no waveform.
   final state without a Replay button).
 - **Method:** full transition/animation inventory + reduced-motion
   coverage check + fresh live re-verification after the fix.
+- **Step 22 — mobile story player:** the player reuses the story's timed
+  beats (Prepare stages 150ms, transcript 160ms/word, points 450ms apart)
+  and the 250ms `rise`; a swipe changes the beat at once (no slide
+  animation — the window's state swaps, the bullets rise as usual). The
+  window has `touch-action: pan-y`, so vertical swipes scroll the page and
+  only a horizontal swipe past 40px changes the beat (direction-locked, no
+  scroll-jacking). Segment state changes use the 150ms transition. Reduced
+  motion: every beat renders its final state at once, no timers — the
+  player works fully by tap, swipe and keyboard.

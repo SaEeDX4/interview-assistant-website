@@ -131,3 +131,10 @@ token hues — the standard locks that in so no new hue can creep in.)
     Pro meter — all imperceptible).
 - **Method:** full color inventory + WCAG contrast computation for every
   pair + fresh live re-verification after the fix.
+- **Step 22 — mobile story player:** segments use only app tokens —
+  inactive `var(--app-surface-2)` bg + `var(--app-dim)` text (6.83:1),
+  active `var(--app-accent-strong)` bg + `var(--app-text)` text (4.52:1),
+  visited `var(--app-surface-3)` bg + `var(--app-dim)` text (6.09:1) — all
+  ≥4.5:1, computed. The caption and counter reuse the site tokens already
+  verified in the Step 12 inventory. No new colors; the player header sheds
+  the decorative buttons at ≤860px but keeps every visible state in-token.

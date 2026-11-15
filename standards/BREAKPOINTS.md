@@ -14,9 +14,9 @@ one direction only.
 |-------|------|---------|--------|
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 14 |
-| 860px | Tablet portrait | two-column grids go single-column, roadmap stacks | 3 |
+| 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
-| 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 5 |
+| 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 4 |
 
 No other width may appear in a media query. 480px and 900px are
 single-rule, component-specific breakpoints — they stay, because folding
@@ -60,3 +60,20 @@ check to confirm the fit.
   the set (three blocks still use it); 1024px gains the nav. No JS change.
   Enforced by two new regression checks in `tests/test-step15.js` and by
   the 900px + 1025px captures in `tests/review19.py`.
+- **Step 22** found a second fixed-width overflow, this time from a grid
+  track, not a flex row: at ≤860px `.story-layout` used
+  `grid-template-columns: 1fr` (= `minmax(auto, 1fr)`), whose auto minimum
+  is the widest snapshot's min-content — beat 3's app header, 436px
+  (status pill + Concise badge + controls, nowrap) — so the track grew to
+  435px and the page scrollWidth was a constant 451px at 390px (61px
+  overflow) and at 420px (31px, the Z Fold7 cover width), measured live.
+  Fix: `minmax(0, 1fr)` + `.story-steps { min-width: 0; }`, and the app
+  header wraps (`flex-wrap: wrap`) instead of clipping. The same step
+  added the mobile story player (one more 860px block, next to the story
+  rules, per B3). The table counts are corrected here: 860px is 5 blocks,
+  1024px is 4 (both were stale). The player needs to know the mode in JS;
+  per B4 it reads the breakpoint from the CSS, not a width literal: the
+  snapshots are `display: none` on desktop and `display: block` at ≤860px,
+  so a snapshot's computed display IS the breakpoint (`isNarrow()`),
+  re-read on resize (fold/unfold, rotate). Enforced by
+  `tests/test-step22.js` and the live scrollWidth check at 390/420/320px.

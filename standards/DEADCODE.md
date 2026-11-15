@@ -55,3 +55,11 @@ will style it thinking it is live, or wonder why a rule has no effect.
 - **Method:** automated census (CSS selectors × HTML classes × JS
   references) + nav/footer byte comparison + fresh live re-verification
   after the fix.
+- **Step 22 — mobile story player:** new classes `.story-segments`,
+  `.story-seg`, `.story-caption`, `.story-nav`, `.story-prev`,
+  `.story-next`, `.story-count` are all used in `index.html`; the
+  `story-player` class on `<html>` is set by `app.js` (mode switch);
+  `.is-done` is toggled by `app.js`. The player chrome is `display: none`
+  by default and shown only under `html.story-player` at ≤860px — hidden
+  by default is not dead. The snapshots stay in the HTML as the no-JS
+  fallback. Census still green (test-step17 10/10).

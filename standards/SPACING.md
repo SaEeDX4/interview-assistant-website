@@ -109,3 +109,6 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
 - **Method:** full CSS inventory + visual review of all 10 pages at
   320/360/390/414/430/768/1024/1280 (Step 8 captures) + fresh live
   re-verification after the fix.
+- **Step 22 — mobile story player:** segments use a 4px gap and 12px 4px
+  padding; the player layout uses a 16px gap; the caption heading has an
+  8px bottom margin. All on the scale; no new values, no exemptions.

@@ -127,18 +127,28 @@
     </div>
   </section>
 
-  <!-- SCROLL STORY (Step 21): one interview, start to finish, in the real
-       app window. Simulated preview — no audio, no microphone, no recording.
-       The pinned window is the live view; on narrow screens and under
-       reduced motion each beat shows its own static snapshot instead. -->
+  <!-- SCROLL STORY (Steps 21–22): one interview, start to finish, in the
+       real app window. Simulated preview — no audio, no microphone, no
+       recording. Desktop: the pinned window follows the scroll. Mobile:
+       one swipeable player (segments + one window + caption). Without JS:
+       each beat shows its own static snapshot instead. -->
   <section class="section" id="story" aria-labelledby="story-title">
     <div class="container">
       <div class="story-head">
         <p class="eyebrow">One interview, start to finish</p>
         <h2 id="story-title">An interview, start to finish</h2>
-        <p class="story-lede">Scroll through a whole interview in the real app window — from Prepare to the report. This is a simulated preview of the Windows app: no audio, no microphone, no recording.</p>
+        <p class="story-lede">Follow a whole interview in the real app window — from Prepare to the report. This is a simulated preview of the Windows app: no audio, no microphone, no recording.</p>
       </div>
       <div class="story-layout">
+        <div class="story-segments" role="group" aria-label="Story beats">
+          <button type="button" class="story-seg is-active" data-beat="0" aria-current="true">Prepare</button>
+          <button type="button" class="story-seg" data-beat="1">Start</button>
+          <button type="button" class="story-seg" data-beat="2">Q1</button>
+          <button type="button" class="story-seg" data-beat="3">Concise</button>
+          <button type="button" class="story-seg" data-beat="4">Coach</button>
+          <button type="button" class="story-seg" data-beat="5">Q2</button>
+          <button type="button" class="story-seg" data-beat="6">Report</button>
+        </div>
         <div class="story-window">
           <div class="app-window" role="img" aria-label="The Interview Assistant app window, showing the current beat of the interview story.">
             <div class="app-window-bar" id="story-home-header" hidden>
@@ -212,6 +222,15 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="story-caption" aria-live="polite">
+          <h3 id="story-caption-title">Before the interview — Prepare</h3>
+          <p id="story-caption-text">In Home, four steps get you ready: account, profile, interview, pre-interview check. Press Prepare and the app builds your 50–150 question bank in about a minute — fifteen stages, from verifying your profile to caching the answers.</p>
+        </div>
+        <div class="story-nav">
+          <button type="button" class="story-prev" aria-label="Previous beat" disabled>‹</button>
+          <span class="story-count" id="story-count">1 / 7</span>
+          <button type="button" class="story-next" aria-label="Next beat">›</button>
         </div>
         <ol class="story-steps">
           <li class="story-step" data-beat="0">

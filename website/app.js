@@ -758,14 +758,17 @@
   }
 })();
 
-/* Step 21 — scroll story: one interview, start to finish. The pinned
-   window renders the beat that crosses the middle of the viewport
-   (IntersectionObserver with a centre band). Every beat sets the window's
-   complete state, so scrolling fast never strands a half state. Beats 0
-   (Prepare stages) and 2 (the first question) play a short timed sequence
-   the first time they activate; later activations render the final state
-   at once. Reduced motion or no IO: the static HTML (Beat 1) stays and
-   the snapshots carry the story. */
+/* Steps 21–22 — scroll story: one interview, start to finish. Two modes,
+   one window, one set of beat states. Desktop: the pinned window renders
+   the beat that crosses the middle of the viewport (IntersectionObserver
+   with a centre band). Mobile (<=860px, Step 22): one swipeable player —
+   segments, arrows, swipe, keyboard — driving the same window. Every beat
+   sets the window's complete state, so scrolling fast never strands a half
+   state. Beats 0 (Prepare stages) and 2 (the first question) play a short
+   timed sequence the first time they activate; later activations render
+   the final state at once. Reduced motion: finals render at once, no
+   timers. No IO on desktop: the static HTML (Beat 1) stays and the
+   snapshots carry the story. */
 (function () {
   "use strict";
   var steps = Array.prototype.slice.call(document.querySelectorAll(".story-step"));
@@ -792,12 +795,20 @@
   var historyEl = document.getElementById("story-history");
   var historyText = document.getElementById("story-history-text");
   var storyWindow = list && list.closest ? list.closest(".story-window") : null;
+  var segWrap = document.querySelector(".story-segments");
+  var snapProbe = document.querySelector(".story-snap");
+  var segBtns = Array.prototype.slice.call(document.querySelectorAll(".story-seg"));
+  var captionTitle = document.getElementById("story-caption-title");
+  var captionText = document.getElementById("story-caption-text");
+  var countEl = document.getElementById("story-count");
+  var prevBtn = document.querySelector(".story-prev");
+  var nextBtn = document.querySelector(".story-next");
   if (!pill || !pillText || !badge || !startEl || !homeHeader || !liveHeader || !homeView || !liveView
       || !reportView || !prepareBar || !prepareStage || !openLive || !questionEl || !transcriptEl
       || !contextEl || !thinkingEl || !list || !metaEl || !coachEl || !historyEl || !historyText
       || !storyWindow) { return; }
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
-  if (!("IntersectionObserver" in window)) { return; }
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasIO = "IntersectionObserver" in window;
 
   var Q1 = "Tell me about yourself.";
   var Q1_POINTS = [
@@ -1020,28 +1031,123 @@
     }, TRANSCRIPT.length * WORD_MS + DETECT_MS));
   }
 
+  var currentBeat = 0;
+  var playerOn = false;
+  var desktopSetup = false;
+  var playerSetup = false;
+
   function activate(beat) {
     clearTimers();
-    // The window only renders while it is displayed (desktop, motion ok);
-    // on narrow screens the snapshots carry the story.
+    // The window only renders while it is displayed (desktop, motion ok,
+    // or the mobile player); otherwise the snapshots carry the story.
     if (storyWindow && getComputedStyle(storyWindow).display === "none") { return; }
+    currentBeat = beat;
     steps.forEach(function (s) {
       s.classList.toggle("is-active", Number(s.getAttribute("data-beat")) === beat);
     });
-    if (beat === 0 && !playedBeats[0]) { playedBeats[0] = true; playPrepare(); return; }
-    if (beat === 2 && !playedBeats[2]) { playedBeats[2] = true; playQuestion(); return; }
-    finals[beat]();
+    if (reduced) { finals[beat](); }
+    else if (beat === 0 && !playedBeats[0]) { playedBeats[0] = true; playPrepare(); }
+    else if (beat === 2 && !playedBeats[2]) { playedBeats[2] = true; playQuestion(); }
+    else { finals[beat](); }
+    if (playerOn) { setPlayerUI(beat); }
   }
 
-  // A beat activates as it crosses the middle 10% of the viewport.
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        activate(Number(entry.target.getAttribute("data-beat")));
-      }
+  // The player chrome mirrors the current beat: segments, caption, counter.
+  function setPlayerUI(beat) {
+    segBtns.forEach(function (btn, i) {
+      btn.classList.toggle("is-active", i === beat);
+      btn.classList.toggle("is-done", i < beat);
+      if (i === beat) { btn.setAttribute("aria-current", "true"); }
+      else { btn.removeAttribute("aria-current"); }
     });
-  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
-  steps.forEach(function (s) { io.observe(s); });
+    var h3 = steps[beat] && steps[beat].querySelector("h3");
+    var p = steps[beat] && steps[beat].querySelector("p");
+    if (captionTitle && h3) { captionTitle.textContent = h3.textContent; }
+    if (captionText && p) { captionText.textContent = p.textContent; }
+    if (countEl) { countEl.textContent = (beat + 1) + " / " + steps.length; }
+    if (prevBtn) { prevBtn.disabled = beat === 0; }
+    if (nextBtn) { nextBtn.disabled = beat === steps.length - 1; }
+  }
+
+  function goBeat(i) {
+    if (i < 0) { i = 0; }
+    if (i > steps.length - 1) { i = steps.length - 1; }
+    activate(i);
+  }
+
+  // Desktop: a beat activates as it crosses the middle 20% of the viewport.
+  function setupDesktop() {
+    if (desktopSetup || reduced || !hasIO) { return; }
+    desktopSetup = true;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          activate(Number(entry.target.getAttribute("data-beat")));
+        }
+      });
+    }, { rootMargin: "-40% 0px -40% 0px", threshold: 0 });
+    steps.forEach(function (s) { io.observe(s); });
+  }
+
+  // Mobile (Step 22): the swipeable player. Tap a segment, tap ‹ ›, swipe
+  // the window, or use arrow keys on the segments. Vertical swipes scroll
+  // the page (the window has touch-action: pan-y); only a horizontal swipe
+  // past 40px changes the beat. Direction-locked, no scroll-jacking.
+  function setupPlayer() {
+    if (playerSetup) { return; }
+    playerSetup = true;
+    segBtns.forEach(function (btn, i) {
+      btn.addEventListener("click", function () { goBeat(i); });
+    });
+    if (prevBtn) { prevBtn.addEventListener("click", function () { goBeat(currentBeat - 1); }); }
+    if (nextBtn) { nextBtn.addEventListener("click", function () { goBeat(currentBeat + 1); }); }
+    if (segWrap) {
+      segWrap.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { goBeat(currentBeat - 1); }
+        if (e.key === "ArrowRight") { goBeat(currentBeat + 1); }
+      });
+    }
+    var touchX = null;
+    storyWindow.addEventListener("touchstart", function (e) {
+      if (!playerOn || !e.changedTouches || !e.changedTouches.length) { return; }
+      touchX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    storyWindow.addEventListener("touchend", function (e) {
+      if (!playerOn || touchX === null || !e.changedTouches || !e.changedTouches.length) { return; }
+      var dx = e.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) > 40) { goBeat(currentBeat + (dx < 0 ? 1 : -1)); }
+    }, { passive: true });
+  }
+
+  // Narrow mode is read from the CSS, not from a width in JS: the snapshots
+  // are display:none on desktop and display:block at <=860px, so the probe's
+  // computed display IS the breakpoint (Step 15: JS has no width logic).
+  // A resize re-reads it (fold/unfold, rotate).
+  function isNarrow() {
+    return !!snapProbe && getComputedStyle(snapProbe).display !== "none";
+  }
+
+  // One story, two modes: the player on narrow screens, the scroll story
+  // on wide ones. Switching (fold/unfold, rotate, resize) keeps the beat.
+  function applyMode() {
+    if (isNarrow()) {
+      if (!playerOn) {
+        playerOn = true;
+        document.documentElement.classList.add("story-player");
+        setupPlayer();
+        activate(currentBeat);
+      }
+    } else {
+      if (playerOn) {
+        playerOn = false;
+        document.documentElement.classList.remove("story-player");
+      }
+      setupDesktop();
+    }
+  }
+  window.addEventListener("resize", applyMode);
+  applyMode();
 })();
 
 /* Step 1 — scroll reveal + header shadow. Elements get .reveal via JS

@@ -112,3 +112,7 @@ a full-width paragraph far too long to read comfortably — fixed to 68ch.
   from `website/fonts/` (latin 71KB + latin-ext 130KB, `font-display: swap`, latin
   preloaded). Latin + latin-ext cover every Inter glyph the site uses; arrows,
   checkmarks and Arabic/Persian fall back to system fonts exactly as before.
+- **Step 22 — mobile story player:** segment labels 11px/600, caption
+  heading 20px, counter 13px, nav arrows 20px — all on the scale. No new
+  sizes, weights, line-heights or letter-spacing; the caption paragraph
+  reuses the body text.
