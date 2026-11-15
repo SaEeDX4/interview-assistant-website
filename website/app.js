@@ -13,8 +13,8 @@
 (function () {
   "use strict";
 
-  var answerEl = document.getElementById("demo-answer");
-  var questionEl = document.getElementById("demo-question");
+  var questionStack = document.getElementById("demo-question-stack");
+  var answerStack = document.getElementById("demo-answer-stack");
   var statusEl = document.getElementById("demo-status");
   var sampleTagEl = document.getElementById("demo-sample-tag");
   var inputEl = document.getElementById("demo-input");
@@ -23,9 +23,23 @@
   var modeCoachBtn = document.getElementById("mode-coach");
 
   // Guard against missing nodes: a missing demo must not throw on load.
-  if (!answerEl || !questionEl || !statusEl || !inputEl || !formEl ||
+  if (!questionStack || !answerStack || !statusEl || !inputEl || !formEl ||
       !modeAnswerBtn || !modeCoachBtn) {
     return;
+  }
+  // The static "tell" question + answer stay in the HTML as layer 0
+  // (the no-JS demo); the rest of the layers are built by JS.
+  var staticQuestionEl = document.getElementById("demo-question");
+  var staticAnswerEl = document.getElementById("demo-answer");
+  if (!staticQuestionEl || !staticAnswerEl) { return; }
+
+  // Step 23 — fixed stage: the sample tag is hidden with visibility, not
+  // display, so its space is reserved from the first paint. It starts as
+  // `hidden` in the HTML (no-JS keeps it out of flow entirely); convert
+  // here, before the first paint.
+  if (sampleTagEl.hidden) {
+    sampleTagEl.hidden = false;
+    sampleTagEl.classList.add("is-hidden");
   }
 
   var mode = "answer"; // "answer" | "coach" — persists across questions.
@@ -200,6 +214,11 @@
   // the app remembers the stories already used, so the next answer
   // reaches for a fresh one (source: docs/v2/LIVE_MEMORY.md).
   var nextEl = document.getElementById("demo-next");
+  // Step 23: reserve the card's space from the first paint (see above).
+  if (nextEl && nextEl.hidden) {
+    nextEl.hidden = false;
+    nextEl.classList.add("is-hidden");
+  }
   function showDemoNext() {
     if (!nextEl) { return; }
     var titleEl = document.getElementById("demo-next-title");
@@ -214,7 +233,7 @@
         ? "The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same Coach keywords and structure are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one."
         : "The Trial gives you 30 lifetime live minutes — about 15 answers like this one. In the real app, the same three points are built from your confirmed resume facts and your prepared question bank — and it remembers the stories you already used, so the next answer reaches for a fresh one.";
     }
-    nextEl.hidden = false;
+    nextEl.classList.remove("is-hidden");
   }
 
   function makeBullet(text, i) {
@@ -229,151 +248,187 @@
     return li;
   }
 
-  function finishRender(myRun, statusText) {
-    if (myRun !== runId) { return; }
-    answerEl.setAttribute("aria-busy", "false");
-    setStatus(statusText);
-    showDemoNext();
+  // Step 23 — fixed stage: every sample is a pre-rendered layer, so the
+  // demo window is always as tall as its tallest sample and nothing below
+  // it moves when a sample is picked or a point lands. Question layers:
+  // one per sample (SAMPLE_KEYS order) + 1 fallback for typed questions
+  // (index 10). Answer layers: 2 per sample (answer, then coach) + 2
+  // fallback (indices 20, 21). The static "tell" question + answer stay
+  // in the HTML as layer 0, so no-JS still shows the demo.
+  var SAMPLE_KEYS = ["tell", "hire", "weakness", "story", "five", "fa", "ar", "salary", "conflict", "why"];
+  var questionLayers = [];
+  var answerLayers = [];
+  var intLayers = [];
+  var currentAnswerLayer = null;
+
+  function hideAllLayers(layers) {
+    layers.forEach(function (layer) { layer.classList.add("is-hidden"); });
+  }
+  function showLayer(layers, i) {
+    hideAllLayers(layers);
+    layers[i].classList.remove("is-hidden");
+    return layers[i];
+  }
+  function hideRows(layer) {
+    Array.prototype.forEach.call(layer.querySelectorAll("li"), function (li) {
+      li.classList.add("is-hidden");
+      li.classList.remove("is-new");
+    });
+  }
+  function makeRow(text, isKeys) {
+    var li = document.createElement("li");
+    var dot = document.createElement("span");
+    dot.className = "app-dot";
+    dot.setAttribute("aria-hidden", "true");
+    li.appendChild(dot);
+    var span = document.createElement("span");
+    if (isKeys) { span.className = "coach-keys"; }
+    span.textContent = text;
+    li.appendChild(span);
+    li.classList.add("is-hidden");
+    return li;
+  }
+  function buildAnswerLayer(items, rtl, lang) {
+    var ul = document.createElement("ul");
+    ul.className = "demo-answer";
+    ul.setAttribute("aria-busy", "false");
+    ul.dir = rtl ? "rtl" : "ltr";
+    ul.lang = lang || (rtl ? "fa" : "en");
+    items.forEach(function (text) {
+      var li = makeBullet(text);
+      li.classList.add("is-hidden");
+      ul.appendChild(li);
+    });
+    ul.classList.add("is-hidden");
+    return ul;
+  }
+  function buildCoachLayer(coach, rtl, lang) {
+    var ul = document.createElement("ul");
+    ul.className = "demo-answer coach";
+    ul.setAttribute("aria-busy", "false");
+    ul.dir = rtl ? "rtl" : "ltr";
+    ul.lang = lang || (rtl ? "fa" : "en");
+    ul.appendChild(makeRow(coach.keys.join(" · "), true));
+    ul.appendChild(makeRow(coach.structure, false));
+    ul.classList.add("is-hidden");
+    return ul;
+  }
+  function buildDemoLayers() {
+    // Questions: adopt the static "tell" question as layer 0.
+    questionLayers.push(staticQuestionEl);
+    SAMPLE_KEYS.slice(1).forEach(function (key) {
+      var sample = SAMPLES[key];
+      var p = document.createElement("p");
+      p.className = "demo-question";
+      p.textContent = "“" + sample.q + "”";
+      p.dir = sample.rtl ? "rtl" : "ltr";
+      p.lang = sample.lang || "en";
+      p.classList.add("is-hidden");
+      questionStack.appendChild(p);
+      questionLayers.push(p);
+    });
+    // Fallback question layer (typed questions): text set on submit.
+    var fallbackQ = document.createElement("p");
+    fallbackQ.className = "demo-question";
+    fallbackQ.classList.add("is-hidden");
+    questionStack.appendChild(fallbackQ);
+    questionLayers.push(fallbackQ);
+
+    // Answers: adopt the static "tell" answer as layer 0, build the
+    // tell coach layer as layer 1, then answer + coach per sample.
+    Array.prototype.forEach.call(staticAnswerEl.querySelectorAll("li"), function (li) {
+      li.classList.add("is-hidden");
+    });
+    answerLayers.push(staticAnswerEl);
+    var tellCoach = buildCoachLayer(SAMPLES.tell.coach, false, "en");
+    answerStack.appendChild(tellCoach);
+    answerLayers.push(tellCoach);
+    SAMPLE_KEYS.slice(1).forEach(function (key) {
+      var sample = SAMPLES[key];
+      var a = buildAnswerLayer(sample.answer, sample.rtl, sample.lang);
+      answerStack.appendChild(a);
+      answerLayers.push(a);
+      var c = buildCoachLayer(sample.coach, sample.rtl, sample.lang);
+      answerStack.appendChild(c);
+      answerLayers.push(c);
+    });
+    var fbA = buildAnswerLayer(FALLBACK.answer, false, "en");
+    answerStack.appendChild(fbA);
+    answerLayers.push(fbA);
+    var fbC = buildCoachLayer(FALLBACK.coach, false, "en");
+    answerStack.appendChild(fbC);
+    answerLayers.push(fbC);
   }
 
-  // Answer mode: exactly 3 bullets, inserted one at a time into the DOM.
-  // At t=0/400/800 ms after render starts, visible counts are 1/2/3.
-  // Reduced motion: all three at once, nothing hidden.
-  function renderBullets(items, rtl, lang, myRun) {
-    // Keep the skeleton lines as placeholders: each staged bullet replaces
-    // one skeleton, so the area never goes dead while points 2-3 prepare.
-    var skels = Array.prototype.slice.call(answerEl.querySelectorAll("li.skel"));
-    answerEl.classList.remove("coach");
-    answerEl.dir = rtl ? "rtl" : "ltr";
-    answerEl.lang = lang || (rtl ? "fa" : "en");
-    answerEl.setAttribute("aria-busy", "true");
+  // Reveal a layer's rows one at a time (400ms apart), then done().
+  // Reduced motion: all at once. The rows are pre-rendered hidden, so
+  // the layer — and the window — never change height while they land.
+  function revealRows(layer, list, isStale, done) {
+    var rows = Array.prototype.slice.call(layer.querySelectorAll("li"));
     if (isReducedMotion()) {
-      answerEl.innerHTML = "";
-      items.forEach(function (text, i) {
-        answerEl.appendChild(makeBullet(text, i));
+      rows.forEach(function (li) {
+        li.classList.remove("is-hidden");
+        li.classList.remove("is-new");
       });
-      finishRender(myRun, "3 points ready.");
+      done();
       return;
     }
-    items.forEach(function (text, i) {
-      timers.push(setTimeout(function () {
-        if (myRun !== runId) { return; }
-        var li = makeBullet(text, i);
+    rows.forEach(function (li, i) {
+      list.push(setTimeout(function () {
+        if (isStale()) { return; }
+        li.classList.remove("is-hidden");
         li.classList.add("is-new");
-        if (skels[i] && skels[i].parentNode === answerEl) {
-          answerEl.replaceChild(li, skels[i]);
-        } else {
-          answerEl.appendChild(li);
-        }
-        if (i === items.length - 1) {
-          Array.prototype.slice.call(answerEl.querySelectorAll("li.skel")).forEach(function (sk) {
-            answerEl.removeChild(sk);
-          });
-          finishRender(myRun, "3 points ready.");
-        }
+        if (i === rows.length - 1) { done(); }
       }, i * STAGE_MS));
     });
   }
 
-  // Coach mode: exactly 3 keywords, then 1 structure line, staged.
-  function renderCoach(coach, rtl, lang, myRun) {
-    // Same skeleton rule as renderBullets: staged rows replace skeletons.
-    var skels = Array.prototype.slice.call(answerEl.querySelectorAll("li.skel"));
-    answerEl.classList.add("coach");
-    answerEl.dir = rtl ? "rtl" : "ltr";
-    answerEl.lang = lang || (rtl ? "fa" : "en");
-    answerEl.setAttribute("aria-busy", "true");
-
-    var keys = document.createElement("li");
-    var dot = document.createElement("span");
-    dot.className = "app-dot";
-    dot.setAttribute("aria-hidden", "true");
-    keys.appendChild(dot);
-    var k = document.createElement("span");
-    k.className = "coach-keys";
-    k.textContent = coach.keys.join(" · ");
-    keys.appendChild(k);
-
-    var structure = document.createElement("li");
-    var dot2 = document.createElement("span");
-    dot2.className = "app-dot";
-    dot2.setAttribute("aria-hidden", "true");
-    structure.appendChild(dot2);
-    var s = document.createElement("span");
-    s.textContent = coach.structure;
-    structure.appendChild(s);
-
-    if (isReducedMotion()) {
-      answerEl.innerHTML = "";
-      answerEl.appendChild(keys);
-      answerEl.appendChild(structure);
-      finishRender(myRun, "Coach points ready.");
-      return;
+  function finishRender(myRun, statusText) {
+    if (myRun !== runId) { return; }
+    if (currentAnswerLayer) {
+      currentAnswerLayer.setAttribute("aria-busy", "false");
     }
-    timers.push(setTimeout(function () {
-      if (myRun !== runId) { return; }
-      keys.classList.add("is-new");
-      if (skels[0] && skels[0].parentNode === answerEl) {
-        answerEl.replaceChild(keys, skels[0]);
-      } else {
-        answerEl.appendChild(keys);
-      }
-      // Coach has only 2 rows — drop the third skeleton line.
-      if (skels[2] && skels[2].parentNode === answerEl) {
-        answerEl.removeChild(skels[2]);
-      }
-    }, 0));
-    timers.push(setTimeout(function () {
-      if (myRun !== runId) { return; }
-      structure.classList.add("is-new");
-      if (skels[1] && skels[1].parentNode === answerEl) {
-        answerEl.replaceChild(structure, skels[1]);
-      } else {
-        answerEl.appendChild(structure);
-      }
-      finishRender(myRun, "Coach points ready.");
-    }, STAGE_MS));
+    setStatus(statusText);
+    showDemoNext();
   }
 
+  // Step 23: renderBullets / renderCoach are retired — the layers are
+  // built once by buildDemoLayers and revealed by revealRows, so no
+  // bullet is ever inserted during a play (the old DOM-insertion +
+  // skeleton placeholders are what grew the window by 170px).
+
+  // Step 23: switch layers, then reveal the active layer's rows one at
+  // a time. Nothing is emptied, inserted or replaced during a play —
+  // the window is at its final height before the first point lands.
   function showAnswer(key, questionText, sample) {
     clearTimers();
     var myRun = ++runId;
     currentKey = key;
     currentQuestion = questionText;
-    questionEl.textContent = "“" + questionText + "”";
-    questionEl.dir = sample && sample.rtl ? "rtl" : "ltr";
-    questionEl.lang = sample && sample.lang ? sample.lang : "en";
-    answerEl.innerHTML = "";
-    answerEl.setAttribute("aria-busy", "true");
-    // Lively staging state: three skeleton lines so the answer area never
-    // looks dead while the first point is prepared. Reduced motion skips
-    // the skeleton (the full answer renders immediately instead).
-    if (!isReducedMotion()) {
-      for (var s = 0; s < 3; s++) {
-        var sk = document.createElement("li");
-        sk.className = "skel";
-        sk.setAttribute("aria-hidden", "true");
-        answerEl.appendChild(sk);
-      }
+    var idx = SAMPLE_KEYS.indexOf(key);
+    if (idx < 0) { idx = SAMPLE_KEYS.length; } // "typed" -> fallback layer
+    var questionLayer = questionLayers[idx];
+    if (key === "typed") {
+      questionLayer.textContent = "“" + questionText + "”";
     }
+    showLayer(questionLayers, idx);
+    var layer = showLayer(answerLayers, idx * 2 + (mode === "coach" ? 1 : 0));
+    currentAnswerLayer = layer;
+    hideRows(layer);
+    layer.setAttribute("aria-busy", "true");
     if (sample) {
       sampleTagEl.textContent = "Illustrative sample — in the real app, points come from your confirmed facts.";
-      sampleTagEl.hidden = false;
+      sampleTagEl.classList.remove("is-hidden");
     } else {
-      sampleTagEl.hidden = true;
+      sampleTagEl.classList.add("is-hidden");
     }
     setStatus("Preparing your points…");
-    var lang = sample && sample.lang ? sample.lang : "en";
     var delay = isReducedMotion() ? 0 : 120;
     timers.push(setTimeout(function () {
       if (myRun !== runId) { return; }
-      if (mode === "coach") {
-        var coach = sample ? sample.coach : FALLBACK.coach;
-        renderCoach(coach, !!(sample && sample.rtl), lang, myRun);
-      } else {
-        var items = sample ? sample.answer : FALLBACK.answer;
-        renderBullets(items, !!(sample && sample.rtl), lang, myRun);
-      }
+      revealRows(layer, timers, function () { return myRun !== runId; }, function () {
+        finishRender(myRun, mode === "coach" ? "Coach points ready." : "3 points ready.");
+      });
       if (!sample) {
         // Generic structure only — announced once, with the render.
         timers.push(setTimeout(function () {
@@ -447,55 +502,37 @@
         "Drawn here by this team’s focus on honest, useful software."],
       rapid: ["Five years building web products — and this team’s focus is why I’m here."]
     };
+    // Step 23: stack the three lengths (Normal / Concise / Rapid) so the
+    // simulator never changes height when the length changes. The static
+    // <ul> is the Normal layer; Concise + Rapid are built here.
+    var intStack = document.getElementById("int-answer-stack");
+    if (intStack) {
+      Array.prototype.forEach.call(intAnswer.querySelectorAll("li"), function (li) {
+        li.classList.add("is-hidden");
+      });
+      intLayers.push(intAnswer);
+      ["concise", "rapid"].forEach(function (key) {
+        var ul = buildAnswerLayer(INT[key], false, "en");
+        intStack.appendChild(ul);
+        intLayers.push(ul);
+      });
+    }
     var intTimers = [];
     var intRun = 0;
     function showInt(key, label) {
       intTimers.forEach(function (t) { clearTimeout(t); });
       intTimers = [];
       var myRun = ++intRun;
-      intAnswer.innerHTML = "";
-      intAnswer.classList.remove("coach");
+      var layer = showLayer(intLayers, ["normal", "concise", "rapid"].indexOf(key));
+      hideRows(layer);
       intStatus.textContent = "Preparing the shorter version…";
       var items = INT[key];
       intBtns.forEach(function (b, i) {
         b.setAttribute("aria-pressed", String(["normal", "concise", "rapid"][i] === key));
       });
       if (intState) { intState.textContent = label.replace(" (", " — ").replace(")", ""); }
-      // Step 5 — same skeleton pattern as the main demo: one skeleton per
-      // staged row, each replaced by its bullet as it lands, so the area
-      // never goes dead while the shorter version prepares. Reduced motion
-      // skips the skeletons and renders all at once.
-      if (!isReducedMotion()) {
-        for (var s = 0; s < items.length; s++) {
-          var sk = document.createElement("li");
-          sk.className = "skel";
-          sk.setAttribute("aria-hidden", "true");
-          intAnswer.appendChild(sk);
-        }
-      }
-      if (isReducedMotion()) {
-        items.forEach(function (text, i) { intAnswer.appendChild(makeBullet(text, i)); });
+      revealRows(layer, intTimers, function () { return myRun !== intRun; }, function () {
         intStatus.textContent = label + " ready — simulated.";
-        return;
-      }
-      var skels = Array.prototype.slice.call(intAnswer.querySelectorAll("li.skel"));
-      items.forEach(function (text, i) {
-        intTimers.push(setTimeout(function () {
-          if (myRun !== intRun) { return; }
-          var li = makeBullet(text, i);
-          li.classList.add("is-new");
-          if (skels[i] && skels[i].parentNode === intAnswer) {
-            intAnswer.replaceChild(li, skels[i]);
-          } else {
-            intAnswer.appendChild(li);
-          }
-          if (i === items.length - 1) {
-            Array.prototype.slice.call(intAnswer.querySelectorAll("li.skel")).forEach(function (sk) {
-              intAnswer.removeChild(sk);
-            });
-            intStatus.textContent = label + " ready — simulated.";
-          }
-        }, i * STAGE_MS));
       });
     }
     intBtns[0].addEventListener("click", function () { showInt("normal", "Normal (3 points)"); });
@@ -504,7 +541,8 @@
     showInt("normal", "Normal (3 points)");
   }
 
-  // Initial state: default sample, bullets staged on load.
+  // Initial state: build the layers, then the default sample, staged on load.
+  buildDemoLayers();
   showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);
 })();
 
@@ -569,6 +607,7 @@
   var pill = document.getElementById("mock-pill");
   var pillText = document.getElementById("mock-pill-text");
   var startEl = document.getElementById("mock-start");
+  var startLabelEl = document.getElementById("mock-start-label");
   var questionEl = document.getElementById("mock-question");
   var transcriptEl = document.getElementById("mock-transcript");
   var thinkingEl = document.getElementById("mock-thinking");
@@ -576,7 +615,7 @@
   var metaEl = document.getElementById("mock-meta");
   var replayBtn = document.getElementById("hero-replay");
   var appWindow = list && list.closest ? list.closest(".app-window") : null;
-  if (!pill || !pillText || !startEl || !questionEl || !transcriptEl || !thinkingEl || !list || !metaEl || !replayBtn || !appWindow) { return; }
+  if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !thinkingEl || !list || !metaEl || !replayBtn || !appWindow) { return; }
 
   var QUESTION = "Tell me about yourself.";
   var POINTS = [
@@ -598,6 +637,24 @@
   var timers = [];
   var played = false; // auto-play runs once; after that, only Replay
   var shown = 0; // points rendered in the current play
+
+  // Step 23 — fixed stage: the three points are built once, at load,
+  // hidden (so they reserve their space). Plays only toggle classes on
+  // them, never rebuild — the card is at its final height from the first
+  // paint, so nothing below the window moves while it plays.
+  POINTS.forEach(function (text) {
+    var li = makeBullet(text);
+    li.classList.add("is-hidden");
+    list.appendChild(li);
+  });
+  function setBulletsHidden(hidden) {
+    for (var i = 0; i < list.children.length; i++) {
+      var li = list.children[i];
+      li.classList.toggle("is-hidden", hidden);
+      li.classList.remove("is-pending");
+      li.classList.remove("is-new");
+    }
+  }
 
   // Clear every pending mockup timer. A play must never run twice at
   // once: without this, a visibilitychange back to visible would start
@@ -633,13 +690,12 @@
   function renderAll() {
     clearTimers();
     setPill("Answer ready", "listening", false);
-    startEl.textContent = "▶ Pause";
+    startLabelEl.textContent = "Pause";
     questionEl.textContent = "“" + QUESTION + "”";
     questionEl.classList.remove("is-empty");
     transcriptEl.textContent = "";
-    thinkingEl.hidden = true;
-    list.innerHTML = "";
-    POINTS.forEach(function (text) { list.appendChild(makeBullet(text)); });
+    thinkingEl.classList.add("is-hidden");
+    setBulletsHidden(false);
     metaEl.textContent = "prepared";
   }
 
@@ -651,7 +707,7 @@
   // finished-looking with no Replay button.
   function finish() {
     setPill("Answer ready", "listening", false);
-    replayBtn.hidden = false;
+    replayBtn.classList.remove("is-hidden");
     played = true;
   }
 
@@ -670,17 +726,17 @@
     clearTimers();
     shown = 0;
     setPill("Not listening", "", false);
-    startEl.textContent = "▶ Start listening";
+    startLabelEl.textContent = "Start listening";
     questionEl.textContent = "Waiting for the interviewer…";
     questionEl.classList.add("is-empty");
     transcriptEl.textContent = "";
-    thinkingEl.hidden = true;
-    list.innerHTML = "";
+    thinkingEl.classList.add("is-hidden");
+    setBulletsHidden(true);
     metaEl.textContent = "";
-    replayBtn.hidden = true;
+    replayBtn.classList.add("is-hidden");
     timers.push(setTimeout(function () {
       // Start pressed: the session begins, the meter runs.
-      startEl.textContent = "▶ Pause";
+      startLabelEl.textContent = "Pause";
       setPill("Listening", "listening", true);
       timers.push(setTimeout(function () {
         setPill("Hearing audio", "listening", true);
@@ -700,25 +756,21 @@
             setPill("Question detected", "thinking", true);
             timers.push(setTimeout(function () {
               setPill("Preparing answer", "thinking", false);
-              thinkingEl.hidden = false;
-              // The bullet being written shows faded until it lands.
-              var pending = makeBullet(POINTS[0]);
+              thinkingEl.classList.remove("is-hidden");
+              // The bullet being written shows faded until it lands: it is
+              // the pre-rendered first bullet, revealed faded.
+              var pending = list.children[0];
+              pending.classList.remove("is-hidden");
               pending.classList.add("is-pending");
-              list.appendChild(pending);
               POINTS.forEach(function (text, i) {
                 timers.push(setTimeout(function () {
-                  var li;
-                  if (i === 0) {
-                    li = pending;
-                    li.classList.remove("is-pending");
-                  } else {
-                    li = makeBullet(text);
-                    list.appendChild(li);
-                  }
+                  var li = list.children[i];
+                  li.classList.remove("is-hidden");
+                  li.classList.remove("is-pending");
                   li.classList.add("is-new");
                   shown++;
                   if (i === 0) {
-                    thinkingEl.hidden = true;
+                    thinkingEl.classList.add("is-hidden");
                     metaEl.textContent = "prepared";
                   }
                   if (i === POINTS.length - 1) {
@@ -777,6 +829,7 @@
   var pillText = document.getElementById("story-pill-text");
   var badge = document.getElementById("story-badge");
   var startEl = document.getElementById("story-start");
+  var startLabelEl = document.getElementById("story-start-label");
   var homeHeader = document.getElementById("story-home-header");
   var liveHeader = document.getElementById("story-live-header");
   var homeView = document.getElementById("story-home");
@@ -785,28 +838,28 @@
   var prepareBar = document.getElementById("story-prepare-bar");
   var prepareStage = document.getElementById("story-prepare-stage");
   var openLive = document.getElementById("story-open-live");
-  var questionEl = document.getElementById("story-question");
+  var questionStack = document.getElementById("story-question-stack");
   var transcriptEl = document.getElementById("story-transcript");
   var contextEl = document.getElementById("story-context");
   var thinkingEl = document.getElementById("story-thinking");
-  var list = document.getElementById("story-answer");
+  var answerStack = document.getElementById("story-answer-stack");
   var metaEl = document.getElementById("story-meta");
   var coachEl = document.getElementById("story-coach");
   var historyEl = document.getElementById("story-history");
   var historyText = document.getElementById("story-history-text");
-  var storyWindow = list && list.closest ? list.closest(".story-window") : null;
+  var storyWindow = answerStack && answerStack.closest ? answerStack.closest(".story-window") : null;
   var segWrap = document.querySelector(".story-segments");
   var snapProbe = document.querySelector(".story-snap");
   var segBtns = Array.prototype.slice.call(document.querySelectorAll(".story-seg"));
-  var captionTitle = document.getElementById("story-caption-title");
-  var captionText = document.getElementById("story-caption-text");
+  var captionStack = document.getElementById("story-caption-stack");
+  var captionLive = document.getElementById("story-caption-live");
   var countEl = document.getElementById("story-count");
   var prevBtn = document.querySelector(".story-prev");
   var nextBtn = document.querySelector(".story-next");
-  if (!pill || !pillText || !badge || !startEl || !homeHeader || !liveHeader || !homeView || !liveView
-      || !reportView || !prepareBar || !prepareStage || !openLive || !questionEl || !transcriptEl
-      || !contextEl || !thinkingEl || !list || !metaEl || !coachEl || !historyEl || !historyText
-      || !storyWindow) { return; }
+  if (!pill || !pillText || !badge || !startEl || !startLabelEl || !homeHeader || !liveHeader || !homeView || !liveView
+      || !reportView || !prepareBar || !prepareStage || !openLive || !questionStack || !transcriptEl
+      || !contextEl || !thinkingEl || !answerStack || !metaEl || !coachEl || !historyEl || !historyText
+      || !captionStack || !storyWindow) { return; }
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var hasIO = "IntersectionObserver" in window;
 
@@ -834,6 +887,12 @@
     "Gap analysis", "Terminology", "Company/product context", "Story ranking",
     "Likely questions", "Fast answers", "Coach keywords & structure", "Playbook",
     "Truth policy", "Difficult questions", "Questions to ask", "Runtime cache"];
+  // Step 23 — the live beats' questions and answers, as layer data. Index
+  // 0-4 = live beats 1-5. Answer layer 3 is Coach (no bullets): its markup
+  // is the #story-coach node, already sitting in the answer stack.
+  var READY_TEXT = "Ready when you are — start listening when the interview begins.";
+  var QUESTION_TEXTS = [READY_TEXT, "“" + Q1 + "”", "“" + Q3 + "”", "“" + Q1 + "”", "“" + Q2 + "”"];
+  var ANSWER_POINTS = [[], Q1_POINTS, Q3_POINTS, null, Q2_POINTS];
   var WORD_MS = 160;   // per transcript word
   var DETECT_MS = 300; // transcript done -> question detected
   var THINK_MS = 500;  // Question detected -> Preparing answer
@@ -866,36 +925,126 @@
     return li;
   }
 
+  // Step 23 — fixed stage: every beat's question, answer and caption is
+  // pre-rendered once, as a layer in one grid cell, and switching beats
+  // reveals a layer instead of rebuilding content. The cell is always as
+  // tall as its tallest layer, so the window — and everything below it —
+  // never moves, at any width, zoom or font.
+  var questionLayers = []; // one <p class="app-question"> per live beat
+  var answerLayers = [];   // one layer per live beat; [3] is the coach node
+  var answerBullets = [];  // per answer layer: its <li> bullets (coach: [])
+  var captionItems = [];   // one <div class="story-caption-item"> per beat
+  var captionTexts = [];   // per beat: { title, text } for the live region
+
+  function hideAll(layers) {
+    layers.forEach(function (el) { el.classList.add("is-hidden"); });
+  }
+  function showLayer(layers, i) {
+    hideAll(layers);
+    if (layers[i]) { layers[i].classList.remove("is-hidden"); }
+  }
+
+  function buildLayers() {
+    QUESTION_TEXTS.forEach(function (text, i) {
+      var p = document.createElement("p");
+      p.className = "app-question" + (i === 0 ? " is-empty" : "");
+      p.textContent = text;
+      p.classList.add("is-hidden");
+      questionStack.appendChild(p);
+      questionLayers.push(p);
+    });
+    ANSWER_POINTS.forEach(function (points, i) {
+      var layer;
+      if (points === null) {
+        // Coach beat: the coach markup is already in the stack (HTML); it
+        // becomes layer 3 as-is — its visibility is the layer's.
+        layer = coachEl;
+        layer.classList.add("app-answer-layer");
+        answerBullets.push([]);
+      } else {
+        layer = document.createElement("div");
+        layer.className = "app-answer-layer";
+        var ul = document.createElement("ul");
+        ul.className = "app-answer";
+        var lis = [];
+        points.forEach(function (text) {
+          var li = makeBullet(text);
+          li.classList.add("is-hidden");
+          ul.appendChild(li);
+          lis.push(li);
+        });
+        layer.appendChild(ul);
+        answerBullets.push(lis);
+      }
+      layer.classList.add("is-hidden");
+      answerStack.appendChild(layer);
+      answerLayers.push(layer);
+    });
+    steps.forEach(function (step) {
+      var item = document.createElement("div");
+      item.className = "story-caption-item is-hidden";
+      var h3 = step.querySelector("h3");
+      var p = step.querySelector("p");
+      var title = h3 ? h3.textContent : "";
+      var text = p ? p.textContent : "";
+      var h = document.createElement("h3");
+      h.textContent = title;
+      item.appendChild(h);
+      var t = document.createElement("p");
+      t.textContent = text;
+      item.appendChild(t);
+      captionStack.appendChild(item);
+      captionItems.push(item);
+      captionTexts.push({ title: title, text: text });
+    });
+  }
+
   // The window has three bodies: Home (Beat 0), Live (Beats 1-5), Report
   // (Beat 6). The header follows: Home has a titled bar, Live/Report have
   // the status pill bar.
+  // Step 23: views and headers are layers in a grid cell — toggling
+  // visibility keeps the cell at its tallest height, so the window never
+  // resizes when the beat changes.
   function showView(name) {
-    homeHeader.hidden = name !== "home";
-    liveHeader.hidden = name === "home";
-    homeView.hidden = name !== "home";
-    liveView.hidden = name !== "live";
-    reportView.hidden = name !== "report";
+    homeHeader.classList.toggle("is-hidden", name !== "home");
+    liveHeader.classList.toggle("is-hidden", name === "home");
+    homeView.classList.toggle("is-hidden", name !== "home");
+    liveView.classList.toggle("is-hidden", name !== "live");
+    reportView.classList.toggle("is-hidden", name !== "report");
   }
 
-  function setQuestion(text, empty) {
-    questionEl.textContent = text;
-    questionEl.classList.toggle("is-empty", !!empty);
-  }
+  // A live beat is two layers: its question and its answer. Both are
+  // pre-rendered; activating a beat shows its layers, nothing is rebuilt.
+  function setQuestionLayer(i) { showLayer(questionLayers, i); }
+  function setAnswerLayer(i) { showLayer(answerLayers, i); }
 
-  function setAnswer(points, meta) {
-    list.innerHTML = "";
-    points.forEach(function (text) { list.appendChild(makeBullet(text)); });
-    metaEl.textContent = meta || "";
+  // One bullet's state: "hidden" (reserved, not yet shown), "pending" (the
+  // bullet being written — visible, faded), "new" (just landed, rises in),
+  // anything else (settled, visible).
+  function setBulletState(layerIdx, i, state) {
+    var li = (answerBullets[layerIdx] || [])[i];
+    if (!li) { return; }
+    li.classList.toggle("is-hidden", state === "hidden");
+    li.classList.toggle("is-pending", state === "pending");
+    li.classList.toggle("is-new", state === "new");
+  }
+  function revealAllBullets(layerIdx) {
+    (answerBullets[layerIdx] || []).forEach(function (li) {
+      li.classList.remove("is-hidden");
+      li.classList.remove("is-pending");
+      li.classList.remove("is-new");
+    });
   }
 
   function setLiveBase() {
     showView("live");
-    startEl.textContent = "▶ Pause";
+    startLabelEl.textContent = "Pause";
     badge.hidden = true;
     transcriptEl.textContent = "";
-    contextEl.hidden = true;
-    thinkingEl.hidden = true;
-    coachEl.hidden = true;
+    contextEl.classList.add("is-hidden");
+    thinkingEl.classList.add("is-hidden");
+    hideAll(questionLayers);
+    hideAll(answerLayers);
   }
 
   // Beat finals: each renders the beat's complete end state at once.
@@ -904,23 +1053,23 @@
       showView("home");
       prepareBar.style.width = "100%";
       prepareStage.textContent = "Done — question bank ready (50–150 questions).";
-      openLive.hidden = false;
+      openLive.classList.remove("is-hidden");
     },
     1: function () {
       setLiveBase();
       setPill("Listening", "listening", true);
-      setQuestion("Ready when you are — start listening when the interview begins.", true);
-      list.innerHTML = "";
-      coachEl.hidden = true;
+      setQuestionLayer(0);
+      setAnswerLayer(0);
       metaEl.textContent = "";
       historyEl.hidden = true;
     },
     2: function () {
       setLiveBase();
       setPill("Answer ready", "listening", false);
-      setQuestion("“" + Q1 + "”", false);
-      setAnswer(Q1_POINTS, "prepared");
-      coachEl.hidden = true;
+      setQuestionLayer(1);
+      setAnswerLayer(1);
+      revealAllBullets(1);
+      metaEl.textContent = "prepared";
       historyEl.hidden = false;
       historyText.textContent = "1 / 1";
     },
@@ -929,18 +1078,18 @@
       setPill("Answer ready", "listening", false);
       badge.hidden = false;
       badge.textContent = "Concise";
-      setQuestion("“" + Q3 + "”", false);
-      setAnswer(Q3_POINTS, "Concise");
-      coachEl.hidden = true;
+      setQuestionLayer(2);
+      setAnswerLayer(2);
+      revealAllBullets(2);
+      metaEl.textContent = "Concise";
       historyEl.hidden = false;
       historyText.textContent = "1 / 1";
     },
     4: function () {
       setLiveBase();
       setPill("Answer ready", "listening", false);
-      setQuestion("“" + Q1 + "”", false);
-      list.innerHTML = "";
-      coachEl.hidden = false;
+      setQuestionLayer(1);
+      setAnswerLayer(3);
       metaEl.textContent = "Coach";
       historyEl.hidden = false;
       historyText.textContent = "1 / 1";
@@ -948,17 +1097,18 @@
     5: function () {
       setLiveBase();
       setPill("Answer ready", "listening", false);
-      setQuestion("“" + Q2 + "”", false);
-      contextEl.hidden = false;
-      setAnswer(Q2_POINTS, "prepared");
-      coachEl.hidden = true;
+      setQuestionLayer(4);
+      contextEl.classList.remove("is-hidden");
+      setAnswerLayer(4);
+      revealAllBullets(4);
+      metaEl.textContent = "prepared";
       historyEl.hidden = false;
       historyText.textContent = "2 / 2";
     },
     6: function () {
       showView("report");
       setPill("Stopped", "", false);
-      startEl.textContent = "▶ Start listening";
+      startLabelEl.textContent = "Start listening";
       badge.hidden = true;
     }
   };
@@ -967,14 +1117,14 @@
   function playPrepare() {
     showView("home");
     prepareBar.style.width = "0";
-    openLive.hidden = true;
+    openLive.classList.add("is-hidden");
     STAGES.forEach(function (name, i) {
       timers.push(setTimeout(function () {
         prepareStage.textContent = "Stage " + (i + 1) + " of 15 — " + name + "…";
         prepareBar.style.width = Math.round(((i + 1) / STAGES.length) * 100) + "%";
         if (i === STAGES.length - 1) {
           prepareStage.textContent = "Done — question bank ready (50–150 questions).";
-          openLive.hidden = false;
+          openLive.classList.remove("is-hidden");
         }
       }, i * PREP_MS));
     });
@@ -985,9 +1135,8 @@
   function playQuestion() {
     setLiveBase();
     setPill("Listening", "listening", true);
-    setQuestion("Ready when you are — start listening when the interview begins.", true);
-    list.innerHTML = "";
-    coachEl.hidden = true;
+    setQuestionLayer(0);
+    setAnswerLayer(0);
     metaEl.textContent = "";
     historyEl.hidden = true;
     TRANSCRIPT.forEach(function (words, i) {
@@ -997,27 +1146,20 @@
     });
     timers.push(setTimeout(function () {
       transcriptEl.textContent = "";
-      setQuestion("“" + Q1 + "”", false);
+      setQuestionLayer(1);
       setPill("Question detected", "thinking", true);
       timers.push(setTimeout(function () {
         setPill("Preparing answer", "thinking", false);
-        thinkingEl.hidden = false;
-        var pending = makeBullet(Q1_POINTS[0]);
-        pending.classList.add("is-pending");
-        list.appendChild(pending);
+        thinkingEl.classList.remove("is-hidden");
+        setAnswerLayer(1);
+        // The bullet being written shows faded until it lands: it is the
+        // pre-rendered first bullet, revealed faded.
+        setBulletState(1, 0, "pending");
         Q1_POINTS.forEach(function (text, i) {
           timers.push(setTimeout(function () {
-            var li;
+            setBulletState(1, i, "new");
             if (i === 0) {
-              li = pending;
-              li.classList.remove("is-pending");
-            } else {
-              li = makeBullet(text);
-              list.appendChild(li);
-            }
-            li.classList.add("is-new");
-            if (i === 0) {
-              thinkingEl.hidden = true;
+              thinkingEl.classList.add("is-hidden");
               metaEl.textContent = "prepared";
               historyEl.hidden = false;
               historyText.textContent = "1 / 1";
@@ -1030,6 +1172,8 @@
       }, THINK_MS));
     }, TRANSCRIPT.length * WORD_MS + DETECT_MS));
   }
+
+  buildLayers();
 
   var currentBeat = 0;
   var playerOn = false;
@@ -1060,10 +1204,11 @@
       if (i === beat) { btn.setAttribute("aria-current", "true"); }
       else { btn.removeAttribute("aria-current"); }
     });
-    var h3 = steps[beat] && steps[beat].querySelector("h3");
-    var p = steps[beat] && steps[beat].querySelector("p");
-    if (captionTitle && h3) { captionTitle.textContent = h3.textContent; }
-    if (captionText && p) { captionText.textContent = p.textContent; }
+    showLayer(captionItems, beat);
+    var caption = captionTexts[beat];
+    if (captionLive && caption) {
+      captionLive.textContent = caption.title + (caption.text ? " " + caption.text : "");
+    }
     if (countEl) { countEl.textContent = (beat + 1) + " / " + steps.length; }
     if (prevBtn) { prevBtn.disabled = beat === 0; }
     if (nextBtn) { nextBtn.disabled = beat === steps.length - 1; }

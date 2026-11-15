@@ -87,7 +87,7 @@
           <div class="app-header" aria-hidden="true">
             <p class="app-pill" id="mock-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="mock-pill-text">Not listening</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
             <span class="app-header-controls" aria-hidden="true">
-              <span class="app-start" id="mock-start">▶ Start listening</span>
+              <span class="app-start" id="mock-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label" id="mock-start-label">Start listening</span></span>
               <span class="app-stop" aria-hidden="true">■</span>
               <span class="app-win-btn" aria-hidden="true">×</span>
             </span>
@@ -100,7 +100,7 @@
             </section>
             <section class="app-card app-card--answer">
               <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="mock-meta"></span></div>
-              <p class="app-thinking" id="mock-thinking" hidden>● ● ●</p>
+              <p class="app-thinking is-hidden" id="mock-thinking">● ● ●</p>
               <ul class="app-answer" id="mock-answer"></ul>
             </section>
             <div class="app-actions" aria-hidden="true">
@@ -113,7 +113,7 @@
             <noscript><p>Animated preview needs JavaScript — the interactive demo below shows the same three points.</p></noscript>
           </div>
         </div>
-        <button type="button" class="hero-replay" id="hero-replay" aria-label="Replay the animated preview" hidden>↻ Replay</button>
+        <button type="button" class="hero-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview">↻ Replay</button>
         <ul class="float-chips" aria-hidden="true">
           <li>50–150 question bank</li>
           <li>10 languages</li>
@@ -151,7 +151,8 @@
         </div>
         <div class="story-window">
           <div class="app-window" role="img" aria-label="The Interview Assistant app window, showing the current beat of the interview story.">
-            <div class="app-window-bar" id="story-home-header" hidden>
+            <div class="app-header-stack">
+            <div class="app-window-bar is-hidden" id="story-home-header">
               <span class="app-window-title">Interview Assistant — Home</span>
               <span class="app-controls" aria-hidden="true"><i>–</i><i>▢</i><i>×</i></span>
             </div>
@@ -159,15 +160,16 @@
               <p class="app-pill" id="story-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="story-pill-text">Not listening</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
               <span class="app-badge" id="story-badge" hidden>Concise</span>
               <span class="app-header-controls" aria-hidden="true">
-                <span class="app-start" id="story-start">▶ Start listening</span>
+                <span class="app-start" id="story-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label" id="story-start-label">Start listening</span></span>
                 <span class="app-stop" aria-hidden="true">■</span>
                 <span class="app-icon-btn" aria-hidden="true">?</span>
                 <span class="app-icon-btn" aria-hidden="true">…</span>
                 <span class="app-win-btn" aria-hidden="true">–</span><span class="app-win-btn" aria-hidden="true">▢</span><span class="app-win-btn" aria-hidden="true">×</span>
               </span>
             </div>
+            </div>
             <div class="app-window-body" aria-hidden="true">
-              <div class="app-home-view" id="story-home" hidden>
+              <div class="app-home-view is-hidden" id="story-home">
                 <section class="app-card">
                   <div class="app-card-head"><span class="app-card-label">Get started</span></div>
                   <ul class="app-checks">
@@ -181,25 +183,26 @@
                   <div class="app-card-head"><span class="app-card-label">Prepare</span><span class="app-card-meta">about a minute</span></div>
                   <div class="app-prepare" aria-hidden="true"><i id="story-prepare-bar"></i></div>
                   <p class="app-prepare-stage" id="story-prepare-stage">Verify profile…</p>
-                  <p class="app-open-live" id="story-open-live" hidden><span class="app-start">Open Live Assistant →</span></p>
+                  <p class="app-open-live is-hidden" id="story-open-live"><span class="app-start">Open Live Assistant →</span></p>
                 </section>
               </div>
               <div class="app-live-view" id="story-live">
                 <section class="app-card">
                   <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
-                  <p class="app-question is-empty" id="story-question">Ready when you are — start listening when the interview begins.</p>
+                  <div class="app-question-stack" id="story-question-stack"></div>
                   <p class="app-transcript" id="story-transcript"></p>
-                  <p class="app-context" id="story-context" hidden>Context: the interviewer asked about leadership after the intro.</p>
+                  <p class="app-context is-hidden" id="story-context">Context: the interviewer asked about leadership after the intro.</p>
                 </section>
                 <section class="app-card app-card--answer">
                   <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="story-meta"></span></div>
-                  <p class="app-thinking" id="story-thinking" hidden>● ● ●</p>
-                  <ul class="app-answer" id="story-answer"></ul>
-                  <div class="app-coach-view" id="story-coach" hidden>
-                    <p class="app-coach-label">Keywords</p>
-                    <p class="app-coach-keys">Experience · Outcome · Fit</p>
-                    <p class="app-coach-label">Structure</p>
-                    <p class="app-coach-structure">Present role → one result → why this role</p>
+                  <p class="app-thinking is-hidden" id="story-thinking">● ● ●</p>
+                  <div class="app-answer-stack" id="story-answer-stack">
+                    <div class="app-coach-view app-answer-layer is-hidden" id="story-coach">
+                      <p class="app-coach-label">Keywords</p>
+                      <p class="app-coach-keys">Experience · Outcome · Fit</p>
+                      <p class="app-coach-label">Structure</p>
+                      <p class="app-coach-structure">Present role → one result → why this role</p>
+                    </div>
                   </div>
                 </section>
                 <div class="app-actions" aria-hidden="true">
@@ -211,7 +214,7 @@
                   <span class="app-manual-send" aria-hidden="true">➤</span>
                 </div>
               </div>
-              <div class="app-report-view" id="story-report" hidden>
+              <div class="app-report-view is-hidden" id="story-report">
                 <section class="app-card">
                   <div class="app-card-head"><span class="app-card-label">Report</span><span class="app-card-meta">saved</span></div>
                   <p class="app-report-line"><span>Questions asked</span><span>2</span></p>
@@ -223,9 +226,9 @@
             </div>
           </div>
         </div>
-        <div class="story-caption" aria-live="polite">
-          <h3 id="story-caption-title">Before the interview — Prepare</h3>
-          <p id="story-caption-text">In Home, four steps get you ready: account, profile, interview, pre-interview check. Press Prepare and the app builds your 50–150 question bank in about a minute — fifteen stages, from verifying your profile to caching the answers.</p>
+        <div class="story-caption">
+          <div class="story-caption-stack" id="story-caption-stack"></div>
+          <p class="visually-hidden" id="story-caption-live" aria-live="polite"></p>
         </div>
         <div class="story-nav">
           <button type="button" class="story-prev" aria-label="Previous beat" disabled>‹</button>
@@ -270,7 +273,7 @@
                 <div class="app-header">
                   <p class="app-pill is-listening is-live"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></p>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Pause</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Pause</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -295,7 +298,7 @@
                 <div class="app-header">
                   <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Pause</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Pause</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -326,7 +329,7 @@
                   <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
                   <span class="app-badge">Concise</span>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Pause</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Pause</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -356,7 +359,7 @@
                 <div class="app-header">
                   <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Pause</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Pause</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -387,7 +390,7 @@
                 <div class="app-header">
                   <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Pause</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Pause</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -422,7 +425,7 @@
                 <div class="app-header">
                   <p class="app-pill"><span class="app-pill-dot"></span><span>Stopped</span><span class="app-meter"><i></i></span></p>
                   <span class="app-header-controls">
-                    <span class="app-start">▶ Start listening</span>
+                    <span class="app-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label">Start listening</span></span>
                     <span class="app-stop">■</span>
                     <span class="app-win-btn">×</span>
                   </span>
@@ -464,12 +467,19 @@
         </div>
         <div class="demo-body">
           <p class="demo-label">Interviewer</p>
-          <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
-          <ul class="demo-answer" id="demo-answer" aria-busy="false">
-            <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
-            <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
-            <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
-          </ul>
+          <!-- Step 23: the question + answer are stacks of pre-rendered
+               layers (one per sample + mode). The static "tell" content
+               stays as layer 0, so no-JS still shows the demo. -->
+          <div class="demo-question-stack" id="demo-question-stack">
+            <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+          </div>
+          <div class="demo-answer-stack" id="demo-answer-stack">
+            <ul class="demo-answer" id="demo-answer" aria-busy="false">
+              <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+              <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+              <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+            </ul>
+          </div>
           <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
           <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
         </div>

@@ -33,8 +33,16 @@ check("story steps list has min-width: 0",
 // Home view showed BOTH headers (found in live verification, Step 22).
 check("app header wraps (flex-wrap) at <=860px",
   /@media \(max-width: 860px\) \{[\s\S]*?\.app-header \{\s*flex-wrap: wrap;\s*\}/.test(clean));
-check("app header [hidden] hides it (no double header on the Home beat)",
-  /\.app-header\[hidden\] \{\s*display: none;\s*\}/.test(clean));
+// Step 23 supersedes the [hidden] fix: the two headers are layers in one
+// grid cell (app-header-stack), toggled with visibility — the cell keeps
+// the tallest header's height, so the window never resizes on beat 0 and
+// the Home beat never shows both headers.
+check("headers are stacked layers, toggled with visibility (no double header, no resize)",
+  /\.app-header-stack \{\s*display: grid;\s*\}/.test(clean) &&
+  /\.app-header-stack > \* \{\s*grid-area: 1 \/ 1;\s*\}/.test(clean) &&
+  /homeHeader\.classList\.toggle\("is-hidden", name !== "home"\);/.test(js) &&
+  /liveHeader\.classList\.toggle\("is-hidden", name === "home"\);/.test(js) &&
+  !/\.app-header\[hidden\]/.test(clean));
 
 // 3. Player chrome exists: seven labelled segments, caption, nav.
 const segs = [...html.matchAll(/<button type="button" class="story-seg[^"]*" data-beat="(\d)"[^>]*>([^<]+)<\/button>/g)];
@@ -44,9 +52,15 @@ check("seven labelled segments in order (Prep Start Q1 Adapt Coach Q2 Report)",
 check("shortened segment labels keep their full names as aria-labels",
   /data-beat="0" aria-current="true" aria-label="Prepare">Prep</.test(html)
   && /data-beat="3" aria-label="Concise">Adapt</.test(html));
-check("caption has title + text ids, starts at beat 0",
-  /<h3 id="story-caption-title">Before the interview — Prepare<\/h3>/.test(html)
-  && /<p id="story-caption-text">In Home, four steps/.test(html));
+// Step 23: the caption is a stack of seven layers (one per beat, built
+// from the steps) plus a visually-hidden live region — the caption zone is
+// always as tall as its longest caption, so the nav never moves.
+check("caption is a stack of seven layers + a live region (Step 23)",
+  /<div class="story-caption-stack" id="story-caption-stack"><\/div>/.test(html) &&
+  /<p class="visually-hidden" id="story-caption-live" aria-live="polite"><\/p>/.test(html) &&
+  /\.story-caption-stack \{\s*display: grid;\s*\}/.test(clean) &&
+  /\.story-caption-item \{\s*grid-area: 1 \/ 1;\s*\}/.test(clean) &&
+  /captionStack\.appendChild\(item\);/.test(js));
 check("nav has prev/next buttons + counter 1 / 7, prev disabled",
   /<button type="button" class="story-prev" aria-label="Previous beat" disabled>‹<\/button>/.test(html)
   && /<button type="button" class="story-next" aria-label="Next beat">›<\/button>/.test(html)
@@ -95,7 +109,8 @@ check("segments, arrows and arrow keys drive goBeat",
 check("player UI mirrors the beat: segments, caption, counter, arrow state",
   /btn\.classList\.toggle\("is-active", i === beat\);/.test(js)
   && /btn\.setAttribute\("aria-current", "true"\);/.test(js)
-  && /captionTitle\.textContent = h3\.textContent;/.test(js)
+  && /showLayer\(captionItems, beat\);/.test(js)
+  && /captionLive\.textContent = caption\.title/.test(js)
   && /countEl\.textContent = \(beat \+ 1\) \+ " \/ " \+ steps\.length;/.test(js)
   && /prevBtn\.disabled = beat === 0;/.test(js)
   && /nextBtn\.disabled = beat === steps\.length - 1;/.test(js)

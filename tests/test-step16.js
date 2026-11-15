@@ -45,7 +45,7 @@ for (const f of PAGES) {
 check("no <img> tags; every page links the favicon and the og-image",
   imgOk, imgNotes.join(" | "));
 const photoBg = [...css.matchAll(/background-image:\s*url\(/g)];
-const gradientBg = [...css.matchAll(/background-image:\s*linear-gradient\(/g)];
+const gradientBg = [...css.matchAll(/background(?:-image)?:\s*linear-gradient\(/g)];
 check("background-image is gradients only (no photo URLs)",
   photoBg.length === 0 && gradientBg.length >= 1,
   `url( backgrounds: ${photoBg.length}`);

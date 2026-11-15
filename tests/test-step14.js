@@ -2,10 +2,12 @@
    (from ~/workspace/interview-assistant-website).
    The standard (MOTION.md): transition durations only 150/250/300ms;
    one entrance curve cubic-bezier(.2,.7,.3,1); rise is 250ms everywhere;
-   ambient loops keep their durations (shimmer 1.2s, meter 1.1s, pulse
-   0.9s, floaty 5s); the app window is flat (no tilt, Step 21); reduced
-   motion kills all animation/transition; JS gates its animation paths
-   on matchMedia. */
+   ambient loops keep their durations (meter 1.1s, pulse 0.9s, floaty 5s);
+   the app window is flat (no tilt, Step 21); reduced motion kills all
+   animation/transition; JS gates its animation paths on matchMedia.
+   (Step 23 retired the shimmer 1.2s skeleton sweep with the demo
+   skeletons — the bullets are pre-rendered now, so there is nothing to
+   sweep.) */
 const fs = require("fs");
 const path = require("path");
 
@@ -39,13 +41,13 @@ check("the rise curve has one spelling: cubic-bezier(.2,.7,.3,1)",
 const anims = [...clean.matchAll(/animation:\s*(\w+)\s+([\d.]+s)/g)];
 const riseOk = anims.filter(([_, name]) => name === "rise").every(([_, __, dur]) => dur === ".25s")
   && anims.some(([_, name]) => name === "rise");
-const loopOk = anims.some(([_, n, d]) => n === "shimmer" && d === "1.2s")
-  && anims.some(([_, n, d]) => n === "meter" && d === "1.1s")
+const loopOk = anims.some(([_, n, d]) => n === "meter" && d === "1.1s")
   && anims.some(([_, n, d]) => n === "pulse" && d === ".9s")
-  && anims.some(([_, n, d]) => n === "floaty" && d === "5s");
+  && anims.some(([_, n, d]) => n === "floaty" && d === "5s")
+  && !/shimmer/.test(clean);
 check("rise is 250ms in both places (demo + hero mock)", riseOk,
   anims.filter(([_, n]) => n === "rise").map((a) => a[0]).join(" | "));
-check("ambient loops keep their durations (shimmer 1.2s, meter 1.1s, pulse 0.9s, floaty 5s)", loopOk);
+check("ambient loops keep their durations (meter 1.1s, pulse 0.9s, floaty 5s; shimmer retired Step 23)", loopOk);
 
 // 4. Reduced motion.
 check("reduced motion kills all animation/transition + scroll-behavior auto",

@@ -13,7 +13,7 @@ one direction only.
 | Width | Name | Purpose | Blocks |
 |-------|------|---------|--------|
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
-| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 14 |
+| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
 | 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 4 |
@@ -45,7 +45,7 @@ check to confirm the fit.
     each width has a clear purpose. JS has no width logic. No CSS
     changes were needed — the standard documents what the audit found
     and the test locks it in.
-  - The 14 scattered 640px blocks stay scattered (rule B3): each sits
+  - The 15 scattered 640px blocks stay scattered (rule B3): each sits
     next to its component.
 - **Method:** full media-query inventory + JS width-logic check.
 - **Step 19** found a real breakpoint bug the earlier widths had missed:
@@ -77,3 +77,11 @@ check to confirm the fit.
   so a snapshot's computed display IS the breakpoint (`isNarrow()`),
   re-read on resize (fold/unfold, rotate). Enforced by
   `tests/test-step22.js` and the live scrollWidth check at 390/420/320px.
+- **Step 23 — fixed stage:** one more 640px block (the table count is now
+  15): the Start label and the adaptive badge are hidden at ≤640px, so
+  the app header stays one row on every beat (the pill word changes
+  length as the status changes — at 390px that flipped the header
+  between 94px and 54px mid-play). The header is still two rows at
+  320px, but the same two rows on every beat — constant per width, so
+  nothing jumps. The grid-stack rules live outside any media block (the
+  stage is fixed at every width). Enforced by `tests/test-step23.js`.

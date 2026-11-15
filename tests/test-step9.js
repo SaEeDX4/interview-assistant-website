@@ -3,7 +3,8 @@
    The standard (SPACING.md): every margin, padding and gap in styles.css
    must be on the scale 4/8/12/16/20/24/28/32/40/48/56/64/72/96, or one of
    the documented exemptions (1px optical alignment on .num/.mk markers,
-   3px waveform-bar gap in .app-wave, -10px slider-thumb centring offset).
+   3px waveform-bar gap in .app-wave, -10px slider-thumb centring offset,
+   -1px visually-hidden offset).
    This test parses the stylesheet and
    fails on any other value — the standard is enforced, not aspirational.
    Step 9 also fixed the one visible violation the audit found: the gap
@@ -49,7 +50,7 @@ while ((m = blockRe.exec(clean)) !== null) {
     }
     for (const num of value.match(/\d+(?:\.\d+)?(?=px)/g) || []) {
       const v = Number(num);
-      const exempt = (v === 1 && /\.num|\.mk/.test(selector))
+      const exempt = (v === 1 && /\.num|\.mk|\.visually-hidden/.test(selector))
         || (v === 3 && selector.includes(".app-wave"))
         || (v === 10 && selector.includes("::-webkit-slider-thumb"));
       if (!SCALE.has(v) && !exempt) {

@@ -126,3 +126,16 @@ are retired with the waveform itself: the real app has no waveform.
   scroll-jacking). Segment state changes use the 150ms transition. Reduced
   motion: every beat renders its final state at once, no timers — the
   player works fully by tap, swipe and keyboard.
+- **Step 23 — fixed stage:** the reveals are transform/opacity only by
+  construction (S8): bullets rise with `translateY + opacity`
+  (`is-new`, 250ms), thinking is a pulsing opacity state, beat switches
+  are visibility toggles — the stage never animates a layout property
+  (no height/top/margin transitions, and the 250ms `rise` is unchanged).
+  The demo's skeleton shimmer is retired with the skeletons (the
+  bullets are pre-rendered now, so there is nothing to sweep): the
+  keyframes are four (rise/meter/pulse/floaty), not five, and the
+  ambient loops are meter 1.1s / pulse 0.9s / floaty 5s. Reduced motion
+  is unchanged: every beat renders its final state at once, no timers,
+  and the layer stacks make that free — the finals are already in the
+  DOM. Enforced by `tests/test-step23.js` and the sim (35 checks,
+  desktop / mobile / reduced).

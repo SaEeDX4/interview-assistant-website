@@ -19,7 +19,7 @@ will style it thinking it is live, or wonder why a rule has no effect.
   - JS state classes added at runtime: `cta-visible`, `is-coach-active`,
     `is-new`, `is-open`, `is-scrolled`, `is-visible`, `js`, `js-acc`,
     `open`.
-  - JS-generated content classes: `reveal`, `skel`, `coach`,
+  - JS-generated content classes: `reveal`, `coach`,
     `coach-keys`, `calc-note`, `pricing`.
   - Semantic hooks with no styles of their own: `brand-name` (the brand
     text, styled by `.brand`), `hero-copy` (the hero text wrapper,
@@ -63,3 +63,26 @@ will style it thinking it is live, or wonder why a rule has no effect.
   by default and shown only under `html.story-player` at ≤860px — hidden
   by default is not dead. The snapshots stay in the HTML as the no-JS
   fallback. Census still green (test-step17 10/10).
+- **Step 23 — fixed stage:** new classes `.is-hidden`, `.app-header-stack`,
+  `.app-question-stack`, `.app-answer-stack`, `.app-answer-layer`,
+  `.story-caption-stack`, `.story-caption-item`, `.app-start-label`,
+  `.app-start-icon`, `.visually-hidden` are all defined in the Step 23
+  block of `styles.css` and used in `index.html` or `app.js`
+  (`.is-hidden` is toggled by `app.js` on the hero + story layers;
+  `.app-answer-layer` is added to the coach node by `buildLayers()`).
+  Removed as dead: the `[hidden]` rules for `.app-window-bar`,
+  `.app-header`, `.app-thinking`, `.app-live-view`, `.app-home-view`,
+  `.app-report-view`, `.app-context`, `.app-open-live`, `.hero-replay`,
+  `.app-coach-view` and `.app-answer` (the last was already dead before
+  Step 23 — nothing used it). Kept: `.app-badge[hidden]`,
+  `.app-history[hidden]`, `.sticky-cta[hidden]`.
+  Census still green (test-step17 10/10).
+- **Step 23 — demo (same step):** new classes `.demo-question-stack`,
+  `.demo-answer-stack` are defined in the Step 23 block and used in
+  `index.html` + `demo.html` (the layers are built by `buildDemoLayers()`
+  in `app.js`). Removed as dead: `.demo-answer li.skel` + the `@keyframes
+  shimmer` (the skeletons are retired — the bullets are pre-rendered) and
+  `.demo-next[hidden]` (the card uses `is-hidden` now). The `--skeleton`
+  color token stays (COLOR.md lists it; test-step6/12 lock it). The
+  `skel` whitelist entry is removed (nothing generates it any more).
+  Census still green (test-step17 10/10).

@@ -82,12 +82,19 @@
         </div>
         <div class="demo-body">
           <p class="demo-label">Interviewer</p>
-          <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
-          <ul class="demo-answer" id="demo-answer" aria-busy="false">
-            <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
-            <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
-            <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
-          </ul>
+          <!-- Step 23: the question + answer are stacks of pre-rendered
+               layers (one per sample + mode). The static "tell" content
+               stays as layer 0, so no-JS still shows the demo. -->
+          <div class="demo-question-stack" id="demo-question-stack">
+            <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+          </div>
+          <div class="demo-answer-stack" id="demo-answer-stack">
+            <ul class="demo-answer" id="demo-answer" aria-busy="false">
+              <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+              <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+              <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+            </ul>
+          </div>
           <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
           <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
         </div>
@@ -149,11 +156,13 @@
           <button class="seg-btn" type="button" id="int-rapid" aria-pressed="false">Rapid — 1 line</button>
         </div>
         <p class="seg-state"><span class="dot" aria-hidden="true"></span><span class="seg-label">Current length:</span> <strong id="int-state">Normal — 3 points</strong></p>
-        <ul class="demo-answer" id="int-answer">
-          <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
-          <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
-          <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
-        </ul>
+        <div class="demo-answer-stack" id="int-answer-stack">
+          <ul class="demo-answer" id="int-answer">
+            <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+            <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+            <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+          </ul>
+        </div>
         <p class="demo-status" id="int-status" role="status">Normal — 3 points ready — simulated.</p>
         <p class="demo-note">Simulated. In the real app the shortening is automatic, driven by how fast the follow-up arrives, and <kbd>Ctrl+Alt+R</kbd> resets it.</p>
       </div>

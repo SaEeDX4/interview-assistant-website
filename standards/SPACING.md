@@ -112,3 +112,7 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
 - **Step 22 — mobile story player:** segments use a 4px gap and 12px 4px
   padding; the player layout uses a 16px gap; the caption heading has an
   8px bottom margin. All on the scale; no new values, no exemptions.
+- **Step 23 — fixed stage:** no new spacing values. One exemption: the
+  `.visually-hidden` live-region utility uses the standard `margin: -1px`
+  offset (part of the visually-hidden recipe, not a spacing choice) — the
+  -1px keeps the 1px box from shifting layout.

@@ -116,3 +116,8 @@ a full-width paragraph far too long to read comfortably — fixed to 68ch.
   heading 20px, counter 13px, nav arrows 20px — all on the scale. No new
   sizes, weights, line-heights or letter-spacing; the caption paragraph
   reuses the body text.
+- **Step 23 — fixed stage:** no new sizes. The live transcript reserves
+  one line with `min-height: 1.5em` (13px × 1.5 = 19.5px, measured) —
+  an em reserve, so it scales with the user's font size. The Start
+  button's label span inherits the button's 13px/600; hiding it at
+  ≤640px changes no size.

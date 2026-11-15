@@ -22,8 +22,10 @@ function check(name, ok, extra = "") {
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. Replay button: real button, labelled, hidden until the moment plays.
+// Step 23: hidden with visibility (is-hidden), not display — its space is
+// reserved, so the pills below never move when it appears.
 check("hero Replay button exists, type=button, labelled, starts hidden",
-  /<button type="button" class="hero-replay" id="hero-replay" aria-label="[^"]+" hidden>/.test(html));
+  /<button type="button" class="hero-replay is-hidden" id="hero-replay" aria-label="[^"]+">/.test(html));
 
 // 2. Player hooks exist in the mockup (pill + transcript + thinking).
 check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, #mock-thinking, #mock-answer, #mock-meta)",
@@ -98,7 +100,7 @@ check("faithful blue window (app tokens, Segoe, radius 14, no tilt/glow)",
 
 // 11. Thinking state: ● ● ● + a faded pending bullet while preparing.
 check("thinking state present (● ● ● + is-pending faded bullet)",
-  /id="mock-thinking" hidden>● ● ●<\/p>/.test(html) &&
+  /<p class="app-thinking is-hidden" id="mock-thinking">● ● ●<\/p>/.test(html) &&
   /\.app-thinking \{[^}]*animation: pulse \.9s/.test(clean) &&
   /\.app-answer li\.is-pending \{[^}]*opacity: \.45;/.test(clean) &&
   /pending\.classList\.add\("is-pending"\)/.test(js));
@@ -106,13 +108,15 @@ check("thinking state present (● ● ● + is-pending faded bullet)",
 // 12. Replay button: 44px target, spacing-scale margins, [hidden] respected.
 check("Replay button is a 44px target (min-height 44px, padding 12px 16px)",
   /\.hero-replay \{[\s\S]*?min-height: 44px;[\s\S]*?padding: 12px 16px;/.test(clean));
-check("Replay button honours [hidden] (display none)",
-  /\.hero-replay\[hidden\] \{\s*display: none;\s*\}/.test(clean));
+check("Replay button is hidden with visibility (Step 23: reserves its space, nothing below moves)",
+  /\.is-hidden \{\s*visibility: hidden;\s*\}/.test(clean) &&
+  /replayBtn\.classList\.remove\("is-hidden"\)/.test(js) &&
+  /replayBtn\.classList\.add\("is-hidden"\)/.test(js));
 
 // 13. Reduced motion: full static state, no Replay button shown.
 check("reduced motion renders the full state statically and never shows Replay",
   /if \(reduced\) \{ renderAll\(\); return; \}/.test(js) &&
-  (js.match(/replayBtn\.hidden = false/g) || []).length === 1);
+  (js.match(/replayBtn\.classList\.remove\("is-hidden"\)/g) || []).length === 1);
 
 // 14. Pause after all three points finishes the moment (no stranded
 // final state: points + Answer ready visible, but no Replay button).

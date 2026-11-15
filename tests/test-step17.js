@@ -24,7 +24,7 @@ function check(name, ok, extra = "") {
 // Whitelist (DEADCODE.md D3): JS state, JS-generated, semantic hooks.
 const WHITELIST = new Set(["cta-visible", "is-coach-active", "is-new", "is-open",
   "is-scrolled", "is-visible", "js", "js-acc", "open",
-  "reveal", "skel", "coach", "coach-keys", "calc-note", "pricing",
+  "reveal", "coach", "coach-keys", "calc-note", "pricing",
   "brand-name", "hero-copy"]);
 
 // 1. Census: every CSS class is used, referenced by JS, or whitelisted.

@@ -89,30 +89,29 @@ const els = {};
 function mk(tag, id) { const el = new El(tag, id); if (id) { els[id] = el; } return el; }
 const htmlEl = new El("html");
 const storyWindowEl = mk("div");
-const storyAnswerEl = mk("ul", "story-answer");
-storyAnswerEl._closestWindow = storyWindowEl;
+const storyAnswerStackEl = mk("div", "story-answer-stack");
+storyAnswerStackEl._closestWindow = storyWindowEl;
 [
   ["p", "story-pill"], ["span", "story-pill-text"], ["span", "story-badge"],
-  ["span", "story-start"], ["div", "story-home-header"], ["div", "story-live-header"],
+  ["span", "story-start"], ["span", "story-start-label"],
+  ["div", "story-home-header"], ["div", "story-live-header"],
   ["div", "story-home"], ["div", "story-live"], ["div", "story-report"],
   ["i", "story-prepare-bar"], ["p", "story-prepare-stage"], ["a", "story-open-live"],
-  ["p", "story-question"], ["p", "story-transcript"], ["p", "story-context"],
+  ["div", "story-question-stack"], ["p", "story-transcript"], ["p", "story-context"],
   ["p", "story-thinking"], ["span", "story-meta"], ["div", "story-coach"],
   ["span", "story-history"], ["span", "story-history-text"],
-  ["h3", "story-caption-title"], ["p", "story-caption-text"], ["span", "story-count"],
+  ["div", "story-caption-stack"], ["p", "story-caption-live"], ["span", "story-count"],
 ].forEach(([tag, id]) => mk(tag, id));
 els["story-pill-text"].textContent = "Not listening";
 els["story-badge"].hidden = true;
-els["story-home-header"].hidden = true;
-els["story-home"].hidden = true;
-els["story-report"].hidden = true;
-els["story-open-live"].hidden = true;
-els["story-context"].hidden = true;
-els["story-thinking"].hidden = true;
-els["story-coach"].hidden = true;
+els["story-home-header"].classList.add("is-hidden");
+els["story-home"].classList.add("is-hidden");
+els["story-report"].classList.add("is-hidden");
+els["story-open-live"].classList.add("is-hidden");
+els["story-context"].classList.add("is-hidden");
+els["story-thinking"].classList.add("is-hidden");
+els["story-coach"].classList.add("is-hidden");
 els["story-history"].hidden = true;
-els["story-caption-title"].textContent = STEP_TEXTS[0][0];
-els["story-caption-text"].textContent = STEP_TEXTS[0][1];
 els["story-count"].textContent = "1 / 7";
 const segWrapEl = mk("div");
 const snapProbeEl = mk("div");
@@ -200,11 +199,45 @@ vm.createContext(sandbox);
 vm.runInContext(storyCode, sandbox);
 
 /* helpers to drive the story */
+// Step 23 layer model: the visible layer is the one without .is-hidden;
+// a bullet counts only once revealed (no .is-hidden on the <li>).
+function visibleChild(stackEl) { return stackEl.children.find((c) => !c.classList.contains("is-hidden")) || null; }
+function bullets() {
+  const layer = visibleChild(els["story-answer-stack"]);
+  if (!layer) { return []; }
+  const ul = layer.children.find((c) => c.tagName === "UL");
+  if (!ul) { return []; }
+  return ul.children.filter((li) => !li.classList.contains("is-hidden"))
+    .map((li) => li.children[1] ? li.children[1].textContent : "");
+}
+function allBullets() {
+  const out = [];
+  els["story-answer-stack"].children.forEach((layer) => {
+    const ul = layer.children.find((c) => c.tagName === "UL");
+    if (ul) { ul.children.forEach((li) => out.push(li)); }
+  });
+  return out;
+}
+function questionText() {
+  const layer = visibleChild(els["story-question-stack"]);
+  return layer ? layer.textContent : "";
+}
+function captionTitle() {
+  const item = visibleChild(els["story-caption-stack"]);
+  if (!item) { return ""; }
+  const h3 = item.children.find((c) => c.tagName === "H3");
+  return h3 ? h3.textContent : "";
+}
+function captionBody() {
+  const item = visibleChild(els["story-caption-stack"]);
+  if (!item) { return ""; }
+  const p = item.children.find((c) => c.tagName === "P");
+  return p ? p.textContent : "";
+}
+function pillText() { return els["story-pill-text"].textContent; }
 function ioDrive(beat) {
   observers.forEach((o) => o.cb([{ isIntersecting: true, target: steps[beat] }]));
 }
-function bullets() { return storyAnswerEl.children.map((li) => li.children[1] ? li.children[1].textContent : ""); }
-function pillText() { return els["story-pill-text"].textContent; }
 function segActive() { return segBtns.findIndex((b) => b.classList.contains("is-active")); }
 function swipe(x0, x1) {
   storyWindowEl.fire("touchstart", { changedTouches: [{ clientX: x0 }] });
@@ -217,11 +250,17 @@ function swipe(x0, x1) {
   if (!MOBILE && !REDUCED) {
     // Desktop: IO drives beats; beat 0 plays Prepare, beat 2 plays Q1.
     check("desktop: story observer registered", observers.length === 1);
+    check("desktop: layers built once (5 question, 5 answer, 7 caption)",
+      els["story-question-stack"].children.length === 5
+      && els["story-answer-stack"].children.length === 5
+      && els["story-caption-stack"].children.length === 7);
     ioDrive(0);
     await sleep(2600);
     check("desktop beat 0: prepare done, open live visible",
-      els["story-prepare-stage"].textContent.startsWith("Done —") && !els["story-open-live"].hidden);
+      els["story-prepare-stage"].textContent.startsWith("Done —") && !els["story-open-live"].classList.contains("is-hidden"));
     check("desktop beat 0: step 0 active", steps[0].classList.contains("is-active"));
+    check("desktop: answer bullets pre-rendered hidden (9 total, none revealed yet)",
+      allBullets().length === 9 && allBullets().every((li) => li.classList.contains("is-hidden")));
     ioDrive(2);
     await sleep(600);
     check("desktop beat 2 mid-play: transcript growing", els["story-transcript"].textContent.length > 0);
@@ -231,14 +270,14 @@ function swipe(x0, x1) {
     ioDrive(3);
     check("desktop beat 3: Concise badge + Q3 + meta Concise",
       !els["story-badge"].hidden && els["story-badge"].textContent === "Concise"
-      && els["story-question"].textContent.includes("Why should we hire you?")
+      && questionText().includes("Why should we hire you?")
       && els["story-meta"].textContent === "Concise");
     ioDrive(4);
     check("desktop beat 4: coach view shown, meta Coach",
-      !els["story-coach"].hidden && els["story-meta"].textContent === "Coach");
+      !els["story-coach"].classList.contains("is-hidden") && els["story-meta"].textContent === "Coach");
     ioDrive(6);
     check("desktop beat 6: report view shown, pill Stopped",
-      !els["story-report"].hidden && pillText() === "Stopped");
+      !els["story-report"].classList.contains("is-hidden") && pillText() === "Stopped");
   }
 
   if (!MOBILE && REDUCED) {
@@ -253,23 +292,28 @@ function swipe(x0, x1) {
     check("mobile init: seg 0 active + aria-current, count 1 / 7, prev disabled",
       segActive() === 0 && segBtns[0].getAttribute("aria-current") === "true"
       && els["story-count"].textContent === "1 / 7" && prevBtn.disabled === true && nextBtn.disabled === false);
-    check("mobile init: caption is beat 0",
-      els["story-caption-title"].textContent === STEP_TEXTS[0][0]
-      && els["story-caption-text"].textContent === STEP_TEXTS[0][1]);
+    check("mobile init: caption is beat 0 (visible layer + live region)",
+      captionTitle() === STEP_TEXTS[0][0]
+      && captionBody() === STEP_TEXTS[0][1]
+      && els["story-caption-live"].textContent.startsWith(STEP_TEXTS[0][0]));
     await sleep(2600);
     check("mobile beat 0: prepare played in player",
-      els["story-prepare-stage"].textContent.startsWith("Done —") && !els["story-open-live"].hidden);
+      els["story-prepare-stage"].textContent.startsWith("Done —") && !els["story-open-live"].classList.contains("is-hidden"));
     segBtns[3].fire("click");
     check("mobile tap seg 3: Concise badge + Q3, caption beat 3, count 4 / 7",
-      !els["story-badge"].hidden && els["story-question"].textContent.includes("Why should we hire you?")
-      && els["story-caption-title"].textContent === STEP_TEXTS[3][0]
+      !els["story-badge"].hidden && questionText().includes("Why should we hire you?")
+      && captionTitle() === STEP_TEXTS[3][0]
       && els["story-count"].textContent === "4 / 7" && segActive() === 3);
+    check("mobile tap seg 3: exactly one caption item visible, and the stacks were not rebuilt",
+      els["story-caption-stack"].children.filter((c) => !c.classList.contains("is-hidden")).length === 1
+      && els["story-question-stack"].children.length === 5
+      && els["story-answer-stack"].children.length === 5);
     check("mobile tap seg 3: segs 0-2 done, seg 3 active",
       segBtns[0].classList.contains("is-done") && segBtns[2].classList.contains("is-done")
       && !segBtns[4].classList.contains("is-done"));
     swipe(200, 100);
     check("mobile swipe left: beat 3 -> 4 coach view",
-      segActive() === 4 && !els["story-coach"].hidden && els["story-meta"].textContent === "Coach");
+      segActive() === 4 && !els["story-coach"].classList.contains("is-hidden") && els["story-meta"].textContent === "Coach");
     swipe(100, 200);
     check("mobile swipe right: beat 4 -> 3 concise again",
       segActive() === 3 && els["story-badge"].textContent === "Concise");
@@ -300,7 +344,7 @@ function swipe(x0, x1) {
     check("mobile reduced: tap seg 2 renders final at once (no timers)",
       pillText() === "Answer ready" && bullets().length === 3
       && els["story-history-text"].textContent === "1 / 1"
-      && els["story-caption-title"].textContent === STEP_TEXTS[2][0]
+      && captionTitle() === STEP_TEXTS[2][0]
       && els["story-count"].textContent === "3 / 7");
     check("mobile reduced: beat 0 rendered final at once (Done, no staged timers)",
       els["story-prepare-stage"].textContent.startsWith("Done —"));

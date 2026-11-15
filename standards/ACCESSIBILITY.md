@@ -121,3 +121,15 @@ paragraph link cannot be 44px tall without breaking the line.
   renders instantly, so the player is fully usable by tap, swipe and
   keyboard without animation. The two shortened segment labels (Prep,
   Adapt) carry `aria-label`s with the full beat names (Prepare, Concise).
+- **Step 23 — fixed stage:** `visibility: hidden` states are inert by
+  design — a hidden layer is out of the focus order and out of the
+  accessibility tree (unlike `opacity: 0`, which would leave five
+  questions and five answers all exposed at once). The visible layer is
+  the only one a screen reader meets. The caption is no longer a live
+  region itself (its layers swap in and out of the tree); instead a
+  separate visually-hidden `<p>` with `aria-live="polite"` carries the
+  beat's title and text, so the announcement is one clean sentence per
+  beat, in either mode. The Start button's label is hidden at ≤640px,
+  but the button keeps its `aria-label` (the pill word carries the
+  state); the hidden badge's information is still in the answer meta
+  and the caption. Enforced by `tests/test-step23.js` and the sim.

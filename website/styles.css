@@ -277,20 +277,10 @@ p { margin: 0 0 16px; }
 .demo-note { color: var(--muted-2); font-size: 13px; margin: 16px 0 0; }
 .nowrap { white-space: nowrap; }
 
-/* Demo skeleton lines — lively staging state while points are prepared.
-   The bar itself must always be visible: a solid base clearly lighter
-   than the dark surface, with a white sheen sweeping over it. The old
-   gradient-only version failed live twice — its bright band spent most
-   of the 1.2s cycle off-screen (background-size 200% + position sweep),
-   and the bar's base was too dark to read on its own. */
-.demo-answer li.skel {
-  display: block; height: 46px; padding: 0;
-  background-color: var(--skeleton);
-  background-image: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, .12) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: shimmer 1.2s ease-in-out infinite;
-}
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+/* Step 23: the skeleton placeholders are retired — the demo bullets are
+   pre-rendered hidden now, so the shimmer has nothing to sweep. The
+   --skeleton token stays (COLOR.md lists it; test-step6/12 lock it). */
+
 
 /* ---------- Cards / grids ---------- */
 .grid { display: grid; gap: 20px; align-items: start; }
@@ -496,13 +486,60 @@ table.compare tbody tr:hover td { background: var(--surface); }
   background: rgba(23, 29, 40, .9);
 }
 .app-window-title { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
-.app-window-bar[hidden] { display: none; }
-.app-header[hidden] { display: none; } /* Step 22 fix: showView() hides the
-  live header on the Home beat, but .app-header { display: flex } overrode
-  the UA [hidden] rule — the Home view showed BOTH headers. */
 .app-controls { margin-left: auto; display: inline-flex; gap: 16px; color: var(--muted-2); font-size: 13px; line-height: 1; }
 .app-controls i { font-style: normal; }
 .app-window-body { padding: 16px; }
+/* ---------- Step 23: fixed stage — nothing below a window ever moves ----------
+   The window is a stage, not a content-sized card (Apple's pinned stage,
+   web.dev's fixed-size container, Material's large-item carousel): every
+   state the window can show is a layer in one grid cell, and the cell is
+   always as tall as its tallest layer. Hidden layers use visibility, never
+   display — display would collapse them out of the cell and defeat the
+   technique. Streaming content is pre-rendered in its layer and revealed
+   with opacity/transform only, so the stage is at its final height from
+   the first frame. See standards/STABILITY.md. */
+.is-hidden { visibility: hidden; }
+.app-header-stack { display: grid; }
+.app-header-stack > * { grid-area: 1 / 1; }
+.story-window .app-window-body { display: grid; }
+.story-window .app-window-body > * { grid-area: 1 / 1; }
+.app-question-stack { display: grid; }
+.app-question-stack > * { grid-area: 1 / 1; }
+.app-answer-stack { display: grid; }
+.app-answer-stack > * { grid-area: 1 / 1; }
+.story-caption-stack { display: grid; }
+.story-caption-item { grid-area: 1 / 1; }
+/* The demo (both pages) is a stage too: 10 sample layers + 1 typed
+   fallback, each in answer and coach mode, so the window is always as
+   tall as its tallest sample (measured: 1860.9px at 390px for "A conflict
+   with a coworker", 1559.9px for the Arabic sample — a 301px range the
+   old streaming code rode up and down). The question has its own stack
+   (11 layers, one per sample + fallback); the interruption simulator
+   stacks its 3 lengths the same way. */
+.demo-question-stack { display: grid; }
+.demo-question-stack > * { grid-area: 1 / 1; min-width: 0; }
+.demo-answer-stack { display: grid; }
+.demo-answer-stack > * { grid-area: 1 / 1; min-width: 0; }
+/* Grid items default to min-width: auto (their min-content) — a wide layer
+   could force its cell wider, the Step 22 overflow all over again. Zero
+   lets each layer shrink to the cell; its content wraps instead. */
+.app-home-view, .app-live-view, .app-report-view { min-width: 0; }
+.app-answer-layer, .app-coach-view { min-width: 0; }
+.app-start-icon { flex: none; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+/* Step 23 — the header is one row on every beat at <=640px, as the real
+   app sheds chrome below 580/640px: the Start button shows its icon only
+   (the pill word carries the state) and the adaptive badge is hidden (the
+   answer meta + caption still say Concise). Without this, the pill text
+   length flips the header between one and two rows mid-play (measured:
+   94px -> 54px while Listening) and everything below jumps 40px. */
+@media (max-width: 640px) {
+  .app-start-label { display: none; }
+  .app-badge { display: none; }
+}
 /* Step 21 — faithful header (G2): status pill left, controls right, no
    title text. The pill holds the dot, the status word and the 48x4 level
    meter (G1) — the only audio visual the app has. */
@@ -563,9 +600,8 @@ table.compare tbody tr:hover td { background: var(--surface); }
 }
 .app-question { font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin: 0; }
 .app-question.is-empty { color: var(--app-faint); font-weight: 400; }
-.app-transcript { font-size: 13px; font-style: italic; line-height: 1.5; color: var(--app-dim); margin: 0; }
+.app-transcript { font-size: 13px; font-style: italic; line-height: 1.5; color: var(--app-dim); margin: 0; min-height: 1.5em; /* Step 23: one line reserved — the transcript grows word by word and must never grow the question card. */ }
 .app-context { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 8px 0 0; }
-.app-context[hidden] { display: none; }
 .app-card--answer { min-height: 240px; }
 .app-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.4; color: var(--app-text); }
@@ -573,10 +609,8 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .app-answer li.is-pending { opacity: .45; }
 .app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; }
-.app-thinking[hidden] { display: none; }
 /* Step 21 — Coach Mode swaps the answer area (G9): labelled KEYWORDS
    (blue, semibold, uppercase) + STRUCTURE. Never beside the bullets. */
-.app-coach-view[hidden] { display: none; }
 .app-coach-label {
   font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
   color: var(--app-faint); line-height: 1.4; margin: 0 0 8px;
@@ -603,7 +637,6 @@ table.compare tbody tr:hover td { background: var(--surface); }
   background: var(--app-accent-strong); color: var(--app-text); border-radius: 8px; font-size: 14px;
 }
 /* Step 21 — story Home view (Beat 0): Get-started checklist + Prepare. */
-.app-live-view[hidden], .app-home-view[hidden], .app-report-view[hidden] { display: none; }
 .app-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .app-checks li { display: flex; gap: 8px; align-items: baseline; font-size: 15px; line-height: 1.4; color: var(--app-text); }
 .app-check { color: var(--app-listening); font-size: 14px; font-weight: 600; }
@@ -611,7 +644,6 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-prepare i { display: block; height: 100%; width: 0; background: var(--app-accent); border-radius: 2px; transition: width .25s ease; }
 .app-prepare-stage { font-size: 13px; line-height: 1.5; color: var(--app-dim); margin: 0 0 12px; min-height: 20px; }
 .app-open-live { margin: 12px 0 0; }
-.app-open-live[hidden] { display: none; }
 .app-report-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); margin: 0 0 8px; }
 .app-report-line span:last-child { color: var(--app-dim); }
 /* Step 20 — Replay control for the living hero. A real button (44px
@@ -623,7 +655,6 @@ table.compare tbody tr:hover td { background: var(--surface); }
   cursor: pointer; transition: color .15s ease, border-color .15s ease;
 }
 .hero-replay:hover { color: var(--text); border-color: var(--text); }
-.hero-replay[hidden] { display: none; }
 .float-chips {
   list-style: none; margin: 20px 0 0; padding: 0; position: relative; z-index: 2;
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
@@ -672,7 +703,6 @@ table.compare tbody tr:hover td { background: var(--surface); }
 }
 .story-head { text-align: center; max-width: 640px; margin: 0 auto 32px; }
 .story-lede { color: var(--muted); margin-bottom: 0; }
-.app-answer[hidden] { display: none; }
 .app-prepare i.is-full { width: 100%; }
 .app-report-note { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 12px 0 0; }
 
@@ -744,7 +774,9 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
   border-radius: var(--radius-lg); padding: 24px 28px;
   box-shadow: var(--shadow-card);
 }
-.demo-next[hidden] { display: none; }
+/* Step 23: the card is hidden with visibility (is-hidden), not display —
+   its space is reserved from the first paint, so it never pushes the
+   interrupt card down when it appears. */
 .demo-next-title { font-size: 19px; margin-bottom: 16px; }
 .demo-next-text { color: var(--muted); }
 .demo-next .cta-row { margin-bottom: 0; }

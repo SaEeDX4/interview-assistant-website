@@ -34,13 +34,16 @@ check("story window is sticky (top 100px) in a two-column layout",
   /\.story-layout \{[^}]*grid-template-columns: minmax\(0, 1\.05fr\) minmax\(0, \.95fr\);/.test(clean));
 
 // 3. Story window hooks exist (pill, views, prepare, coach, report).
+// Step 23: the question/answer/caption are stacks (layers built by JS),
+// so the hooks are the stack containers + the live region, not the old
+// single question/answer elements.
 check("story window hooks present (all story-* ids)",
-  ["story-pill", "story-pill-text", "story-badge", "story-start",
+  ["story-pill", "story-pill-text", "story-badge", "story-start", "story-start-label",
     "story-home-header", "story-live-header", "story-home", "story-live",
     "story-report", "story-prepare-bar", "story-prepare-stage", "story-open-live",
-    "story-question", "story-transcript", "story-context", "story-thinking",
-    "story-answer", "story-meta", "story-coach", "story-history",
-    "story-history-text"].every((id) => new RegExp('id="' + id + '"').test(html)));
+    "story-question-stack", "story-transcript", "story-context", "story-thinking",
+    "story-answer-stack", "story-meta", "story-coach", "story-history",
+    "story-history-text", "story-caption-stack", "story-caption-live"].every((id) => new RegExp('id="' + id + '"').test(html)));
 
 // 4. Beat content is grounded in the real app.
 const STAGES = ["Verify profile", "JD extraction", "Candidate–role match map",
@@ -112,7 +115,8 @@ check("demo Coach keywords are blue semibold, not amber",
 // 10. Must-not-invent checklist: no waveform, no typed question, no
 // "3 points ready", no numbers in the hero/story, coach never beside bullets.
 const heroAnswer = (html.match(/<ul class="app-answer" id="mock-answer"><\/ul>/) || [""])[0];
-const storyAnswer = (html.match(/<ul class="app-answer" id="story-answer"><\/ul>/) || [""])[0];
+// Step 23: the story answer is a stack of pre-rendered layers (one per
+// live beat) built from the POINTS arrays; the coach markup is layer 3.
 // The demo keeps its own "3 points ready" status (labelled sample), so the
 // invented-status check is scoped to the app-window depictions (hero + story).
 const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?id="hero-replay"/) || [""])[0]
@@ -122,8 +126,10 @@ check("must-not-invent checklist holds (hero + story)",
   !/mock-wave|app-wave|@keyframes eq/.test(html + clean + js) &&
   !/TYPE_MS|QUESTION\.slice\(0, typed\)/.test(js) &&
   !/3 points ready/.test(heroStoryHtml + heroStoryJs) &&
-  !heroAnswer.includes('class="num"') && !storyAnswer.includes('class="num"') &&
-  /coachEl\.hidden = true;/.test(js) && /coachEl\.hidden = false;/.test(js));
+  !heroAnswer.includes('class="num"') &&
+  /id="story-answer-stack"/.test(html) && /id="story-coach"/.test(html) &&
+  /setAnswerLayer\(3\)/.test(js) &&
+  /points\.forEach\(function \(text\) \{\s*var li = makeBullet\(text\);/.test(js));
 
 // 11. Reduced motion gates all three animation paths (demo + hero + story).
 check("JS gates demo, hero and story on prefers-reduced-motion (>= 3)",
