@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+tests/*-captures/
+tests/*.log
+tests/__pycache__/
+tests/mobile-verify/

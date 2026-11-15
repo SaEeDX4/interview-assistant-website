@@ -1,34 +1,114 @@
-# Interview Assistant — Commercial V2 Documentation and Source Audit
+# Interview Assistant — Commercial Website
 
-**This is an English-language production planning package**, not an implemented website or a paid live-release certification.
+The public home of **Interview Assistant** — a Windows interview
+preparation and practice coach with a live assist mode for interviews
+where assistance is permitted.
 
-## Package summary
+**Live site:** https://saeedx4.github.io/interview-assistant-website/
 
-- **71 numbered specialist documents**, owned and dependency-mapped; **16,531 actual physical Markdown lines**, vs **13,105 estimated**; counts independently verified by `MANIFEST.json`.
-- **Critical current platform:** Windows 10/11 x64. Android, iOS and a native macOS client are future research only, with separate audio-permission feasibility and companion-only fallbacks.
-- **Source checked read-only:** `https://github.com/SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT` on branch `claude/clever-hopper-m8kdai` at commit `4976e16f5379d38e9b265d3db979d2f8d7d7aa21`. Root/docs/v2/docs/release materials and selected code entry points were inspected. Full code line-by-line review, public payment validation and real device testing are **not** complete.
-- **Original inputs** saved unchanged under `evidence/original-attachments/` for audit traceability. The website HTML source was not attached; a PDF print view is not the HTML.
-- **No GitHub write action occurred.** No PR, commit, push or fork; no original website code was rewritten.
+The app listens to the interviewer's audio from a headset, then shows
+three short, speakable answers one at a time — built only from facts the
+candidate confirmed. It never hides, never records the microphone, and
+never stores audio. Windows 10/11 x64 only for now; Android, iOS, and a
+native Mac app are future research.
 
-## Reading order
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| `website/` | The live static site (11 pages, CSS, JS, self-hosted Inter). GitHub Pages deploys from here. |
+| `standards/` | The engineering standards the site is built to (spacing, typography, accessibility, color, SEO, motion, breakpoints, imagery, dead code) + `FINAL-REVIEW.md`, the full final review. |
+| `tests/` | Automated checks that enforce the standards, the applied fix scripts, and the full review (`review19.py` + `step19-report.json`). |
+| `docs/` | The V2 documentation package: 71 numbered specialist docs (01–08 at root, 09–71 in topic folders). |
+| `audit/` | The V2 source audit: verdict, source proof, scorecard, findings, decision log. |
+| `00-MASTER-DOCUMENT-INDEX.md` | Index of all 71 V2 docs with owners and dependencies. |
+| `MANIFEST.json`, `SHA256SUMS.txt`, `VERIFY_PACKAGE.py` | The V2 package manifest, checksums, and verifier (see below). |
+| `.github/workflows/static.yml` | The GitHub Pages deploy (Static HTML, artifact `website/`). |
+
+## The website
+
+No build step, no npm, no external fonts, images, or scripts — the font
+(Inter, variable) is self-hosted in `website/fonts/`. Preview locally:
+
+```bash
+cd website
+python3 -m http.server 8000
+# then open http://localhost:8000
+```
+
+Pricing on the site: Trial 30 lifetime live minutes; Pro USD 19.99/month
+with 600 live minutes. **The Pro price is a Paddle sandbox reference —
+confirm it before paid checkout opens.** There is no checkout on the site
+yet, and the download page says plainly that the signed installer is not
+published yet.
+
+## Standards and tests
+
+Every standard in `standards/` is enforced by a test in `tests/`
+(`test-step6.js` … `test-step18.js`, 195 checks total). From the repo
+root:
+
+```bash
+for f in tests/test-step*.js; do node "$f"; done
+python3 tests/review19.py   # full review: suites + links + content + renders
+```
+
+The review's latest results are in `tests/step19-report.json`
+(195/195 checks, 0 broken links, all pages exactly viewport-wide at
+320–1280px, Lighthouse 98/100/100/100).
+
+## The V2 documentation package
+
+`docs/`, `audit/`, `00-MASTER-DOCUMENT-INDEX.md`, `MANIFEST.json`,
+`SHA256SUMS.txt`, and `VERIFY_PACKAGE.py` are the Commercial V2 package:
+71 numbered docs (16,531 lines), 45 audit findings, 40 website checklist
+items, 16 owner decisions. Reading order:
 
 1. `audit/01-EXECUTIVE-VERDICT.md` — launch verdict and top blockers.
-2. `audit/02-SOURCE-PROOF.md` — actual repo files fetched, critical conflicts, review limits.
-3. `00-MASTER-DOCUMENT-INDEX.md` — complete 71-doc numbering, owner, dependencies, estimate and measured lines.
-4. `audit/03-SCORECARD.md`, `audit/04-DETAILED-FINDINGS.md`, `audit/05-CROSS-DOCUMENT-CONFLICTS.md` — precise v1/website assessment.
-5. `docs/01-PRD.md` through `docs/08-ROADMAP.md` — revised original eight.
-6. `docs/<category>/09...71-...md` — specialist implementation and testing contracts.
-7. `audit/06-WEBSITE-CHECKLIST.md` — file/section-specific P0/P1/P2 plan, intentionally **no website code rewrite**.
-8. `audit/07-OWNER-DECISION-LOG.md` and `audit/08-CHANGE-LOG.md` — owner decisions and v1-to-v2 delta.
+2. `audit/02-SOURCE-PROOF.md` — what was actually inspected.
+3. `00-MASTER-DOCUMENT-INDEX.md` — the full 71-doc index.
+4. `audit/03-SCORECARD.md`, `audit/04-DETAILED-FINDINGS.md`,
+   `audit/05-CROSS-DOCUMENT-CONFLICTS.md`.
+5. `docs/01-PRD.md` … `docs/08-ROADMAP.md`, then
+   `docs/<category>/09…71-….md`.
+6. `audit/06-WEBSITE-CHECKLIST.md`, `audit/07-OWNER-DECISION-LOG.md`,
+   `audit/08-CHANGE-LOG.md`.
 
-## Readiness semantics
+Verify the package (from the repo root — it checks document counts, line
+totals, dependency paths, and file hashes):
 
-`SOURCE-VERIFIED` means source text or code was inspected, **not** that a paid public service was actually tested. `PROPOSED` identifies recommended future implementation and test design. `UNKNOWN` denotes missing proof. `BLOCKED` means do not publish dependent claims or CTAs.
+```bash
+python3 VERIFY_PACKAGE.py
+```
 
-**Critical unresolved dependencies:** source HTML for real DOM audit, signed and hosted Windows stable installer, Paddle live merchant approval/real checkout E2E, finalized legal/support pages, current release mode verification and native language/audio validation.
+**Do not edit a checksummed file without updating its row in
+`SHA256SUMS.txt`** (recompute the SHA-256 of the new content), or the
+verifier fails. The package is an archive: the website was built from it,
+but the website is the living product now.
 
-**Line-count math:** 8 existing docs × 260 estimated lines + 63 new docs × 175 estimated lines = **13,105 planned lines**. The built documents contain **16,531 actual lines**; the verification script recounted the final file contents rather than using target counts.
+## Status — what is still open
 
-## Verification
+- **16 owner decisions (D01–D16)** — brand/domain, hosting, signed
+  download, live Pro price, legal, support channel, analytics, language
+  marketing, platform scope, developer mode, launch threshold, data
+  rights, version — all deferred to the end. See
+  `audit/07-OWNER-DECISION-LOG.md`.
+- **Launch blockers:** live Paddle payment validation, signed Windows
+  installer + published SHA-256, final legal/support pages, real
+  device/audio/language E2E tests. The site is honest about all of these;
+  it is not yet a shippable paid public product.
 
-Run `python3 VERIFY_PACKAGE.py` in this folder to verify numbered document count, physical line total, missing dependency paths and archive file hashes. This script does not connect to GitHub or write to the source repository.
+## Working rules
+
+1. **The source app repo is read-only.** Never edit, create, or delete
+   anything in
+   [`SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT`](https://github.com/SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT)
+   from this project.
+2. **No GitHub writes without Saeed's explicit permission.** That includes
+   this repo.
+3. **No invented claims.** If the app does not do it, the website does not
+   claim it: no hidden mode, no microphone recording, no audio storage, no
+   hiring-outcome predictions, no scores, no fake testimonials, dates, or
+   download links.
+4. **Use only where allowed.** Every public surface carries the
+   authorized-use message.

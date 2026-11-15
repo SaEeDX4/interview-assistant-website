@@ -1,0 +1,248 @@
+{
+  "failures": [],
+  "warnings": [
+    "external link unreachable (The read operation timed out): https://github.com/SaEeDX4/interview-assistant-website/tree/main/docs",
+    "PageSpeed Insights unavailable: HTTP Error 429: Too Many Requests"
+  ],
+  "suites": {
+    "step6": {
+      "passed": 52,
+      "failed": 0
+    },
+    "step7": {
+      "passed": 28,
+      "failed": 0
+    },
+    "step8": {
+      "passed": 11,
+      "failed": 0
+    },
+    "step9": {
+      "passed": 14,
+      "failed": 0
+    },
+    "step10": {
+      "passed": 9,
+      "failed": 0
+    },
+    "step11": {
+      "passed": 17,
+      "failed": 0
+    },
+    "step12": {
+      "passed": 8,
+      "failed": 0
+    },
+    "step13": {
+      "passed": 9,
+      "failed": 0
+    },
+    "step14": {
+      "passed": 10,
+      "failed": 0
+    },
+    "step15": {
+      "passed": 12,
+      "failed": 0
+    },
+    "step16": {
+      "passed": 7,
+      "failed": 0
+    },
+    "step17": {
+      "passed": 10,
+      "failed": 0
+    },
+    "step18": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "links": {
+    "pages": 11,
+    "broken": [],
+    "missing_anchors": [],
+    "external": [
+      "https://github.com/SaEeDX4/interview-assistant-website/tree/main/docs",
+      "https://saeedx4.github.io/interview-assistant-website/",
+      "https://saeedx4.github.io/interview-assistant-website/demo.html",
+      "https://saeedx4.github.io/interview-assistant-website/download.html",
+      "https://saeedx4.github.io/interview-assistant-website/features.html",
+      "https://saeedx4.github.io/interview-assistant-website/how-it-works.html",
+      "https://saeedx4.github.io/interview-assistant-website/platforms.html",
+      "https://saeedx4.github.io/interview-assistant-website/pricing.html",
+      "https://saeedx4.github.io/interview-assistant-website/privacy.html",
+      "https://saeedx4.github.io/interview-assistant-website/support.html",
+      "https://saeedx4.github.io/interview-assistant-website/terms.html"
+    ]
+  },
+  "content": {
+    "Pro price $19.99 present": true,
+    "no other dollar price": true,
+    "trial 30 minutes present": true,
+    "600 Pro minutes present": true,
+    "50-150 question bank present": true,
+    "10 languages present": true,
+    "no TODO/FIXME": true,
+    "no lorem ipsum": true,
+    "no 'coming soon' promise": true,
+    "no google fonts reference": true,
+    "no american 'organize/behavior'": true
+  },
+  "captures": {
+    "demo-390.png": {
+      "px": [
+        780,
+        11480
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "download-390.png": {
+      "px": [
+        780,
+        9012
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "features-390.png": {
+      "px": [
+        780,
+        20310
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "how-it-works-390.png": {
+      "px": [
+        780,
+        14264
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "index-390.png": {
+      "px": [
+        780,
+        17384
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "platforms-390.png": {
+      "px": [
+        780,
+        11014
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "pricing-390.png": {
+      "px": [
+        780,
+        17032
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "privacy-390.png": {
+      "px": [
+        780,
+        13892
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "support-390.png": {
+      "px": [
+        780,
+        10172
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "terms-390.png": {
+      "px": [
+        780,
+        11546
+      ],
+      "css_w": 390,
+      "ok": true
+    },
+    "index-320.png": {
+      "px": [
+        640,
+        19306
+      ],
+      "css_w": 320,
+      "ok": true
+    },
+    "index-768.png": {
+      "px": [
+        1536,
+        12202
+      ],
+      "css_w": 768,
+      "ok": true
+    },
+    "index-900.png": {
+      "px": [
+        1800,
+        11918
+      ],
+      "css_w": 900,
+      "ok": true
+    },
+    "index-1024.png": {
+      "px": [
+        2048,
+        11858
+      ],
+      "css_w": 1024,
+      "ok": true
+    },
+    "index-1025.png": {
+      "px": [
+        2050,
+        10822
+      ],
+      "css_w": 1025,
+      "ok": true
+    },
+    "index-1280.png": {
+      "px": [
+        2560,
+        10734
+      ],
+      "css_w": 1280,
+      "ok": true
+    }
+  },
+  "pagespeed": {
+    "unavailable": "HTTP Error 429: Too Many Requests"
+  },
+  "pagespeed_browser": {
+    "method": "pagespeed.web.dev via browser, Moto G Power, Lighthouse 13.6.0, Slow 4G, 2026-11-14 ~18:04-18:07 PST",
+    "scores": {
+      "performance": 98,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "vitals": {
+      "FCP": "0.9 s",
+      "LCP": "0.9 s",
+      "TBT": "0 ms",
+      "CLS": "0",
+      "Speed Index": "3.8 s",
+      "INP": "no field data"
+    },
+    "report_url": "https://pagespeed.web.dev/analysis/https-saeedx4-github-io-interview-assistant-website/88z6svg27h?form_factor=mobile"
+  },
+  "notes": [
+    "run3 index-1024 capture (1040px) was a stale Microlink cache: run2 and run3 shared the ?v=step19 cache-buster. Fresh capture ?v=step19b is exactly 1024px, 0 rows past 1024; live styles.css confirmed to contain the fix.",
+    "PageSpeed Insights API returned 429, so Part E was measured via the pagespeed.web.dev UI instead (same device/throttling as Step 5).",
+    "GitHub docs-tree external link timed out once on HEAD (transient); the target docs/ exists in the repo."
+  ]
+}
