@@ -351,7 +351,17 @@ code { overflow-wrap: anywhere; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+  /* Step 26 — the 1fr track is minmax(auto, 1fr): its auto minimum is the
+     app window's min-content (531px — Step 25's nowrap chips row: chips 445
+     + Replay 44 + gap 8 = 497, + 32 body padding + 2 border), which widened
+     the hero to 531px at a 390px viewport and .hero's overflow: hidden
+     clipped Start, Replay and the third stats column off the right edge
+     (scrollWidth == innerWidth still passed — the section clips, the page
+     doesn't scroll). minmax(0, 1fr) plus min-width: 0 on the visual let
+     the track shrink to its container, so the chips row finally scrolls
+     and the fade edge lights up. Same pattern as Step 22's story fix. */
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero-visual { min-width: 0; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 1024px) {
