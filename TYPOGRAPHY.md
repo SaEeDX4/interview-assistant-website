@@ -39,11 +39,13 @@ leading), Microsoft Fluent (single type ramp, one weight per role).
 
 ## 3. Weights — only loaded weights
 
-The font URL loads `Inter:wght@400;500;600;700;800`. The stylesheet must
-use **only** those weights. (Step 10 found `650` ×19 and `750` ×1 in the CSS
-— weights the URL never lists, so browsers round or synthesise them and the
-rendered weight is unreliable across browsers. All mapped to 600 / 700,
-which is what browsers were already rendering.)
+Inter is self-hosted as a variable font (`website/fonts/inter-latin.woff2`
++ `inter-latin-ext.woff2`, weights 100–900, `font-display: swap`; Step 18).
+The stylesheet must use **only** weights 400–800. (Step 10 found `650` ×19
+and `750` ×1 in the CSS — weights the old Google Fonts URL never listed, so
+browsers round or synthesise them and the rendered weight is unreliable
+across browsers. All mapped to 600 / 700, which is what browsers were
+already rendering.)
 
 ## 4. Line-height — one value per role
 
@@ -97,3 +99,8 @@ a full-width paragraph far too long to read comfortably — fixed to 68ch.
     .01em/.02em → 0 (negligible values on the app title and brand mark).
 - **Method:** full CSS inventory + heading census (1 h1 per page, all
   sentence case) + fresh live re-verification after the fix.
+- **Step 18** self-hosted Inter: the Google Fonts stylesheet link (render-blocking,
+  ~760ms per Lighthouse) is gone from all 11 pages; the variable font is served
+  from `website/fonts/` (latin 71KB + latin-ext 130KB, `font-display: swap`, latin
+  preloaded). Latin + latin-ext cover every Inter glyph the site uses; arrows,
+  checkmarks and Arabic/Persian fall back to system fonts exactly as before.
