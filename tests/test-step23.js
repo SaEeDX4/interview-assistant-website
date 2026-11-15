@@ -61,7 +61,7 @@ check("question + answer stacks exist (containers + layer builders)",
   /var ANSWER_POINTS = \[\[\], Q1_POINTS, Q3_POINTS, null, Q2_POINTS\];/.test(js) &&
   /function buildLayers\(\) \{/.test(js) &&
   /function showLayer\(layers, i\) \{/.test(js) &&
-  /function setQuestionLayer\(i\) \{ showLayer\(questionLayers, i\); \}/.test(js) &&
+  /function setQuestionLayer\(i\) \{[\s\S]*?showLayer\(questionLayers, i\);[\s\S]*?classList\.add\("is-landing"\);/.test(js) &&
   /function setAnswerLayer\(i\) \{ showLayer\(answerLayers, i\); \}/.test(js));
 check("coach is answer layer 3 (its markup sits in the stack)",
   /id="story-answer-stack">[\s\S]*?id="story-coach"/.test(html) &&

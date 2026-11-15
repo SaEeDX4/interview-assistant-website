@@ -13,6 +13,13 @@ per role), Material color roles.
 All tokens live in `:root`. Nothing outside `:root` may contain a hex
 color; nothing may invent a new hue.
 
+Step 25 exception — mask gradients: the chip-row fade uses
+`mask-image: linear-gradient(…, black …, transparent …)`. `black` /
+`transparent` there are alpha values (opaque / clear in the mask), not
+design colors, so they are written as keywords, never as a hex (the
+test forbids hex outside `:root`, and a token would be misleading — the
+mask has no colour). No other keyword colour is allowed.
+
 | Token | Value | Role |
 |-------|-------|------|
 | `--bg` | `#0a0c10` | page background |

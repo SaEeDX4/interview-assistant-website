@@ -119,7 +119,7 @@ const heroAnswer = (html.match(/<ul class="app-answer" id="mock-answer"><\/ul>/)
 // live beat) built from the POINTS arrays; the coach markup is layer 3.
 // The demo keeps its own "3 points ready" status (labelled sample), so the
 // invented-status check is scoped to the app-window depictions (hero + story).
-const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?id="hero-replay"/) || [""])[0]
+const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?class="hero-stats"/) || [""])[0]
   + (html.split('id="story"')[1] || "").split("<!-- LIVE DEMO")[0];
 const heroStoryJs = (js.replace(/\/\*[\s\S]*?\*\//g, "").split("Step 21 — hero")[1] || "");
 check("must-not-invent checklist holds (hero + story)",

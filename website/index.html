@@ -103,8 +103,11 @@
               <p class="app-thinking is-hidden" id="mock-thinking">● ● ●</p>
               <ul class="app-answer" id="mock-answer"></ul>
             </section>
-            <div class="app-actions" aria-hidden="true">
-              <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+            <div class="app-actions">
+              <div class="app-actions-scroll" aria-hidden="true">
+                <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+              </div>
+              <button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview">↻</button>
             </div>
             <div class="app-manual" aria-hidden="true">
               <span class="app-manual-input">Type or paste a question and press Enter</span>
@@ -113,7 +116,6 @@
             <noscript><p>Animated preview needs JavaScript — the interactive demo below shows the same three points.</p></noscript>
           </div>
         </div>
-        <button type="button" class="hero-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview">↻ Replay</button>
         <dl class="hero-stats">
           <div class="hero-stat">
             <dt>questions</dt>
@@ -214,9 +216,11 @@
                     </div>
                   </div>
                 </section>
-                <div class="app-actions" aria-hidden="true">
-                  <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
-                  <span class="app-history" id="story-history" hidden><span aria-hidden="true">‹</span><span id="story-history-text">1 / 1</span><span aria-hidden="true">›</span></span>
+                <div class="app-actions">
+                  <div class="app-actions-scroll" aria-hidden="true">
+                    <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+                  </div>
+                  <span class="app-history" id="story-history" hidden aria-hidden="true"><span aria-hidden="true">‹</span><span id="story-history-text">1 / 1</span><span aria-hidden="true">›</span></span>
                 </div>
                 <div class="app-manual" aria-hidden="true">
                   <span class="app-manual-input">Type or paste a question and press Enter</span>
@@ -419,7 +423,9 @@
                     </ul>
                   </section>
                   <div class="app-actions">
-                    <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+                    <div class="app-actions-scroll">
+                      <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+                    </div>
                     <span class="app-history"><span>‹</span><span>2 / 2</span><span>›</span></span>
                   </div>
                 </div>

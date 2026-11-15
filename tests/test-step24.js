@@ -21,12 +21,15 @@ function check(name, ok, extra = "") {
 }
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-// 1. Replay is centred below the window (not right-aligned alone).
-check("Replay is centred below the window (margin: 12px auto 0)",
-  /\.hero-replay \{[\s\S]*?margin: 12px auto 0;/.test(clean));
-check("Replay is still a 44px button, hidden until the moment plays",
-  /<button type="button" class="hero-replay is-hidden" id="hero-replay"/.test(html) &&
-  /\.hero-replay \{[\s\S]*?min-height: 44px;/.test(clean));
+// 1. Step 25 supersedes the centred Replay below the window: the Replay
+// is now an icon-only button pinned at the right end of the hero's action
+// row (see test-step25 for the full checks). The standalone button and its
+// CSS are gone; the stats strip stays.
+check("no standalone Replay button below the window (Step 25 moved it into the row)",
+  !/class="hero-replay"/.test(html) && !/\.hero-replay \{/.test(clean));
+check("Replay is an icon-only 44px button in the hero's action row, hidden until the moment plays",
+  /<button type="button" class="app-replay is-hidden" id="hero-replay"/.test(html) &&
+  /\.app-replay \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/.test(clean));
 
 // 2. Stats strip: one line, three cells, value over label, dividers.
 const stats = html.match(/<dl class="hero-stats">([\s\S]*?)<\/dl>/);

@@ -282,6 +282,16 @@ function swipe(x0, x1) {
     await sleep(2200);
     check("desktop beat 2 final: Answer ready, 3 bullets, history 1 / 1",
       pillText() === "Answer ready" && bullets().length === 3 && els["story-history-text"].textContent === "1 / 1");
+    // Step 25 (E1 + E2): the question lands when shown, and the thinking
+    // dots crossfade out (opacity 0, then is-hidden + opacity reset after
+    // 150ms) as the first bullet lands. In the sim animationend never
+    // fires, so is-landing persists on the visible layer.
+    check("desktop beat 2: the question lands (is-landing on the visible layer)",
+      visibleChild(els["story-question-stack"]) &&
+      visibleChild(els["story-question-stack"]).classList.contains("is-landing"));
+    check("desktop beat 2: the thinking dots faded out (is-hidden, opacity reset)",
+      els["story-thinking"].classList.contains("is-hidden") &&
+      els["story-thinking"].style.opacity === "");
     ioDrive(3);
     check("desktop beat 3: Concise badge + Q3 + meta Concise",
       !els["story-badge"].hidden && els["story-badge"].textContent === "Concise"

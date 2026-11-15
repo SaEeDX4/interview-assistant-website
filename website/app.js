@@ -665,6 +665,31 @@
     timers = [];
   }
 
+  // Step 25 (E1): the question lands (fade + 6px rise + 0.92 scale, 250ms)
+  // instead of popping in whole. The class is removed when the animation
+  // ends so a Replay re-triggers it; reduced motion kills the animation
+  // and the question appears instantly.
+  function landQuestion() {
+    questionEl.classList.remove("is-landing");
+    void questionEl.offsetWidth;
+    questionEl.classList.add("is-landing");
+  }
+  questionEl.addEventListener("animationend", function () {
+    questionEl.classList.remove("is-landing");
+  });
+
+  // Step 25 (E2): the thinking dots crossfade out over 150ms as the first
+  // bullet lands, instead of vanishing instantly. The timeout is tracked
+  // in timers so an interruption clears it; the opacity is reset wherever
+  // the row is hidden or shown again.
+  function fadeThinking() {
+    thinkingEl.style.opacity = "0";
+    timers.push(setTimeout(function () {
+      thinkingEl.classList.add("is-hidden");
+      thinkingEl.style.opacity = "";
+    }, 150));
+  }
+
   // The pill's state: text + colour class. is-listening = green (with
   // pulsing dot), is-thinking = amber (with pulsing dot), no class =
   // faint grey. is-live runs the level meter while audio is coming in.
@@ -693,8 +718,10 @@
     startLabelEl.textContent = "Pause";
     questionEl.textContent = "“" + QUESTION + "”";
     questionEl.classList.remove("is-empty");
+    landQuestion();
     transcriptEl.textContent = "";
     thinkingEl.classList.add("is-hidden");
+    thinkingEl.style.opacity = "";
     setBulletsHidden(false);
     metaEl.textContent = "prepared";
   }
@@ -707,6 +734,8 @@
   // finished-looking with no Replay button.
   function finish() {
     setPill("Answer ready", "listening", false);
+    thinkingEl.classList.add("is-hidden");
+    thinkingEl.style.opacity = "";
     replayBtn.classList.remove("is-hidden");
     played = true;
   }
@@ -731,6 +760,7 @@
     questionEl.classList.add("is-empty");
     transcriptEl.textContent = "";
     thinkingEl.classList.add("is-hidden");
+    thinkingEl.style.opacity = "";
     setBulletsHidden(true);
     metaEl.textContent = "";
     replayBtn.classList.add("is-hidden");
@@ -753,10 +783,12 @@
             transcriptEl.textContent = "";
             questionEl.textContent = "“" + QUESTION + "”";
             questionEl.classList.remove("is-empty");
+            landQuestion();
             setPill("Question detected", "thinking", true);
             timers.push(setTimeout(function () {
               setPill("Preparing answer", "thinking", false);
               thinkingEl.classList.remove("is-hidden");
+              thinkingEl.style.opacity = "";
               // The bullet being written shows faded until it lands: it is
               // the pre-rendered first bullet, revealed faded.
               var pending = list.children[0];
@@ -770,7 +802,7 @@
                   li.classList.add("is-new");
                   shown++;
                   if (i === 0) {
-                    thinkingEl.classList.add("is-hidden");
+                    fadeThinking();
                     metaEl.textContent = "prepared";
                   }
                   if (i === POINTS.length - 1) {
@@ -950,6 +982,7 @@
       p.className = "app-question" + (i === 0 ? " is-empty" : "");
       p.textContent = text;
       p.classList.add("is-hidden");
+      p.addEventListener("animationend", function () { p.classList.remove("is-landing"); });
       questionStack.appendChild(p);
       questionLayers.push(p);
     });
@@ -1015,7 +1048,18 @@
 
   // A live beat is two layers: its question and its answer. Both are
   // pre-rendered; activating a beat shows its layers, nothing is rebuilt.
-  function setQuestionLayer(i) { showLayer(questionLayers, i); }
+  // Step 25 (E1): the question lands (fade + 6px rise + 0.92 scale, 250ms)
+  // instead of popping in whole; the class is removed when the animation
+  // ends so a revisit re-triggers it.
+  function setQuestionLayer(i) {
+    showLayer(questionLayers, i);
+    if (questionLayers[i]) {
+      var layer = questionLayers[i];
+      layer.classList.remove("is-landing");
+      void layer.offsetWidth;
+      layer.classList.add("is-landing");
+    }
+  }
   function setAnswerLayer(i) { showLayer(answerLayers, i); }
 
   // One bullet's state: "hidden" (reserved, not yet shown), "pending" (the
@@ -1036,6 +1080,18 @@
     });
   }
 
+  // Step 25 (E2): the thinking dots crossfade out over 150ms as the first
+  // bullet lands, instead of vanishing instantly. The timeout is tracked
+  // in timers so an interruption clears it; the opacity is reset wherever
+  // the row is hidden or shown again.
+  function fadeThinking() {
+    thinkingEl.style.opacity = "0";
+    timers.push(setTimeout(function () {
+      thinkingEl.classList.add("is-hidden");
+      thinkingEl.style.opacity = "";
+    }, 150));
+  }
+
   function setLiveBase() {
     showView("live");
     startLabelEl.textContent = "Pause";
@@ -1043,6 +1099,7 @@
     transcriptEl.textContent = "";
     contextEl.classList.add("is-hidden");
     thinkingEl.classList.add("is-hidden");
+    thinkingEl.style.opacity = "";
     hideAll(questionLayers);
     hideAll(answerLayers);
   }
@@ -1151,6 +1208,7 @@
       timers.push(setTimeout(function () {
         setPill("Preparing answer", "thinking", false);
         thinkingEl.classList.remove("is-hidden");
+        thinkingEl.style.opacity = "";
         setAnswerLayer(1);
         // The bullet being written shows faded until it lands: it is the
         // pre-rendered first bullet, revealed faded.
@@ -1159,7 +1217,7 @@
           timers.push(setTimeout(function () {
             setBulletState(1, i, "new");
             if (i === 0) {
-              thinkingEl.classList.add("is-hidden");
+              fadeThinking();
               metaEl.textContent = "prepared";
               historyEl.hidden = false;
               historyText.textContent = "1 / 1";
@@ -1604,4 +1662,27 @@
       btn.setAttribute("aria-expanded", String(open));
     });
   });
+})();
+
+/* Step 25 — chip-row fade edge: a scroller's mask shows only where there
+   is more content to scroll to. The scrolling itself is pure CSS
+   (native overflow-x); this only toggles the mask classes, on scroll and
+   on resize. The chips are decorative spans for now (they become real
+   buttons in the next phase), so the row needs no keyboard handling yet —
+   the pinned Replay button beside it is focusable. */
+(function () {
+  "use strict";
+  function update(scroller) {
+    scroller.classList.toggle("can-scroll-right",
+      scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1);
+    scroller.classList.toggle("can-scroll-left", scroller.scrollLeft > 0);
+  }
+  function updateAll() {
+    document.querySelectorAll(".app-actions-scroll").forEach(update);
+  }
+  document.querySelectorAll(".app-actions-scroll").forEach(function (scroller) {
+    scroller.addEventListener("scroll", function () { update(scroller); }, { passive: true });
+    update(scroller);
+  });
+  window.addEventListener("resize", updateAll);
 })();

@@ -257,6 +257,13 @@ p { margin: 0 0 16px; }
 .demo-answer li .app-dot { margin-top: 12px; }
 .demo-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* Step 25 — entrance (E1 + E3): the question lands with Material's
+   fade-through (92% → 100% scale, 6px rise, 250ms, the one entrance
+   curve) instead of popping in whole; each bullet's 7px dot lands first
+   (0.6 → 1 in 150ms) while its words rise. Transform + opacity only, so
+   no height ever moves; reduced motion kills both (blanket rule). */
+@keyframes land { from { opacity: 0; transform: translateY(6px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes dot-land { from { transform: scale(.6); } to { transform: scale(1); } }
 .demo-answer .coach-keys { font-weight: 600; letter-spacing: .04em; color: var(--app-accent); }
 .demo-status { color: var(--muted); font-size: 14px; min-height: 22px; margin: 12px 0 0; }
 .demo-sample-tag { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
@@ -624,6 +631,7 @@ html.story-player .story-window {
   margin-left: auto; font-size: 11px; line-height: 1.4; color: var(--app-faint); text-align: right;
 }
 .app-question { font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin: 0; }
+.app-question.is-landing { animation: land .25s cubic-bezier(.2,.7,.3,1) both; }
 .app-question.is-empty { color: var(--app-faint); font-weight: 400; }
 .app-transcript { font-size: 13px; font-style: italic; line-height: 1.5; color: var(--app-dim); margin: 0; min-height: 1.5em; /* Step 23: one line reserved — the transcript grows word by word and must never grow the question card. */ }
 .app-context { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 8px 0 0; }
@@ -632,8 +640,10 @@ html.story-player .story-window {
 .app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.4; color: var(--app-text); }
 .app-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--app-accent); margin-top: 8px; }
 .app-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.app-answer li.is-new .app-dot,
+.demo-answer li.is-new .app-dot { animation: dot-land .15s cubic-bezier(.2,.7,.3,1) both; }
 .app-answer li.is-pending { opacity: .45; }
-.app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; }
+.app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; transition: opacity .15s cubic-bezier(.2,.7,.3,1); /* Step 25 (E2): the dots crossfade out over 150ms as the first bullet lands, instead of vanishing instantly — the Lottie typing-to-message handoff. Opacity only; the row's slot stays reserved. */ }
 /* Step 21 — Coach Mode swaps the answer area (G9): labelled KEYWORDS
    (blue, semibold, uppercase) + STRUCTURE. Never beside the bullets. */
 .app-coach-label {
@@ -643,12 +653,57 @@ html.story-player .story-window {
 .app-coach-keys { font-size: 22px; font-weight: 600; letter-spacing: .04em; color: var(--app-accent); line-height: 1.4; text-transform: uppercase; margin: 0 0 16px; }
 .app-coach-structure { font-size: 19px; line-height: 1.4; color: var(--app-text); margin: 0; }
 /* Step 21 — action bar + manual question box (G10), as in the app. */
-.app-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+/* Step 25 — one-line action row: the five chips (Shorter … Regenerate)
+   plus the pinned control at the right end never wrap. The chips live in
+   a horizontally scrollable strip (Material's singleLine + HorizontalScrollView;
+   Apple HIG: partial content at the edge is the scrollability signal) with
+   a 32px fade edge that appears only where more content lies, and a peek of
+   the next chip. Compaction was measured impossible (509px of chips + Replay
+   into 326px at 390px); scrolling is the documented answer. The strip is
+   pure CSS scrolling; a ~10-line listener only toggles the fade classes.
+   The pinned control (Replay in the hero, history in the story/demo) is a
+   sibling of the scroller, never inside it, so it never scrolls away. */
+.app-actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.app-actions-scroll {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; gap: 8px; flex-wrap: nowrap;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; -ms-overflow-style: none;
+  touch-action: pan-x;
+  scroll-snap-type: x proximity;
+}
+.app-actions-scroll::-webkit-scrollbar { display: none; }
+.app-actions-scroll .app-chip { flex: none; scroll-snap-align: start; }
+.app-actions-scroll.can-scroll-right {
+  -webkit-mask-image: linear-gradient(to right, black 0, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, black 0, black calc(100% - 32px), transparent 100%);
+}
+.app-actions-scroll.can-scroll-left {
+  -webkit-mask-image: linear-gradient(to left, black 0, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to left, black 0, black calc(100% - 32px), transparent 100%);
+}
+.app-actions-scroll.can-scroll-right.can-scroll-left {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 32px, black calc(100% - 32px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 32px, black calc(100% - 32px), transparent 100%);
+}
 .app-chip {
   font-size: 12px; font-weight: 600; line-height: 1; color: var(--app-dim);
   background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
   padding: 8px 12px; white-space: nowrap;
 }
+/* Step 25 — Replay, icon-only (↻), pinned at the right end of the hero's
+   action row (was a standalone "↻ Replay" button below the window, Step 20,
+   centred Step 24). Same surface/border/radius as the chips, 44px square
+   (Step 11 target). It is is-hidden until the moment has played once, so
+   it reserves its 44px from the start and the row never grows when it
+   appears; the stats strip below the window moves up by its height. */
+.app-replay {
+  flex: none; width: 44px; height: 44px; display: inline-grid; place-items: center;
+  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
+  color: var(--app-dim); font-family: inherit; font-size: 18px; line-height: 1;
+  cursor: pointer; transition: color .15s ease, border-color .15s ease;
+}
+.app-replay:hover { color: var(--app-text); border-color: var(--app-text); }
 .app-history { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1; color: var(--app-faint); }
 .app-history[hidden] { display: none; }
 .app-manual { display: flex; gap: 8px; margin-top: 12px; }
@@ -671,18 +726,6 @@ html.story-player .story-window {
 .app-open-live { margin: 12px 0 0; }
 .app-report-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); margin: 0 0 8px; }
 .app-report-line span:last-child { color: var(--app-dim); }
-/* Step 20 — Replay control for the living hero. A real button (44px
-   target, Step 11); hidden until the moment has played once.
-   Step 24: centred (was right-aligned alone on its row — detached, and
-   Saeed flagged it on his phone); the stats strip below replaces the
-   wrapping float chips. */
-.hero-replay {
-  display: block; margin: 12px auto 0; min-height: 44px; padding: 12px 16px;
-  background: transparent; border: 1px solid var(--border-strong); border-radius: 10px;
-  color: var(--muted); font-family: inherit; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: color .15s ease, border-color .15s ease;
-}
-.hero-replay:hover { color: var(--text); border-color: var(--text); }
 /* Step 24 — hero stats strip (replaces the float chips): the three facts
    as one line, Tesla-style — big value, small label, dividers. The chips
    wrapped 2+1 at 390px and looked scattered; a 3-column grid never wraps

@@ -31,7 +31,8 @@ interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
 | Name | Duration | Job |
 |------|----------|-----|
 | `rise` | 250ms | answer points appear (demo + hero mock — same duration) |
-| `shimmer` | 1.2s | skeleton loading sweep |
+| `land` | 250ms | the question lands (Step 25: fade + 6px rise + 0.92 scale) |
+| `dot-land` | 150ms | a bullet's 7px dot lands first (Step 25: 0.6 → 1 scale) |
 | `meter` | 1.1s | level meter in the status pill (gated by `.is-live`) |
 | `pulse` | 0.9s | status dot + thinking dots (the app's 0.9s sine pulse) |
 
@@ -147,6 +148,23 @@ are retired with the waveform itself: the real app has no waveform.
   clears the inline height; a tap within 500ms makes the change
   CLS-exempt, and a glide is not a jump. The desktop scroll story has
   no height transition (its stage stays fixed).
+- **Step 25** makes the question/answer arrival more beautiful without
+  touching fidelity: E1 — the question lands with Material's fade-through
+  (`land`: opacity 0→1, translateY 6px, scale 0.92→1, 250ms, the one
+  entrance curve) instead of popping in whole; the question still appears
+  whole, same text, same instant. E2 — the thinking dots crossfade out
+  over 150ms (`.app-thinking` opacity transition) as the first bullet
+  lands, instead of vanishing instantly (the Lottie typing-to-message
+  handoff). E3 — each bullet's 7px dot lands first (`dot-land`: scale
+  0.6→1 in 150ms) while its words rise 250ms. All three are
+  transform/opacity only, so no height ever moves; the 450ms bullet
+  stagger, the 250ms rise, the 0.9s dot pulse and the transcript's
+  word-by-word growth are unchanged. E5 (a highlight sweep on the
+  question) was held back — the only fidelity departure. Reduced motion
+  is unchanged: every beat renders its final state at once, no timers,
+  and the layer stacks make that free — the finals are already in the
+  DOM. Enforced by `tests/test-step25.js` (27 checks) and
+  `tests/test-step14.js` (land 250ms, dot-land 150ms).
   is unchanged: every beat renders its final state at once, no timers,
   and the layer stacks make that free — the finals are already in the
   DOM. Enforced by `tests/test-step23.js` and the sim (35 checks,

@@ -94,3 +94,17 @@ will style it thinking it is live, or wonder why a rule has no effect.
   which has no animation) and the reduced-motion `.float-chips li` rule.
   The `.hero-replay` class is unchanged (only its margin moved).
   Census still green (test-step17 10/10).
+- **Step 25 — chips row + entrance:** new classes `.app-actions-scroll`,
+  `.app-replay`, `.can-scroll-right`, `.can-scroll-left` are defined in
+  the Step 25 block and used in `index.html` (the three chip rows) and
+  `app.js` (the fade-edge listener toggles the mask classes; the hero
+  IIFE toggles `is-hidden` on `#hero-replay`). New class
+  `.app-question.is-landing` is toggled by the hero IIFE (`landQuestion`)
+  and the story IIFE (`setQuestionLayer`); the `land` and `dot-land`
+  keyframes are used by `.app-question.is-landing` and by
+  `.app-answer li.is-new .app-dot` / `.demo-answer li.is-new .app-dot`.
+  Removed as dead: `.hero-replay` (the standalone button below the
+  window is gone — the Replay is now `.app-replay`, an icon-only button
+  in the hero's action row). The `.app-actions` rule keeps its name but
+  no longer wraps (the scroller handles overflow). Census still green
+  (test-step17 10/10).

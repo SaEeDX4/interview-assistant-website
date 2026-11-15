@@ -31,6 +31,7 @@ only 24px; we hold Apple's 44px because the site is used on phones.)
 | A12 | `.site-footer nav a` | ~49px | padding 12px 0 + 15px/1.65 |
 | A13 | `.sticky-cta-close` | 44×44px | width/height 44px (fits the bar's 56px right padding) |
 | A14 | Range thumb (minutes calculator) | 24px | custom thumb, webkit + moz (the track is also clickable) |
+| A15 | `.app-replay` (hero Replay icon) | 44×44px | width/height 44px (Step 25: icon-only ↻ button in the action row, `aria-label="Replay the animated preview"`) |
 
 **Rule:** prefer padding for standalone controls (A1–A6, A11–A13) and
 `min-height: 44px` for grouped/compact controls (A7–A10) where bigger

@@ -8,7 +8,10 @@
    (Step 23 retired the shimmer 1.2s skeleton sweep with the demo
    skeletons — the bullets are pre-rendered now, so there is nothing to
    sweep. Step 24 retired the floaty 5s chip float with the float chips —
-   the hero stats strip has no animation.) */
+   the hero stats strip has no animation. Step 25 adds the question's land
+   (250ms, fade + 6px rise + 0.92 scale) and the bullet dot's dot-land
+   (150ms, 0.6 → 1 scale), plus the thinking row's 150ms opacity
+   crossfade — all on the one entrance curve, transform/opacity only.) */
 const fs = require("fs");
 const path = require("path");
 
@@ -38,15 +41,25 @@ check("the rise curve has one spelling: cubic-bezier(.2,.7,.3,1)",
   curves.length > 0 && curves.every((c) => c === "cubic-bezier(.2,.7,.3,1)"),
   [...new Set(curves)].join(", "));
 
-// 3. Animations: rise 250ms everywhere; named loops keep their durations.
-const anims = [...clean.matchAll(/animation:\s*(\w+)\s+([\d.]+s)/g)];
+// 3. Animations: rise 250ms everywhere; land 250ms (Step 25 question
+// entrance); dot-land 150ms (Step 25 bullet-dot entrance); named loops
+// keep their durations.
+const anims = [...clean.matchAll(/animation:\s*([\w-]+)\s+([\d.]+s)/g)];
 const riseOk = anims.filter(([_, name]) => name === "rise").every(([_, __, dur]) => dur === ".25s")
   && anims.some(([_, name]) => name === "rise");
+const landOk = anims.filter(([_, name]) => name === "land").every(([_, __, dur]) => dur === ".25s")
+  && anims.some(([_, name]) => name === "land");
+const dotLandOk = anims.filter(([_, name]) => name === "dot-land").every(([_, __, dur]) => dur === ".15s")
+  && anims.some(([_, name]) => name === "dot-land");
 const loopOk = anims.some(([_, n, d]) => n === "meter" && d === "1.1s")
   && anims.some(([_, n, d]) => n === "pulse" && d === ".9s")
   && !/shimmer/.test(clean) && !/floaty/.test(clean);
 check("rise is 250ms in both places (demo + hero mock)", riseOk,
   anims.filter(([_, n]) => n === "rise").map((a) => a[0]).join(" | "));
+check("land is 250ms (Step 25 question entrance)", landOk,
+  anims.filter(([_, n]) => n === "land").map((a) => a[0]).join(" | "));
+check("dot-land is 150ms (Step 25 bullet-dot entrance)", dotLandOk,
+  anims.filter(([_, n]) => n === "dot-land").map((a) => a[0]).join(" | "));
 check("ambient loops keep their durations (meter 1.1s, pulse 0.9s; shimmer retired Step 23, floaty retired Step 24)", loopOk);
 
 // 4. Reduced motion.

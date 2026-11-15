@@ -49,9 +49,13 @@ jump even when the metric excludes it (web.dev excludes shifts within
   at its final height before the first frame of the animation.
 - **S4 — reserve the small slots.** A line that grows (the italic live
   transcript) reserves its line: `.app-transcript { min-height: 1.5em; }`.
-  A row that appears (● ● ● thinking, the Replay button, the "Open Live
-  Assistant" button, the Context line) stays in flow and toggles
-  visibility — its space is reserved from the start.
+  A row that appears (● ● ● thinking, the "Open Live Assistant" button,
+  the Context line) stays in flow and toggles visibility — its space is
+  reserved from the start. (Step 25: the Replay button now sits in the
+  action row as a 44px icon; it is `is-hidden` until the moment plays,
+  so it reserves its 44px from the start and the row is 44px tall at
+  every stage — the row never grows when it appears. The stats strip
+  below the window moves up by the standalone button's height.)
 - **S5 — the header is one row on every beat at ≤640px.** The pill word
   changes length as the status changes, and at ≤640px that flips the
   header between one and two rows mid-play (measured 94 → 54px while
@@ -260,3 +264,40 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   Regression tests in step23 + step24.
 - Tests: step24 (hero + glide + badge); full suite 281+; sims 35
   (story, incl. the glide) + 17 (demo).
+
+## Audit — Step 25 (2026-11-15)
+
+- **Chips wrap (Saeed's screenshot, 03:03):** Regenerate alone on row 2
+  at 390px. Research: Material documents the single-line ChipGroup +
+  HorizontalScrollView (its own illustration shows chip 4 partly
+  visible — the peek); Apple HIG says partial content at the edge is the
+  scrollability signal; NN/g calls the peek the strong cue (dots weak,
+  arrows easy to miss) and budgets 3–4 steps to the last item — here it
+  is one swipe. Compaction measured impossible (509px of chips + Replay
+  into 326px; the best realistic cut still left 104px over). Decision:
+  the five chips live in a one-line scrollable strip with a 32px fade
+  edge that appears only where more content lies (a ~10-line listener
+  toggles the mask classes; the scrolling itself is pure CSS), and the
+  pinned control at the row's right end (Replay in the hero, history in
+  the story/demo) is a sibling of the scroller, never inside it. The
+  row is 44px tall from the start (the Replay reserves its 44px via
+  `is-hidden`); the chips are `flex: none`, so they never shrink or
+  clip; the scroller's width changing (when the history appears) moves
+  no chip — they are left-aligned in the strip, only the visible
+  portion changes. A balanced 2-row grid was the fallback (never 4+1).
+- **Entrance (Saeed: "very, very stunning"):** the question popped in
+  whole and the thinking dots vanished instantly. Research: Material
+  Fade/Fade-through (92% → 100% scale), Shared axis, Emphasized
+  Decelerate; Fluent fades large elements and staggers large sets, and
+  keeps motion constrained to the element in focus; web.dev: opacity /
+  transform only. Decision: E1 — the question lands (fade + 6px rise +
+  0.92 scale, 250ms, the one curve); E2 — the dots crossfade out 150ms
+  as the first bullet lands; E3 — each bullet's dot lands first (0.6 →
+  1 in 150ms). All transform/opacity only; the stagger, the rise, the
+  0.9s pulse and the transcript are unchanged. E5 (a highlight sweep on
+  the question) held back — the only fidelity departure.
+- **Replay (Saeed):** the standalone button below the window is gone;
+  only the ↻ icon sits at the right end of the hero's action row, and
+  the stats strip sits directly under the window.
+- Tests: step25 (27 checks: chips + fade + Replay + entrance); full
+  suite 319; sims 41 (story, incl. 2 entrance checks) + 17 (demo).

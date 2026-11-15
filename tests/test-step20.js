@@ -23,9 +23,11 @@ const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. Replay button: real button, labelled, hidden until the moment plays.
 // Step 23: hidden with visibility (is-hidden), not display — its space is
-// reserved, so the pills below never move when it appears.
-check("hero Replay button exists, type=button, labelled, starts hidden",
-  /<button type="button" class="hero-replay is-hidden" id="hero-replay" aria-label="[^"]+">/.test(html));
+// reserved, so the row never grows when it appears. Step 25: icon-only
+// (↻), pinned at the right end of the hero's action row (was a standalone
+// "↻ Replay" button below the window).
+check("hero Replay button exists, type=button, labelled, starts hidden, icon-only",
+  /<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="[^"]+">↻<\/button>/.test(html));
 
 // 2. Player hooks exist in the mockup (pill + transcript + thinking).
 check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, #mock-thinking, #mock-answer, #mock-meta)",
@@ -60,7 +62,7 @@ check("hero sequence timings documented (start 300, hear 600, trans 600, word 16
 // 6. No waveform, no typed question, no "3 points ready" in the app-window
 // depictions (hero + story). The demo keeps its own status wording —
 // labelled "— sample." / "— simulated." — so the check is scoped, not global.
-const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?id="hero-replay"/) || [""])[0]
+const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?class="hero-stats"/) || [""])[0]
   + (html.split('id="story"')[1] || "").split("<!-- LIVE DEMO")[0];
 const heroStoryJs = (js.replace(/\/\*[\s\S]*?\*\//g, "").split("Step 21 — hero")[1] || "");
 check("no waveform, no typing, no invented status (Step 20 retired)",
@@ -105,9 +107,10 @@ check("thinking state present (● ● ● + is-pending faded bullet)",
   /\.app-answer li\.is-pending \{[^}]*opacity: \.45;/.test(clean) &&
   /pending\.classList\.add\("is-pending"\)/.test(js));
 
-// 12. Replay button: 44px target, spacing-scale margins, [hidden] respected.
-check("Replay button is a 44px target (min-height 44px, padding 12px 16px)",
-  /\.hero-replay \{[\s\S]*?min-height: 44px;[\s\S]*?padding: 12px 16px;/.test(clean));
+// 12. Replay button: 44px target (Step 25: a 44px square icon button in
+// the action row), spacing-scale sizing, [hidden] respected.
+check("Replay button is a 44px target (width 44px, height 44px)",
+  /\.app-replay \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/.test(clean));
 check("Replay button is hidden with visibility (Step 23: reserves its space, nothing below moves)",
   /\.is-hidden \{\s*visibility: hidden;\s*\}/.test(clean) &&
   /replayBtn\.classList\.remove\("is-hidden"\)/.test(js) &&
