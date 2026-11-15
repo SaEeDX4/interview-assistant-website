@@ -2,8 +2,10 @@
    (from ~/workspace/interview-assistant-website).
    The standard (MOTION.md): transition durations only 150/250/300ms;
    one entrance curve cubic-bezier(.2,.7,.3,1); rise is 250ms everywhere;
-   reduced motion kills all animation/transition and resets the app-window
-   tilt; JS gates its animation paths on matchMedia. */
+   ambient loops keep their durations (shimmer 1.2s, meter 1.1s, pulse
+   0.9s, floaty 5s); the app window is flat (no tilt, Step 21); reduced
+   motion kills all animation/transition; JS gates its animation paths
+   on matchMedia. */
 const fs = require("fs");
 const path = require("path");
 
@@ -38,17 +40,18 @@ const anims = [...clean.matchAll(/animation:\s*(\w+)\s+([\d.]+s)/g)];
 const riseOk = anims.filter(([_, name]) => name === "rise").every(([_, __, dur]) => dur === ".25s")
   && anims.some(([_, name]) => name === "rise");
 const loopOk = anims.some(([_, n, d]) => n === "shimmer" && d === "1.2s")
-  && anims.some(([_, n, d]) => n === "eq" && d === "1.1s")
+  && anims.some(([_, n, d]) => n === "meter" && d === "1.1s")
+  && anims.some(([_, n, d]) => n === "pulse" && d === ".9s")
   && anims.some(([_, n, d]) => n === "floaty" && d === "5s");
 check("rise is 250ms in both places (demo + hero mock)", riseOk,
   anims.filter(([_, n]) => n === "rise").map((a) => a[0]).join(" | "));
-check("ambient loops keep their durations (shimmer 1.2s, eq 1.1s, floaty 5s)", loopOk);
+check("ambient loops keep their durations (shimmer 1.2s, meter 1.1s, pulse 0.9s, floaty 5s)", loopOk);
 
 // 4. Reduced motion.
 check("reduced motion kills all animation/transition + scroll-behavior auto",
   /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*?scroll-behavior:\s*auto;[\s\S]*?animation:\s*none !important;\s*transition:\s*none !important;/.test(clean));
-check("reduced motion resets the app-window 3D tilt",
-  /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*?\.app-window\s*\{\s*transform:\s*none;\s*\}/.test(clean));
+check("no 3D tilt on the app window anywhere (flat by design, Step 21)",
+  !/rotateY|perspective\(1400px\)/.test(clean));
 check("JS gates animation paths on prefers-reduced-motion",
   (js.match(/matchMedia\("\(prefers-reduced-motion: reduce\)"\)/g) || []).length >= 2);
 

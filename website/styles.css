@@ -52,6 +52,23 @@
   --danger-soft: rgba(248, 113, 113, .14);
   --surface-mid: #11151d;
   --skeleton: #2a3547;
+  /* Step 21 — the real app's tokens (Themes/Theme.xaml), scoped to the
+     app-window depictions. The site keeps its violet brand outside the
+     window; inside the window the app is blue, as it is on Windows. */
+  --app-bg: #0F1115;
+  --app-surface: #161920;
+  --app-surface-2: #1D212A;
+  --app-surface-3: #252A35;
+  --app-border: #2A303C;
+  --app-text: #ECEEF2;
+  --app-dim: #A3A9B5;
+  --app-faint: #8B92A0;
+  --app-accent: #5B8DEF;
+  --app-accent-strong: #3567D0;
+  --app-accent-soft: #335B8DEF;
+  --app-listening: #3DD68C;
+  --app-thinking: #F2B44C;
+  --app-error: #EF6B6B;
   --radius: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
@@ -227,23 +244,20 @@ p { margin: 0 0 16px; }
 .mode-btn.is-coach-active { background: var(--coach); color: var(--bg); }
 .demo-body { padding: 20px; min-height: 230px; }
 .demo-label { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 8px; }
-.demo-question { font-size: 19px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; overflow-wrap: break-word; }
-.demo-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.demo-question { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; overflow-wrap: break-word; }
+/* Step 21 — the demo depicts the app, so its bullets are the app's:
+   7px blue dots, no card chrome, no numbers (G3); the answer is bigger
+   than the question (G4) at the real 22:17 sizes — the panel is ~720px,
+   the app's own width. Coach keywords are blue, not amber (G9). */
+.demo-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .demo-answer li {
   display: flex; gap: 8px; align-items: flex-start;
-  background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 16px; font-size: 15px; line-height: 1.6;
+  font-size: 22px; line-height: 1.4; color: var(--text);
 }
-.demo-answer li .num {
-  flex: none; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent-soft); color: var(--focus);
-  display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; margin-top: 1px;
-}
-.demo-answer.coach li .num { background: rgba(245,185,78,.16); color: var(--coach); }
-.demo-answer.coach li { border-color: rgba(245,185,78,.35); }
+.demo-answer li .app-dot { margin-top: 12px; }
 .demo-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.demo-answer .coach-keys { font-weight: 700; letter-spacing: .04em; }
+.demo-answer .coach-keys { font-weight: 600; letter-spacing: .04em; color: var(--app-accent); }
 .demo-status { color: var(--muted); font-size: 14px; min-height: 22px; margin: 12px 0 0; }
 .demo-sample-tag { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .demo-foot { padding: 16px 20px 20px; border-top: 1px solid var(--border); }
@@ -462,72 +476,141 @@ table.compare tbody tr:hover td { background: var(--surface); }
   width: 260px; height: 260px; bottom: -40px; left: -24px;
   background: rgba(45, 212, 191, .20);
 }
+/* Step 21 — the window is a depiction of the real Windows app: flat,
+   radius 14, neutral shadow, no tilt, no coloured glow (G11). It renders
+   in the app's own tokens + Segoe stack (G5/G6); the site around it keeps
+   its violet brand. (The installer on download.html shares this frame;
+   its bar + body are its own.) */
 .app-window {
   position: relative; z-index: 1;
-  background: linear-gradient(180deg, var(--surface-2), var(--surface-mid) 60%, var(--bg-soft));
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xl); overflow: hidden;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .06),
-    0 32px 80px rgba(0, 0, 0, .55),
-    0 0 90px rgba(124, 108, 255, .12);
-  transform: perspective(1400px) rotateY(-3deg) rotateX(1.5deg);
-  transform-origin: center;
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, .35);
+  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  color: var(--app-text);
 }
-@media (max-width: 1024px) { .app-window { transform: none; } }
 .app-window-bar {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 16px; border-bottom: 1px solid var(--border);
   background: rgba(23, 29, 40, .9);
 }
 .app-window-title { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.app-window-bar[hidden] { display: none; }
 .app-controls { margin-left: auto; display: inline-flex; gap: 16px; color: var(--muted-2); font-size: 13px; line-height: 1; }
 .app-controls i { font-style: normal; }
-.app-window-body { padding: 20px; min-height: 268px; }
-.app-wave { display: flex; align-items: flex-end; gap: 3px; height: 26px; margin-bottom: 16px; }
-.app-wave i {
-  flex: 1; background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  border-radius: 2px; height: 40%;
-  transform-origin: bottom; transform: scaleY(.25);
+.app-window-body { padding: 16px; }
+/* Step 21 — faithful header (G2): status pill left, controls right, no
+   title text. The pill holds the dot, the status word and the 48x4 level
+   meter (G1) — the only audio visual the app has. */
+.app-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface);
 }
-/* Step 20 — the waveform only moves while the interviewer is "speaking"
-   (the question is typing). Quiet before and after: the silence beat. */
-.app-wave.is-live i { animation: eq 1.1s ease-in-out infinite alternate; }
-.app-wave i:nth-child(2n) { animation-delay: .15s; }
-.app-wave i:nth-child(3n) { animation-delay: .3s; }
-.app-wave i:nth-child(4n) { animation-delay: .45s; }
-.app-wave i:nth-child(5n) { animation-delay: .6s; }
-@keyframes eq { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
-.app-label {
-  font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--accent-2); margin-bottom: 8px;
+.app-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0; padding: 8px 12px;
+  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 14px;
+  font-size: 11px; font-weight: 600; line-height: 1; color: var(--app-faint);
+  white-space: nowrap;
 }
-.app-question { font-size: 19px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; }
-.app-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.app-answer li {
-  display: flex; gap: 8px; align-items: flex-start;
-  background: rgba(23, 29, 40, .9); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px; font-size: 15px; line-height: 1.5;
+.app-pill-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--app-faint); }
+.app-pill.is-listening { color: var(--app-listening); }
+.app-pill.is-listening .app-pill-dot { background: var(--app-listening); animation: pulse .9s ease-in-out infinite alternate; }
+.app-pill.is-thinking { color: var(--app-thinking); }
+.app-pill.is-thinking .app-pill-dot { background: var(--app-thinking); animation: pulse .9s ease-in-out infinite alternate; }
+.app-meter { flex: none; width: 48px; height: 4px; border-radius: 2px; background: var(--app-surface-3); overflow: hidden; }
+.app-meter i { display: block; height: 100%; width: 8%; background: var(--app-listening); border-radius: 2px; transition: width .15s ease; }
+.app-pill.is-live .app-meter i { animation: meter 1.1s ease-in-out infinite alternate; }
+@keyframes meter { from { width: 12%; } to { width: 88%; } }
+@keyframes pulse { from { opacity: 1; } to { opacity: .3; } }
+.app-header-controls { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+.app-start {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--app-accent-strong); color: var(--app-text);
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 12px; font-weight: 600; line-height: 1; white-space: nowrap;
 }
-.app-answer li .num {
-  flex: none; width: 21px; height: 21px; border-radius: 50%;
-  background: var(--accent-soft); color: var(--focus);
-  display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; margin-top: 1px;
+.app-stop, .app-icon-btn, .app-win-btn {
+  display: inline-grid; place-items: center; width: 28px; height: 28px;
+  color: var(--app-dim); font-size: 13px; line-height: 1;
 }
-.app-answer.coach li { border-color: rgba(245, 185, 78, .35); }
-.app-answer.coach li .num { background: rgba(245, 185, 78, .16); color: var(--coach); }
+.app-badge {
+  display: inline-flex; align-items: center;
+  background: var(--app-accent-soft); color: var(--app-accent);
+  border-radius: 8px; padding: 4px 8px;
+  font-size: 11px; font-weight: 600; line-height: 1; white-space: nowrap;
+}
+.app-badge[hidden] { display: none; }
+/* Step 21 — two labelled cards (G12): QUESTION and ANSWER, each Surface
+   bg, 1px border, radius 12, 12px apart. The answer is bigger than the
+   question (G4): 19px vs 15px, the real 22:17 ratio at mockup scale. */
+.app-card {
+  background: var(--app-surface); border: 1px solid var(--app-border);
+  border-radius: 12px; padding: 16px; margin-bottom: 12px;
+}
+.app-card-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.app-card-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--app-faint); line-height: 1.4;
+}
+.app-card-detail, .app-card-meta {
+  margin-left: auto; font-size: 11px; line-height: 1.4; color: var(--app-faint); text-align: right;
+}
+.app-question { font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin: 0; }
+.app-question.is-empty { color: var(--app-faint); font-weight: 400; }
+.app-transcript { font-size: 13px; font-style: italic; line-height: 1.5; color: var(--app-dim); margin: 0; }
+.app-context { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 8px 0 0; }
+.app-context[hidden] { display: none; }
+.app-card--answer { min-height: 240px; }
+.app-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.4; color: var(--app-text); }
+.app-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--app-accent); margin-top: 8px; }
 .app-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
-.app-answer .coach-keys { font-weight: 700; letter-spacing: .04em; }
-.app-status { color: var(--muted); font-size: 14px; min-height: 20px; margin: 12px 0 0; }
-.app-coach-mini {
-  margin: 16px 0 0; padding: 12px; font-size: 14px; line-height: 1.5; color: var(--muted);
-  background: rgba(245, 185, 78, .08); border: 1px solid rgba(245, 185, 78, .3); border-radius: 10px;
-  transition: opacity .25s ease;
+.app-answer li.is-pending { opacity: .45; }
+.app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; }
+.app-thinking[hidden] { display: none; }
+/* Step 21 — Coach Mode swaps the answer area (G9): labelled KEYWORDS
+   (blue, semibold, uppercase) + STRUCTURE. Never beside the bullets. */
+.app-coach-view[hidden] { display: none; }
+.app-coach-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--app-faint); line-height: 1.4; margin: 0 0 8px;
 }
-.app-coach-mini strong { color: var(--coach); letter-spacing: .04em; }
-/* Step 20 — the Coach bar hides while the moment plays, then flips in. */
-.app-window.hero-playing .app-coach-mini:not(.is-new) { opacity: 0; }
-.app-coach-mini.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.app-coach-keys { font-size: 22px; font-weight: 600; letter-spacing: .04em; color: var(--app-accent); line-height: 1.4; text-transform: uppercase; margin: 0 0 16px; }
+.app-coach-structure { font-size: 19px; line-height: 1.4; color: var(--app-text); margin: 0; }
+/* Step 21 — action bar + manual question box (G10), as in the app. */
+.app-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.app-chip {
+  font-size: 12px; font-weight: 600; line-height: 1; color: var(--app-dim);
+  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
+  padding: 8px 12px; white-space: nowrap;
+}
+.app-history { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1; color: var(--app-faint); }
+.app-history[hidden] { display: none; }
+.app-manual { display: flex; gap: 8px; margin-top: 12px; }
+.app-manual-input {
+  flex: 1; min-width: 0; height: 36px; padding: 8px 12px; font-size: 13px; line-height: 1.4; color: var(--app-dim);
+  background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.app-manual-send {
+  flex: none; width: 36px; height: 36px; display: inline-grid; place-items: center;
+  background: var(--app-accent-strong); color: var(--app-text); border-radius: 8px; font-size: 14px;
+}
+/* Step 21 — story Home view (Beat 0): Get-started checklist + Prepare. */
+.app-live-view[hidden], .app-home-view[hidden], .app-report-view[hidden] { display: none; }
+.app-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.app-checks li { display: flex; gap: 8px; align-items: baseline; font-size: 15px; line-height: 1.4; color: var(--app-text); }
+.app-check { color: var(--app-listening); font-size: 14px; font-weight: 600; }
+.app-prepare { height: 4px; border-radius: 2px; background: var(--app-surface-3); overflow: hidden; margin-bottom: 12px; }
+.app-prepare i { display: block; height: 100%; width: 0; background: var(--app-accent); border-radius: 2px; transition: width .25s ease; }
+.app-prepare-stage { font-size: 13px; line-height: 1.5; color: var(--app-dim); margin: 0 0 12px; min-height: 20px; }
+.app-open-live { margin: 12px 0 0; }
+.app-open-live[hidden] { display: none; }
+.app-report-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); margin: 0 0 8px; }
+.app-report-line span:last-child { color: var(--app-dim); }
 /* Step 20 — Replay control for the living hero. A real button (44px
    target, Step 11); hidden until the moment has played once. */
 .hero-replay {
@@ -554,13 +637,45 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .float-chips li:nth-child(3) { animation-delay: 1.6s; }
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
+/* ---------- Step 21: scroll story — one interview, start to finish ----------
+   One pinned faithful window on the left, seven beats on the right. Each
+   beat activates as it crosses the middle of the viewport (JS, IO with a
+   centre band); the window renders that beat's full state. No pinning and
+   no scroll linking at <=860px or under reduced motion: each beat shows
+   its static snapshot instead. */
+.story-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 48px; align-items: start; }
+.story-window { position: sticky; top: 100px; }
+.story-steps { list-style: none; margin: 0; padding: 0; }
+.story-step { padding: 32px 0; opacity: .55; transition: opacity .25s ease; }
+.story-step.is-active { opacity: 1; }
+.story-step h3 { font-size: 24px; margin-bottom: 12px; }
+.story-step p { color: var(--muted); margin: 0 0 12px; }
+.story-step p:last-child { margin-bottom: 0; }
+.story-snap { display: none; }
+@media (max-width: 860px) {
+  .story-layout { grid-template-columns: 1fr; gap: 24px; }
+  .story-window { display: none; }
+  .story-snap { display: block; margin-top: 16px; }
+  .story-step { opacity: 1; padding: 24px 0; }
+}
+.story-head { text-align: center; max-width: 640px; margin: 0 auto 32px; }
+.story-lede { color: var(--muted); margin-bottom: 0; }
+.app-answer[hidden] { display: none; }
+.app-prepare i.is-full { width: 100%; }
+.app-report-note { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 12px 0 0; }
+
 /* ---------- Step 1: scroll reveal ---------- */
 html.js .reveal { opacity: .85; transform: translateY(6px); transition: opacity .25s ease, transform .25s cubic-bezier(.2,.7,.3,1); }
 html.js .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal { opacity: 1; transform: none; transition: none; }
-  .app-wave i, .float-chips li { animation: none !important; }
-  .app-window { transform: none; }
+  .float-chips li { animation: none !important; }
+  /* Step 21 — no pinning, no scroll linking: each beat shows its static
+     snapshot instead of the live window. (The window has no tilt to reset
+     any more — it is flat by design.) */
+  .story-window { display: none; }
+  .story-snap { display: block; margin-top: 16px; }
+  .story-step { opacity: 1; }
 }
 
 /* ---------- Step 1: home demo section ---------- */

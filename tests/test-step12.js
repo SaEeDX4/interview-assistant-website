@@ -28,10 +28,13 @@ const strayHex = outsideRoot.match(/#[0-9a-fA-F]{3,8}\b/g) || [];
 check("no hex color outside :root (all colors are tokens)",
   strayHex.length === 0, [...new Set(strayHex)].join(", "));
 
-// 2. The new Step 12 tokens exist.
+// 2. The Step 12 + Step 21 tokens exist.
 const newTokens = ["accent-light", "accent-hover", "accent-2-light", "coach-light",
-  "warn-light", "danger", "danger-light", "danger-soft", "surface-mid", "skeleton"];
-check("Step 12 tokens exist in :root",
+  "warn-light", "danger", "danger-light", "danger-soft", "surface-mid", "skeleton",
+  "app-bg", "app-surface", "app-surface-2", "app-surface-3", "app-border", "app-text",
+  "app-dim", "app-faint", "app-accent", "app-accent-strong", "app-accent-soft",
+  "app-listening", "app-thinking", "app-error"];
+check("Step 12 + Step 21 tokens exist in :root",
   newTokens.every((t) => tokens[t] !== undefined),
   newTokens.filter((t) => tokens[t] === undefined).join(", "));
 check("no second dark text color (#221a05) and no duplicate lavenders/teals",
@@ -77,6 +80,12 @@ const pairs = [
   ["bg", "accent"], ["bg", "coach"], ["bg", "accent-2"], ["bg", "accent-hover"],
   ["danger", "bg"], ["danger-light", "bg"], ["accent-light", "bg"],
   ["accent-2-light", "bg"], ["coach-light", "bg"], ["warn-light", "bg"],
+  // Step 21: the app window's own pairs (real Theme.xaml tokens).
+  ["app-text", "app-bg"], ["app-text", "app-surface"], ["app-text", "app-surface-2"],
+  ["app-dim", "app-surface"], ["app-faint", "app-surface"], ["app-faint", "app-surface-2"],
+  ["app-accent", "app-surface"], ["app-accent", "app-surface-2"],
+  ["app-listening", "app-surface"], ["app-thinking", "app-surface"],
+  ["app-text", "app-accent-strong"],
 ];
 let contrastOk = true, contrastNotes = [], worst = 99;
 for (const [fg, bg] of pairs) {

@@ -92,8 +92,8 @@ check("accordion buttons say aria-expanded=true in HTML on both FAQ pages (no-JS
   && [...accBtns, ...indexAccBtns].every((b) => b.includes('aria-expanded="true"'))
   && !/class="acc-panel open"/.test(support) && !/class="acc-panel open"/.test(html["index.html"]),
   `support: ${accBtns.length}, index: ${indexAccBtns.length}`);
-check("hero mock status is aria-hidden (decorative duplicate of the demo)",
-  html["index.html"].includes('<p class="app-status" id="mock-status" aria-hidden="true"></p>'));
+check("hero mock status (pill) is aria-hidden (decorative duplicate of the demo)",
+  /<div class="app-header" aria-hidden="true">[\s\S]*?<p class="app-pill" id="mock-pill">/.test(html["index.html"]));
 check("demo status uses role=status (live region)",
   html["demo.html"].includes('id="demo-status" role="status"')
   && html["index.html"].includes('id="demo-status" role="status"'));

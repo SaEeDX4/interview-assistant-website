@@ -18,7 +18,7 @@ Hide, 2.3.3 Animation from Interactions, reduced-motion support).
 | Slow | 300ms | panels that change layout (accordion rows, sticky bar) |
 
 Named ambient animations keep their own durations (they are loops, not
-interactions): shimmer 1.2s, equalizer 1.1s, float 5s.
+interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
 
 ## 2. Easings — two curves
 
@@ -26,18 +26,21 @@ interactions): shimmer 1.2s, equalizer 1.1s, float 5s.
   gentle landing. One spelling, no spaces.
 - **Everything else** (hovers, state changes): `ease`.
 
-## 3. Keyframes — four, each with one job
+## 3. Keyframes — five, each with one job
 
 | Name | Duration | Job |
 |------|----------|-----|
 | `rise` | 250ms | answer points appear (demo + hero mock — same duration) |
 | `shimmer` | 1.2s | skeleton loading sweep |
-| `eq` | 1.1s | waveform bars in the app mockup |
+| `meter` | 1.1s | level meter in the status pill (gated by `.is-live`) |
+| `pulse` | 0.9s | status dot + thinking dots (the app's 0.9s sine pulse) |
 | `floaty` | 5s | floating chips on the hero |
 
-The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
-(waveform, gated by `.is-live` — it runs only while the interviewer is
-"speaking", then settles flat for the silence beat). No new keyframes.
+The faithful hero (Step 21) reuses `rise` (points) and `meter` (level
+meter, gated by `.is-live` — it runs only while audio is coming in, then
+settles to 8% width) and `pulse` (the pill dot while listening/thinking,
+and the ● ● ● thinking indicator). The Step 20 `eq` waveform keyframes
+are retired with the waveform itself: the real app has no waveform.
 
 ## 4. Reduced motion — everything stops, content stays
 
@@ -45,10 +48,13 @@ The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
   **all** animations and transitions (`!important`) and sets
   `scroll-behavior: auto`.
 - A second reduced-motion block resets the things the global kill cannot:
-  `.reveal` to full opacity, `.app-window` tilt to `none` (the 3D
-  `perspective(1400px) rotateY(-3deg)` mockup tilt).
+  `.reveal` to full opacity. (The `.app-window` tilt reset is gone with
+  the tilt itself — the window is flat by design since Step 21.) Under
+  reduced motion the scroll story also drops its pinning and scroll
+  linking: the sticky window hides and each beat shows its static
+  snapshot instead.
 - JS: `matchMedia("(prefers-reduced-motion: reduce)")` gates the
-  demo/hero animation paths (3 checks). Content staging (points appearing
+  demo/hero/story animation paths (3 checks). Content staging (points appearing
   one at a time) still runs — it is content, not motion — but with the CSS
   animation killed, points appear instantly.
 
@@ -56,9 +62,17 @@ The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
 
 - Reveal stagger: 40ms between groups.
 - Demo cadence: 450ms per point, 4200ms hold before cycling.
-- Hero player (Step 20): type 45ms/char, silence beat 700ms, points
-  450ms apart, Coach flip 400ms after the last point. Plays once when
-  the hero is first seen, then only on Replay — no infinite loop.
+- Hero player (Step 21, faithful): Start 300ms, Hearing audio 600ms,
+  Transcribing 600ms, transcript 160ms/word, question detected +300ms,
+  thinking 500ms, points 450ms apart, Replay 400ms after the last point.
+  Plays once when the hero is first seen, then only on Replay — no
+  infinite loop. The Step 20 timings (type 45ms/char, silence beat 700ms,
+  Coach flip 400ms) are retired with the typing effect and the Coach bar.
+- Scroll story (Step 21): a beat activates as it crosses the middle 10%
+  of the viewport (IO centre band, `-45% 0px -45% 0px`). Prepare stages
+  tick 150ms apart; the first question reuses the hero cadence
+  (transcript 160ms/word, thinking 500ms, points 450ms apart). Timed
+  beats play once; revisiting a beat renders its final state at once.
 - These are content rhythms, not motion; they stay as-is.
 
 ## 6. Audit log
@@ -84,5 +98,20 @@ The living hero (Step 20) reuses `rise` (points + Coach bar) and `eq`
   final state statically with no Replay button. Pause after all three
   points finishes the moment instead of restarting (no stranded final
   state without a Replay button).
+- **Step 21 — faithful hero + scroll story:** the hero mockup plays one
+  staged moment the way the real app behaves (transcript grows → question
+  appears whole → ● ● ● thinking → 3 points stream in → Answer ready),
+  once when first seen, then only on Replay. The waveform, the typed
+  question, the silence beat and the Coach bar are gone — all four were
+  inventions; the app has a 48×4 level meter (`meter` 1.1s), a live
+  transcript, a thinking pulse (`pulse` 0.9s) and a Coach view that swaps
+  the answer area. The scroll story pins the same window through seven
+  beats (Prepare → Start → Q1 → interruption → Coach → Q2 → Stop/report),
+  each activating at the viewport centre; timed beats play once. The
+  window is flat now (radius 14, no tilt, no violet glow). Reduced motion
+  renders the hero's final state statically with no Replay button, and
+  the story falls back to static snapshots per beat. Pause after all
+  three points finishes the moment instead of restarting (no stranded
+  final state without a Replay button).
 - **Method:** full transition/animation inventory + reduced-motion
   coverage check + fresh live re-verification after the fix.

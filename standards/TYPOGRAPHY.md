@@ -47,6 +47,14 @@ browsers round or synthesise them and the rendered weight is unreliable
 across browsers. All mapped to 600 / 700, which is what browsers were
 already rendering.)
 
+**The app window is the exception:** the `.app-window` depictions (hero,
+scroll story, demo bullets/coach) render in the Segoe UI stack
+(`"Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif`) — the real
+app's font (Step 21). Its sizes still follow the scale (question 15,
+answer 19, coach keywords 22; the demo panel uses the real 17/22 at its
+~720px width) and its weights stay in 400–800. Site text everywhere else
+stays Inter.
+
 ## 4. Line-height — one value per role
 
 ```

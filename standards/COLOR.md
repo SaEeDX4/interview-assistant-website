@@ -41,6 +41,20 @@ color; nothing may invent a new hue.
 | `--danger-soft` | `rgba(248,113,113,.14)` | red tint background |
 | `--focus` | `#a99fff` | focus outline |
 | `--skeleton` | `#2a3547` | skeleton loading bars |
+| `--app-bg` | `#0F1115` | the app window background (Step 21) |
+| `--app-surface` | `#161920` | the app cards |
+| `--app-surface-2` | `#1D212A` | the app raised surfaces (pill, chips, inputs) |
+| `--app-surface-3` | `#252A35` | the app meter / progress track |
+| `--app-border` | `#2A303C` | the app borders |
+| `--app-text` | `#ECEEF2` | the app primary text |
+| `--app-dim` | `#A3A9B5` | the app secondary text |
+| `--app-faint` | `#8B92A0` | the app tertiary text (card labels) |
+| `--app-accent` | `#5B8DEF` | the app blue accent (dots, coach keywords) |
+| `--app-accent-strong` | `#3567D0` | the app primary button fill (Start) |
+| `--app-accent-soft` | `#335B8DEF` | the app accent tint (Concise badge) |
+| `--app-listening` | `#3DD68C` | the app listening green (pill, meter, checks) |
+| `--app-thinking` | `#F2B44C` | the app thinking amber (pill, profile-gap) |
+| `--app-error` | `#EF6B6B` | the app error red |
 | `--shadow-card` / `--shadow-lift` | black alpha | shadows only |
 
 **Dark text on bright backgrounds is always `var(--bg)`** — one dark text
@@ -64,6 +78,15 @@ recomputes them). The tightest pairs:
 | muted-2 on bg | 6.64:1 |
 | muted on bg | 7.69:1 |
 | text on bg | 17.77:1 |
+| app text on app Start button (`--app-text` on `--app-accent-strong`) | 4.52:1 |
+| app accent on app surface-2 (coach keywords, badge) | 4.99:1 |
+| app faint on app surface-2 (pill, labels) | 5.15:1 |
+
+The `--app-*` tokens are the real app's values (`Themes/Theme.xaml`), used
+**only** inside `.app-window` depictions — the hero mockup, the scroll-story
+window and snapshots, and the demo's bullets/coach keywords (Step 21). The
+site outside the window keeps its violet brand. The app tokens are never
+used for site text, buttons or chrome.
 
 Badge text sits on tinted backgrounds (`.12`–`.16` alpha over bg); the
 composite is only slightly lighter than bg, so badge ratios stay ≥ 11:1.

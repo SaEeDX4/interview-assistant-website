@@ -219,11 +219,10 @@
 
   function makeBullet(text, i) {
     var li = document.createElement("li");
-    var num = document.createElement("span");
-    num.className = "num";
-    num.setAttribute("aria-hidden", "true");
-    num.textContent = String(i + 1);
-    li.appendChild(num);
+    var dot = document.createElement("span");
+    dot.className = "app-dot";
+    dot.setAttribute("aria-hidden", "true");
+    li.appendChild(dot);
     var span = document.createElement("span");
     span.textContent = text;
     li.appendChild(span);
@@ -286,22 +285,20 @@
     answerEl.setAttribute("aria-busy", "true");
 
     var keys = document.createElement("li");
-    var num = document.createElement("span");
-    num.className = "num";
-    num.setAttribute("aria-hidden", "true");
-    num.textContent = "✓";
-    keys.appendChild(num);
+    var dot = document.createElement("span");
+    dot.className = "app-dot";
+    dot.setAttribute("aria-hidden", "true");
+    keys.appendChild(dot);
     var k = document.createElement("span");
     k.className = "coach-keys";
     k.textContent = coach.keys.join(" · ");
     keys.appendChild(k);
 
     var structure = document.createElement("li");
-    var num2 = document.createElement("span");
-    num2.className = "num";
-    num2.setAttribute("aria-hidden", "true");
-    num2.textContent = "→";
-    structure.appendChild(num2);
+    var dot2 = document.createElement("span");
+    dot2.className = "app-dot";
+    dot2.setAttribute("aria-hidden", "true");
+    structure.appendChild(dot2);
     var s = document.createElement("span");
     s.textContent = coach.structure;
     structure.appendChild(s);
@@ -558,24 +555,28 @@
   });
 })();
 
-/* Step 20 — hero app-window player: the "living hero". One staged
-   moment, played once when the hero is first seen, then only on Replay:
-   the question types itself while the waveform listens, a beat of
-   silence, the three points rise one at a time, then the Coach Mode bar
-   flips in. This replaces the Step 1 animator, which looped the points
-   forever; play-once + Replay is quieter, and the whole sequence is
-   ~4s of motion per play. Reduced motion: the full final state renders
-   statically, no Replay button. */
+/* Step 21 — hero app-window player: the faithful moment. One staged
+   moment, played once when the hero is first seen, then only on Replay.
+   It follows the real app, not the Step 20 invention: the interviewer
+   speaks (the live transcript grows in italics), the question appears
+   whole, the app thinks (● ● ● + a faded pending bullet), the three
+   points stream in one at a time, and the pill reads Answer ready. No
+   waveform (the app has only a 48x4 level meter inside the pill), no
+   typed question, no "3 points ready". Reduced motion: the full final
+   state renders statically, no Replay button. */
 (function () {
   "use strict";
-  var list = document.getElementById("mock-answer");
-  var status = document.getElementById("mock-status");
-  var wave = document.getElementById("mock-wave");
+  var pill = document.getElementById("mock-pill");
+  var pillText = document.getElementById("mock-pill-text");
+  var startEl = document.getElementById("mock-start");
   var questionEl = document.getElementById("mock-question");
-  var coachEl = document.getElementById("mock-coach");
+  var transcriptEl = document.getElementById("mock-transcript");
+  var thinkingEl = document.getElementById("mock-thinking");
+  var list = document.getElementById("mock-answer");
+  var metaEl = document.getElementById("mock-meta");
   var replayBtn = document.getElementById("hero-replay");
   var appWindow = list && list.closest ? list.closest(".app-window") : null;
-  if (!list || !status || !wave || !questionEl || !coachEl || !replayBtn || !appWindow) { return; }
+  if (!pill || !pillText || !startEl || !questionEl || !transcriptEl || !thinkingEl || !list || !metaEl || !replayBtn || !appWindow) { return; }
 
   var QUESTION = "Tell me about yourself.";
   var POINTS = [
@@ -583,10 +584,16 @@
     "I start from the outcome, then the trade-off I made to get there.",
     "What draws me here is this team’s focus on honest, useful software."
   ];
-  var TYPE_MS = 45;     // per typed character (~1.1s for the question)
-  var SILENCE_MS = 700; // beat between the question ending and point 1
-  var STAGE_MS = 450;   // interval between points (same as the demo)
-  var COACH_MS = 400;   // delay before the Coach bar flips in
+  // The live transcript, growing word by word while the interviewer speaks.
+  var TRANSCRIPT = ["Tell", "Tell me", "Tell me about", "Tell me about yourself."];
+  var START_MS = 300;  // press Start after the window is seen
+  var HEAR_MS = 600;   // Listening -> Hearing audio
+  var TRANS_MS = 600;  // Hearing audio -> Transcribing
+  var WORD_MS = 160;   // per transcript word
+  var DETECT_MS = 300; // transcript done -> question detected
+  var THINK_MS = 500;  // Question detected -> Preparing answer
+  var STAGE_MS = 450;  // interval between points (same as the demo)
+  var END_MS = 400;    // last point -> Replay appears
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timers = [];
   var played = false; // auto-play runs once; after that, only Replay
@@ -595,19 +602,28 @@
   // Clear every pending mockup timer. A play must never run twice at
   // once: without this, a visibilitychange back to visible would start
   // a second sequence alongside the first and every point would render
-  // twice (rows numbered 1, 1, 2, 2, 3, 3).
+  // twice.
   function clearTimers() {
     timers.forEach(function (t) { clearTimeout(t); });
     timers = [];
   }
 
-  function makeBullet(text, i) {
+  // The pill's state: text + colour class. is-listening = green (with
+  // pulsing dot), is-thinking = amber (with pulsing dot), no class =
+  // faint grey. is-live runs the level meter while audio is coming in.
+  function setPill(text, state, live) {
+    pillText.textContent = text;
+    pill.classList.toggle("is-listening", state === "listening");
+    pill.classList.toggle("is-thinking", state === "thinking");
+    pill.classList.toggle("is-live", !!live);
+  }
+
+  function makeBullet(text) {
     var li = document.createElement("li");
-    var num = document.createElement("span");
-    num.className = "num";
-    num.setAttribute("aria-hidden", "true");
-    num.textContent = String(i + 1);
-    li.appendChild(num);
+    var dot = document.createElement("span");
+    dot.className = "app-dot";
+    dot.setAttribute("aria-hidden", "true");
+    li.appendChild(dot);
     var span = document.createElement("span");
     span.textContent = text;
     li.appendChild(span);
@@ -616,76 +632,105 @@
 
   function renderAll() {
     clearTimers();
+    setPill("Answer ready", "listening", false);
+    startEl.textContent = "▶ Pause";
     questionEl.textContent = "“" + QUESTION + "”";
+    questionEl.classList.remove("is-empty");
+    transcriptEl.textContent = "";
+    thinkingEl.hidden = true;
     list.innerHTML = "";
-    POINTS.forEach(function (text, i) { list.appendChild(makeBullet(text, i)); });
-    status.textContent = "3 points ready — preview.";
+    POINTS.forEach(function (text) { list.appendChild(makeBullet(text)); });
+    metaEl.textContent = "prepared";
   }
 
   if (reduced) { renderAll(); return; }
 
-  // Finish: the moment is over — Coach bar in, Replay shown. Used both
-  // at the end of play() and when pausing after all three points are
-  // already on screen, so a scroll-away in the last 400ms can never
-  // leave the mockup finished-looking with no Replay button.
+  // Finish: the moment is over — Replay shown. Used both at the end of
+  // play() and when pausing after all three points are already on screen,
+  // so a scroll-away in the last 400ms can never leave the mockup
+  // finished-looking with no Replay button.
   function finish() {
-    coachEl.classList.add("is-new");
-    appWindow.classList.remove("hero-playing");
+    setPill("Answer ready", "listening", false);
     replayBtn.hidden = false;
     played = true;
   }
 
-  // Pause: stop the timers and settle the waveform. Called when the hero
+  // Pause: stop the timers and settle the meter. Called when the hero
   // scrolls out of view or the tab hides mid-play; the sequence restarts
   // from the beginning on return (played stays false until it completes).
   // Exception: if all three points are already shown, the moment is
   // over — finish it instead of restarting from scratch on return.
   function pause() {
     clearTimers();
-    wave.classList.remove("is-live");
-    appWindow.classList.remove("hero-playing");
+    pill.classList.remove("is-live");
     if (shown === 3) { finish(); }
   }
 
   function play() {
     clearTimers();
     shown = 0;
-    appWindow.classList.add("hero-playing");
-    wave.classList.add("is-live");
-    coachEl.classList.remove("is-new");
-    questionEl.textContent = "“";
+    setPill("Not listening", "", false);
+    startEl.textContent = "▶ Start listening";
+    questionEl.textContent = "Waiting for the interviewer…";
+    questionEl.classList.add("is-empty");
+    transcriptEl.textContent = "";
+    thinkingEl.hidden = true;
     list.innerHTML = "";
-    status.textContent = "Listening…";
+    metaEl.textContent = "";
     replayBtn.hidden = true;
-    var typed = 0;
-    (function typeNext() {
+    timers.push(setTimeout(function () {
+      // Start pressed: the session begins, the meter runs.
+      startEl.textContent = "▶ Pause";
+      setPill("Listening", "listening", true);
       timers.push(setTimeout(function () {
-        typed++;
-        questionEl.textContent = typed < QUESTION.length
-          ? "“" + QUESTION.slice(0, typed)
-          : "“" + QUESTION + "”";
-        if (typed < QUESTION.length) {
-          typeNext();
-          return;
-        }
-        // The question ended: the waveform goes quiet for one beat.
-        wave.classList.remove("is-live");
+        setPill("Hearing audio", "listening", true);
         timers.push(setTimeout(function () {
-          POINTS.forEach(function (text, i) {
+          setPill("Transcribing", "listening", true);
+          // The live transcript grows word by word; the question itself
+          // never types — it appears whole when detected.
+          TRANSCRIPT.forEach(function (words, i) {
             timers.push(setTimeout(function () {
-              var li = makeBullet(text, i);
-              li.classList.add("is-new");
-              list.appendChild(li);
-              shown++;
-              if (i === POINTS.length - 1) {
-                status.textContent = "3 points ready — preview.";
-                timers.push(setTimeout(function () { finish(); }, COACH_MS));
-              }
-            }, i * STAGE_MS));
+              transcriptEl.textContent = words;
+            }, i * WORD_MS));
           });
-        }, SILENCE_MS));
-      }, TYPE_MS));
-    })();
+          timers.push(setTimeout(function () {
+            transcriptEl.textContent = "";
+            questionEl.textContent = "“" + QUESTION + "”";
+            questionEl.classList.remove("is-empty");
+            setPill("Question detected", "thinking", true);
+            timers.push(setTimeout(function () {
+              setPill("Preparing answer", "thinking", false);
+              thinkingEl.hidden = false;
+              // The bullet being written shows faded until it lands.
+              var pending = makeBullet(POINTS[0]);
+              pending.classList.add("is-pending");
+              list.appendChild(pending);
+              POINTS.forEach(function (text, i) {
+                timers.push(setTimeout(function () {
+                  var li;
+                  if (i === 0) {
+                    li = pending;
+                    li.classList.remove("is-pending");
+                  } else {
+                    li = makeBullet(text);
+                    list.appendChild(li);
+                  }
+                  li.classList.add("is-new");
+                  shown++;
+                  if (i === 0) {
+                    thinkingEl.hidden = true;
+                    metaEl.textContent = "prepared";
+                  }
+                  if (i === POINTS.length - 1) {
+                    timers.push(setTimeout(function () { finish(); }, END_MS));
+                  }
+                }, i * STAGE_MS));
+              });
+            }, THINK_MS));
+          }, TRANSCRIPT.length * WORD_MS + DETECT_MS));
+        }, TRANS_MS));
+      }, HEAR_MS));
+    }, START_MS));
   }
 
   replayBtn.addEventListener("click", function () { play(); });
@@ -711,6 +756,292 @@
   } else {
     play();
   }
+})();
+
+/* Step 21 — scroll story: one interview, start to finish. The pinned
+   window renders the beat that crosses the middle of the viewport
+   (IntersectionObserver with a centre band). Every beat sets the window's
+   complete state, so scrolling fast never strands a half state. Beats 0
+   (Prepare stages) and 2 (the first question) play a short timed sequence
+   the first time they activate; later activations render the final state
+   at once. Reduced motion or no IO: the static HTML (Beat 1) stays and
+   the snapshots carry the story. */
+(function () {
+  "use strict";
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".story-step"));
+  if (!steps.length) { return; }
+  var pill = document.getElementById("story-pill");
+  var pillText = document.getElementById("story-pill-text");
+  var badge = document.getElementById("story-badge");
+  var startEl = document.getElementById("story-start");
+  var homeHeader = document.getElementById("story-home-header");
+  var liveHeader = document.getElementById("story-live-header");
+  var homeView = document.getElementById("story-home");
+  var liveView = document.getElementById("story-live");
+  var reportView = document.getElementById("story-report");
+  var prepareBar = document.getElementById("story-prepare-bar");
+  var prepareStage = document.getElementById("story-prepare-stage");
+  var openLive = document.getElementById("story-open-live");
+  var questionEl = document.getElementById("story-question");
+  var transcriptEl = document.getElementById("story-transcript");
+  var contextEl = document.getElementById("story-context");
+  var thinkingEl = document.getElementById("story-thinking");
+  var list = document.getElementById("story-answer");
+  var metaEl = document.getElementById("story-meta");
+  var coachEl = document.getElementById("story-coach");
+  var historyEl = document.getElementById("story-history");
+  var historyText = document.getElementById("story-history-text");
+  var storyWindow = list && list.closest ? list.closest(".story-window") : null;
+  if (!pill || !pillText || !badge || !startEl || !homeHeader || !liveHeader || !homeView || !liveView
+      || !reportView || !prepareBar || !prepareStage || !openLive || !questionEl || !transcriptEl
+      || !contextEl || !thinkingEl || !list || !metaEl || !coachEl || !historyEl || !historyText
+      || !storyWindow) { return; }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  if (!("IntersectionObserver" in window)) { return; }
+
+  var Q1 = "Tell me about yourself.";
+  var Q1_POINTS = [
+    "Five years building web products — most recently leading a small team.",
+    "I start from the outcome, then the trade-off I made to get there.",
+    "What draws me here is this team’s focus on honest, useful software."
+  ];
+  var Q2 = "Tell me about a time you led a difficult project.";
+  var Q2_POINTS = [
+    "I led a rebuild of our checkout while the old one stayed live.",
+    "I split the work into weekly slices the team could review.",
+    "We shipped on time, and checkout errors fell by half."
+  ];
+  var Q3 = "Why should we hire you?";
+  var Q3_POINTS = [
+    "I ship real products — five years, most recently leading a small team.",
+    "I start from the outcome, then the trade-off I made.",
+    "I learn a team’s stack fast and contribute in week one."
+  ];
+  var TRANSCRIPT = ["Tell", "Tell me", "Tell me about", "Tell me about yourself."];
+  // The 15 Prepare stages, verbatim (source: docs/v2/PREPARATION_PIPELINE.md).
+  var STAGES = ["Verify profile", "JD extraction", "Candidate–role match map",
+    "Gap analysis", "Terminology", "Company/product context", "Story ranking",
+    "Likely questions", "Fast answers", "Coach keywords & structure", "Playbook",
+    "Truth policy", "Difficult questions", "Questions to ask", "Runtime cache"];
+  var WORD_MS = 160;   // per transcript word
+  var DETECT_MS = 300; // transcript done -> question detected
+  var THINK_MS = 500;  // Question detected -> Preparing answer
+  var STAGE_MS = 450;  // interval between points (same as the demo)
+  var PREP_MS = 150;   // interval between Prepare stages
+  var timers = [];
+  var playedBeats = {}; // beats whose timed sequence already ran once
+
+  function clearTimers() {
+    timers.forEach(function (t) { clearTimeout(t); });
+    timers = [];
+  }
+
+  function setPill(text, state, live) {
+    pillText.textContent = text;
+    pill.classList.toggle("is-listening", state === "listening");
+    pill.classList.toggle("is-thinking", state === "thinking");
+    pill.classList.toggle("is-live", !!live);
+  }
+
+  function makeBullet(text) {
+    var li = document.createElement("li");
+    var dot = document.createElement("span");
+    dot.className = "app-dot";
+    dot.setAttribute("aria-hidden", "true");
+    li.appendChild(dot);
+    var span = document.createElement("span");
+    span.textContent = text;
+    li.appendChild(span);
+    return li;
+  }
+
+  // The window has three bodies: Home (Beat 0), Live (Beats 1-5), Report
+  // (Beat 6). The header follows: Home has a titled bar, Live/Report have
+  // the status pill bar.
+  function showView(name) {
+    homeHeader.hidden = name !== "home";
+    liveHeader.hidden = name === "home";
+    homeView.hidden = name !== "home";
+    liveView.hidden = name !== "live";
+    reportView.hidden = name !== "report";
+  }
+
+  function setQuestion(text, empty) {
+    questionEl.textContent = text;
+    questionEl.classList.toggle("is-empty", !!empty);
+  }
+
+  function setAnswer(points, meta) {
+    list.innerHTML = "";
+    points.forEach(function (text) { list.appendChild(makeBullet(text)); });
+    metaEl.textContent = meta || "";
+  }
+
+  function setLiveBase() {
+    showView("live");
+    startEl.textContent = "▶ Pause";
+    badge.hidden = true;
+    transcriptEl.textContent = "";
+    contextEl.hidden = true;
+    thinkingEl.hidden = true;
+    coachEl.hidden = true;
+  }
+
+  // Beat finals: each renders the beat's complete end state at once.
+  var finals = {
+    0: function () {
+      showView("home");
+      prepareBar.style.width = "100%";
+      prepareStage.textContent = "Done — question bank ready (50–150 questions).";
+      openLive.hidden = false;
+    },
+    1: function () {
+      setLiveBase();
+      setPill("Listening", "listening", true);
+      setQuestion("Ready when you are — start listening when the interview begins.", true);
+      list.innerHTML = "";
+      coachEl.hidden = true;
+      metaEl.textContent = "";
+      historyEl.hidden = true;
+    },
+    2: function () {
+      setLiveBase();
+      setPill("Answer ready", "listening", false);
+      setQuestion("“" + Q1 + "”", false);
+      setAnswer(Q1_POINTS, "prepared");
+      coachEl.hidden = true;
+      historyEl.hidden = false;
+      historyText.textContent = "1 / 1";
+    },
+    3: function () {
+      setLiveBase();
+      setPill("Answer ready", "listening", false);
+      badge.hidden = false;
+      badge.textContent = "Concise";
+      setQuestion("“" + Q3 + "”", false);
+      setAnswer(Q3_POINTS, "Concise");
+      coachEl.hidden = true;
+      historyEl.hidden = false;
+      historyText.textContent = "1 / 1";
+    },
+    4: function () {
+      setLiveBase();
+      setPill("Answer ready", "listening", false);
+      setQuestion("“" + Q1 + "”", false);
+      list.innerHTML = "";
+      coachEl.hidden = false;
+      metaEl.textContent = "Coach";
+      historyEl.hidden = false;
+      historyText.textContent = "1 / 1";
+    },
+    5: function () {
+      setLiveBase();
+      setPill("Answer ready", "listening", false);
+      setQuestion("“" + Q2 + "”", false);
+      contextEl.hidden = false;
+      setAnswer(Q2_POINTS, "prepared");
+      coachEl.hidden = true;
+      historyEl.hidden = false;
+      historyText.textContent = "2 / 2";
+    },
+    6: function () {
+      showView("report");
+      setPill("Stopped", "", false);
+      startEl.textContent = "▶ Start listening";
+      badge.hidden = true;
+    }
+  };
+
+  // Beat 0, first activation: the fifteen Prepare stages tick by.
+  function playPrepare() {
+    showView("home");
+    prepareBar.style.width = "0";
+    openLive.hidden = true;
+    STAGES.forEach(function (name, i) {
+      timers.push(setTimeout(function () {
+        prepareStage.textContent = "Stage " + (i + 1) + " of 15 — " + name + "…";
+        prepareBar.style.width = Math.round(((i + 1) / STAGES.length) * 100) + "%";
+        if (i === STAGES.length - 1) {
+          prepareStage.textContent = "Done — question bank ready (50–150 questions).";
+          openLive.hidden = false;
+        }
+      }, i * PREP_MS));
+    });
+  }
+
+  // Beat 2, first activation: the first question, live — transcript grows,
+  // the question appears whole, the app thinks, the points stream in.
+  function playQuestion() {
+    setLiveBase();
+    setPill("Listening", "listening", true);
+    setQuestion("Ready when you are — start listening when the interview begins.", true);
+    list.innerHTML = "";
+    coachEl.hidden = true;
+    metaEl.textContent = "";
+    historyEl.hidden = true;
+    TRANSCRIPT.forEach(function (words, i) {
+      timers.push(setTimeout(function () {
+        transcriptEl.textContent = words;
+      }, i * WORD_MS));
+    });
+    timers.push(setTimeout(function () {
+      transcriptEl.textContent = "";
+      setQuestion("“" + Q1 + "”", false);
+      setPill("Question detected", "thinking", true);
+      timers.push(setTimeout(function () {
+        setPill("Preparing answer", "thinking", false);
+        thinkingEl.hidden = false;
+        var pending = makeBullet(Q1_POINTS[0]);
+        pending.classList.add("is-pending");
+        list.appendChild(pending);
+        Q1_POINTS.forEach(function (text, i) {
+          timers.push(setTimeout(function () {
+            var li;
+            if (i === 0) {
+              li = pending;
+              li.classList.remove("is-pending");
+            } else {
+              li = makeBullet(text);
+              list.appendChild(li);
+            }
+            li.classList.add("is-new");
+            if (i === 0) {
+              thinkingEl.hidden = true;
+              metaEl.textContent = "prepared";
+              historyEl.hidden = false;
+              historyText.textContent = "1 / 1";
+            }
+            if (i === Q1_POINTS.length - 1) {
+              setPill("Answer ready", "listening", false);
+            }
+          }, i * STAGE_MS));
+        });
+      }, THINK_MS));
+    }, TRANSCRIPT.length * WORD_MS + DETECT_MS));
+  }
+
+  function activate(beat) {
+    clearTimers();
+    // The window only renders while it is displayed (desktop, motion ok);
+    // on narrow screens the snapshots carry the story.
+    if (storyWindow && getComputedStyle(storyWindow).display === "none") { return; }
+    steps.forEach(function (s) {
+      s.classList.toggle("is-active", Number(s.getAttribute("data-beat")) === beat);
+    });
+    if (beat === 0 && !playedBeats[0]) { playedBeats[0] = true; playPrepare(); return; }
+    if (beat === 2 && !playedBeats[2]) { playedBeats[2] = true; playQuestion(); return; }
+    finals[beat]();
+  }
+
+  // A beat activates as it crosses the middle 10% of the viewport.
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        activate(Number(entry.target.getAttribute("data-beat")));
+      }
+    });
+  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+  steps.forEach(function (s) { io.observe(s); });
 })();
 
 /* Step 1 — scroll reveal + header shadow. Elements get .reveal via JS
