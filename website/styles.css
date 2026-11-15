@@ -538,7 +538,32 @@ table.compare tbody tr:hover td { background: var(--surface); }
    94px -> 54px while Listening) and everything below jumps 40px. */
 @media (max-width: 640px) {
   .app-start-label { display: none; }
-  .app-badge { display: none; }
+  /* Step 24 fix: the badge rule MUST outrank the base .app-badge rule
+     below (display: inline-flex, line 579). The Step 23 selector was a
+     bare .app-badge — same specificity as the base rule, but earlier in
+     the file, so the base rule won and the badge showed on the Adapt beat
+     at 390px, wrapping the header to 2 rows (+40px window growth, caption
+     + nav moved +40px — caught by the Step 23 live verification). The
+     .app-header qualifier (0,2,0) wins regardless of order. */
+  .app-header .app-badge { display: none; }
+}
+/* Step 24 — story glide (mobile player only): the window eases to each
+   beat's natural height instead of staying fixed at the tallest beat, so
+   the short beats no longer leave a void inside the window. In player
+   mode (html.story-player) the inactive VIEWS and HEADERS are
+   display:none, so the window is fluid (its height is the active view's
+   height); the question/answer stacks stay grid-stacked
+   (visibility:hidden) so a timed play never grows the window mid-play,
+   and the caption stack stays fixed so only the window moves. The height
+   transition is 300ms on the standard curve (MOTION.md); the desktop
+   scroll story keeps the fixed stage (no height animation on scroll).
+   Reduced motion kills the transition (the blanket rule). */
+html.story-player .story-window .app-header-stack > .is-hidden,
+html.story-player .story-window .app-window-body > .is-hidden {
+  display: none;
+}
+html.story-player .story-window {
+  transition: height .3s cubic-bezier(.2,.7,.3,1);
 }
 /* Step 21 — faithful header (G2): status pill left, controls right, no
    title text. The pill holds the dot, the status word and the 48x4 level
@@ -647,29 +672,38 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-report-line { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); margin: 0 0 8px; }
 .app-report-line span:last-child { color: var(--app-dim); }
 /* Step 20 — Replay control for the living hero. A real button (44px
-   target, Step 11); hidden until the moment has played once. */
+   target, Step 11); hidden until the moment has played once.
+   Step 24: centred (was right-aligned alone on its row — detached, and
+   Saeed flagged it on his phone); the stats strip below replaces the
+   wrapping float chips. */
 .hero-replay {
-  display: block; margin: 12px 0 0 auto; min-height: 44px; padding: 12px 16px;
+  display: block; margin: 12px auto 0; min-height: 44px; padding: 12px 16px;
   background: transparent; border: 1px solid var(--border-strong); border-radius: 10px;
   color: var(--muted); font-family: inherit; font-size: 14px; font-weight: 600;
   cursor: pointer; transition: color .15s ease, border-color .15s ease;
 }
 .hero-replay:hover { color: var(--text); border-color: var(--text); }
-.float-chips {
-  list-style: none; margin: 20px 0 0; padding: 0; position: relative; z-index: 2;
-  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+/* Step 24 — hero stats strip (replaces the float chips): the three facts
+   as one line, Tesla-style — big value, small label, dividers. The chips
+   wrapped 2+1 at 390px and looked scattered; a 3-column grid never wraps
+   and nothing hides behind a scroll. No animation (the floaty keyframe
+   retires with the chips). */
+.hero-stats {
+  margin: 20px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr);
 }
-.float-chips li {
-  background: rgba(18, 22, 30, .88); backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border-strong); border-radius: 999px;
-  padding: 8px 16px; font-size: 14px; font-weight: 600;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, .4);
-  animation: floaty 5s ease-in-out infinite;
+.hero-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 4px 8px;
 }
-.float-chips li:nth-child(2) { animation-delay: .8s; }
-.float-chips li:nth-child(3) { animation-delay: 1.6s; }
-@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.hero-stat + .hero-stat { border-left: 1px solid var(--border); }
+.hero-stat dd {
+  order: -1; margin: 0;
+  font-size: 20px; font-weight: 700; line-height: 1.12; color: var(--text);
+}
+.hero-stat dt {
+  font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
 
 /* ---------- Step 21: scroll story — one interview, start to finish ----------
    One pinned faithful window on the left, seven beats on the right. Each
@@ -751,7 +785,6 @@ html.js .reveal { opacity: .85; transform: translateY(6px); transition: opacity 
 html.js .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal { opacity: 1; transform: none; transition: none; }
-  .float-chips li { animation: none !important; }
   /* Step 21 — no pinning, no scroll linking: each beat shows its static
      snapshot instead of the live window. (The window has no tilt to reset
      any more — it is flat by design.) */

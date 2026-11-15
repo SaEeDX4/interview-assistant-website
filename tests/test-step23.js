@@ -26,9 +26,14 @@ const heroJs = (js.split("Step 21 — hero")[1] || "").split("Steps 21–22 — 
 const storyJs = (js.split("Steps 21–22 — scroll story")[1] || "").split("Step 1 — scroll reveal")[0];
 
 // 1. The mechanism: .is-hidden is visibility, never display.
+// (Step 24 exception: in player mode ONLY, the inactive story VIEWS +
+// HEADERS are display:none — html.story-player .story-window ... >
+// .is-hidden — so the window glides to the active view's height. That
+// rule is scoped to the player and asserted in test-step24; nothing
+// else hides .is-hidden with display.)
 check("is-hidden is visibility:hidden (layers keep their space)",
   /\.is-hidden \{\s*visibility: hidden;\s*\}/.test(clean) &&
-  !/\.is-hidden \{\s*display: none/.test(clean));
+  !/(^|\n)\.is-hidden \{\s*display: none/.test(clean));
 
 // 2. Header stack: the two headers share one grid cell.
 check("headers are a grid stack (home bar + live header in one cell)",
@@ -94,7 +99,10 @@ check("Start button splits icon + label (label hidden at <=640px)",
   /<span class="app-start-label" id="story-start-label">Start listening<\/span>/.test(html) &&
   /startLabelEl\.textContent = "Pause"/.test(heroJs) &&
   /startLabelEl\.textContent = "Pause"/.test(storyJs) &&
-  /@media \(max-width: 640px\) \{\s*\.app-start-label \{\s*display: none;\s*\}\s*\.app-badge \{\s*display: none;\s*\}\s*\}/.test(clean));
+  /@media \(max-width: 640px\) \{[\s\S]*?\.app-start-label \{[^}]*display: none;[\s\S]*?\.app-header \.app-badge \{[^}]*display: none;/.test(clean));
+// Step 24: the badge rule is .app-header .app-badge (0,2,0) — the bare
+// .app-badge selector lost to the later base rule (display: inline-flex)
+// and the badge showed on the Adapt beat at 390px (+40px, caught live).
 check("no .hidden toggles on the converted elements (visibility only)",
   !/(thinkingEl|openLive|contextEl|coachEl|homeHeader|liveHeader|homeView|liveView|reportView)\.hidden\s*=/.test(js) &&
   /contextEl\.classList\.(add|remove)\("is-hidden"\)/.test(js) &&

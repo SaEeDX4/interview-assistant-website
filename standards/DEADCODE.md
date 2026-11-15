@@ -86,3 +86,11 @@ will style it thinking it is live, or wonder why a rule has no effect.
   color token stays (COLOR.md lists it; test-step6/12 lock it). The
   `skel` whitelist entry is removed (nothing generates it any more).
   Census still green (test-step17 10/10).
+- **Step 24 — hero (Replay + stats strip):** new classes `.hero-stats`,
+  `.hero-stat` are defined in the Step 24 block and used in `index.html`
+  (the `<dl>` with three value/label cells). Removed as dead:
+  `.float-chips` + `.float-chips li` (and their `nth-child` delay rules)
+  and the `@keyframes floaty` (the chips are replaced by the stats strip,
+  which has no animation) and the reduced-motion `.float-chips li` rule.
+  The `.hero-replay` class is unchanged (only its margin moved).
+  Census still green (test-step17 10/10).

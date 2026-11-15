@@ -1180,6 +1180,47 @@
   var desktopSetup = false;
   var playerSetup = false;
 
+  // One beat's render: its final state, or its timed play the first time.
+  function renderBeat(beat) {
+    if (reduced) { finals[beat](); }
+    else if (beat === 0 && !playedBeats[0]) { playedBeats[0] = true; playPrepare(); }
+    else if (beat === 2 && !playedBeats[2]) { playedBeats[2] = true; playQuestion(); }
+    else { finals[beat](); }
+  }
+
+  // Player only (Step 24): glide the window's height to the new beat's
+  // natural height (300ms, the standard curve). The window is fluid in
+  // player mode (inactive views are display:none), so its height is the
+  // active view's height. The render + measure happen synchronously
+  // before the next paint, so the user never sees the intermediate
+  // states — only the smooth glide. The inline height is cleared after
+  // the transition so the window is fluid again (robust to font swap /
+  // resize / zoom). Desktop keeps the fixed stage: no height animation
+  // on scroll, where a shift would count as layout shift.
+  var glideToken = 0;
+  function glideRender(beat) {
+    if (!storyWindow) { renderBeat(beat); return; }
+    var token = ++glideToken;
+    var h0 = storyWindow.offsetHeight;
+    storyWindow.style.transition = "none";
+    renderBeat(beat);
+    var h1 = storyWindow.offsetHeight;
+    if (h1 === h0) {
+      // Same height: no animation, and no inline height to keep.
+      storyWindow.style.height = "";
+      storyWindow.style.transition = "";
+      return;
+    }
+    storyWindow.style.height = h0 + "px";
+    void storyWindow.offsetHeight; // register the starting height
+    storyWindow.style.transition = "";
+    storyWindow.style.height = h1 + "px";
+    setTimeout(function () {
+      if (token !== glideToken) { return; } // superseded by a newer glide
+      storyWindow.style.height = "";
+    }, 350);
+  }
+
   function activate(beat) {
     clearTimers();
     // The window only renders while it is displayed (desktop, motion ok,
@@ -1189,10 +1230,8 @@
     steps.forEach(function (s) {
       s.classList.toggle("is-active", Number(s.getAttribute("data-beat")) === beat);
     });
-    if (reduced) { finals[beat](); }
-    else if (beat === 0 && !playedBeats[0]) { playedBeats[0] = true; playPrepare(); }
-    else if (beat === 2 && !playedBeats[2]) { playedBeats[2] = true; playQuestion(); }
-    else { finals[beat](); }
+    if (playerOn && !reduced) { glideRender(beat); }
+    else { renderBeat(beat); }
     if (playerOn) { setPlayerUI(beat); }
   }
 

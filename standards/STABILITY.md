@@ -60,11 +60,24 @@ jump even when the metric excludes it (web.dev excludes shifts within
   hidden at ≤640px; the pill word carries the state) and the adaptive
   badge is hidden (`.app-badge` hidden at ≤640px; the answer meta and
   the caption still say Concise). The header is 54px on every beat.
-- **S6 — controls below a stage never move.** The caption is a stack of
-  seven layers (one per beat, built from the steps) plus a
-  visually-hidden live region, so the caption zone is as tall as its
-  longest caption and the nav row below it is pixel-stationary. The
-  Replay button is rendered hidden, not absent.
+  (Step 24 correction: the Step 23 badge rule was a bare `.app-badge`
+  inside the media query — same specificity as the base `.app-badge`
+  rule, but earlier in the file, so the base rule's `display:
+  inline-flex` won and the badge showed on the Adapt beat at 390px,
+  wrapping the header to 2 rows (+40px — caught by the Step 23 live
+  verification, which found the window 755.8 → 795.8px on beat 4 only).
+  The rule is now `.app-header .app-badge` (0,2,0), which wins
+  regardless of order. A media-query rule that must beat a base rule
+  needs the higher specificity, not just the later position.)
+- **S6 — controls below a stage never move — except on the mobile
+  player, where they glide.** The caption is a stack of seven layers
+  (one per beat, built from the steps) plus a visually-hidden live
+  region, so the caption zone is as tall as its longest caption and the
+  nav row below it is pixel-stationary. The Replay button is rendered
+  hidden, not absent. (Step 24: on the mobile tap/swipe player the
+  window glides to each beat's height, so the caption + nav glide with
+  it — smoothly, over 300ms, never a jump. On the desktop scroll story
+  the stage is fixed and the controls never move at all.)
 - **S7 — no fixed pixel heights, no JS measurement.** A fixed height per
   breakpoint is brittle against font loading (Inter is `display: swap`),
   zoom and user font-size settings; JS-measured `min-height` has the
@@ -74,9 +87,18 @@ jump even when the metric excludes it (web.dev excludes shifts within
   "replace the old content with the new content within a fixed size
   container"; Material 3 sizes the carousel container to its largest
   item; Fluent skeletons must match the final dimensions exactly.)
-- **S8 — motion stays transform/opacity-only.** Bullets rise with
-  `translateY + opacity`; beats crossfade. Never animate height, top or
-  margin — those are layout animations (web.dev, MOTION.md).
+- **S8 — motion stays transform/opacity-only — except one deliberate
+  height glide, tap-driven only.** Bullets rise with `translateY +
+  opacity`; beats crossfade. Never animate height, top or margin — those
+  are layout animations (web.dev, MOTION.md). The single exception
+  (Step 24): on the mobile story player, and only there, the window's
+  height glides 300ms (the standard curve) to the new beat's height when
+  the user taps, swipes, or arrows to another beat. A tap-driven change
+  within 500ms of the input is CLS-exempt (web.dev), and a glide is
+  continuous motion the eye can track — not the jump this standard was
+  written to kill. The desktop scroll story never glides: a height
+  change mid-scroll would count as layout shift and feel broken, so it
+  keeps the fixed stage. Reduced motion never glides (instant render).
 
 ## Where it applies
 
@@ -97,6 +119,12 @@ It reads as intentional because the window is a device frame — and it
 is faithful: the real app is a fixed 720×560 window whose short views
 have the same empty space. What it must never look like is a bug: the
 content stays top-aligned, exactly as in the real app.
+
+(Step 24: the mobile player no longer pays this price — the window
+glides to each beat's natural height, so there is no void at all on a
+phone. The desktop scroll story still pays it: its stage stays fixed
+at the tallest beat, and the void there is the honest cost of a stage
+that never moves while scrolling.)
 
 ## What this does not fix
 
@@ -165,6 +193,18 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   (1 of 3 mid-stream), sample switch + coach toggle + typed fallback +
   interrupt lengths all render to their final states, reduced motion
   renders everything at once.
+- `tests/test-step24.js` — the hero fix (Replay centred, stats strip,
+  float chips + floaty retired) and the story glide: the player-mode
+  display:none rules (views + headers only — the question/answer stacks
+  stay grid-stacked, the caption stack stays fixed), the 300ms height
+  transition on the standard curve, the glide in `app.js` (measure →
+  freeze → animate → clear, token-guarded, gated on player + motion),
+  and the ≤640px badge rule outranking the base rule.
+- `tests/sim-step22.js` — the story sim also models the glide (mobile
+  mode): the window's height is the visible view's (home 425 / live
+  690 / report 338 at 390px), a beat change sets the explicit height to
+  the new view's and clears it after the transition, and the desktop
+  mode never sets an inline height.
 
 ## Audit — Step 23 (2026-11-15)
 
@@ -191,3 +231,32 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   was a timing artefact of the story Prep growth (already fixed) — not
   the demo, not the sample tag. Tests: step23 now 19 checks (5 demo +
   the demo sim); full suite 269; sims 35 (story) + 17 (demo).
+
+## Audit — Step 24 (2026-11-15)
+
+- **Hero (Saeed's screenshot 1):** Replay sat alone, right-aligned
+  below the window; the three pills wrapped 2+1 at 390px. Research:
+  YouTube/Apple put replay on the frame, Material puts chips on one
+  scrollable line, Tesla puts key numbers in a one-line stats row.
+  Decision: Replay centred below the window; the facts become a
+  Tesla-style stats strip (three equal columns, value over label,
+  dividers). Overlay rejected (the faithful window has no free corner);
+  scrollable chips rejected (hides "30-min free trial" behind a swipe).
+  Float chips + the floaty keyframe retired.
+- **Story void (Saeed's screenshot 2):** the fixed stage left up to
+  356px of empty window on short beats. Research: web.dev's CLS guide
+  exempts tap-driven changes within 500ms; a glide is not a jump.
+  Decision: the mobile player glides the window's height 300ms to each
+  beat's natural height (inactive views + headers display:none in
+  player mode only; question/answer stacks stay grid-stacked so a
+  timed play never grows the window mid-play; caption stack stays
+  fixed). Desktop keeps the fixed stage. Vertical centring rejected
+  (the real app is top-aligned).
+- **Badge bug (Step 23 live verification):** the story player shifted
+  +40px on the Adapt beat only (window 755.8 → 795.8px at 390px).
+  Cause: the ≤640px `.app-badge { display: none; }` rule was overridden
+  by the later base rule (`display: inline-flex`, same specificity).
+  Fix: the media-query rule is now `.app-header .app-badge` (0,2,0).
+  Regression tests in step23 + step24.
+- Tests: step24 (hero + glide + badge); full suite 281+; sims 35
+  (story, incl. the glide) + 17 (demo).

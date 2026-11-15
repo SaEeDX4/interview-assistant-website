@@ -133,6 +133,21 @@ const steps = STEP_TEXTS.map((t, i) => {
   return li;
 });
 
+/* Step 24 — the story window's height in the sim: in player mode the
+   window is fluid (inactive views are display:none), so its height is
+   the visible view's. Representative 390px heights from the Step 23
+   live measurements (home 425 / live 690 / report 338) — the sim checks
+   the glide's mechanics (set the target height, clear it after the
+   transition), not the exact pixels. */
+Object.defineProperty(storyWindowEl, "offsetHeight", {
+  get: function () {
+    if (!els["story-home"].classList.contains("is-hidden")) { return 425; }
+    if (!els["story-live"].classList.contains("is-hidden")) { return 690; }
+    if (!els["story-report"].classList.contains("is-hidden")) { return 338; }
+    return 690;
+  },
+});
+
 /* matchMedia (only prefers-reduced-motion is queried now) + a mutable
    narrow flag standing in for the CSS breakpoint: the probe's computed
    display is block at <=860px, none on desktop. setMobile flips it and
@@ -304,6 +319,13 @@ function swipe(x0, x1) {
       !els["story-badge"].hidden && questionText().includes("Why should we hire you?")
       && captionTitle() === STEP_TEXTS[3][0]
       && els["story-count"].textContent === "4 / 7" && segActive() === 3);
+    // Step 24 glide: home (425) -> live (690). The height is set to the
+    // target at once (the transition animates it) and cleared after it.
+    check("mobile glide seg 3: window height set to the live view (690px)",
+      storyWindowEl.style.height === "690px");
+    await sleep(400);
+    check("mobile glide seg 3: inline height cleared after the transition",
+      storyWindowEl.style.height === "");
     check("mobile tap seg 3: exactly one caption item visible, and the stacks were not rebuilt",
       els["story-caption-stack"].children.filter((c) => !c.classList.contains("is-hidden")).length === 1
       && els["story-question-stack"].children.length === 5
@@ -327,6 +349,13 @@ function swipe(x0, x1) {
     check("mobile ArrowRight on segments: beat 3 -> 4", segActive() === 4);
     segWrapEl.fire("keydown", { key: "ArrowLeft" });
     check("mobile ArrowLeft on segments: beat 4 -> 3", segActive() === 3);
+    // Step 24 glide to the short view: live (690) -> report (338).
+    segBtns[6].fire("click");
+    check("mobile glide seg 6: window height set to the report view (338px)",
+      segActive() === 6 && storyWindowEl.style.height === "338px");
+    await sleep(400);
+    check("mobile glide seg 6: inline height cleared after the transition",
+      storyWindowEl.style.height === "");
     // Mode switch: unfold / resize to desktop — class removed, IO takes over.
     setMobile(false);
     check("mode switch to desktop: story-player class removed", !htmlEl.classList.contains("story-player"));

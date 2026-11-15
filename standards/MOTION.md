@@ -34,7 +34,6 @@ interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
 | `shimmer` | 1.2s | skeleton loading sweep |
 | `meter` | 1.1s | level meter in the status pill (gated by `.is-live`) |
 | `pulse` | 0.9s | status dot + thinking dots (the app's 0.9s sine pulse) |
-| `floaty` | 5s | floating chips on the hero |
 
 The faithful hero (Step 21) reuses `rise` (points) and `meter` (level
 meter, gated by `.is-live` — it runs only while audio is coming in, then
@@ -131,10 +130,23 @@ are retired with the waveform itself: the real app has no waveform.
   (`is-new`, 250ms), thinking is a pulsing opacity state, beat switches
   are visibility toggles — the stage never animates a layout property
   (no height/top/margin transitions, and the 250ms `rise` is unchanged).
+  (Step 24 adds the one exception: the mobile player's 300ms height
+  glide, tap-driven only — see below.)
   The demo's skeleton shimmer is retired with the skeletons (the
   bullets are pre-rendered now, so there is nothing to sweep): the
   keyframes are four (rise/meter/pulse/floaty), not five, and the
   ambient loops are meter 1.1s / pulse 0.9s / floaty 5s. Reduced motion
+- **Step 24** retired `floaty` with the float chips (the hero stats strip
+  has no animation): the keyframes are three (rise/meter/pulse), and the
+  ambient loops are meter 1.1s / pulse 0.9s. It also adds the one
+  height transition in the whole site: on the mobile story player only,
+  `html.story-player .story-window { transition: height .3s
+  cubic-bezier(.2,.7,.3,1); }` — the 300ms "Slow" duration on the
+  standard entrance curve. The JS freezes the window at the old height,
+  swaps the beat, measures the new height, and animates to it, then
+  clears the inline height; a tap within 500ms makes the change
+  CLS-exempt, and a glide is not a jump. The desktop scroll story has
+  no height transition (its stage stays fixed).
   is unchanged: every beat renders its final state at once, no timers,
   and the layer stacks make that free — the finals are already in the
   DOM. Enforced by `tests/test-step23.js` and the sim (35 checks,

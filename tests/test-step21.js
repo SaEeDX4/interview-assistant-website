@@ -135,10 +135,10 @@ check("must-not-invent checklist holds (hero + story)",
 check("JS gates demo, hero and story on prefers-reduced-motion (>= 3)",
   (js.match(/matchMedia\("\(prefers-reduced-motion: reduce\)"\)/g) || []).length >= 3);
 
-// 12. Regressions: the hero mockup still has its Replay + float chips,
+// 12. Regressions: the hero mockup still has its Replay + stats strip,
 // the installer still shares the window frame.
-check("hero Replay + float chips still present; installer frame intact",
-  /id="hero-replay"/.test(html) && /class="float-chips"/.test(html) &&
+check("hero Replay + stats strip still present; installer frame intact",
+  /id="hero-replay"/.test(html) && /class="hero-stats"/.test(html) &&
   fs.readFileSync(path.join(root, "download.html"), "utf8").includes('class="installer app-window"'));
 
 console.log(`\n${pass} passed, ${fail} failed`);

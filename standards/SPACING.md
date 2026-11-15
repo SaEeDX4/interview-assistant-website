@@ -97,7 +97,7 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
     timeline gutter 44px→40px (dot offset follows, dot stays centred on the
     line), badge/pill tags 4px 12px. The enforcement test itself caught 7
     more values the hand inventory had missed (skip-link, pill, badge,
-    float-chips, timeline) — that is why the standard is enforced by a test,
+    timeline) — that is why the standard is enforced by a test,
     not by eyeballing.
   - No "too much spacing" defects found. Clean components: hero, cards,
     grids, header height, footer frame, next-band, demo stage frame.
