@@ -74,7 +74,7 @@ check("R1 section padding 72px (64px mobile)",
 check("R9 card padding 28px", /\.card\s*\{[^}]*padding:\s*28px;/s.test(css));
 check("R10 card icon -> title 16px", /\.icon\s*\{[^}]*margin-bottom:\s*16px;/s.test(css));
 check("R14 primary button 12px 24px",
-  /display:\s*inline-block;\s*padding:\s*12px 24px;\s*border-radius:\s*999px;/.test(css));
+  /display:\s*inline-block;\s*padding:\s*12px 24px;\s*border-radius:\s*12px;/.test(css));
 check("R7 eyebrow -> heading 12px",
   /margin-bottom:\s*12px;\s*\n\s*\}/.test(css) || /color:\s*var\(--muted\);\s*margin-bottom:\s*12px;/.test(css));
 check("R20 footer link rows 12px vertical (Step 11: 44px touch target)",

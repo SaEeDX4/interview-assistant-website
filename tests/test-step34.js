@@ -42,9 +42,9 @@ check("the demo's status sentence matches (no \"AI\")",
 /* ---------- the slim header ---------- */
 check("the header's vertical padding is 8px (a 46px bar)",
   /\.app-header \{\s*display: flex; align-items: center; gap: 12px;\s*padding: 8px 16px;/.test(clean));
-check("the Start button joined the pill's capsule family (radius 14px)",
-  /\.app-start \{[^}]*border-radius: 14px;/.test(clean) &&
-  /\.app-pill \{[^}]*border-radius: 14px;/.test(clean));
+check("the header controls share one radius family (14px in Step 34; Step 35 set both to the chips' 8px at the owner's direction)",
+  /\.app-start \{[^}]*border-radius: 8px;/.test(clean) &&
+  /\.app-pill \{[^}]*border-radius: 8px;/.test(clean));
 check("no caption glyph survives as text in the app windows",
   !html.includes("■") && !html.includes("▢") &&
   !/<span class="app-win-btn"[^>]*>×<\/span>/.test(html) &&

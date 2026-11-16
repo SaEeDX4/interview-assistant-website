@@ -70,8 +70,8 @@ check("sticky bar has a 12px gap and 16px side padding (no 56px reserve)",
   !/\.sticky-cta \{[^}]*56px/.test(clean));
 check("sticky bar buttons use a 12px radius, scoped to the bar only",
   /\.sticky-cta \.btn \{ border-radius: 12px;/.test(clean));
-check("every other .btn is still a 999px pill (no global radius change)",
-  /\.btn \{[\s\S]*?border-radius: 999px;/.test(clean));
+check("every other .btn follows the radius standard (999px pill in Step 27; 12px since Step 35's site-wide rule)",
+  /\.btn \{[\s\S]*?border-radius: 12px;/.test(clean));
 check("sticky primary still flexes full-width at phone widths",
   /@media \(max-width: 480px\) \{[\s\S]*?\.sticky-cta \.btn-primary \{ flex: 1 1 auto;/.test(clean));
 
@@ -87,7 +87,7 @@ check("ethics strip uses a violet tint, not a grey bordered box",
   /\.ethics-strip \{[\s\S]*?background: var\(--accent-soft\);[\s\S]*?border: 1px solid rgba\(124, 108, 255, \.16\);/.test(clean) &&
   !/\.ethics-strip \{[^}]*border: 1px solid var\(--border\)/.test(clean));
 check("ethics link is a tonal button (pill, no underline), not an inline link",
-  /\.ethics-link \{[\s\S]*?display: inline-flex;[\s\S]*?border-radius: 999px;[\s\S]*?text-decoration: none;/.test(clean) &&
+  /\.ethics-link \{[\s\S]*?display: inline-flex;[\s\S]*?border-radius: 12px;[\s\S]*?text-decoration: none;/.test(clean) &&
   !/\.ethics-strip a \{/.test(clean));
 check("honest strip uses the same link treatment",
   /<section class="honest-strip"[\s\S]*?<a class="ethics-link" href="privacy\.html">How we handle privacy/.test(html) &&
