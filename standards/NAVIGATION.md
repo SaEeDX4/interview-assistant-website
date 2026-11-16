@@ -75,3 +75,25 @@ site had until Step 32 read as a layout mistake).
 
 Enforced by `tests/test-step32.js`; nav/footer sameness across all
 11 pages stays with `tests/test-step17.js`.
+
+## Step 36 audit — the Home question
+
+Researched 2026-11-16 (~/workspace/step36-home-link-research.md):
+nine of nine brand sites checked (Apple, Google Store, Google,
+Microsoft, Tesla, Samsung, Amazon, Nike, Stripe) carry NO
+explicit "Home" link in the header or the mobile menu — the
+top-left logo is the path home, and none adds Home to the footer
+either. NN/g (updated Oct 2024) nevertheless recommends an
+explicit link somewhere in the global navigation, and the best
+controlled study (Optimal Workshop, n=242) measures ~83%
+return-home success logo-only vs ≥98% with an explicit link —
+the failures concentrate in less-technical users. Back is not a
+substitute: it returns to the previous page, not home.
+
+Adopted for this flat site: NO Home link in the desktop header
+(it would duplicate the logo beside it, which NN/g warns
+against); "Home" IS the mobile menu's first item (mobile-only,
+like Platforms — the evidence-supported spot, at zero header
+cost); the header brand's hit area is 48px tall; and the
+footer brand is a home link too, so every page offers three
+quiet paths home: logo, menu (mobile), footer brand.

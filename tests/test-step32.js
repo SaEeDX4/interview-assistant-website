@@ -75,7 +75,8 @@ check("the panel is an under-bar overlay in the header's material, shown by visi
 check("links rise with a 40ms stagger that exists only under .is-open; the foot fades last",
   /\.site-nav\.is-open > a:nth-child\(2\) \{ transition-delay: \.04s; \}/.test(clean) &&
   /\.site-nav\.is-open > a:nth-child\(7\) \{ transition-delay: \.24s; \}/.test(clean) &&
-  /\.site-nav\.is-open \.nav-menu-foot \{ opacity: 1; transition-delay: \.28s; \}/.test(clean) &&
+  /\.site-nav\.is-open > a:nth-child\(8\) \{ transition-delay: \.28s; \}/.test(clean) &&
+  /\.site-nav\.is-open \.nav-menu-foot \{ opacity: 1; transition-delay: \.32s; \}/.test(clean) &&
   !/\.site-nav > a:nth-child\(\d\) \{ transition-delay/.test(clean));
 check("panel links are 24px; the current page is accent in the open menu; scroll locks only at ≤1024px",
   /\.site-nav > a \{ font-size: 24px; padding: 16px 4px;/.test(clean) &&

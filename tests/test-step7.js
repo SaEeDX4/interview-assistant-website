@@ -20,10 +20,10 @@ function navLinks(html) {
   const m = html.match(/<nav id="site-nav"[\s\S]*?<\/nav>/);
   return m ? [...m[0].matchAll(/href="([^"]+)"/g)].map(x => x[1]) : [];
 }
-const expectedNav = ['features.html', 'how-it-works.html', 'demo.html', 'pricing.html',
+const expectedNav = ['index.html', 'features.html', 'how-it-works.html', 'demo.html', 'pricing.html',
   'download.html', 'platforms.html', 'support.html', 'demo.html', 'privacy.html', 'terms.html'];
 for (const [f, html] of Object.entries(pages)) {
-  check(`D2 ${f} nav has exactly the 10 standard links (Step 32 set)`,
+  check(`D2 ${f} nav has exactly the 11 standard links (Step 32 set + Step 36 Home)`,
     JSON.stringify(navLinks(html)) === JSON.stringify(expectedNav));
 }
 // --- D3: simulator state row stacks cleanly on small phones ---
