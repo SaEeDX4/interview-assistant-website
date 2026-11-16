@@ -97,8 +97,8 @@ check("transcript reserves one line (min-height 1.5em)",
 check("Start button splits icon + label (label hidden at <=640px)",
   /<span class="app-start-label" id="mock-start-label">Start listening<\/span>/.test(html) &&
   /<span class="app-start-label" id="story-start-label">Start listening<\/span>/.test(html) &&
-  /startLabelEl\.textContent = "Pause"/.test(heroJs) &&
-  /startLabelEl\.textContent = "Pause"/.test(storyJs) &&
+  /setStart\("Pause"\)/.test(heroJs) &&
+  /setStart\("Pause"\)/.test(storyJs) &&
   /@media \(max-width: 640px\) \{[\s\S]*?\.app-start-label \{[^}]*display: none;[\s\S]*?\.app-header \.app-badge \{[^}]*display: none;/.test(clean));
 // Step 24: the badge rule is .app-header .app-badge (0,2,0) — the bare
 // .app-badge selector lost to the later base rule (display: inline-flex)

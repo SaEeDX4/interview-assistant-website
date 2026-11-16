@@ -336,6 +336,11 @@ p { margin: 0 0 16px; }
 }
 @media (hover: hover) {
   .card:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), var(--shadow-lift); }
+  /* Step 38 — timeline cards do not lift: the connector's geometry is
+     the section's signature and must stay honest. Border + icon tint
+     only (the dark-theme restraint the reference brands use). */
+  .tl-card:hover { transform: none; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), var(--shadow-card); }
+  .tl-card:hover .icon { background: rgba(124, 108, 255, .22); }
 }
 .icon {
   width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
@@ -345,6 +350,61 @@ p { margin: 0 0 16px; }
 .icon svg { width: 22px; height: 22px; display: block; }
 .card h3 { margin-bottom: 8px; }
 .card p:last-child { margin-bottom: 0; color: var(--muted); }
+
+/* ---------- Step 38: the Timeline Trio (homepage "What it does") ----------
+   The three cards are a sequence — before / during / during — so the
+   row admits it: numbered nodes threaded by a hairline, an italic
+   tagline layer, copy cut to the flagship budget, and a fact footer
+   pinned to the bottom of every card. Heights are structural here:
+   the grid stretches and the cards are flex columns, so no card sizes
+   to its own text (the defect this section shipped with: the base
+   .grid aligns items to start). Research: step38-feature-trio-research.md. */
+.grid.grid-timeline {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px; align-items: stretch;
+  list-style: none; margin: 28px 0 0; padding: 0;
+}
+.tl-card {
+  display: flex; flex-direction: column; position: relative;
+  transition: border-color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1);
+}
+.tl-phase { display: flex; align-items: center; gap: 12px; height: 28px; }
+.tl-node {
+  flex: none; width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center; position: relative; z-index: 1;
+  background: var(--accent-soft); border: 1px solid var(--accent);
+  color: var(--accent-light); font-size: 13px; font-weight: 600; line-height: 1;
+}
+.tl-phase-name {
+  font-size: 12px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted);
+}
+.tl-card .icon { width: 48px; height: 48px; margin: 20px 0 0; }
+.tl-card .icon svg { width: 24px; height: 24px; }
+.tl-card h3 { font-size: 20px; margin: 16px 0 0; }
+.tl-tag { font-style: italic; font-size: 15px; line-height: 1.4; color: var(--accent-light); margin: 4px 0 0; }
+.tl-body { font-size: 15px; line-height: 1.6; color: var(--muted); margin: 8px 0 0; }
+.tl-fact {
+  margin: auto 0 0; padding-top: 20px; border-top: 1px solid var(--border);
+  font-size: 13px; line-height: 1.5; color: var(--muted);
+}
+/* The thread: from each node centre to the next, drawn by the card
+   itself so it travels with the card. The segment into Coach is
+   dashed — Coach is a branch within the live moment, not a successor
+   to it. Nodes sit above the line (z-index) with a filled ground, so
+   the line appears to thread them. */
+.tl-card:not(:last-child)::after {
+  content: ""; position: absolute; top: 41px; left: 42px;
+  width: calc(100% + 24px); border-top: 1px solid var(--border);
+}
+.tl-card:nth-child(2)::after { border-top-style: dashed; }
+.grid-timeline + .cta-row { margin-top: 32px; }
+.text-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 500; line-height: 1.4;
+  color: var(--accent-light); text-decoration: none; padding: 12px 0;
+}
+.text-link-arrow { display: inline-block; transition: transform .15s cubic-bezier(.2,.7,.3,1); }
 
 /* ---------- Steps ---------- */
 .step-num { display: block; color: var(--accent); font-weight: 800; font-size: 14px; letter-spacing: .08em; margin-bottom: 12px; }
@@ -611,7 +671,8 @@ table.compare tbody tr:hover td { background: var(--surface); }
    lets each layer shrink to the cell; its content wraps instead. */
 .app-home-view, .app-live-view, .app-report-view { min-width: 0; }
 .app-answer-layer, .app-coach-view { min-width: 0; }
-.app-start-icon { flex: none; }
+.app-start-icon { flex: none; display: inline-grid; place-items: center; }
+.app-start-icon svg { display: block; width: 11px; height: 11px; }
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
@@ -698,6 +759,16 @@ html.story-player .story-window {
   font-size: 11px; font-weight: 600; line-height: 1; white-space: nowrap;
 }
 .app-badge[hidden] { display: none; }
+/* Step 38 — the story window lives in a narrow column at every
+   desktop width, and its live header carried the full control set
+   (help, more, minimise, maximise) into it: the close button was
+   clipped at the window's right edge (owner's desktop screenshot,
+   2026-11-16). The header sheds the decorative items — the same
+   treatment the mobile player already used (html.story-player rule)
+   and the hero header was born with — and at <=1024px the adaptive
+   badge sheds too. The close button is never shed. */
+#story-live-header .app-icon-btn { display: none; }
+#story-live-header .app-win-btn:not(:last-child) { display: none; }
 /* Step 29 — below 385px the header sheds the level meter and tightens,
    so the longest status word keeps the header at one row. Measured live
    (2026-11-15): at 360px the header content is 294px, and the pill for
@@ -839,6 +910,7 @@ html.story-player .story-window {
   .app-chip-btn[aria-pressed="true"]:hover .app-chip { background: var(--app-accent-soft); }
   .app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
   .app-manual-send-btn:hover .app-manual-send { background: var(--app-accent); }
+  .text-link:hover .text-link-arrow { transform: translateX(4px); }
 }
 /* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
@@ -1358,6 +1430,18 @@ body.cta-visible { padding-bottom: 96px; }
 @media (max-width: 1024px) {
   .dataflow { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); padding: 8px 0; align-self: center; }
+  /* Step 38 — the Timeline Trio goes one column: the thread turns
+     down the left edge (rail through the nodes), same solid/dashed
+     grammar. (Rules live in this existing block: the 1024px block
+     count is itself under test.) */
+  .grid.grid-timeline { grid-template-columns: 1fr; }
+  .tl-card:not(:last-child)::after {
+    top: 42px; left: 41px; width: 0; height: calc(100% + 24px);
+    border-top: 0; border-left: 1px solid var(--border);
+  }
+  .tl-card:nth-child(2)::after { border-left-style: dashed; }
+  /* Step 38 — the story header's adaptive badge sheds at <=1024px. */
+  .story-window .app-header .app-badge { display: none; }
 }
 .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; align-items: start; }
 @media (max-width: 640px) { .vs-grid { grid-template-columns: 1fr; } }

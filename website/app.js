@@ -1002,6 +1002,18 @@ var IA_VARIANTS = {
   var pill = document.getElementById("mock-pill");
   var pillText = document.getElementById("mock-pill-text");
   var startEl = document.getElementById("mock-start");
+  // Step 38 — the start button's icon follows its label: the play
+  // triangle belongs to "Start listening"/"Resume", the pause bars to
+  // "Pause". Before this, the label changed and the icon never did,
+  // so a button reading "Pause" carried a play glyph.
+  var startIconEl = document.getElementById("mock-start-icon");
+  var PLAY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z" fill="currentColor"/></svg>';
+  var PAUSE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg>';
+  function setStart(label) {
+    startLabelEl.textContent = label;
+    if (startIconEl) { startIconEl.innerHTML = label === "Pause" ? PAUSE_ICON : PLAY_ICON; }
+  }
+
   var startLabelEl = document.getElementById("mock-start-label");
   var questionEl = document.getElementById("mock-question");
   var transcriptEl = document.getElementById("mock-transcript");
@@ -1318,7 +1330,7 @@ var IA_VARIANTS = {
     if (fetchCtl) { fetchCtl.abort(); fetchCtl = null; }
     initialInFlight = false;
     setPill("Answer ready", "listening", false);
-    startLabelEl.textContent = "Pause";
+    setStart("Pause");
     questionEl.textContent = "“" + questionText + "”";
     questionEl.classList.remove("is-empty");
     transcriptEl.textContent = "";
@@ -1369,7 +1381,7 @@ var IA_VARIANTS = {
     selectChip(null);
     setChipsEnabled(false);
     setPill("Not listening", "", false);
-    startLabelEl.textContent = "Start listening";
+    setStart("Start listening");
     questionEl.textContent = "Waiting for the interviewer…";
     questionEl.classList.add("is-empty");
     questionEl.dir = "ltr";
@@ -1384,7 +1396,7 @@ var IA_VARIANTS = {
     var words = questionText.split(" ");
     var prefixes = words.map(function (_, i) { return words.slice(0, i + 1).join(" "); });
     later(function () {
-      startLabelEl.textContent = "Pause";
+      setStart("Pause");
       setPill("Listening", "listening", true);
       later(function () {
         setPill("Hearing audio", "listening", true);
@@ -1524,7 +1536,7 @@ var IA_VARIANTS = {
     selectChip(null);
     variant = "base";
     lastRegen = -1;
-    startLabelEl.textContent = "Pause";
+    setStart("Pause");
     transcriptEl.textContent = "";
     questionEl.textContent = "“" + questionText + "”";
     questionEl.classList.remove("is-empty");
@@ -1737,6 +1749,18 @@ var IA_VARIANTS = {
   var pillText = document.getElementById("story-pill-text");
   var badge = document.getElementById("story-badge");
   var startEl = document.getElementById("story-start");
+  // Step 38 — the start button's icon follows its label: the play
+  // triangle belongs to "Start listening"/"Resume", the pause bars to
+  // "Pause". Before this, the label changed and the icon never did,
+  // so a button reading "Pause" carried a play glyph.
+  var startIconEl = document.getElementById("story-start-icon");
+  var PLAY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z" fill="currentColor"/></svg>';
+  var PAUSE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg>';
+  function setStart(label) {
+    startLabelEl.textContent = label;
+    if (startIconEl) { startIconEl.innerHTML = label === "Pause" ? PAUSE_ICON : PLAY_ICON; }
+  }
+
   var startLabelEl = document.getElementById("story-start-label");
   var homeHeader = document.getElementById("story-home-header");
   var liveHeader = document.getElementById("story-live-header");
@@ -1970,7 +1994,7 @@ var IA_VARIANTS = {
 
   function setLiveBase() {
     showView("live");
-    startLabelEl.textContent = "Pause";
+    setStart("Pause");
     badge.hidden = true;
     transcriptEl.textContent = "";
     contextEl.classList.add("is-hidden");
@@ -2041,7 +2065,7 @@ var IA_VARIANTS = {
     6: function () {
       showView("report");
       setPill("Stopped", "", false);
-      startLabelEl.textContent = "Start listening";
+      setStart("Start listening");
       badge.hidden = true;
     }
   };
