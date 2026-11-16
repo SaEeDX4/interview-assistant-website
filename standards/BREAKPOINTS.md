@@ -12,7 +12,7 @@ one direction only.
 
 | Width | Name | Purpose | Blocks |
 |-------|------|---------|--------|
-| 440px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row with real headroom (Steps 29 + 30 fix-up; widened 400 -> 440 by the Step 37a fix-up) | 1 |
+| 400px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row with real headroom (Steps 29 + 30 fix-up) | 1 |
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
@@ -26,7 +26,7 @@ check to confirm the fit.
 
 ## 2. Rules
 
-- **B1 — closed set:** every `max-width` is one of 440 / 480 / 640 /
+- **B1 — closed set:** every `max-width` is one of 400 / 480 / 640 /
   860 / 900 / 1024.
 - **B2 — one direction:** `max-width` only. No `min-width` media
   queries anywhere.
@@ -126,15 +126,3 @@ check to confirm the fit.
   margins are verified in live play, not only by setting words.
   Enforced by `tests/test-step29.js` (updated) and
   `tests/test-step15.js` (set updated).
-
-- **Step 37a fix-up** moves the shed threshold from 400px to 440px —
-  the set's sixth width changes value, not count. Step 37a added the
-  minutes meter to the hero header; live verification (2026-11-16)
-  measured the full header wrapping to two rows (46px -> 86px) across
-  a 401-429px band: the compact treatment ended at 400px but the full
-  header only fits from ~430px. The Step 30 fix-up's claim that
-  "420px and up keep the meter" was true of the pre-meter header and
-  is corrected here. At 440px the threshold covers the whole band
-  with headroom, and widths above it keep the full header, meter
-  included. Enforced by `tests/test-step29.js` and
-  `tests/test-step15.js` (both updated).

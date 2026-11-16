@@ -79,7 +79,7 @@ check("caption is a stack of seven layers + a visually-hidden live region",
 // 6. Hero bullets are built once at load, hidden; plays only toggle classes.
 check("hero layers pre-rendered hidden at load; play() never rebuilds (Step 30: layers)",
   /function buildLayers\(\) \{/.test(heroJs) &&
-  /buildLayers\(\);\s*renderSuggestions\(\);\s*setGhosts\(sample\.rtl \? "rtl" : "ltr", sample\.lang \|\| "en"\);\s*if \(reduced\)/.test(heroJs) &&
+  /buildLayers\(\);\s*setGhosts\(sample\.rtl \? "rtl" : "ltr", sample\.lang \|\| "en"\);\s*if \(reduced\)/.test(heroJs) &&
   /function makeLayer\(bullets, rtl, lang\) \{[\s\S]*?li\.classList\.add\("is-hidden"\);[\s\S]*?ul\.classList\.add\("is-hidden"\);/.test(heroJs) &&
   !/appendChild|buildLayers/.test((heroJs.split("function play() {")[1] || "").split("function pause()")[0]) &&
   /function setLayerBullets\(ul, hidden\) \{/.test(heroJs));

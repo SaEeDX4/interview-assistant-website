@@ -22,12 +22,12 @@ const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. Closed breakpoint set.
 const widths = [...clean.matchAll(/@media\s*\(max-width:\s*(\d+)px\)/g)].map((m) => Number(m[1]));
-const ALLOWED = new Set([440, 480, 640, 860, 900, 1024]);
+const ALLOWED = new Set([400, 480, 640, 860, 900, 1024]);
 const bad = [...new Set(widths)].filter((w) => !ALLOWED.has(w));
-check("every max-width is in the closed set {440, 480, 640, 860, 900, 1024}",
+check("every max-width is in the closed set {400, 480, 640, 860, 900, 1024}",
   bad.length === 0, `off-set widths: ${bad.join(", ")}`);
 check("each documented breakpoint is used",
-  [440, 480, 640, 860, 900, 1024].every((w) => widths.includes(w)),
+  [400, 480, 640, 860, 900, 1024].every((w) => widths.includes(w)),
   `used: ${[...new Set(widths)].sort((a, b) => a - b).join(", ")}`);
 check("no min-width media queries (one direction: desktop-first)",
   !/@media\s*\(min-width:/.test(clean));

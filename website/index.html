@@ -93,10 +93,9 @@
         <div class="app-window">
           <div class="app-header" aria-hidden="true">
             <p class="app-pill" id="mock-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="mock-pill-text">Not listening</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
-            <span class="app-minutes" aria-hidden="true"><span id="mock-minutes-num">30</span>/30<span class="app-minutes-unit"> min</span></span>
             <span class="app-header-controls" aria-hidden="true">
               <span class="app-start" id="mock-start"><span class="app-start-icon" aria-hidden="true">▶</span><span class="app-start-label" id="mock-start-label">Start listening</span></span>
-              <span class="app-stop app-stop--hero" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+              <span class="app-stop" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
               <span class="app-win-btn" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
             </span>
           </div>
@@ -149,14 +148,6 @@
             <dd>30-min</dd>
           </div>
         </dl>
-        <div class="hero-after is-hidden" id="hero-after">
-          <p class="hero-after-line">Another question from the same bank:</p>
-          <div class="hero-suggest">
-            <button type="button" class="suggest-btn" id="suggest-1"></button>
-            <button type="button" class="suggest-btn" id="suggest-2"></button>
-          </div>
-          <p class="hero-after-more">One question, from a prepared bank. The full demo has all ten — with Coach Mode and your own questions. <a href="demo.html">Try the full demo</a></p>
-        </div>
       </div>
     </div>
     <div class="container">
@@ -553,15 +544,12 @@
             <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
           </div>
           <p class="demo-note">Simulated demo — no audio, no microphone, no recording.
-            Sample answers are illustrative; in the real app, points are built from
-            your confirmed facts and your prepared question bank. Type a question of
-            your own and it may be answered live over the network — and when that is
-            unavailable, you get the honest answer shape instead: outcome, example,
-            connection to the role.</p>
+            Sample answers are illustrative. In the real app, points are built from
+            your confirmed facts and your prepared question bank.</p>
         </div>
       </div>
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong id="demo-next-title">Three points, ready to say out loud — here’s what 30 trial minutes buys.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">Those 3 points took about 2 minutes — here’s what 30 trial minutes buys.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>

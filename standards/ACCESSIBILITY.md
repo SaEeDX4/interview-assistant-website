@@ -41,7 +41,6 @@ centre then matches the blue send button's centre one row below).
 | A16 | `.app-chip-btn` (hero style chips, Step 30) | 44px tall | the button is the 44px target; the visible chip stays 30px (the A15 hit-region/visual split); the four style chips carry `aria-pressed` |
 | A17 | `.app-manual-send-btn` (hero message box, Step 30) | 44×44px | visible box 36×36, right-aligned + centred, so its centre matches Replay's (Step 28) |
 | A18 | `.app-manual-input` (hero message box, Step 30) | 36px tall × flexible width | **documented exception:** the real app's field is 36px tall and the mockup stays faithful; the field's width (≥200px) far exceeds 44px and the pair meets WCAG AA target size (24px). It is labelled (`<label for>`) and its focus is the global ring + an accent border |
-| A19 | `.suggest-btn` (hero suggested questions, Step 37a) | >=44px tall x flexible width | real buttons labelled by the question itself (the NN/g suggested-questions pattern); the pair sits in a space reserved from first paint, so it is never a moving target |
 
 **Rule:** prefer padding for standalone controls (A1–A6, A11–A13) and
 `min-height: 44px` for grouped/compact controls (A7–A10) where bigger
