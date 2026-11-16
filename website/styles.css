@@ -362,7 +362,7 @@ p { margin: 0 0 16px; }
 .grid.grid-timeline {
   grid-template-columns: repeat(3, 1fr);
   gap: 24px; align-items: stretch;
-  list-style: none; margin: 28px 0 0; padding: 0;
+  list-style: none; margin: 40px 0 0; padding: 0;
 }
 .tl-card {
   display: flex; flex-direction: column; position: relative;
