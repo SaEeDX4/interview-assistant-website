@@ -680,7 +680,7 @@ html.story-player .story-window {
 /* Step 37a — the minutes meter, the app's own header object
    ("{remaining}/{total} min", faint, tabular so the count never
    wobbles). It sits between the status pill and the controls, as in
-   the app; at <=400px the unit suffix sheds (see the shed block) —
+   the app; at <=440px the unit suffix sheds (see the shed block) —
    the app's own chrome sheds its labels as the window narrows. */
 .app-minutes {
   font-size: 11px; font-weight: 600; line-height: 1.4; white-space: nowrap;
@@ -727,7 +727,7 @@ html.story-player .story-window {
    the longest word fits by 4.36px. This block sits after the base
    header rules on purpose — same-specificity overrides must come
    later in the file (the Step 24 lesson). */
-@media (max-width: 400px) {
+@media (max-width: 440px) {
   .app-meter { display: none; }
   .app-header { gap: 8px; }
   .app-header-controls { gap: 4px; }

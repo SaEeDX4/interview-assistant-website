@@ -23,11 +23,11 @@ check("minutes meter styled (11px, faint, tabular)",
   /\.app-minutes \{[^}]*var\(--app-faint\)/.test(css) &&
   /\.app-minutes \{[^}]*tabular-nums/.test(css));
 
-/* 2 — the <=400px shed keeps the one-row rule with the meter present. */
-const shed = css.slice(css.indexOf("@media (max-width: 400px)"));
-check("shed block drops the meter's unit suffix at <=400px",
+/* 2 — the <=440px shed keeps the one-row rule with the meter present. */
+const shed = css.slice(css.indexOf("@media (max-width: 440px)"));
+check("shed block drops the meter's unit suffix at <=440px",
   shed.includes(".app-minutes-unit { display: none; }"));
-check("shed block drops the hero's decorative stop at <=400px",
+check("shed block drops the hero's decorative stop at <=440px",
   shed.includes(".app-stop--hero { display: none; }") &&
   index.includes('class="app-stop app-stop--hero"'));
 

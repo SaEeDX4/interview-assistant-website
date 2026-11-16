@@ -30,6 +30,7 @@
    threshold, not a device guess. The block sits after the base
    header rules so its same-specificity overrides win by order.
    Step 30 fix-up (2026-11-16): the threshold moved 384px -> 400px.
+   Step 37a fix-up (2026-11-16): 400px -> 440px (the minutes meter widened the header).
    Step 30's live verification caught the header wrapping at 390px
    during a real play — the static margin there was only ~4.36px,
    inside font-rendering variance. Same shed rules, wider computed
@@ -49,8 +50,8 @@ function check(name, ok, extra = "") {
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. The shed block exists and carries all five rules.
-const block = (clean.match(/@media \(max-width: 400px\) \{([\s\S]*?)\n\}/) || [])[1] || "";
-check("400px media block exists (384px in Step 29, widened by the Step 30 fix-up)", block.length > 0);
+const block = (clean.match(/@media \(max-width: 440px\) \{([\s\S]*?)\n\}/) || [])[1] || "";
+check("440px media block exists (384px in Step 29; 400px Step 30 fix-up; 440px Step 37a fix-up)", block.length > 0);
 check("the meter is shed inside the block",
   /\.app-meter\s*\{\s*display:\s*none;\s*\}/.test(block));
 check("header gap tightens to 8px inside the block",
@@ -70,16 +71,16 @@ check("base meter rule still defines the 48px meter, not hidden",
   baseMeter.trim());
 check("the meter is hidden exactly once in the whole stylesheet",
   (clean.match(/\.app-meter\s*\{\s*display:\s*none;\s*\}/g) || []).length === 1);
-check("the 400px block sits after the base header rules",
-  clean.indexOf("@media (max-width: 400px)") > clean.indexOf(".app-badge[hidden]"));
+check("the 440px block sits after the base header rules",
+  clean.indexOf("@media (max-width: 440px)") > clean.indexOf(".app-badge[hidden]"));
 
 // 3. The Step 23 shed is unchanged.
 check("the <=640px shed (icon-only Start + badge off) is intact",
   /@media \(max-width: 640px\) \{[\s\S]*?\.app-start-label \{[^}]*display: none;[\s\S]*?\.app-header \.app-badge \{[^}]*display: none;/.test(clean));
 
 // 4. The standards record the new width and the fix.
-check("BREAKPOINTS.md lists 400px in the closed set",
-  /\| 400px \|/.test(bp) && /one of 400 \/ 480/.test(bp));
+check("BREAKPOINTS.md lists 440px in the closed set",
+  /\| 440px \|/.test(bp) && /one of 440 \/ 480/.test(bp));
 check("STABILITY.md carries the Step 29 audit",
   /## Audit — Step 29/.test(stab) && /383\.64px/.test(stab));
 

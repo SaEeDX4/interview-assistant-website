@@ -438,10 +438,15 @@ request; "prepared" would have been false for a typed question,
 
 The hero window's header gained the app's own minutes meter
 ("{remaining}/30 min", Step 37 proposal §5.1). The one-row rule is
-unchanged and now covers the meter: at <=400px the header sheds, in
+unchanged and now covers the meter: at <=440px the header sheds, in
 the app's own spirit — the meter's unit suffix hides (the count
 remains) and the hero header's decorative stop glyph hides (the story
 headers keep theirs). The hero's after-block (suggested questions +
 handoff) reserves its space from the first paint under the global
 visibility pattern, so its reveal after the first answer moves
 nothing on the page.
+
+Step 37a fix-up (2026-11-16): the shed threshold moved 400px ->
+440px after live verification caught the widened header wrapping to
+two rows across 401-429px (the full header fits only from ~430px
+with the meter present). See BREAKPOINTS.md's Step 37a fix-up entry.
