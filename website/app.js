@@ -497,6 +497,8 @@ var IA_VARIANTS = {
   var currentQuestion = "Tell me about yourself.";
   var timers = [];
   var runId = 0; // Increments on every new question/mode; stale timers bail out.
+  var demoFetchCtl = null; // In-flight AI request for a typed question.
+  var dynAnswerLayer = null; // The dynamic layer a live AI answer lands in.
 
 
   var STAGE_MS = 400; // Interval between staged bullet insertions.
@@ -664,6 +666,12 @@ var IA_VARIANTS = {
     var fbC = buildCoachLayer(FALLBACK.coach, false, "en");
     answerStack.appendChild(fbC);
     answerLayers.push(fbC);
+    // One dynamic layer for a live AI answer to a typed question
+    // (Step 30 completion): built empty, filled only when the proxy
+    // answers; every pre-rendered index above stays untouched.
+    dynAnswerLayer = buildAnswerLayer([], false, "en");
+    answerStack.appendChild(dynAnswerLayer);
+    answerLayers.push(dynAnswerLayer);
   }
 
   // Reveal a layer's rows one at a time (400ms apart), then done().
@@ -708,6 +716,7 @@ var IA_VARIANTS = {
   // the window is at its final height before the first point lands.
   function showAnswer(key, questionText, sample) {
     clearTimers();
+    if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     var myRun = ++runId;
     currentKey = key;
     currentQuestion = questionText;
@@ -743,6 +752,61 @@ var IA_VARIANTS = {
         }, mode === "coach" ? STAGE_MS : (FALLBACK.answer.length - 1) * STAGE_MS));
       }
     }, delay));
+  }
+
+  // A typed question, answered live by the AI proxy (Step 30
+  // completion — the hero's message box got the same path in Step
+  // 30). The proxy returns speakable points, so this runs in Answer
+  // mode only; Coach keeps the generic structure. Any failure lands
+  // on exactly the pre-AI behaviour: the honest generic structure.
+  function showTypedAI(text) {
+    clearTimers();
+    if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
+    var myRun = ++runId;
+    currentKey = "typed";
+    currentQuestion = text;
+    var idx = SAMPLE_KEYS.length;
+    var questionLayer = questionLayers[idx];
+    questionLayer.textContent = "“" + text + "”";
+    showLayer(questionLayers, idx);
+    dynAnswerLayer.textContent = "";
+    dynAnswerLayer.dir = /[؀-ۿ]/.test(text) ? "rtl" : "ltr";
+    dynAnswerLayer.lang = dynAnswerLayer.dir === "rtl" ? "fa" : "en";
+    var layer = showLayer(answerLayers, answerLayers.indexOf(dynAnswerLayer));
+    currentAnswerLayer = layer;
+    layer.setAttribute("aria-busy", "true");
+    sampleTagEl.classList.add("is-hidden");
+    setStatus("Preparing your points…");
+    demoFetchCtl = ("AbortController" in window) ? new AbortController() : null;
+    var timeout = demoFetchCtl ? setTimeout(function () { demoFetchCtl.abort(); }, 15000) : null;
+    fetch(IA_AI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text, style: "base" }),
+      signal: demoFetchCtl ? demoFetchCtl.signal : undefined
+    }).then(function (res) {
+      if (!res.ok) { throw new Error("endpoint"); }
+      return res.json();
+    }).then(function (data) {
+      if (timeout) { clearTimeout(timeout); }
+      demoFetchCtl = null;
+      if (myRun !== runId) { return; }
+      var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
+      if (!bullets.length) { throw new Error("shape"); }
+      bullets.forEach(function (b) {
+        var li = makeBullet(b);
+        li.classList.add("is-hidden");
+        dynAnswerLayer.appendChild(li);
+      });
+      revealRows(layer, timers, function () { return myRun !== runId; }, function () {
+        finishRender(myRun, "Live AI answer — generated for this question.");
+      });
+    }).catch(function () {
+      if (timeout) { clearTimeout(timeout); }
+      demoFetchCtl = null;
+      if (myRun !== runId) { return; }
+      showAnswer("typed", text, null);
+    });
   }
 
   function setMode(next) {
@@ -782,8 +846,15 @@ var IA_VARIANTS = {
       return;
     }
     inputEl.removeAttribute("aria-invalid");
-    // No sample match: show the honest generic structure, not a fake answer.
-    showAnswer("typed", text, null);
+    // A typed question goes to the live AI when the proxy is
+    // configured (Answer mode — the proxy returns speakable points,
+    // not Coach keywords). Any failure, and Coach mode, use the
+    // honest generic structure, not a fake answer.
+    if (IA_AI_ENDPOINT && typeof fetch === "function" && mode !== "coach") {
+      showTypedAI(text);
+    } else {
+      showAnswer("typed", text, null);
+    }
   });
 
   inputEl.addEventListener("input", function () {
@@ -929,6 +1000,8 @@ var IA_VARIANTS = {
   var startLabelEl = document.getElementById("mock-start-label");
   var questionEl = document.getElementById("mock-question");
   var transcriptEl = document.getElementById("mock-transcript");
+  var questionGhost = document.getElementById("mock-question-ghost");
+  var transcriptGhost = document.getElementById("mock-transcript-ghost");
   var thinkingEl = document.getElementById("mock-thinking");
   var metaEl = document.getElementById("mock-meta");
   var replayBtn = document.getElementById("hero-replay");
@@ -938,7 +1011,7 @@ var IA_VARIANTS = {
   var liveEl = document.getElementById("hero-live");
   var formEl = document.getElementById("hero-manual-form");
   var inputEl = document.getElementById("hero-manual-input");
-  if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !thinkingEl || !metaEl || !replayBtn || !zone || !stack || !fullEl) { return; }
+  if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !questionGhost || !transcriptGhost || !thinkingEl || !metaEl || !replayBtn || !zone || !stack || !fullEl) { return; }
   var chipBtns = Array.prototype.slice.call(document.querySelectorAll(".app-chip-btn"));
   var appWindow = stack.closest ? stack.closest(".app-window") : null;
 
@@ -1236,6 +1309,21 @@ var IA_VARIANTS = {
 
   function renderAll() { settle(); }
 
+  // Ghost layers reserve the question's and the transcript's FINAL
+  // heights from the first frame (the Step 23 stack pattern, applied
+  // to the question card in the Step 30 fix-up): the prepared bank
+  // holds questions that wrap to two lines at phone widths, so a
+  // one-line reservation is not enough — the ghost carries the full
+  // text, invisibly, and the card is born at its final height.
+  function setGhosts(dir, lang) {
+    questionGhost.textContent = "“" + questionText + "”";
+    questionGhost.dir = dir;
+    questionGhost.lang = lang;
+    transcriptGhost.textContent = questionText;
+    transcriptGhost.dir = dir;
+    transcriptGhost.lang = lang;
+  }
+
   // The staged moment for the loaded sample: Start is pressed, the
   // interviewer speaks (transcript grows), the question lands whole,
   // the app thinks, the points stream in.
@@ -1259,6 +1347,7 @@ var IA_VARIANTS = {
     transcriptEl.textContent = "";
     transcriptEl.dir = sample.rtl ? "rtl" : "ltr";
     transcriptEl.lang = sample.lang || "en";
+    setGhosts(sample.rtl ? "rtl" : "ltr", sample.lang || "en");
     hideThinking();
     showOnly("layer", true);
     metaEl.textContent = "";
@@ -1411,6 +1500,7 @@ var IA_VARIANTS = {
     questionEl.textContent = "“" + questionText + "”";
     questionEl.classList.remove("is-empty");
     questionEl.dir = /[؀-ۿ]/.test(questionText) ? "rtl" : "ltr";
+    setGhosts(questionEl.dir, questionEl.lang || "en");
     landQuestion();
     setPill("Question detected", "thinking", true);
     metaEl.textContent = "";
@@ -1581,6 +1671,7 @@ var IA_VARIANTS = {
   });
 
   buildLayers();
+  setGhosts(sample.rtl ? "rtl" : "ltr", sample.lang || "en");
   if (reduced) { renderAll(); return; }
 
   // Pause when scrolled off-screen; play once when first seen.

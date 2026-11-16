@@ -95,8 +95,14 @@
           <div class="app-window-body">
             <section class="app-card" aria-hidden="true">
               <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
-              <p class="app-question is-empty" id="mock-question">Waiting for the interviewer…</p>
-              <p class="app-transcript" id="mock-transcript"></p>
+              <div class="app-question-stack">
+                <p class="app-question is-empty" id="mock-question">Waiting for the interviewer…</p>
+                <p class="app-question app-ghost" id="mock-question-ghost" aria-hidden="true"></p>
+              </div>
+              <div class="app-transcript-stack">
+                <p class="app-transcript" id="mock-transcript"></p>
+                <p class="app-transcript app-ghost" id="mock-transcript-ghost" aria-hidden="true"></p>
+              </div>
             </section>
             <section class="app-card app-card--answer" aria-hidden="true">
               <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="mock-meta"></span></div>

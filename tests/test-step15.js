@@ -1,7 +1,8 @@
 /* Step 15 — breakpoints standard. Run: node tests/test-step15.js
    (from ~/workspace/interview-assistant-website).
-   The standard (BREAKPOINTS.md): the only max-widths are 384/480/640/
-   860/900/1024 (384 added by Step 29 — a computed threshold, see
+   The standard (BREAKPOINTS.md): the only max-widths are 400/480/640/
+   860/900/1024 (400 added by Step 29 as 384 — a computed threshold,
+   widened to 400 by the Step 30 fix-up — see
    BREAKPOINTS.md); no min-width queries; JS has no width logic;
    feature queries are separate. The Step 15 audit found no
    violations, so there is no fix script — this test locks in what
@@ -21,12 +22,12 @@ const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // 1. Closed breakpoint set.
 const widths = [...clean.matchAll(/@media\s*\(max-width:\s*(\d+)px\)/g)].map((m) => Number(m[1]));
-const ALLOWED = new Set([384, 480, 640, 860, 900, 1024]);
+const ALLOWED = new Set([400, 480, 640, 860, 900, 1024]);
 const bad = [...new Set(widths)].filter((w) => !ALLOWED.has(w));
-check("every max-width is in the closed set {384, 480, 640, 860, 900, 1024}",
+check("every max-width is in the closed set {400, 480, 640, 860, 900, 1024}",
   bad.length === 0, `off-set widths: ${bad.join(", ")}`);
 check("each documented breakpoint is used",
-  [384, 480, 640, 860, 900, 1024].every((w) => widths.includes(w)),
+  [400, 480, 640, 860, 900, 1024].every((w) => widths.includes(w)),
   `used: ${[...new Set(widths)].sort((a, b) => a - b).join(", ")}`);
 check("no min-width media queries (one direction: desktop-first)",
   !/@media\s*\(min-width:/.test(clean));

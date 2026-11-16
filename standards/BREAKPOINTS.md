@@ -12,7 +12,7 @@ one direction only.
 
 | Width | Name | Purpose | Blocks |
 |-------|------|---------|--------|
-| 384px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row (Step 29) | 1 |
+| 400px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row with real headroom (Steps 29 + 30 fix-up) | 1 |
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
@@ -26,7 +26,7 @@ check to confirm the fit.
 
 ## 2. Rules
 
-- **B1 — closed set:** every `max-width` is one of 384 / 480 / 640 /
+- **B1 — closed set:** every `max-width` is one of 400 / 480 / 640 /
   860 / 900 / 1024.
 - **B2 — one direction:** `max-width` only. No `min-width` media
   queries anywhere.
@@ -110,3 +110,19 @@ check to confirm the fit.
   the app-window controls' hover states (B5 updated: hover ×2). The
   pairing is the point: hover feedback must exist only where a pointer
   can actually hover, so a tap on a phone never leaves a stuck hover.
+- **Step 30 fix-up** moves the shed threshold from 384px to 400px —
+  the set's sixth width changes value, not count. Step 29's 383.64px
+  threshold was computed from static pill measurements, which left
+  the longest status word only ~4.36px of headroom at 390px; Step
+  30's live verification (2026-11-16) caught the header wrapping to
+  two rows at 390px during a real play ("Question detected" /
+  "Preparing answer", header 54px -> 94px) — a margin that small is
+  inside normal font-rendering variance, so it is not a safe margin.
+  The shed block's rules are unchanged; at 400px the threshold now
+  covers every width whose unshed margin would stay under ~35px,
+  and widths above it (420px and up, margin ~34px and growing) keep
+  the meter. New rule this adds: a header margin under ~15px at any
+  width counts as a defect, even when a static measurement passes —
+  margins are verified in live play, not only by setting words.
+  Enforced by `tests/test-step29.js` (updated) and
+  `tests/test-step15.js` (set updated).

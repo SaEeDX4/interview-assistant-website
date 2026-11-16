@@ -539,6 +539,9 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-question-stack > * { grid-area: 1 / 1; }
 .app-answer-stack { display: grid; }
 .app-answer-stack > * { grid-area: 1 / 1; }
+.app-transcript-stack { display: grid; }
+.app-transcript-stack > * { grid-area: 1 / 1; }
+.app-ghost { visibility: hidden; }
 .story-caption-stack { display: grid; }
 .story-caption-item { grid-area: 1 / 1; }
 /* The demo (both pages) is a stage too: 10 sample layers + 1 typed
@@ -660,7 +663,7 @@ html.story-player .story-window {
    the longest word fits by 4.36px. This block sits after the base
    header rules on purpose — same-specificity overrides must come
    later in the file (the Step 24 lesson). */
-@media (max-width: 384px) {
+@media (max-width: 400px) {
   .app-meter { display: none; }
   .app-header { gap: 8px; }
   .app-header-controls { gap: 4px; }

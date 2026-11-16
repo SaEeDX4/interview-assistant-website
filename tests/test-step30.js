@@ -117,6 +117,14 @@ check("the answer zone holds the layer stack and the Full paragraph",
   /<div class="app-answer-zone" id="mock-answer-zone">/.test(heroHtml) &&
   /<div class="app-answer-stack" id="mock-answer-stack"><\/div>/.test(heroHtml) &&
   /<p class="app-full-answer" id="mock-full" hidden><\/p>/.test(heroHtml));
+check("ghost layers reserve the question + transcript final heights (Step 30 fix-up)",
+  /<div class="app-question-stack">\s*<p class="app-question is-empty" id="mock-question">/.test(heroHtml) &&
+  /<p class="app-question app-ghost" id="mock-question-ghost" aria-hidden="true"><\/p>/.test(heroHtml) &&
+  /<div class="app-transcript-stack">\s*<p class="app-transcript" id="mock-transcript"><\/p>/.test(heroHtml) &&
+  /<p class="app-transcript app-ghost" id="mock-transcript-ghost" aria-hidden="true"><\/p>/.test(heroHtml) &&
+  /function setGhosts\(dir, lang\)/.test(heroJs) &&
+  /setGhosts\(sample\.rtl \? "rtl" : "ltr", sample\.lang \|\| "en"\)/.test(heroJs) &&
+  /setGhosts\(questionEl\.dir, questionEl\.lang \|\| "en"\)/.test(heroJs));
 
 /* ---------- hero JS ---------- */
 check("typed questions: sample matching, then the AI endpoint, then the guidance fallback",
@@ -139,6 +147,15 @@ check("Replay spins the glyph on click and replays the sample play or the typed 
   /replayBtn\.classList\.add\("is-spinning"\)/.test(heroJs) &&
   /if \(source === "sample"\) \{\s*play\(\);/.test(heroJs) &&
   /typedFlow\(null, function \(\) \{/.test(heroJs));
+
+/* ---------- the demo's typed box (Step 30 completion) ---------- */
+const demoJs = (js.split("/* Interview Assistant — demo logic")[1] || "").split("Step 21 — hero")[0];
+check("the demo's typed box uses the same proxy in Answer mode, with the generic structure as its failure path",
+  /function showTypedAI\(text\)/.test(demoJs) &&
+  /if \(IA_AI_ENDPOINT && typeof fetch === "function" && mode !== "coach"\) \{\s*showTypedAI\(text\);/.test(demoJs) &&
+  /showAnswer\("typed", text, null\);/.test(demoJs) &&
+  /Live AI answer — generated for this question\./.test(demoJs) &&
+  /dynAnswerLayer = buildAnswerLayer\(\[\], false, "en"\);/.test(demoJs));
 
 /* ---------- CSS ---------- */
 check("chip + send targets are 44px with smaller visual boxes (the A15 split)",
@@ -166,6 +183,9 @@ check("the real input: inherited font, full-strength text, dim placeholder, acce
   /input\.app-manual-input \{ font: inherit; font-size: 13px; color: var\(--app-text\); \}/.test(clean) &&
   /input\.app-manual-input::placeholder \{ color: var\(--app-dim\); opacity: 1; \}/.test(clean) &&
   /input\.app-manual-input:focus \{ border-color: var\(--app-accent\); \}/.test(clean));
+check("ghost CSS: stacks are grids and ghosts are visibility-hidden (never display)",
+  /\.app-transcript-stack \{ display: grid; \}/.test(clean) &&
+  /\.app-ghost \{ visibility: hidden; \}/.test(clean));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

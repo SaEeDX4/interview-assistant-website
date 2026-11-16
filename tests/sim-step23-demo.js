@@ -3,9 +3,10 @@
    suite — it is a verification harness, not a repo test): extracts the REAL
    demo IIFE from website/app.js and runs it against a minimal DOM shim,
    in animated and reduced-motion modes. The story has sim-step22.js; the
-   demo has this one, because the demo's layer model (22 answer layers)
+   demo has this one, because the demo's layer model (22 pre-rendered
+   answer layers + 1 dynamic layer for live AI answers to typed questions)
    is the part the static suites cannot execute.
-   Usage: node tests/sim-step23-demo.js [--reduced]
+   Usage: node tests/sim-step23-demo.js [--reduced] [--ai]
    Exit 0 when every check passes. */
 "use strict";
 const fs = require("fs");
@@ -20,6 +21,7 @@ if (start < 0 || end < 0 || end <= start) { console.error("demo IIFE markers not
 const demoCode = appJs.slice(start, end);
 
 const REDUCED = process.argv.includes("--reduced");
+const AI = process.argv.includes("--ai");
 
 let passed = 0, failed = 0;
 function check(name, cond) {
@@ -153,6 +155,17 @@ const sandbox = {
   },
   window: { matchMedia, addEventListener: () => {} },
 };
+if (AI) {
+  // A working proxy: typed questions must land in the dynamic layer.
+  sandbox.fetch = () => Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ bullets: [
+      "AI point one — specific and speakable.",
+      "AI point two — approach and proof.",
+      "AI point three — closing line.",
+    ] }),
+  });
+}
 vm.createContext(sandbox);
 vm.runInContext(demoCode, sandbox);
 
@@ -171,11 +184,11 @@ function questionText() {
 function answerLayer() { return visibleChild(answerStackEl); }
 
 (async function main() {
-  console.log("== demo sim" + (REDUCED ? " + reduced motion" : "") + " ==");
+  console.log("== demo sim" + (REDUCED ? " + reduced motion" : "") + (AI ? " + ai" : "") + " ==");
 
-  check("layers built once (11 question, 22 answer, 3 int)",
+  check("layers built once (11 question, 22 pre-rendered + 1 dynamic answer, 3 int)",
     questionStackEl.children.length === 11
-    && answerStackEl.children.length === 22
+    && answerStackEl.children.length === 23
     && intStackEl.children.length === 3);
   check("static tell content adopted as layer 0 (no-JS demo intact)",
     questionStackEl.children[0] === staticQuestionEl
@@ -201,7 +214,7 @@ function answerLayer() { return visibleChild(answerStackEl); }
       && rows(answerLayer())[0].includes("We disagreed on the approach")
       && els["demo-status"].textContent === "3 points ready.");
     check("sample switch did not rebuild the stacks",
-      questionStackEl.children.length === 11 && answerStackEl.children.length === 22);
+      questionStackEl.children.length === 11 && answerStackEl.children.length === 23);
     els["mode-coach"].fire("click");
     await sleep(1200);
     check("coach mode: keys + structure rows, status Coach points ready",
@@ -215,12 +228,21 @@ function answerLayer() { return visibleChild(answerStackEl); }
     els["demo-input"].value = "What is your greatest achievement?";
     els["demo-form"].fire("submit", { preventDefault: function () {} });
     await sleep(1400);
-    check("typed question: fallback question + generic structure, tag hidden (space reserved)",
-      questionText().includes("greatest achievement")
-      && rows(answerLayer()).length === 3
-      && rows(answerLayer())[0].includes("Start with the outcome")
-      && els["demo-status"].textContent.startsWith("Sample structure")
-      && els["demo-sample-tag"].classList.contains("is-hidden"));
+    if (AI) {
+      check("typed question (AI): live bullets in the dynamic layer, honest AI status, tag hidden",
+        questionText().includes("greatest achievement")
+        && rows(answerLayer()).length === 3
+        && rows(answerLayer())[0].includes("AI point one")
+        && els["demo-status"].textContent === "Live AI answer — generated for this question."
+        && els["demo-sample-tag"].classList.contains("is-hidden"));
+    } else {
+      check("typed question: fallback question + generic structure, tag hidden (space reserved)",
+        questionText().includes("greatest achievement")
+        && rows(answerLayer()).length === 3
+        && rows(answerLayer())[0].includes("Start with the outcome")
+        && els["demo-status"].textContent.startsWith("Sample structure")
+        && els["demo-sample-tag"].classList.contains("is-hidden"));
+    }
     intBtns[1].fire("click"); // concise
     await sleep(1200);
     check("interrupt concise: 2 short bullets, status ready — simulated",

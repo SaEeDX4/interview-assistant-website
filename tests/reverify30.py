@@ -27,6 +27,10 @@ CHECKS = [
     ("styles.css", "hover gated behind hover + fine pointer",
      "@media (hover: hover) and (pointer: fine)", True),
     ("styles.css", "Replay glyph spin rule", "rotate(-360deg)", True),
+    ("styles.css", "header shed threshold widened to 400px (Step 30 fix-up)",
+     "@media (max-width: 400px)", True),
+    ("styles.css", "ghost layers are visibility-hidden", ".app-ghost { visibility: hidden; }", True),
+    ("index.html", "question ghost layer present", 'id="mock-question-ghost"', True),
 ]
 
 cache = {}

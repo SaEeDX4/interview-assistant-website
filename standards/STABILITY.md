@@ -376,3 +376,45 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
   the guidance/AI answer). Rule this adds: *unsolicited* height change
   is still forbidden everywhere; a height change the user just asked
   for glides, it never jumps.
+
+## Audit — Step 30 fix-up (ghost reservations + header headroom)
+
+Step 30's live verification (2026-11-16, instrumented harness,
+100ms sampling, the "conflict" sample fixed via a Math.random stub)
+found two within-play height steps the suites could not see:
+
+1. **Question card +21px / transcript +19.5px.** The Step 23
+   reservation (a one-line transcript `min-height`, a one-line
+   "Waiting for the interviewer…" placeholder) was sized for the
+   old hero's single short sample. The Step 30 bank's longer
+   questions wrap to two lines at phone widths: the transcript
+   grew +19.5px when it crossed to line 2 (320px), and the
+   question grew +21px when it landed (390px and 320px). Fix:
+   ghost layers — the question and the transcript each sit in a
+   grid stack with an invisible twin carrying the FULL text
+   (`#mock-question-ghost`, `#mock-transcript-ghost`, set by
+   `setGhosts` at load, on play, and on a typed landing), so the
+   card is born at its final height at every width. Rule this
+   adds: a reservation must be sized by the CONTENT's final
+   rendered height (a ghost), never by a fixed line count, when
+   the content varies.
+2. **Header wrap at 390px.** During "Question detected" /
+   "Preparing answer" the header wrapped (54px -> 94px) and the
+   window grew +40px until "Answer ready". Step 29's static
+   margin at 390px was only ~4.36px — inside font-rendering
+   variance. Fix: the shed block's threshold moves 384px ->
+   400px (see BREAKPOINTS.md). Rule this adds: margins are
+   verified in live play; under ~15px of headroom is a defect.
+
+The answer card, actions row and manual row never moved in any
+sample. Enforced by `tests/test-step30.js` (ghost checks) and the
+updated `tests/test-step29.js` / `tests/test-step15.js`.
+
+Addendum (same audit): the story window's transcript was measured
+within its timed beats (100ms sampling at 390px) and audited in
+code. It needs no ghost: the only text it ever holds is the prefix
+series of one 23-character question ("Tell me about yourself."),
+one line at every width, and its question card never moved within
+a beat (178.28px constant on both timed beats). The demo likewise
+has no streaming transcript. The ghost rule therefore applies
+exactly where content varies — the hero — and is satisfied there.

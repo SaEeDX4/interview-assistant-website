@@ -98,7 +98,9 @@ function buildDom() {
   const startLabel = reg(new El("span", "mock-start-label"));
   start.appendChild(startLabel);
   const question = reg(new El("p", "mock-question"));
+  const questionGhost = reg(new El("p", "mock-question-ghost"));
   const transcript = reg(new El("p", "mock-transcript"));
+  const transcriptGhost = reg(new El("p", "mock-transcript-ghost"));
   const thinking = reg(new El("p", "mock-thinking"));
   thinking.className = "app-thinking is-hidden";
   const meta = reg(new El("span", "mock-meta"));
@@ -122,13 +124,14 @@ function buildDom() {
     b.disabled = true;
     return b;
   });
-  body.appendChild(question); body.appendChild(transcript); body.appendChild(thinking);
+  body.appendChild(question); body.appendChild(questionGhost);
+  body.appendChild(transcript); body.appendChild(transcriptGhost); body.appendChild(thinking);
   body.appendChild(meta); body.appendChild(zone); body.appendChild(replay);
   body.appendChild(form); body.appendChild(live);
   chips.forEach((c) => body.appendChild(c));
   win.appendChild(body);
   heroVisual.appendChild(win);
-  return { byId, chips, replay, form, input, stack, full, zone, pillText, question, meta, live };
+  return { byId, chips, replay, form, input, stack, full, zone, pillText, question, questionGhost, transcriptGhost, meta, live };
 }
 
 async function run() {
@@ -170,6 +173,9 @@ async function run() {
   // Layers are pre-built at load: base + 3 styles + regen sets.
   check("layers pre-built at load (base, shorter, technical, example, regen x" + bank[key].regen.length + ")",
     layers().length === 4 + bank[key].regen.length);
+  check("ghosts reserve the final heights (full question + transcript texts set at load)",
+    dom.questionGhost.textContent === "“" + sandbox.SAMPLES[key].q + "”" &&
+    dom.transcriptGhost.textContent === sandbox.SAMPLES[key].q);
   if (!REDUCED) {
     check("chips start disabled before the first answer", dom.chips.every((c) => c.disabled));
   }
