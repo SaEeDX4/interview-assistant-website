@@ -946,26 +946,31 @@ var IA_VARIANTS = {
 
 /* Mobile nav. Own IIFE (Step 4 fix): this used to live inside the demo
    IIFE after its early-return guard, so the nav toggle was dead on every
-   page without a demo. It must bind on all 10 pages. */
+   page without a demo. It must bind on all 10 pages.
+   Step 32: the toggle drives the full-screen menu — aria-expanded is
+   the state the icon morph keys off, the page scroll locks while the
+   menu is open, and Escape closes the menu and returns focus to the
+   toggle. */
 (function () {
   "use strict";
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.getElementById("site-nav");
   if (!toggle || !nav) { return; }
-  toggle.addEventListener("click", function () {
-    var open = nav.classList.toggle("is-open");
+  function setOpen(open) {
+    nav.classList.toggle("is-open", open);
     toggle.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("menu-open", open);
+  }
+  toggle.addEventListener("click", function () {
+    setOpen(!nav.classList.contains("is-open"));
   });
   nav.querySelectorAll("a").forEach(function (a) {
-    a.addEventListener("click", function () {
-      nav.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    });
+    a.addEventListener("click", function () { setOpen(false); });
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      nav.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
+    if (e.key === "Escape" && nav.classList.contains("is-open")) {
+      setOpen(false);
+      toggle.focus();
     }
   });
 })();

@@ -78,10 +78,10 @@ check("sticky: secondary hidden at <=480px",
 check("sticky: primary flexes full-width at <=480px",
   css.includes(".sticky-cta .btn-primary { flex: 1 1 auto; }"));
 check("sticky: bottom reserve is 96px everywhere (no 132px left)", !css.includes("132px"));
-// A7. nav-toggle touch target. Step 9: 14px is off-scale, standardised to
-// 16px — the target is still ~44px (12px + 16px text + 12px + 2px border).
-check("nav-toggle: padding 12px 16px (~44px target)",
-  css.includes("padding: 12px 16px; font-size: 16px; cursor: pointer;"));
+// A7. nav-toggle touch target. Step 32: the toggle is an exact
+// 44x44 button (two morphing bars), no padding arithmetic left.
+check("nav-toggle: exact 44x44 target (Step 32 bars button)",
+  css.includes(".nav-toggle { display: none; margin-left: auto; width: 44px; height: 44px;"));
 // A8. sticky bar buttons still carry the classes the <=480px rule needs.
 // Download.html has no sticky bar by design (it IS the download page).
 for (const p of PAGES) {

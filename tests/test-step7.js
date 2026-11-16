@@ -14,15 +14,16 @@ for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html'))) pages[f] =
 // --- D1: long <code> tokens must break anywhere ---
 check('D1 code overflow-wrap anywhere rule exists',
   /code\s*\{\s*overflow-wrap:\s*anywhere;/.test(css));
-// --- D2: terms header nav matches the other pages (8 links, no Terms link) ---
+// --- D2: header nav matches on all pages (Step 32 set: the 7 funnel
+// links in order, then the menu foot's demo CTA, Privacy and Terms) ---
 function navLinks(html) {
   const m = html.match(/<nav id="site-nav"[\s\S]*?<\/nav>/);
   return m ? [...m[0].matchAll(/href="([^"]+)"/g)].map(x => x[1]) : [];
 }
 const expectedNav = ['features.html', 'how-it-works.html', 'demo.html', 'pricing.html',
-  'download.html', 'platforms.html', 'privacy.html', 'support.html'];
+  'download.html', 'platforms.html', 'support.html', 'demo.html', 'privacy.html', 'terms.html'];
 for (const [f, html] of Object.entries(pages)) {
-  check(`D2 ${f} nav has exactly the 8 standard links`,
+  check(`D2 ${f} nav has exactly the 10 standard links (Step 32 set)`,
     JSON.stringify(navLinks(html)) === JSON.stringify(expectedNav));
 }
 // --- D3: simulator state row stacks cleanly on small phones ---

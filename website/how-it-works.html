@@ -44,7 +44,7 @@
       <span class="brand-name">Interview Assistant</span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
-      <span aria-hidden="true">☰</span>
+      <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span></span>
     </button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
       <a href="features.html">Features</a>
@@ -52,9 +52,15 @@
       <a href="demo.html">Demo</a>
       <a href="pricing.html">Pricing</a>
       <a href="download.html">Download</a>
-      <a href="platforms.html">Platforms</a>
-      <a href="privacy.html">Privacy</a>
+      <a href="platforms.html" class="nav-mobile-only">Platforms</a>
       <a href="support.html">Support</a>
+      <span class="nav-menu-foot">
+        <a class="btn btn-primary nav-menu-cta" href="demo.html">Try the live demo</a>
+        <span class="nav-menu-legal">
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms (draft)</a>
+        </span>
+      </span>
     </nav>
     <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
   </div>
@@ -215,14 +221,13 @@
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
     </nav>
-    <nav aria-label="Legal">
-      <h3>Legal</h3>
-      <a href="support.html#faq-b9">Billing — via Paddle</a>
-    </nav>
   </div>
   <div class="container footer-bottom">
     <p>© 2026 Interview Assistant. Use only where you are allowed to.</p>
-    <p class="muted">Made for candidates, in 10 languages.</p>
+    <div class="footer-bottom-right">
+      <a href="support.html#faq-b9">Billing — via Paddle</a>
+      <p class="muted">Made for candidates, in 10 languages.</p>
+    </div>
   </div>
 </footer>
 <div class="sticky-cta" id="sticky-cta" hidden>

@@ -58,11 +58,11 @@ check("step10: no unloaded weights (650/750) reintroduced",
 check("step9: hero->content 48px still present",
   /\.page-hero\s*\+\s*\.section\s*\{\s*padding-top:\s*40px;\s*\}/.test(clean));
 
-check("step19: mobile nav dropdown at 1024px, not 860px (header fits 861-1039)",
-  /@media \(max-width: 1024px\) \{\s*\.site-nav \{\s*display: none;/.test(clean)
-  && !/@media \(max-width: 860px\) \{\s*\.site-nav \{\s*display: none;/.test(clean));
-check("step19: nav-link padding 12px 4px (header fits at 1025px)",
-  /\.site-nav a\s*\{[^}]*padding:\s*12px 4px;/.test(clean));
+check("step19+32: mobile nav overlay at 1024px, not 860px (header fits 861-1039)",
+  /@media \(max-width: 1024px\) \{\s*\.site-nav \{\s*position: absolute;/.test(clean)
+  && !/@media \(max-width: 860px\) \{\s*\.site-nav \{/.test(clean));
+check("step19+32: nav-link padding 12px 8px (six links since Step 32; the bar fits at 1025px)",
+  /\.site-nav a\s*\{[^}]*padding:\s*12px 8px;/.test(clean));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

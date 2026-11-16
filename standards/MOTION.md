@@ -179,3 +179,13 @@ are retired with the waveform itself: the real app has no waveform.
   cue in the SF Symbols discrete-effect family — never on hover, and
   the reduced-motion blanket rule still kills it. No new keyframes;
   the variant reveal reuses rise/dot-land and the 300ms height glide.
+- **Step 32 — the menu morph and entrance:** the nav toggle's two
+  bars morph into an × with a 300ms transform transition on the
+  standard curve (Apple's two-line pattern — no middle line to
+  fade, so the transformation reads as one motion). The menu panel
+  fades/slides 250ms; its links rise with a 40ms stagger expressed
+  as `transition-delay` under `.is-open` only (a delay is not a
+  duration — the 150/250/300 duration rule is untouched — and
+  keeping delays off the closed state makes the close a single
+  unstaggered fade). The reduced-motion blanket rule kills all of
+  it: the icon snaps, the panel appears at once.
