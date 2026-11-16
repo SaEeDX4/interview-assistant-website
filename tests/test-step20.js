@@ -40,9 +40,9 @@ check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, 
 // the shared prepared bank (the same SAMPLES the demo uses) and loads
 // one at random per visit. The bank's content is spec-checked by
 // test-step30; here we lock the mechanism.
-check("hero draws a random sample from the shared bank (Step 30)",
+check("hero draws its sample from the shared bank via the language-matched pick (Steps 30–31)",
   /var KEYS = Object\.keys\(SAMPLES\);/.test(js) &&
-  /KEYS\[Math\.floor\(Math\.random\(\) \* KEYS\.length\)\]/.test(js) &&
+  /var key = pickSampleKey\(\);/.test(js) &&
   /var sample = SAMPLES\[key\];/.test(js));
 
 // 4. Play-once: a played flag, Replay replays, no self-rescheduling loop.

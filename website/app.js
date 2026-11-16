@@ -1016,7 +1016,31 @@ var IA_VARIANTS = {
   var appWindow = stack.closest ? stack.closest(".app-window") : null;
 
   var KEYS = Object.keys(SAMPLES);
-  var key = KEYS[Math.floor(Math.random() * KEYS.length)];
+  // Step 31 — the sample is picked in a language the visitor reads.
+  // The prepared bank exists in three languages (English, Persian,
+  // Arabic); picking a random one of the ten surprised an English
+  // reader in Canada with an Arabic sample. The signal is the
+  // browser's own language list (navigator.languages): the
+  // preference the user set on their device — what Apple and Google
+  // localize by — which an IP address, and therefore a VPN, cannot
+  // change. The first language in the visitor's list that the bank
+  // has a sample for wins; every other language falls back to
+  // English, the site's own language. Within the matched language
+  // the pick stays random, one per refresh (Step 30).
+  function pickSampleKey() {
+    var langs = (typeof navigator !== "undefined" && navigator.languages && navigator.languages.length)
+      ? navigator.languages
+      : [(typeof navigator !== "undefined" && navigator.language) || "en"];
+    for (var i = 0; i < langs.length; i++) {
+      var primary = String(langs[i]).toLowerCase().split("-")[0];
+      if (primary === "fa") { return "fa"; }
+      if (primary === "ar") { return "ar"; }
+      if (primary === "en") { break; }
+    }
+    var english = KEYS.filter(function (k) { return !SAMPLES[k].rtl; });
+    return english[Math.floor(Math.random() * english.length)];
+  }
+  var key = pickSampleKey();
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timers = [];
   var spinTimer = null;

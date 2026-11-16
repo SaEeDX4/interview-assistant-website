@@ -13,7 +13,7 @@
    - the hero markup: real chip buttons + a real message box, the
      window no longer role="img", the visual cards aria-hidden
      individually, a live region for announcements;
-   - the hero JS: a random sample per load, the variant mechanism
+   - the hero JS: a language-matched sample per load (Step 31), the variant mechanism
      mirroring the app's RequestVariantAsync, typed-question matching,
      the guidance fallback, and the AI path gated on IA_AI_ENDPOINT;
    - no key material anywhere: the endpoint points at the deployed
@@ -136,6 +136,14 @@ check("the AI path posts {question, style} and renders only validated bullets (m
   /fetch\(IA_AI_ENDPOINT, \{/.test(heroJs) &&
   /JSON\.stringify\(\{ question: questionText, style: styleName \|\| "base" \}\)/.test(heroJs) &&
   /\.slice\(0, 4\)/.test(heroJs) && /typeof data\.full === "string"/.test(heroJs));
+check("the sample pick is language-matched, never a blind random of all ten (Step 31)",
+  /function pickSampleKey\(\)/.test(heroJs) &&
+  /var key = pickSampleKey\(\);/.test(heroJs) &&
+  !/var key = KEYS\[Math\.floor\(Math\.random\(\) \* KEYS\.length\)\]/.test(heroJs) &&
+  /navigator\.languages/.test(heroJs) &&
+  /if \(primary === "fa"\) \{ return "fa"; \}/.test(heroJs) &&
+  /if \(primary === "ar"\) \{ return "ar"; \}/.test(heroJs) &&
+  /KEYS\.filter\(function \(k\) \{ return !SAMPLES\[k\]\.rtl; \}\)/.test(heroJs));
 check("chips are enabled only through canRework (the app's gate) when an answer completes",
   /function canRework\(\)/.test(heroJs) &&
   /setChipsEnabled\(canRework\(\)\)/.test(heroJs) &&

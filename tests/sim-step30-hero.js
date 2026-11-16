@@ -7,7 +7,7 @@
    (variant layers, meta words, selected state, Regenerate cycling),
    the Full paragraph swap, typed questions (matched sample, guidance
    fallback, chips disabled), and Replay for both sources.
-   Usage: node tests/sim-step30-hero.js [--reduced] [--fa]
+   Usage: node tests/sim-step30-hero.js [--reduced] [--fa] [--ar] [--fr]
    Exit 0 when every check passes. */
 "use strict";
 const fs = require("fs");
@@ -25,6 +25,8 @@ const code = appJs.slice(dataStart, dataEnd) + "\n" + appJs.slice(heroStart, her
 
 const REDUCED = process.argv.includes("--reduced");
 const FA = process.argv.includes("--fa");
+const AR = process.argv.includes("--ar");
+const FR = process.argv.includes("--fr");
 
 let passed = 0, failed = 0;
 function check(name, cond) {
@@ -158,7 +160,14 @@ async function run() {
     matchMedia: (q) => ({ matches: REDUCED && q.includes("prefers-reduced-motion"), addEventListener() {} }),
     IntersectionObserver: sandbox.IntersectionObserver,
   };
-  sandbox.Math.random = FA ? () => 0.55 : () => 0; // tell (index 0) or fa (index 5)
+  // Step 31: the pick follows the browser's language list. The
+  // navigator stub picks the mode's language; Math.random only
+  // chooses among the English samples (stub 0 -> "tell").
+  sandbox.navigator = {
+    languages: [FA ? "fa-IR" : AR ? "ar-EG" : FR ? "fr-FR" : "en-US"],
+    language: FA ? "fa-IR" : AR ? "ar-EG" : FR ? "fr-FR" : "en-US",
+  };
+  sandbox.Math.random = () => 0;
   vm.createContext(sandbox);
   vm.runInContext(code, sandbox);
 
@@ -168,7 +177,7 @@ async function run() {
   const visibleTexts = (ul) => ul.children.filter((li) => !li.classList.contains("is-hidden")).map((li) => li.children[1].textContent);
   const chip = (v) => dom.chips.find((c) => c.getAttribute("data-variant") === v);
   const bank = sandbox.IA_VARIANTS;
-  const key = FA ? "fa" : "tell";
+  const key = FA ? "fa" : AR ? "ar" : "tell"; // FR falls back to English, like any unsupported language
 
   // Layers are pre-built at load: base + 3 styles + regen sets.
   check("layers pre-built at load (base, shorter, technical, example, regen x" + bank[key].regen.length + ")",
