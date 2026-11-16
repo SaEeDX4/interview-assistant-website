@@ -1,7 +1,9 @@
-/* Interview Assistant — demo logic (simulated, local only).
-   No audio, no microphone, no network. Sample answers are illustrative:
-   in the real app, points are built from the user's confirmed facts and
-   their prepared question bank.
+/* Interview Assistant — demo logic (simulated; the prepared bank is
+   local). No audio, no microphone, no recording. Sample answers are
+   illustrative: in the real app, points are built from the user's
+   confirmed facts and their prepared question bank. A typed question
+   may be answered live through the AI proxy (Step 30); everything else
+   on this page runs locally.
    Demo state machine: docs/frontend-website/25-DEMO-STATE-MACHINE.md
    - Answer mode inserts exactly 3 bullets one at a time (DOM insertion,
      not just a class animation), at 400 ms intervals.
@@ -517,8 +519,9 @@ var IA_VARIANTS = {
   // Step 2 — reveal the demo next-step card once an answer has completed.
   // Copy is mode-aware: Coach mode shows keywords, not 3 points.
   // Step 5 — the card is the demo-to-plan handoff: the 3 points took
-  // about 2 minutes, and the Trial's 30 lifetime minutes buy about 15
-  // answers like this one. It also surfaces the bounded-memory story:
+  // the Trial's 30 lifetime minutes buy about 15 answers like this one
+  // (the plan's arithmetic, stated as such — never a claim about how
+  // long the visitor's demo took). It also surfaces the bounded-memory story:
   // the app remembers the stories already used, so the next answer
   // reaches for a fresh one (source: docs/v2/LIVE_MEMORY.md).
   var nextEl = document.getElementById("demo-next");
@@ -533,8 +536,8 @@ var IA_VARIANTS = {
     var textEl = document.getElementById("demo-next-text");
     if (titleEl) {
       titleEl.textContent = mode === "coach"
-        ? "Those Coach keywords took about a minute — here\u2019s what 30 trial minutes buys."
-        : "Those 3 points took about 2 minutes — here\u2019s what 30 trial minutes buys.";
+        ? "Keywords and a structure, ready to speak — here\u2019s what 30 trial minutes buys."
+        : "Three points, ready to say out loud — here\u2019s what 30 trial minutes buys.";
     }
     if (textEl) {
       textEl.textContent = mode === "coach"
@@ -1019,6 +1022,13 @@ var IA_VARIANTS = {
   if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !questionGhost || !transcriptGhost || !thinkingEl || !metaEl || !replayBtn || !zone || !stack || !fullEl) { return; }
   var chipBtns = Array.prototype.slice.call(document.querySelectorAll(".app-chip-btn"));
   var appWindow = stack.closest ? stack.closest(".app-window") : null;
+  // Step 37a — the app's own minutes meter in the header, and the
+  // after-block under the window (suggested questions + the handoff to
+  // the full demo). Both are soft dependencies: if the markup is not
+  // there, the preview simply runs without them.
+  var minutesNum = document.getElementById("mock-minutes-num");
+  var afterEl = document.getElementById("hero-after");
+  var suggestBtns = [document.getElementById("suggest-1"), document.getElementById("suggest-2")];
 
   var KEYS = Object.keys(SAMPLES);
   // Step 31 — the sample is picked in a language the visitor reads.
@@ -1068,6 +1078,13 @@ var IA_VARIANTS = {
   var played = false;      // the staged moment has completed once
   var initialInFlight = false;
   var shownCount = 0;      // bullets revealed in the active layer
+  // Step 37a — minutes: the meter counts a heard question once (the
+  // app's feel, compressed: one played bank question ≈ one live
+  // minute). Replays of a heard question are free, variants are free,
+  // and typed questions never use live minutes — the app's own rule.
+  var minutesLeft = 30;
+  var heardKeys = {};
+  var minutePending = false;
 
   var START_MS = 300;  // press Start after the window is seen
   var HEAR_MS = 600;   // Listening -> Hearing audio
@@ -1300,6 +1317,20 @@ var IA_VARIANTS = {
     }
   }
 
+  // Step 37a — settle the minutes meter and open the after-block.
+  // Called from both completion paths (finishAnswer and settle).
+  function consumeMinute() {
+    if (!minutePending) { return; }
+    minutePending = false;
+    if (source !== "sample" || heardKeys[key]) { return; }
+    heardKeys[key] = true;
+    if (minutesLeft > 0) { minutesLeft--; }
+    if (minutesNum) { minutesNum.textContent = String(minutesLeft); }
+  }
+  function showAfter() {
+    if (afterEl) { afterEl.classList.remove("is-hidden"); }
+  }
+
   function finishAnswer() {
     busy = false;
     initialInFlight = false;
@@ -1309,6 +1340,8 @@ var IA_VARIANTS = {
     if (!reduced) { replayBtn.classList.remove("is-hidden"); }
     played = true;
     setChipsEnabled(canRework());
+    consumeMinute();
+    showAfter();
   }
 
   // Render the current state completely, with no motion. Used for
@@ -1334,6 +1367,8 @@ var IA_VARIANTS = {
     played = true;
     if (!reduced) { replayBtn.classList.remove("is-hidden"); }
     setChipsEnabled(canRework());
+    consumeMinute();
+    showAfter();
   }
 
   function renderAll() { settle(); }
@@ -1361,6 +1396,7 @@ var IA_VARIANTS = {
     if (fetchCtl) { fetchCtl.abort(); fetchCtl = null; }
     busy = true;
     initialInFlight = true;
+    minutePending = true;
     answerShown = false;
     shownCount = 0;
     variant = "base";
@@ -1412,6 +1448,36 @@ var IA_VARIANTS = {
     }, START_MS);
   }
 
+  // Step 37a — suggested questions (the NN/g pattern: suggested
+  // questions as buttons, at the start and after each answer). The
+  // pair is drawn from the English bank in a fixed order, always
+  // excluding the question on screen, and rotates after every play —
+  // so a visitor can keep hearing new questions without typing. Every
+  // suggested play is a prepared bank play: local, instant-cost $0.
+  var SUGGEST_POOL = ["tell", "hire", "weakness", "story", "five", "salary", "conflict", "why"];
+  var suggestCursor = 0;
+  function renderSuggestions() {
+    if (!suggestBtns[0] || !suggestBtns[1]) { return; }
+    var picked = [];
+    for (var n = 0; n < SUGGEST_POOL.length && picked.length < 2; n++) {
+      var k = SUGGEST_POOL[(suggestCursor + n) % SUGGEST_POOL.length];
+      if (k !== key && picked.indexOf(k) === -1) { picked.push(k); }
+    }
+    suggestCursor = (suggestCursor + 2) % SUGGEST_POOL.length;
+    picked.forEach(function (k2, i) {
+      var btn = suggestBtns[i];
+      btn.textContent = "\u201C" + SAMPLES[k2].q + "\u201D";
+      btn.setAttribute("data-key", k2);
+    });
+  }
+  suggestBtns.forEach(function (btn) {
+    if (!btn) { return; }
+    btn.addEventListener("click", function () {
+      if (busy) { return; }
+      playSample(btn.getAttribute("data-key"));
+    });
+  });
+
   // Pause: stop the timers and settle the meter. A user-initiated flow
   // (variant, typed answer) settles to its final state; the staged
   // moment keeps the Step 21 rule — it finishes only if every point is
@@ -1426,6 +1492,24 @@ var IA_VARIANTS = {
       return;
     }
     if (busy || answerShown) { settle(); }
+  }
+
+  // Step 37a — play a different bank question (a suggested-question
+  // tap). The layer set is rebuilt inside the Step 24 glide, exactly
+  // as the typed-match path rebuilds it: a user-initiated switch may
+  // change the answer zone's height, but it glides — nothing moves
+  // while content is arriving.
+  function playSample(newKey) {
+    if (!SAMPLES[newKey] || newKey === key) { return; }
+    key = newKey;
+    sample = SAMPLES[key];
+    variants = IA_VARIANTS[key] || null;
+    questionText = sample.q;
+    source = "sample";
+    glideSwap(function () { buildLayers(); });
+    announce("Question: " + sample.q);
+    play();
+    renderSuggestions();
   }
 
   // A variant request, the app's way: same question, new style. The
@@ -1700,6 +1784,7 @@ var IA_VARIANTS = {
   });
 
   buildLayers();
+  renderSuggestions();
   setGhosts(sample.rtl ? "rtl" : "ltr", sample.lang || "en");
   if (reduced) { renderAll(); return; }
 

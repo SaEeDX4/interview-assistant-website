@@ -677,6 +677,15 @@ html.story-player .story-window {
 @keyframes meter { from { width: 12%; } to { width: 88%; } }
 @keyframes pulse { from { opacity: 1; } to { opacity: .3; } }
 .app-header-controls { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+/* Step 37a — the minutes meter, the app's own header object
+   ("{remaining}/{total} min", faint, tabular so the count never
+   wobbles). It sits between the status pill and the controls, as in
+   the app; at <=400px the unit suffix sheds (see the shed block) —
+   the app's own chrome sheds its labels as the window narrows. */
+.app-minutes {
+  font-size: 11px; font-weight: 600; line-height: 1.4; white-space: nowrap;
+  color: var(--app-faint); font-variant-numeric: tabular-nums;
+}
 .app-start {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--app-accent-strong); color: var(--app-text);
@@ -724,6 +733,12 @@ html.story-player .story-window {
   .app-header-controls { gap: 4px; }
   .app-pill { padding-left: 8px; padding-right: 8px; }
   .app-start { padding-left: 8px; padding-right: 8px; }
+  /* Step 37a — the minutes meter joined the header; the one-row rule
+     (STABILITY) is kept by shedding, in the app's own spirit: the
+     meter's unit suffix goes, and the hero header's decorative stop
+     glyph goes (the story headers keep theirs). */
+  .app-minutes-unit { display: none; }
+  .app-stop--hero { display: none; }
 }
 /* Step 21 — two labelled cards (G12): QUESTION and ANSWER, each Surface
    bg, 1px border, radius 12, 12px apart. The answer is bigger than the
@@ -839,6 +854,7 @@ html.story-player .story-window {
   .app-chip-btn[aria-pressed="true"]:hover .app-chip { background: var(--app-accent-soft); }
   .app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
   .app-manual-send-btn:hover .app-manual-send { background: var(--app-accent); }
+  .suggest-btn:hover { border-color: var(--accent); color: var(--accent-light); }
 }
 /* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
@@ -930,6 +946,23 @@ input.app-manual-input:focus { border-color: var(--app-accent); }
 .hero-stat dt {
   font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
 }
+
+/* Step 37a — the hero's after-block: suggested-question buttons and
+   the handoff to the full demo. It reserves its space from the first
+   paint (the Step 23 visibility pattern — the global .is-hidden), so
+   its reveal after the first answer never moves the page. */
+.hero-after { margin-top: 24px; }
+.hero-after-line { font-size: 14px; line-height: 1.5; color: var(--muted); margin: 0 0 12px; }
+.hero-suggest { display: flex; flex-wrap: wrap; gap: 12px; }
+.suggest-btn {
+  font: inherit; font-size: 15px; line-height: 1.4; text-align: left;
+  min-height: 44px; padding: 12px 16px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  cursor: pointer; transition: border-color .15s cubic-bezier(.2,.7,.3,1), color .15s cubic-bezier(.2,.7,.3,1), background-color .15s cubic-bezier(.2,.7,.3,1);
+}
+.suggest-btn:active { background: var(--surface); }
+.hero-after-more { font-size: 14px; line-height: 1.6; color: var(--muted); margin: 16px 0 0; }
+.hero-after-more a { color: var(--accent-light); }
 
 /* ---------- Step 21: scroll story — one interview, start to finish ----------
    One pinned faithful window on the left, seven beats on the right. Each
