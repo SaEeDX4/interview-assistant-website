@@ -218,7 +218,12 @@ p { margin: 0 0 16px; }
 }
 .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 56px; align-items: center; }
 .lede { color: var(--muted); font-size: 19px; line-height: 1.6; max-width: 56ch; }
-.trust-line { color: var(--muted); font-size: 14px; }
+/* Step 33: the line under the hero CTAs is offer-only (the ethics
+   sentence lives in the privacy strip and the footer, its proper
+   homes). margin-bottom is 0: the line ends the copy column, so
+   the grid gap alone separates it from the window — the base p
+   margin stacked on the gap measured 48px where 32px belongs. */
+.trust-line { color: var(--muted); font-size: 14px; margin-bottom: 0; }
 /* Step 27 — the privacy note, rebuilt as a "three nevers" trust block
    (Google Safety Center principles style): eyebrow + bold headline, the
    three promises as scannable icon chips, and the link as a real tonal

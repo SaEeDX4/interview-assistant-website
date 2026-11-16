@@ -116,3 +116,16 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
   `.visually-hidden` live-region utility uses the standard `margin: -1px`
   offset (part of the visually-hidden recipe, not a spacing choice) — the
   -1px keeps the 1px box from shifting layout.
+
+## Step 33 audit — the hero copy column's last element
+
+The hero's trust line is the last element of `.hero-copy`. The base
+`p` margin (R8, 16px) stacked on the grid row gap (R18, 32px), so
+the rendered gap from the line to the app window measured 48px on
+mobile. Rule: **a column's last element carries no bottom margin —
+the container's gap or padding alone sets the separation.**
+`.trust-line { margin-bottom: 0 }`; the measured gap is now the
+grid's 32px exactly. The line itself is offer-only copy (Step 33,
+from the hero-microcopy study of nine brands): trial terms in one
+register, one line at 390px; the ethics sentence stays in the
+privacy strip and the footer, never under the CTAs.
