@@ -38,6 +38,9 @@ centre then matches the blue send button's centre one row below).
 | A13 | `.sticky-cta-close` | 51×51px | width/height from the shared --sticky-control-h token (51px), 44px floor (Step 28 fix-up: in-flow flex item, 12px gap from the primary button; stretch + aspect-ratio did not transfer on a flex item — the live check caught 44×50.75) |
 | A14 | Range thumb (minutes calculator) | 24px | custom thumb, webkit + moz (the track is also clickable) |
 | A15 | `.app-replay` (hero Replay icon) | 44×44px | button width/height 44px; visible box 36×30 (Step 27: same height as the chips, same width as the send button; 16px SVG glyph; focus ring on the visible box; Step 28: the box is right-aligned inside the button, so its centre matches the send button's centre) |
+| A16 | `.app-chip-btn` (hero style chips, Step 30) | 44px tall | the button is the 44px target; the visible chip stays 30px (the A15 hit-region/visual split); the four style chips carry `aria-pressed` |
+| A17 | `.app-manual-send-btn` (hero message box, Step 30) | 44×44px | visible box 36×36, right-aligned + centred, so its centre matches Replay's (Step 28) |
+| A18 | `.app-manual-input` (hero message box, Step 30) | 36px tall × flexible width | **documented exception:** the real app's field is 36px tall and the mockup stays faithful; the field's width (≥200px) far exceeds 44px and the pair meets WCAG AA target size (24px). It is labelled (`<label for>`) and its focus is the global ring + an accent border |
 
 **Rule:** prefer padding for standalone controls (A1–A6, A11–A13) and
 `min-height: 44px` for grouped/compact controls (A7–A10) where bigger
@@ -50,12 +53,17 @@ paragraph link cannot be 44px tall without breaking the line.
   never a `<div>` with a click handler.
 - Global `:focus-visible` outline: **3px solid, 2px offset** (line 106 of
   styles.css) + a forced-colors fallback. **`outline: none` is forbidden
-  anywhere — except one documented case:** the hero Replay button, whose
-  visible box (36×30) is smaller than its 44×44 hit region: the button's
-  own outline is suppressed and the identical 3px/2px ring is drawn on the
-  visible box instead (`.app-replay:focus-visible .app-replay-box`), so
-  focus is still always visible, on the thing the eye sees. (Step 27;
-  enforced by test-step11.)
+  anywhere — except one documented pattern:** the ring move, used by the
+  app-window controls whose visible box is smaller than their 44×44 hit
+  region (Step 27: the hero Replay, visible box 36×30; Step 30: the hero
+  chip buttons, visible chip 30px tall, and the hero send button, visible
+  box 36×36). The button's own outline is suppressed and the identical
+  3px/2px ring is drawn on the visible box instead
+  (`.app-replay:focus-visible .app-replay-box`,
+  `.app-chip-btn:focus-visible .app-chip`,
+  `.app-manual-send-btn:focus-visible .app-manual-send`), so focus is
+  still always visible, on the thing the eye sees. (Enforced by
+  test-step11.)
 - Skip link is the first tab stop on every page.
 
 ## 3. Names — every control tells a screen reader what it is

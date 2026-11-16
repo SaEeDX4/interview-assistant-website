@@ -411,6 +411,7 @@ code { overflow-wrap: anywhere; }
   .btn-primary, .mode-btn.is-active, .brand-mark { forced-color-adjust: none; }
   :focus-visible { outline: 3px solid Highlight; }
   .app-replay:focus-visible .app-replay-box { outline-color: Highlight; }
+  .app-chip-btn:focus-visible .app-chip, .app-manual-send-btn:focus-visible .app-manual-send { outline-color: Highlight; }
   .card, .demo, .demo-answer li { border-color: ButtonBorder; }
 }
 
@@ -695,6 +696,16 @@ html.story-player .story-window {
 .demo-answer li.is-new .app-dot { animation: dot-land .15s cubic-bezier(.2,.7,.3,1) both; }
 .app-answer li.is-pending { opacity: .45; }
 .app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; transition: opacity .15s cubic-bezier(.2,.7,.3,1); /* Step 25 (E2): the dots crossfade out over 150ms as the first bullet lands, instead of vanishing instantly — the Lottie typing-to-message handoff. Opacity only; the row's slot stays reserved. */ }
+
+/* Step 30 — the hero's answer zone: the bullet layers live in the Step 23
+   stack (its height is the tallest bullet variant, reserved from the
+   first paint, so variant switches never move the card). The Full
+   paragraph is taller by design and lives outside the stack; swapping
+   to or from it glides the zone's height over 300ms (the Step 24 glide),
+   with overflow clipped only while the glide runs. */
+.app-answer-zone { transition: height .3s cubic-bezier(.2,.7,.3,1); }
+.app-answer-zone.is-gliding { overflow: hidden; }
+.app-full-answer { font-size: 19px; line-height: 1.4; color: var(--app-text); margin: 0; }
 /* Step 21 — Coach Mode swaps the answer area (G9): labelled KEYWORDS
    (blue, semibold, uppercase) + STRUCTURE. Never beside the bullets. */
 .app-coach-label {
@@ -742,6 +753,35 @@ html.story-player .story-window {
   background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
   padding: 8px 12px; white-space: nowrap;
 }
+
+/* Step 30 — in the hero the chips are real buttons: a 44px target (the
+   Step 11 rule) carrying the 30px visual chip, the same hit-region /
+   visual split as Replay. Feedback is colour and opacity only, plus a
+   small press scale — no layout movement (Material 3 state layers,
+   Fluent, Apple HIG). The four style chips keep a selected state while
+   their variant is shown (aria-pressed + the app's accent-soft fill);
+   Regenerate is an action and never stays selected. */
+.app-chip-btn {
+  height: 44px; padding: 0; margin: 0; display: inline-grid; place-items: center;
+  background: none; border: 0; font: inherit; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.app-actions-scroll .app-chip-btn { flex: none; scroll-snap-align: start; }
+.app-chip-btn .app-chip {
+  transition: background-color .15s cubic-bezier(.2,.7,.3,1), border-color .15s cubic-bezier(.2,.7,.3,1), color .15s cubic-bezier(.2,.7,.3,1), transform .15s cubic-bezier(.2,.7,.3,1);
+}
+.app-chip-btn:disabled { cursor: default; }
+.app-chip-btn:disabled .app-chip { opacity: .45; }
+.app-chip-btn[aria-pressed="true"] .app-chip { background: var(--app-accent-soft); border-color: var(--app-accent); color: var(--app-text); }
+.app-chip-btn:active .app-chip { transform: scale(.96); }
+.app-chip-btn:focus-visible { outline: none; }
+.app-chip-btn:focus-visible .app-chip { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .app-chip-btn:hover .app-chip { color: var(--app-text); border-color: var(--app-accent); background: var(--app-surface-3); }
+  .app-chip-btn[aria-pressed="true"]:hover .app-chip { background: var(--app-accent-soft); }
+  .app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
+  .app-manual-send-btn:hover .app-manual-send { background: var(--app-accent); }
+}
 /* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
    centred Step 24). The BUTTON is 44×44 (the Step 11 target) but its visible
@@ -764,15 +804,16 @@ html.story-player .story-window {
 .app-replay-box {
   width: 36px; height: 30px; display: grid; place-items: center;
   background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
-  color: var(--app-dim); transition: color .15s ease, border-color .15s ease;
+  color: var(--app-dim); transition: color .15s ease, border-color .15s ease, background-color .15s ease, transform .15s cubic-bezier(.2,.7,.3,1);
 }
-.app-replay-box svg { width: 16px; height: 16px; display: block; }
-.app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
+.app-replay-box svg { width: 16px; height: 16px; display: block; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+.app-replay:active .app-replay-box { transform: scale(.92); }
+.app-replay.is-spinning .app-replay-box svg { transform: rotate(-360deg); }
 .app-replay:focus-visible { outline: none; }
 .app-replay:focus-visible .app-replay-box { outline: 3px solid var(--focus); outline-offset: 2px; }
 .app-history { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1; color: var(--app-faint); }
 .app-history[hidden] { display: none; }
-.app-manual { display: flex; gap: 8px; margin-top: 12px; }
+.app-manual { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
 .app-manual-input {
   flex: 1; min-width: 0; height: 36px; padding: 8px 12px; font-size: 13px; line-height: 1.4; color: var(--app-dim);
   background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px;
@@ -782,6 +823,24 @@ html.story-player .story-window {
   flex: none; width: 36px; height: 36px; display: inline-grid; place-items: center;
   background: var(--app-accent-strong); color: var(--app-text); border-radius: 8px; font-size: 14px;
 }
+
+/* Step 30 — the message box is real. The input keeps the app's faithful
+   36px field height (documented exception in ACCESSIBILITY.md); typed
+   text is full-strength, only the placeholder is dim. The send control
+   is a 44px button whose 36px visual box is right-aligned and centred,
+   so its centre still coincides with Replay's one row up (Step 28). */
+input.app-manual-input { font: inherit; font-size: 13px; color: var(--app-text); }
+input.app-manual-input::placeholder { color: var(--app-dim); opacity: 1; }
+input.app-manual-input:focus { border-color: var(--app-accent); }
+.app-manual-send { transition: background-color .15s cubic-bezier(.2,.7,.3,1), transform .15s cubic-bezier(.2,.7,.3,1); }
+.app-manual-send-btn {
+  flex: none; width: 44px; height: 44px; padding: 0; display: inline-grid; place-items: center end;
+  background: none; border: 0; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.app-manual-send-btn:active .app-manual-send { transform: scale(.92); }
+.app-manual-send-btn:focus-visible { outline: none; }
+.app-manual-send-btn:focus-visible .app-manual-send { outline: 3px solid var(--focus); outline-offset: 2px; }
 /* Step 21 — story Home view (Beat 0): Get-started checklist + Prepare. */
 .app-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .app-checks li { display: flex; gap: 8px; align-items: baseline; font-size: 15px; line-height: 1.4; color: var(--app-text); }

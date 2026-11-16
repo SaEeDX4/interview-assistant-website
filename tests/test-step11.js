@@ -114,10 +114,15 @@ check("JS updates aria-expanded on accordion buttons",
 // the button's own outline is suppressed and the identical 3px/2px ring
 // is drawn on the visible box instead — focus is still always visible,
 // on the thing the eye sees. Anything else suppressed still fails.
-check(":focus-visible outline exists and outline is never suppressed (except the documented Replay ring move)",
+check(":focus-visible outline exists and outline is never suppressed (except the documented ring-move pattern)",
   /^:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--focus\)/m.test(css)
-  && !/outline:\s*(none|0)(;|\s)/.test(css.replace(".app-replay:focus-visible { outline: none; }", ""))
-  && /\.app-replay:focus-visible \.app-replay-box \{ outline: 3px solid var\(--focus\); outline-offset: 2px;/.test(css));
+  && !/outline:\s*(none|0)(;|\s)/.test(css
+    .replace(".app-replay:focus-visible { outline: none; }", "")
+    .replace(".app-chip-btn:focus-visible { outline: none; }", "")
+    .replace(".app-manual-send-btn:focus-visible { outline: none; }", ""))
+  && /\.app-replay:focus-visible \.app-replay-box \{ outline: 3px solid var\(--focus\); outline-offset: 2px;/.test(css)
+  && /\.app-chip-btn:focus-visible \.app-chip \{ outline: 3px solid var\(--focus\); outline-offset: 2px;/.test(css)
+  && /\.app-manual-send-btn:focus-visible \.app-manual-send \{ outline: 3px solid var\(--focus\); outline-offset: 2px;/.test(css));
 let labelsOk = true, labelsNotes = [];
 for (const f of htmlFiles) {
   const forIds = new Set([...html[f].matchAll(/<label[^>]*for="([^"]+)"/g)].map((m) => m[1]));

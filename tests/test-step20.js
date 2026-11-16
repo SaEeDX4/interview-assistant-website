@@ -31,25 +31,25 @@ check("hero Replay button exists, type=button, labelled, starts hidden, icon-onl
   /<button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="[^"]+"><span class="app-replay-box"><svg[^>]*>[\s\S]*?<\/svg><\/span><\/button>/.test(html));
 
 // 2. Player hooks exist in the mockup (pill + transcript + thinking).
-check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, #mock-thinking, #mock-answer, #mock-meta)",
+check("hero player hooks present (#mock-pill, #mock-question, #mock-transcript, #mock-thinking, #mock-answer-stack, #mock-meta)",
   ["mock-pill", "mock-pill-text", "mock-start", "mock-question", "mock-transcript",
-    "mock-thinking", "mock-answer", "mock-meta"].every((id) => new RegExp('id="' + id + '"').test(html)));
+    "mock-thinking", "mock-answer-zone", "mock-answer-stack", "mock-full", "mock-meta",
+    "hero-manual-form", "hero-manual-input", "hero-manual-send", "hero-live"].every((id) => new RegExp('id="' + id + '"').test(html)));
 
-// 3. The sample text is unchanged (same question, same three points).
-const QUESTION = "Tell me about yourself.";
-const POINTS = [
-  "Five years building web products — most recently leading a small team.",
-  "I start from the outcome, then the trade-off I made to get there.",
-  "What draws me here is this team’s focus on honest, useful software."
-];
-check("hero question + three points unchanged",
-  js.includes('var QUESTION = "' + QUESTION + '"') &&
-  POINTS.every((p) => js.includes('"' + p + '"')));
+// 3. Step 30: the hero no longer hardcodes one question — it draws from
+// the shared prepared bank (the same SAMPLES the demo uses) and loads
+// one at random per visit. The bank's content is spec-checked by
+// test-step30; here we lock the mechanism.
+check("hero draws a random sample from the shared bank (Step 30)",
+  /var KEYS = Object\.keys\(SAMPLES\);/.test(js) &&
+  /KEYS\[Math\.floor\(Math\.random\(\) \* KEYS\.length\)\]/.test(js) &&
+  /var sample = SAMPLES\[key\];/.test(js));
 
 // 4. Play-once: a played flag, Replay replays, no self-rescheduling loop.
 check("hero plays once (played flag) and only Replay restarts it",
   /var played = false;/.test(js) &&
-  /replayBtn\.addEventListener\("click", function \(\) \{ play\(\); \}\);/.test(js) &&
+  /replayBtn\.addEventListener\("click", function \(\) \{/.test(js) &&
+  /if \(source === "sample"\) \{\s*play\(\);/.test(js) &&
   !/setTimeout\(cycle/.test(js) && !/setTimeout\(play/.test(js));
 
 // 5. Sequence: transcript grows word by word; timings are the documented ones.
@@ -58,12 +58,12 @@ check("hero sequence timings documented (start 300, hear 600, trans 600, word 16
   /var TRANS_MS = 600;/.test(js) && /var WORD_MS = 160;/.test(js) &&
   /var DETECT_MS = 300;/.test(js) && /var THINK_MS = 500;/.test(js) &&
   /var STAGE_MS = 450;/.test(js) && /var END_MS = 400;/.test(js) &&
-  /TRANSCRIPT\.forEach\(function \(words, i\)/.test(js));
+  /prefixes\.forEach\(function \(text, i\)/.test(js));
 
 // 6. No waveform, no typed question, no "3 points ready" in the app-window
 // depictions (hero + story). The demo keeps its own status wording —
 // labelled "— sample." / "— simulated." — so the check is scoped, not global.
-const heroStoryHtml = (html.match(/aria-label="Preview of the Interview Assistant app window[\s\S]*?class="hero-stats"/) || [""])[0]
+const heroStoryHtml = (html.match(/<!-- APP PREVIEW[\s\S]*?class="hero-stats"/) || [""])[0]
   + (html.split('id="story"')[1] || "").split("<!-- LIVE DEMO")[0];
 const heroStoryJs = (js.replace(/\/\*[\s\S]*?\*\//g, "").split("Step 21 — hero")[1] || "");
 check("no waveform, no typing, no invented status (Step 20 retired)",
@@ -92,7 +92,7 @@ check("two labelled cards QUESTION/ANSWER, dot bullets, answer 19px > question 1
   /\.app-answer li \{[^}]*font-size: 19px;/.test(clean) &&
   /\.app-question \{[^}]*font-size: 15px;/.test(clean) &&
   /\.app-dot \{[^}]*width: 7px; height: 7px;[^}]*background: var\(--app-accent\);/.test(clean) &&
-  !/id="mock-answer"[\s\S]*?class="num"/.test(html));
+  !/id="mock-answer-stack"[\s\S]*?class="num"/.test(html));
 
 // 10. Blue window: app tokens, Segoe stack, radius 14, flat (no tilt, no glow).
 check("faithful blue window (app tokens, Segoe, radius 14, no tilt/glow)",
@@ -120,14 +120,15 @@ check("Replay button is hidden with visibility (Step 23: reserves its space, not
 // 13. Reduced motion: full static state, no Replay button shown.
 check("reduced motion renders the full state statically and never shows Replay",
   /if \(reduced\) \{ renderAll\(\); return; \}/.test(js) &&
-  (js.match(/replayBtn\.classList\.remove\("is-hidden"\)/g) || []).length === 1);
+  (js.match(/if \(!reduced\) \{ replayBtn\.classList\.remove\("is-hidden"\); \}/g) || []).length === 2 &&
+  !/replayBtn\.classList\.remove\("is-hidden"\);(?! \})/.test(js.replace(/if \(!reduced\) \{ replayBtn\.classList\.remove\("is-hidden"\); \}/g, "")));
 
 // 14. Pause after all three points finishes the moment (no stranded
 // final state: points + Answer ready visible, but no Replay button).
-check("pause() finishes the moment once all 3 points are shown",
-  /function finish\(\) \{/.test(js) &&
-  /if \(shown === 3\) \{ finish\(\); \}/.test(js) &&
-  (js.match(/finish\(\);/g) || []).length >= 2);
+check("pause() settles the moment once every point of the layer is shown (Step 30: settle)",
+  /function pause\(\) \{/.test(js) &&
+  /if \(ul && shownCount === ul\.children\.length\) \{ settle\(\); return; \}/.test(js) &&
+  /function settle\(\) \{/.test(js));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

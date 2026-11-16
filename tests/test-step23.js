@@ -77,12 +77,12 @@ check("caption is a stack of seven layers + a visually-hidden live region",
   /captionLive\.textContent = caption\.title/.test(js));
 
 // 6. Hero bullets are built once at load, hidden; plays only toggle classes.
-check("hero bullets pre-rendered hidden at load; play() never rebuilds",
-  /POINTS\.forEach\(function \(text\) \{\s*var li = makeBullet\(text\);\s*li\.classList\.add\("is-hidden"\);\s*list\.appendChild\(li\);\s*\}\);/.test(heroJs) &&
-  /function setBulletsHidden\(hidden\) \{/.test(heroJs) &&
-  (heroJs.match(/list\.appendChild\(li\)/g) || []).length === 1 &&
-  !/function play\(\) \{[\s\S]*?appendChild/.test(heroJs) &&
-  /setBulletsHidden\(true\)/.test(heroJs) && /setBulletsHidden\(false\)/.test(heroJs));
+check("hero layers pre-rendered hidden at load; play() never rebuilds (Step 30: layers)",
+  /function buildLayers\(\) \{/.test(heroJs) &&
+  /buildLayers\(\);\s*if \(reduced\)/.test(heroJs) &&
+  /function makeLayer\(bullets, rtl, lang\) \{[\s\S]*?li\.classList\.add\("is-hidden"\);[\s\S]*?ul\.classList\.add\("is-hidden"\);/.test(heroJs) &&
+  !/appendChild|buildLayers/.test((heroJs.split("function play() {")[1] || "").split("function pause()")[0]) &&
+  /function setLayerBullets\(ul, hidden\) \{/.test(heroJs));
 check("hero thinking + Replay use visibility (their space is reserved)",
   /thinkingEl\.classList\.(add|remove)\("is-hidden"\)/.test(heroJs) &&
   /replayBtn\.classList\.(add|remove)\("is-hidden"\)/.test(heroJs) &&

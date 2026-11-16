@@ -362,3 +362,17 @@ stacks its 3 lengths (Normal / Concise / Rapid) the same way.
 - Tests: step29 (12 checks: the shed block, its five rules, the base
   meter untouched, the breakpoint documented); full suite 377; sims
   41 (story) + 17 (demo).
+- **Step 30 — the hero becomes a working preview:** the hero's answer
+  area is now a layer stack of prepared variants (base, Shorter,
+  Technical, Example and the Regenerate alternates of one randomly
+  loaded sample), all pre-rendered at load exactly like the base was —
+  so switching bullet variants never moves the card, and the staged
+  play still only toggles classes. Two content changes CAN change the
+  zone's height, and both are user-initiated, so both use the Step 24
+  glide (300ms, overflow clipped only while gliding): the Full
+  paragraph (taller by design; it lives outside the stack and swaps
+  with `display`, the player-mode distinction) and a rebuilt layer set
+  or dynamic layer (a typed question that matches another sample, or
+  the guidance/AI answer). Rule this adds: *unsolicited* height change
+  is still forbidden everywhere; a height change the user just asked
+  for glides, it never jumps.

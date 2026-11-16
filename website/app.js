@@ -10,6 +10,456 @@
    - Reduced motion renders the full result immediately, nothing hidden.
    - The completed answer is announced once, via the status line. */
 
+/* Step 30 — shared prepared content, at file scope so the demo and the
+   hero read the same bank. The samples are illustrative (built from the
+   app's core question bank, never a real user's facts); the variants
+   follow the app's own style specs (see IA_VARIANTS' header comment).
+   Prepared content is the cost strategy: the ten questions, every chip
+   variant and every Regenerate alternate are answered locally, with no
+   AI call at all. The AI is spent only on a question nobody prepared. */
+// Sample content. Grounded in the app's core question bank (intro,
+// why-hire, weakness, behavioural story, five years). Bullets are
+// illustrative samples, not the user's own facts — the page labels
+// them as such, persistently, in #demo-sample-tag.
+var SAMPLES = {
+  tell: {
+    q: "Tell me about yourself.",
+    answer: [
+      "Five years building web products — most recently leading a small team on a customer-facing tool.",
+      "I start from the outcome, then the trade-off I made to get there.",
+      "What draws me here is this team’s focus on honest, useful software."
+    ],
+    coach: {
+      keys: ["EXPERIENCE", "OUTCOME", "FIT"],
+      structure: "Present role → one result → why this role"
+    }
+  },
+  hire: {
+    q: "Why should we hire you?",
+    answer: [
+      "I’ve done this work before — shipping the same kind of product, under the same constraints.",
+      "I bring the two things this role asks for most: the technical depth, and the calm under pressure.",
+      "And I’ll be honest about what I’m still learning — here’s how I’m closing that gap."
+    ],
+    coach: {
+      keys: ["PROOF", "FIT", "HONESTY"],
+      structure: "Evidence → role fit → gap, handled honestly"
+    }
+  },
+  weakness: {
+    q: "What is your biggest weakness?",
+    answer: [
+      "I used to over-polish work before asking for feedback.",
+      "Now I share a rough version early — here’s one time that changed the outcome.",
+      "It’s still a habit I watch, and this is how I keep it in check."
+    ],
+    coach: {
+      keys: ["REAL GAP", "CHANGE", "PROOF"],
+      structure: "Honest weakness → what changed → evidence it works"
+    }
+  },
+  story: {
+    q: "Tell me about a time you led a difficult project.",
+    answer: [
+      "The project was behind schedule, and two teams disagreed on the approach.",
+      "I got everyone into one room, named the trade-off, and we chose the simpler plan together.",
+      "We shipped two weeks later — and the team kept the decision log we started that day."
+    ],
+    coach: {
+      keys: ["SITUATION", "ACTION", "RESULT"],
+      structure: "Situation → your action → result, with numbers"
+    }
+  },
+  five: {
+    q: "Where do you see yourself in five years?",
+    answer: [
+      "Doing this work at a deeper level — owning a product area, not just tasks.",
+      "I want to be the person others come to for the hard trade-offs.",
+      "That’s why a team that reviews honestly and ships carefully matters to me."
+    ],
+    coach: {
+      keys: ["DEPTH", "OWNERSHIP", "FIT"],
+      structure: "Direction → contribution → why here"
+    }
+  },
+  fa: {
+    q: "درباره خودتان بگویید.",
+    rtl: true,
+    lang: "fa",
+    answer: [
+      "با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.",
+      "بعد یک مثال واقعی از تجربه‌ام می‌آورم، نه حرف کلی.",
+      "در پایان می‌گویم چرا این نقش برایم مناسب است."
+    ],
+    coach: {
+      keys: ["تجربه", "نتیجه", "تناسب"],
+      structure: "نقش فعلی ← یک نتیجه ← چرا این نقش"
+    }
+  },
+  ar: {
+    q: "حدّثني عن نفسك.",
+    rtl: true,
+    lang: "ar",
+    answer: [
+      "أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.",
+      "ثم أذكر مثالاً حقيقياً من تجربتي، لا كلاماً عاماً.",
+      "وأختم بتوضيح سبب ملاءمة هذا الدور لي."
+    ],
+    coach: {
+      keys: ["الخبرة", "النتيجة", "الملاءمة"],
+      structure: "الدور الحالي ← نتيجة واحدة ← لماذا هذا الدور"
+    }
+  },
+  salary: {
+    q: "What salary are you expecting?",
+    answer: [
+      "I’d rather anchor on the range for this role — what I’ve seen is around this level, for this scope.",
+      "What matters most to me is the full picture: the work, the growth, and the total package.",
+      "I’m flexible on the number if the role and the package are right — here’s the range I had in mind."
+    ],
+    coach: {
+      keys: ["RANGE", "PACKAGE", "FLEXIBLE"],
+      structure: "Market range → full package → your range, flexibly"
+    }
+  },
+  conflict: {
+    q: "Tell me about a conflict with a coworker.",
+    answer: [
+      "We disagreed on the approach — I wanted the simpler plan, they wanted the thorough one.",
+      "I asked for their reasoning first, then named the trade-off openly instead of arguing past each other.",
+      "We shipped the simpler plan, and we kept the decision log — the relationship was stronger afterwards."
+    ],
+    coach: {
+      keys: ["DISAGREEMENT", "LISTENED", "RESOLVED"],
+      structure: "Disagreement → what you did → outcome, with the relationship intact"
+    }
+  },
+  why: {
+    q: "Why do you want to work here?",
+    answer: [
+      "This team ships carefully and reviews honestly — that is the environment I do my best work in.",
+      "The product itself matters to me: it helps people at a moment that actually counts.",
+      "And the role fits what I do well — here is the one result that shows it."
+    ],
+    coach: {
+      keys: ["TEAM", "PRODUCT", "FIT"],
+      structure: "Why this team → why this product → why you fit"
+    }
+  }
+};
+
+// Generic fallback for typed questions: teach the *shape* of an answer,
+// never invent a fake specific answer.
+var FALLBACK = {
+  answer: [
+    "Start with the outcome — the result, in one sentence.",
+    "Give one concrete example from your own experience.",
+    "Close by connecting it to this role."
+  ],
+  coach: {
+    keys: ["OUTCOME", "EXAMPLE", "FIT"],
+    structure: "Outcome → example → connection to this role"
+  }
+};
+
+// The AI endpoint for typed questions that match no prepared sample.
+// Empty = no endpoint configured: those questions get the guidance
+// answer (FALLBACK). When the proxy is deployed, this becomes its URL.
+// The OpenAI key lives ONLY in the proxy — never in this file, never
+// in the browser.
+var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
+
+// Step 30 — prepared answer variants for the hero, authored to the source
+// app's own style specs (AnswerStyleSpec): Shorter = VeryShort (2-3 bullets,
+// 8-16 words each, 25-45 total); Technical = 3-4 bullets, 12-24 words each,
+// 50-90 total, naming mechanisms; Example = 3 bullets, 12-22 words each,
+// 40-80 total, ONE concrete example; Full = ONE spoken paragraph, 90-130
+// words, no bullets; Regenerate = a fresh Balanced set (exactly 3 bullets,
+// 10-22 words each, 35-75 total). Every bullet is one speakable first-person
+// sentence, and every variant stays inside its sample's stated facts.
+var IA_VARIANTS = {
+  tell: {
+    shorter: [
+      "Five years building web products, most recently leading a small customer-facing team.",
+      "I work outcome-first, trade-offs explicit — drawn to this team’s honest, useful software."
+    ],
+    technical: [
+      "Five years building web products — currently leading a small team shipping a customer-facing tool on weekly releases.",
+      "My loop is fixed: define the outcome, prototype behind a flag, measure against it, then harden what survives.",
+      "Trade-offs get written down — latency against cost, scope against reliability — so the decision survives the meeting."
+    ],
+    example: [
+      "Five years building web products — most recently leading a small team on a customer-facing tool.",
+      "When its launch slipped, I split it into staged rollouts instead of one risky big-bang release.",
+      "We shipped on the revised date, and the staged pattern became how the team releases now."
+    ],
+    full: "I’ve spent five years building web products, and most recently I’ve been leading a small team on a customer-facing tool. The thread through my work is starting from the outcome: before I argue for an approach, I want to know what success looks like and how we’ll measure it. From there I make the trade-off explicit — scope against reliability, speed against cost — and I write the decision down so the team can revisit it honestly. What draws me to this role is the same instinct: this team builds honest, useful software, and that’s the environment where my way of working fits best.",
+    regen: [
+      [
+        "I build web products — five years of it, lately leading a small team on a customer-facing tool.",
+        "My habit is to name the outcome first, then choose the trade-off that gets us there.",
+        "This team’s focus on honest, useful software is exactly why the role caught my eye."
+      ],
+      [
+        "For five years I’ve built web products; my current role leads a small team on a customer-facing tool.",
+        "I decide by outcomes: agree the result first, then argue about the cheapest honest path to it.",
+        "I’m here because this team ships software that’s honest about what it does — my kind of team."
+      ]
+    ]
+  },
+  hire: {
+    shorter: [
+      "I’ve shipped this exact kind of product, under the same constraints, before.",
+      "Technical depth, calm under pressure — and honest about the gaps I’m closing."
+    ],
+    technical: [
+      "I’ve shipped the same class of product under the same constraints — legacy surface, live users, no downtime window.",
+      "My depth is in the unglamorous parts: data invariants, idempotent operations, and rollbacks that are tested, not hoped for.",
+      "Under pressure I narrow scope to the invariant that must hold, and I say early what will slip."
+    ],
+    example: [
+      "I’ve done this work before — shipping the same kind of product, under the same constraints.",
+      "On my last release the deadline halved mid-flight; I cut scope to the core flow and we shipped on time.",
+      "That’s the pattern you’d get: honest scope, early warnings, and a calm hand when the plan breaks."
+    ],
+    full: "Hire me because I’ve already done the core of this job: shipping the same kind of product, under the same constraints, with live users depending on it. The two things this role asks for most are the two I bring — real technical depth in the parts that break quietly, and a calm, explicit way of working when the plan stops holding. I’d rather tell you in week one what will slip than surprise you in week six. And I’ll be straight about the edge of my experience: there are things I’m still learning, and I can show you exactly how I’m closing those gaps.",
+    regen: [
+      [
+        "Because this role is the work I’ve been doing: same product shape, same constraints, same stakes.",
+        "I bring depth where it breaks quietly, and I stay calm and explicit when plans change.",
+        "Where I’m still growing, I’m direct about it — and I can show you the gap closing."
+      ],
+      [
+        "I’ve shipped this kind of product before, under these constraints — the learning curve here is short.",
+        "Depth plus steadiness: I go deep on the hard parts and keep the team informed early.",
+        "I won’t oversell the rest — my gaps are named, and each one has a plan attached."
+      ]
+    ]
+  },
+  weakness: {
+    shorter: [
+      "I used to over-polish before asking for feedback — it slowed everything down.",
+      "Now I share rough versions early — and I still watch the habit daily."
+    ],
+    technical: [
+      "My weakness was a process flaw: I’d polish in private until feedback could only arrive late and expensive.",
+      "The fix is mechanical: a rough draft goes out at fifty percent, before I’ve defended any of it.",
+      "I track it like a metric — if a week passes with nothing shared early, the old habit is back."
+    ],
+    example: [
+      "I used to over-polish work before asking for feedback — feedback arrived too late to help.",
+      "On one project I shared a rough draft early; a reviewer caught a wrong assumption in minutes.",
+      "That single catch saved the whole design — it’s why early sharing is now my default."
+    ],
+    full: "My biggest weakness used to be over-polishing: I’d keep work private until it felt finished, which meant feedback arrived late, when changing direction was expensive. I noticed the pattern after one review where a wrong assumption had survived for weeks simply because nobody had seen the draft. So I changed the mechanism, not just the intention: now I share a rough version early, on purpose, while it’s still cheap to be wrong. It still takes discipline — the instinct to polish first hasn’t vanished — but the habit is visible and checkable, and the work has been better for it every time since.",
+    regen: [
+      [
+        "Honestly: I over-polished. Work stayed with me until it felt safe to show.",
+        "These days a rough version goes out early — feedback is cheaper before I’ve committed.",
+        "It’s a watched habit, not a cured one — and I can show you the checks I use."
+      ],
+      [
+        "I used to keep work back until it was polished — and feedback came too late.",
+        "Now the rough draft is the first thing people see; being wrong early is the point.",
+        "I still catch the old instinct weekly — the difference is the system that catches it."
+      ]
+    ]
+  },
+  story: {
+    shorter: [
+      "The project was behind schedule and two teams were split on approach.",
+      "One room, the trade-off named, the simpler plan chosen — shipped two weeks later."
+    ],
+    technical: [
+      "The project was behind schedule, and the two teams were defending incompatible architectures with no shared criteria.",
+      "I forced the decision onto invariants: what must stay true for users, for data, and for the deadline.",
+      "Against those, the simpler plan won on every axis — and we logged the decision and its reversal cost."
+    ],
+    example: [
+      "The project was behind schedule, and two teams disagreed on the approach — loudly, in separate documents.",
+      "I booked one room, put both plans side by side, and made us name the trade-off out loud.",
+      "We chose the simpler plan together, shipped two weeks later, and kept the decision log ever since."
+    ],
+    full: "The project was behind schedule, and two teams had settled into defending different approaches — mostly in separate documents, which meant the disagreement never actually met itself. I got everyone into one room and put both plans side by side. Then I made us name the trade-off out loud: what the thorough plan protected, what it cost, and what the simpler plan risked. Once the trade-off was explicit, the decision almost made itself — we chose the simpler plan together, which mattered, because a decision people help make is a decision they defend. We shipped two weeks later, and the team kept the decision log we started that day.",
+    regen: [
+      [
+        "A late project, two teams, two plans — and the argument happening in separate documents.",
+        "I put both plans in one room and made the trade-off explicit before we voted.",
+        "The simpler plan won, we shipped two weeks later, and the decision log outlived the project."
+      ],
+      [
+        "We were behind schedule because two teams couldn’t agree on the approach.",
+        "My move was simple: one room, both plans visible, the trade-off named in plain words.",
+        "We picked the simpler plan together — shipped two weeks later, decision log still in use."
+      ]
+    ]
+  },
+  five: {
+    shorter: [
+      "Owning a product area at depth — not just tasks, the hard trade-offs too.",
+      "On a team that reviews honestly and ships carefully — like this one."
+    ],
+    technical: [
+      "In five years I want depth with evidence: one product area whose systems I can reason about end to end.",
+      "That means owning the invariants and the failure modes, not just shipping features against a roadmap.",
+      "The milestone I track is trust: being the person called when a trade-off has no clean answer."
+    ],
+    example: [
+      "Doing this work at a deeper level — owning a product area, not just tasks.",
+      "Concretely: when a hard trade-off lands, I’m the person who frames it, decides, and documents why.",
+      "That’s why a team that reviews honestly matters — depth like that only grows where review is real."
+    ],
+    full: "In five years I see myself doing this same work at a deeper level: owning a product area rather than a list of tasks, and being accountable for its hard decisions. I want to be the person a team comes to when a trade-off has no clean answer — not because I always win the argument, but because I frame the choice honestly and stand behind the outcome. Getting there means choosing environments that review honestly and ship carefully, because depth doesn’t grow where feedback is polite and vague. It’s why this team’s way of working matters to me as much as the role itself.",
+    regen: [
+      [
+        "Deeper, not just higher: owning a product area and its hardest decisions.",
+        "I want to be the person people find when a trade-off needs an honest call.",
+        "Teams that review honestly and ship carefully are where that growth actually happens."
+      ],
+      [
+        "In five years: this work, at depth — an area I own, not tasks I complete.",
+        "Known for the hard trade-offs: framing them clearly and standing behind the call.",
+        "That’s why the team’s honesty in review matters to me — it’s the growth condition."
+      ]
+    ]
+  },
+  salary: {
+    shorter: [
+      "I’d anchor on this role’s range — around this level, for this scope.",
+      "The full package matters more than the number; I’m flexible if both fit."
+    ],
+    technical: [
+      "My expectation is built from the market band for this scope, not a single number plucked from my current pay.",
+      "The variables I’d weigh are total compensation: base, bonus structure, equity, and the review cycle that moves them.",
+      "Within the band for this role, I’m flexible — the fit of the work moves me more than the last increment."
+    ],
+    example: [
+      "I’d rather anchor on the range for this role — what I’ve seen is around this level, for this scope.",
+      "Last time I changed roles, the headline number moved less than the package — and the package was the right call.",
+      "So I’m flexible on the number itself, if the role and the total package are right."
+    ],
+    full: "I’d rather anchor this on the range for the role than negotiate from a single number. From what I’ve seen, roles of this scope sit around a particular level, and my expectation is in that band — but the number is honestly not the part I weigh most. The full picture matters more: the work itself, the room to grow, and the total package, including how and when it’s reviewed. If the role is right and the package is fair, I’m flexible on the exact figure, and I’d rather we spend the conversation on the work than on the last increment of salary.",
+    regen: [
+      [
+        "Let’s anchor on the band for this role — my expectation sits inside it for this scope.",
+        "What I weigh is the whole package: the work, the growth, and how it’s reviewed.",
+        "Get those right and the number is flexible — I’ll share the range I have in mind."
+      ],
+      [
+        "My expectation follows the market for this scope — around this level, from what I’ve seen.",
+        "The total package matters more to me than any single line in it.",
+        "So I’m flexible on the figure itself when the role and package are right."
+      ]
+    ]
+  },
+  conflict: {
+    shorter: [
+      "We disagreed — simpler plan versus thorough one — and argued past each other first.",
+      "I asked their reasoning, named the trade-off — we shipped simpler, stayed close."
+    ],
+    technical: [
+      "The conflict was architectural: I wanted the simpler plan, they wanted the thorough one, and neither had stated criteria.",
+      "I asked for their reasoning first, then put the trade-off in measurable terms — risk, reversibility, and time to signal.",
+      "On those terms the simpler plan won; we logged the decision so the disagreement stayed on paper, not between us."
+    ],
+    example: [
+      "We disagreed on the approach — I wanted the simpler plan, they wanted the thorough one.",
+      "In one meeting I stopped defending mine and asked them to walk me through theirs, step by step.",
+      "Hearing it fully changed the shape of the argument — we shipped simpler, and stayed genuinely close."
+    ],
+    full: "The conflict was about approach: I wanted the simpler plan, a coworker wanted the thorough one, and for a while we were arguing past each other — each defending a conclusion without exposing the reasoning under it. What changed it was a deliberate move on my side: I asked them to walk me through their reasoning first, fully, before I said another word for mine. Hearing it properly, I could name the actual trade-off between us instead of the caricature I’d been arguing against. We chose the simpler plan, kept a decision log so the reasoning stayed visible, and — the part I care about — the working relationship came out stronger, not just intact.",
+    regen: [
+      [
+        "A real disagreement: my simpler plan against their thorough one, both of us dug in.",
+        "I listened first — their full reasoning — then named the trade-off we were actually making.",
+        "We shipped the simpler plan, logged the decision, and the relationship strengthened from it."
+      ],
+      [
+        "We clashed on approach — I pushed simple, they pushed thorough, neither budging.",
+        "Asking for their reasoning before defending mine turned an argument into a comparison.",
+        "Simpler plan shipped, decision logged — and we worked better together after that."
+      ]
+    ]
+  },
+  why: {
+    shorter: [
+      "This team ships carefully and reviews honestly — that’s where I do my best work.",
+      "The product helps people when it counts, and the role fits my strengths."
+    ],
+    technical: [
+      "I read how this team works before applying: careful releases, honest reviews, decisions written down — that’s a system, not a slogan.",
+      "The product’s value is measurable at a moment that counts for its users — that’s the kind of feedback loop I trust.",
+      "And the role maps to my strongest evidence: owning trade-offs on a customer-facing product, end to end."
+    ],
+    example: [
+      "This team ships carefully and reviews honestly — that is the environment I do my best work in.",
+      "A team that would pull a feature back openly when the data says wait — that’s the standard I want.",
+      "And the role fits what I do well — here is the one result that shows it."
+    ],
+    full: "I want to work here for three reasons that compound. First, the environment: this team ships carefully and reviews honestly, and that is simply where I do my best work — careful shipping keeps promises to users, and honest review is the only way I know to keep getting better. Second, the product: it helps people at a moment that actually counts, and work with real stakes is easier to care about on the hard days. Third, the fit: this role asks for exactly what my experience evidences — owning trade-offs on a customer-facing product and standing behind the result. Put together, it’s the rare case where the team, the product, and the role all point the same way.",
+    regen: [
+      [
+        "Because of how this team works: careful shipping, honest reviews — my best environment, full stop.",
+        "Because the product matters at a moment that counts for the people using it.",
+        "And because the role fits my evidence — one result in particular shows how."
+      ],
+      [
+        "The honest answer is the team’s standards: ship carefully, review honestly, write decisions down.",
+        "The product helps people when it matters — work like that is easy to commit to.",
+        "And my strongest experience maps straight onto this role — I can point to the result."
+      ]
+    ]
+  },
+  fa: {
+    shorter: [
+      "با نقش فعلی و یک نتیجه مشخص شروع می‌کنم.",
+      "بعد یک مثال واقعی می‌آورم و می‌گویم چرا این نقش مناسب من است."
+    ],
+    technical: [
+      "شروع من ساختار مشخصی دارد: نقش فعلی، یک نتیجه قابل اندازه‌گیری، بعد دلیل تناسب با این نقش.",
+      "هر ادعا را به یک مثال واقعی از تجربه‌ام وصل می‌کنم تا حرفم قابل بررسی باشد.",
+      "از حرف کلی و تعریف از خودم پرهیز می‌کنم؛ فقط چیزی را می‌گویم که شاهد دارد."
+    ],
+    example: [
+      "با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.",
+      "مثلاً از پروژه‌ای می‌گویم که در آن با یک تصمیم مشخص، نتیجه کار بهتر شد.",
+      "در پایان می‌گویم چرا این نقش برایم مناسب است."
+    ],
+    full: "با نقش فعلی‌ام شروع می‌کنم: چه کاری انجام می‌دهم و چه مسئولیتی دارم. بعد یک نتیجه مشخص از کارم را می‌گویم، نه یک ادعای کلی، و برایش یک مثال واقعی از تجربه‌ام می‌آورم تا روشن شود آن نتیجه چطور به دست آمده است. در ادامه کوتاه می‌گویم در چه کاری قوی‌ترم و روش کارم چیست: از نتیجه شروع می‌کنم و تصمیم‌ها را شفاف می‌گیرم. در پایان هم می‌گویم چرا این نقش و این تیم برایم مناسب است و چرا فکر می‌کنم تجربه‌ام دقیقاً به همین کار می‌خورد. هدفم این است که در زمانی کوتاه، تصویری دقیق و واقعی از خودم بدهم، نه فهرستی از تعریف‌ها.",
+    regen: [
+      [
+        "از نقش فعلی‌ام می‌گویم و یک نتیجه مشخص را جلو می‌گذارم.",
+        "برای هر حرفم یک مثال واقعی از تجربه‌ام دارم، نه ادعای کلی.",
+        "آخر سر می‌گویم چرا این نقش، قدم طبیعی بعدی من است."
+      ]
+    ]
+  },
+  ar: {
+    shorter: [
+      "أبدأ بذكر دوري الحالي ونتيجة محددة حققتها في عملي.",
+      "ثم مثال حقيقي من تجربتي، وأختم بسبب ملاءمة هذا الدور لي."
+    ],
+    technical: [
+      "أتبع بنية ثابتة: الدور الحالي، ثم نتيجة قابلة للقياس، ثم سبب الملاءمة لهذا الدور.",
+      "أربط كل ادعاء بمثال حقيقي من تجربتي حتى يكون كلامي قابلاً للتحقق.",
+      "أتجنب الكلام العام والمدح الذاتي؛ لا أقول إلا ما له شاهد من عملي."
+    ],
+    example: [
+      "أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.",
+      "مثلاً أذكر مشروعاً غيّرت فيه قراراً واحداً فتحسّنت نتيجة العمل بوضوح.",
+      "وأختم بتوضيح سبب ملاءمة هذا الدور لي."
+    ],
+    full: "أبدأ بدوري الحالي: ما الذي أفعله وما مسؤوليتي فيه. ثم أذكر نتيجة محددة من عملي، لا ادعاءً عاماً، وأدعمها بمثال حقيقي من تجربتي يوضح كيف تحققت تلك النتيجة. بعد ذلك أتحدث باختصار عن نقاط قوتي وطريقتي في العمل: أبدأ من النتيجة المطلوبة وأتخذ القرارات بشفافية. وفي الختام أوضح سبب ملاءمة هذا الدور وهذا الفريق لي، ولماذا أرى أن تجربتي تناسب هذا العمل تحديداً. وأحرص على أن تكون كل جملة أقولها مدعومة بتجربة حقيقية، لأن الصدق في التفاصيل هو ما يجعل الإجابة مقنعة. هدفي أن أقدم في وقت قصير صورة دقيقة وصادقة عن نفسي، لا قائمة من عبارات المدح.",
+    regen: [
+      [
+        "أبدأ من دوري الحالي وأضع نتيجة محددة في المقدمة.",
+        "لكل ما أقوله مثال حقيقي من تجربتي، لا ادعاءات عامة.",
+        "وأختم بأن هذا الدور هو الخطوة الطبيعية التالية بالنسبة لي."
+      ]
+    ]
+  }
+};
+
 (function () {
   "use strict";
 
@@ -48,150 +498,6 @@
   var timers = [];
   var runId = 0; // Increments on every new question/mode; stale timers bail out.
 
-  // Sample content. Grounded in the app's core question bank (intro,
-  // why-hire, weakness, behavioural story, five years). Bullets are
-  // illustrative samples, not the user's own facts — the page labels
-  // them as such, persistently, in #demo-sample-tag.
-  var SAMPLES = {
-    tell: {
-      q: "Tell me about yourself.",
-      answer: [
-        "Five years building web products — most recently leading a small team on a customer-facing tool.",
-        "I start from the outcome, then the trade-off I made to get there.",
-        "What draws me here is this team’s focus on honest, useful software."
-      ],
-      coach: {
-        keys: ["EXPERIENCE", "OUTCOME", "FIT"],
-        structure: "Present role → one result → why this role"
-      }
-    },
-    hire: {
-      q: "Why should we hire you?",
-      answer: [
-        "I’ve done this work before — shipping the same kind of product, under the same constraints.",
-        "I bring the two things this role asks for most: the technical depth, and the calm under pressure.",
-        "And I’ll be honest about what I’m still learning — here’s how I’m closing that gap."
-      ],
-      coach: {
-        keys: ["PROOF", "FIT", "HONESTY"],
-        structure: "Evidence → role fit → gap, handled honestly"
-      }
-    },
-    weakness: {
-      q: "What is your biggest weakness?",
-      answer: [
-        "I used to over-polish work before asking for feedback.",
-        "Now I share a rough version early — here’s one time that changed the outcome.",
-        "It’s still a habit I watch, and this is how I keep it in check."
-      ],
-      coach: {
-        keys: ["REAL GAP", "CHANGE", "PROOF"],
-        structure: "Honest weakness → what changed → evidence it works"
-      }
-    },
-    story: {
-      q: "Tell me about a time you led a difficult project.",
-      answer: [
-        "The project was behind schedule, and two teams disagreed on the approach.",
-        "I got everyone into one room, named the trade-off, and we chose the simpler plan together.",
-        "We shipped two weeks later — and the team kept the decision log we started that day."
-      ],
-      coach: {
-        keys: ["SITUATION", "ACTION", "RESULT"],
-        structure: "Situation → your action → result, with numbers"
-      }
-    },
-    five: {
-      q: "Where do you see yourself in five years?",
-      answer: [
-        "Doing this work at a deeper level — owning a product area, not just tasks.",
-        "I want to be the person others come to for the hard trade-offs.",
-        "That’s why a team that reviews honestly and ships carefully matters to me."
-      ],
-      coach: {
-        keys: ["DEPTH", "OWNERSHIP", "FIT"],
-        structure: "Direction → contribution → why here"
-      }
-    },
-    fa: {
-      q: "درباره خودتان بگویید.",
-      rtl: true,
-      lang: "fa",
-      answer: [
-        "با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.",
-        "بعد یک مثال واقعی از تجربه‌ام می‌آورم، نه حرف کلی.",
-        "در پایان می‌گویم چرا این نقش برایم مناسب است."
-      ],
-      coach: {
-        keys: ["تجربه", "نتیجه", "تناسب"],
-        structure: "نقش فعلی ← یک نتیجه ← چرا این نقش"
-      }
-    },
-    ar: {
-      q: "حدّثني عن نفسك.",
-      rtl: true,
-      lang: "ar",
-      answer: [
-        "أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.",
-        "ثم أذكر مثالاً حقيقياً من تجربتي، لا كلاماً عاماً.",
-        "وأختم بتوضيح سبب ملاءمة هذا الدور لي."
-      ],
-      coach: {
-        keys: ["الخبرة", "النتيجة", "الملاءمة"],
-        structure: "الدور الحالي ← نتيجة واحدة ← لماذا هذا الدور"
-      }
-    },
-    salary: {
-      q: "What salary are you expecting?",
-      answer: [
-        "I’d rather anchor on the range for this role — what I’ve seen is around this level, for this scope.",
-        "What matters most to me is the full picture: the work, the growth, and the total package.",
-        "I’m flexible on the number if the role and the package are right — here’s the range I had in mind."
-      ],
-      coach: {
-        keys: ["RANGE", "PACKAGE", "FLEXIBLE"],
-        structure: "Market range → full package → your range, flexibly"
-      }
-    },
-    conflict: {
-      q: "Tell me about a conflict with a coworker.",
-      answer: [
-        "We disagreed on the approach — I wanted the simpler plan, they wanted the thorough one.",
-        "I asked for their reasoning first, then named the trade-off openly instead of arguing past each other.",
-        "We shipped the simpler plan, and we kept the decision log — the relationship was stronger afterwards."
-      ],
-      coach: {
-        keys: ["DISAGREEMENT", "LISTENED", "RESOLVED"],
-        structure: "Disagreement → what you did → outcome, with the relationship intact"
-      }
-    },
-    why: {
-      q: "Why do you want to work here?",
-      answer: [
-        "This team ships carefully and reviews honestly — that is the environment I do my best work in.",
-        "The product itself matters to me: it helps people at a moment that actually counts.",
-        "And the role fits what I do well — here is the one result that shows it."
-      ],
-      coach: {
-        keys: ["TEAM", "PRODUCT", "FIT"],
-        structure: "Why this team → why this product → why you fit"
-      }
-    }
-  };
-
-  // Generic fallback for typed questions: teach the *shape* of an answer,
-  // never invent a fake specific answer.
-  var FALLBACK = {
-    answer: [
-      "Start with the outcome — the result, in one sentence.",
-      "Give one concrete example from your own experience.",
-      "Close by connecting it to this role."
-    ],
-    coach: {
-      keys: ["OUTCOME", "EXAMPLE", "FIT"],
-      structure: "Outcome → example → connection to this role"
-    }
-  };
 
   var STAGE_MS = 400; // Interval between staged bullet insertions.
 
@@ -601,7 +907,20 @@
    points stream in one at a time, and the pill reads Answer ready. No
    waveform (the app has only a 48x4 level meter inside the pill), no
    typed question, no "3 points ready". Reduced motion: the full final
-   state renders statically, no Replay button. */
+   state renders statically, no Replay button.
+   Step 30 — the window is now a working preview, not just a play. On
+   load it picks ONE of the ten prepared samples at random (a different
+   one per visit, per refresh — prepared content costs no AI call). The
+   five chips are real buttons and rework the shown answer exactly the
+   way the app's engine does (InterviewEngine.RequestVariantAsync: same
+   question, new style — Shorter/Technical/Example/Full answer, and
+   Regenerate = a fresh Balanced version), using variants prepared to
+   the app's own style specs (AnswerStyleSpec), so still no AI call.
+   The message box is real too: a typed question that matches a sample
+   is answered from that sample; anything else goes to the AI endpoint
+   when one is configured (IA_AI_ENDPOINT — the key lives behind it,
+   never in this file) and otherwise gets the honest guidance answer,
+   the same FALLBACK the demo uses. */
 (function () {
   "use strict";
   var pill = document.getElementById("mock-pill");
@@ -611,84 +930,61 @@
   var questionEl = document.getElementById("mock-question");
   var transcriptEl = document.getElementById("mock-transcript");
   var thinkingEl = document.getElementById("mock-thinking");
-  var list = document.getElementById("mock-answer");
   var metaEl = document.getElementById("mock-meta");
   var replayBtn = document.getElementById("hero-replay");
-  var appWindow = list && list.closest ? list.closest(".app-window") : null;
-  if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !thinkingEl || !list || !metaEl || !replayBtn || !appWindow) { return; }
+  var zone = document.getElementById("mock-answer-zone");
+  var stack = document.getElementById("mock-answer-stack");
+  var fullEl = document.getElementById("mock-full");
+  var liveEl = document.getElementById("hero-live");
+  var formEl = document.getElementById("hero-manual-form");
+  var inputEl = document.getElementById("hero-manual-input");
+  if (!pill || !pillText || !startEl || !startLabelEl || !questionEl || !transcriptEl || !thinkingEl || !metaEl || !replayBtn || !zone || !stack || !fullEl) { return; }
+  var chipBtns = Array.prototype.slice.call(document.querySelectorAll(".app-chip-btn"));
+  var appWindow = stack.closest ? stack.closest(".app-window") : null;
 
-  var QUESTION = "Tell me about yourself.";
-  var POINTS = [
-    "Five years building web products — most recently leading a small team.",
-    "I start from the outcome, then the trade-off I made to get there.",
-    "What draws me here is this team’s focus on honest, useful software."
-  ];
-  // The live transcript, growing word by word while the interviewer speaks.
-  var TRANSCRIPT = ["Tell", "Tell me", "Tell me about", "Tell me about yourself."];
+  var KEYS = Object.keys(SAMPLES);
+  var key = KEYS[Math.floor(Math.random() * KEYS.length)];
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  var spinTimer = null;
+  var fetchCtl = null;
+
+  // The current state of the window. `variant` names what the answer
+  // area shows: base | shorter | technical | example | full | regen.
+  // `source` says where the current question came from: the loaded
+  // sample, a typed question that matched a sample, a typed question
+  // the AI answered, or a typed question on the guidance fallback.
+  var sample = SAMPLES[key];
+  var variants = IA_VARIANTS[key] || null;
+  var questionText = sample.q;
+  var source = "sample";
+  var variant = "base";
+  var metaWord = "prepared";
+  var lastRegen = -1;
+  var busy = false;        // a play, switch or fetch is running
+  var answerShown = false; // a complete answer is on screen (CanRework)
+  var played = false;      // the staged moment has completed once
+  var initialInFlight = false;
+  var shownCount = 0;      // bullets revealed in the active layer
+
   var START_MS = 300;  // press Start after the window is seen
   var HEAR_MS = 600;   // Listening -> Hearing audio
   var TRANS_MS = 600;  // Hearing audio -> Transcribing
   var WORD_MS = 160;   // per transcript word
   var DETECT_MS = 300; // transcript done -> question detected
   var THINK_MS = 500;  // Question detected -> Preparing answer
-  var STAGE_MS = 450;  // interval between points (same as the demo)
+  var STAGE_MS = 450;  // interval between points in the staged play
+  var SWITCH_THINK_MS = 450; // thinking beat before a variant lands
+  var SWITCH_STAGE_MS = 250; // interval between points in a variant
   var END_MS = 400;    // last point -> Replay appears
-  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var timers = [];
-  var played = false; // auto-play runs once; after that, only Replay
-  var shown = 0; // points rendered in the current play
 
-  // Step 23 — fixed stage: the three points are built once, at load,
-  // hidden (so they reserve their space). Plays only toggle classes on
-  // them, never rebuild — the card is at its final height from the first
-  // paint, so nothing below the window moves while it plays.
-  POINTS.forEach(function (text) {
-    var li = makeBullet(text);
-    li.classList.add("is-hidden");
-    list.appendChild(li);
-  });
-  function setBulletsHidden(hidden) {
-    for (var i = 0; i < list.children.length; i++) {
-      var li = list.children[i];
-      li.classList.toggle("is-hidden", hidden);
-      li.classList.remove("is-pending");
-      li.classList.remove("is-new");
-    }
-  }
-
-  // Clear every pending mockup timer. A play must never run twice at
-  // once: without this, a visibilitychange back to visible would start
-  // a second sequence alongside the first and every point would render
-  // twice.
   function clearTimers() {
     timers.forEach(function (t) { clearTimeout(t); });
     timers = [];
   }
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
 
-  // Step 25 (E1): the question lands (fade + 6px rise + 0.92 scale, 250ms)
-  // instead of popping in whole. The class is removed when the animation
-  // ends so a Replay re-triggers it; reduced motion kills the animation
-  // and the question appears instantly.
-  function landQuestion() {
-    questionEl.classList.remove("is-landing");
-    void questionEl.offsetWidth;
-    questionEl.classList.add("is-landing");
-  }
-  questionEl.addEventListener("animationend", function () {
-    questionEl.classList.remove("is-landing");
-  });
-
-  // Step 25 (E2): the thinking dots crossfade out over 150ms as the first
-  // bullet lands, instead of vanishing instantly. The timeout is tracked
-  // in timers so an interruption clears it; the opacity is reset wherever
-  // the row is hidden or shown again.
-  function fadeThinking() {
-    thinkingEl.style.opacity = "0";
-    timers.push(setTimeout(function () {
-      thinkingEl.classList.add("is-hidden");
-      thinkingEl.style.opacity = "";
-    }, 150));
-  }
+  function announce(text) { if (liveEl) { liveEl.textContent = text; } }
 
   // The pill's state: text + colour class. is-listening = green (with
   // pulsing dot), is-thinking = amber (with pulsing dot), no class =
@@ -712,127 +1008,587 @@
     return li;
   }
 
-  function renderAll() {
+  function makeLayer(bullets, rtl, lang) {
+    var ul = document.createElement("ul");
+    ul.className = "app-answer";
+    ul.dir = rtl ? "rtl" : "ltr";
+    ul.lang = lang || "en";
+    bullets.forEach(function (text) {
+      var li = makeBullet(text);
+      li.classList.add("is-hidden");
+      ul.appendChild(li);
+    });
+    ul.classList.add("is-hidden");
+    return ul;
+  }
+
+  // Layers for the current sample: base + the four prepared variants +
+  // the Regenerate alternates, all pre-rendered in the Step 23 stack so
+  // switching between bullet variants never moves the card. The Full
+  // paragraph lives outside the stack (it is taller by design) and is
+  // swapped in with the Step 24 glide.
+  var layers = {};
+  function buildLayers() {
+    stack.textContent = "";
+    layers = {};
+    var rtl = !!sample.rtl, lang = sample.lang || "en";
+    layers.base = makeLayer(sample.answer, rtl, lang);
+    stack.appendChild(layers.base);
+    if (variants) {
+      layers.shorter = makeLayer(variants.shorter, rtl, lang);
+      layers.technical = makeLayer(variants.technical, rtl, lang);
+      layers.example = makeLayer(variants.example, rtl, lang);
+      stack.appendChild(layers.shorter);
+      stack.appendChild(layers.technical);
+      stack.appendChild(layers.example);
+      layers.regen = variants.regen.map(function (set) {
+        var ul = makeLayer(set, rtl, lang);
+        stack.appendChild(ul);
+        return ul;
+      });
+      fullEl.textContent = variants.full;
+      fullEl.dir = rtl ? "rtl" : "ltr";
+      fullEl.lang = lang;
+    }
+    layers.dyn = null;
+  }
+
+  function activeLayer() {
+    if (variant === "regen") { return layers.regen ? layers.regen[Math.max(0, lastRegen)] : layers.base; }
+    if (variant === "dyn") { return layers.dyn; }
+    return layers[variant] || layers.base;
+  }
+
+  function setLayerBullets(ul, hidden) {
+    for (var i = 0; i < ul.children.length; i++) {
+      ul.children[i].classList.toggle("is-hidden", hidden);
+      ul.children[i].classList.remove("is-pending");
+      ul.children[i].classList.remove("is-new");
+    }
+  }
+
+  // Show exactly one bullet layer (or the Full paragraph), fully or
+  // reset for a staged reveal. Full swaps use display, bullet layers
+  // use visibility — the Step 24 distinction.
+  function showOnly(name, reset) {
+    Object.keys(layers).forEach(function (k) {
+      var node = layers[k];
+      if (!node) { return; }
+      if (Array.isArray(node)) {
+        node.forEach(function (ul) { ul.classList.add("is-hidden"); });
+      } else {
+        node.classList.toggle("is-hidden", true);
+      }
+    });
+    if (name === "full") {
+      stack.style.display = "none";
+      fullEl.hidden = false;
+      return;
+    }
+    stack.style.display = "";
+    fullEl.hidden = true;
+    var ul = activeLayer();
+    if (ul) {
+      ul.classList.remove("is-hidden");
+      if (reset) { setLayerBullets(ul, true); }
+    }
+  }
+
+  // Step 24 glide, reused: animate the answer zone between two content
+  // heights over 300ms instead of jumping. Used only when the content
+  // height actually changes (Full swaps, a rebuilt layer set, a dynamic
+  // AI/guidance layer) — bullet-variant switches never call it.
+  function glideSwap(mutator) {
+    if (reduced) { mutator(); return; }
+    var h0 = zone.offsetHeight;
+    zone.style.height = h0 + "px";
+    zone.classList.add("is-gliding");
+    mutator();
+    var h1 = zone.scrollHeight;
+    void zone.offsetHeight;
+    if (h1 === h0) { zone.style.height = ""; zone.classList.remove("is-gliding"); return; }
+    zone.style.height = h1 + "px";
+    later(function () { zone.style.height = ""; zone.classList.remove("is-gliding"); }, 320);
+  }
+
+  // Step 25 (E1): the question lands (fade + 6px rise + 0.92 scale,
+  // 250ms) instead of popping in whole.
+  function landQuestion() {
+    questionEl.classList.remove("is-landing");
+    void questionEl.offsetWidth;
+    questionEl.classList.add("is-landing");
+  }
+  questionEl.addEventListener("animationend", function () {
+    questionEl.classList.remove("is-landing");
+  });
+
+  // Step 25 (E2): the thinking dots crossfade out over 150ms as the
+  // first bullet lands, instead of vanishing instantly.
+  function fadeThinking() {
+    thinkingEl.style.opacity = "0";
+    timers.push(setTimeout(function () {
+      thinkingEl.classList.add("is-hidden");
+      thinkingEl.style.opacity = "";
+    }, 150));
+  }
+  function showThinking() {
+    thinkingEl.classList.remove("is-hidden");
+    thinkingEl.style.opacity = "";
+  }
+  function hideThinking() {
+    thinkingEl.classList.add("is-hidden");
+    thinkingEl.style.opacity = "";
+  }
+
+  function setChipsEnabled(on) {
+    chipBtns.forEach(function (btn) { btn.disabled = !on; });
+  }
+  function selectChip(name) {
+    chipBtns.forEach(function (btn) {
+      if (btn.getAttribute("data-variant") === name) {
+        btn.setAttribute("aria-pressed", "true");
+      } else if (btn.hasAttribute("aria-pressed")) {
+        btn.setAttribute("aria-pressed", "false");
+      }
+    });
+  }
+  function canRework() {
+    if (source === "typed-ai") { return !!IA_AI_ENDPOINT; }
+    return !!variants && (source === "sample" || source === "typed-matched");
+  }
+
+  // Reveal a bullet layer's points one at a time (the app's stream),
+  // then settle: pill Answer ready, meta set, chips per canRework.
+  function reveal(ul, stageMs, done) {
+    shownCount = 0;
+    var items = ul.children;
+    if (reduced || items.length === 0) {
+      setLayerBullets(ul, false);
+      shownCount = items.length;
+      hideThinking();
+      metaEl.textContent = metaWord;
+      finishAnswer();
+      if (done) { done(); }
+      return;
+    }
+    // The bullet being written shows faded until it lands.
+    var pending = items[0];
+    pending.classList.remove("is-hidden");
+    pending.classList.add("is-pending");
+    for (var i = 0; i < items.length; i++) {
+      (function (idx) {
+        later(function () {
+          var li = items[idx];
+          li.classList.remove("is-hidden");
+          li.classList.remove("is-pending");
+          li.classList.add("is-new");
+          shownCount++;
+          if (idx === 0) {
+            fadeThinking();
+            metaEl.textContent = metaWord;
+          }
+          if (idx === items.length - 1) {
+            later(function () {
+              finishAnswer();
+              if (done) { done(); }
+            }, END_MS);
+          }
+        }, idx * stageMs);
+      })(i);
+    }
+  }
+
+  function finishAnswer() {
+    busy = false;
+    initialInFlight = false;
+    answerShown = true;
+    setPill("Answer ready", "listening", false);
+    hideThinking();
+    if (!reduced) { replayBtn.classList.remove("is-hidden"); }
+    played = true;
+    setChipsEnabled(canRework());
+  }
+
+  // Render the current state completely, with no motion. Used for
+  // reduced motion and to settle an interrupted user-initiated flow.
+  function settle() {
     clearTimers();
+    if (fetchCtl) { fetchCtl.abort(); fetchCtl = null; }
+    initialInFlight = false;
     setPill("Answer ready", "listening", false);
     startLabelEl.textContent = "Pause";
-    questionEl.textContent = "“" + QUESTION + "”";
+    questionEl.textContent = "“" + questionText + "”";
     questionEl.classList.remove("is-empty");
-    landQuestion();
     transcriptEl.textContent = "";
-    thinkingEl.classList.add("is-hidden");
-    thinkingEl.style.opacity = "";
-    setBulletsHidden(false);
-    metaEl.textContent = "prepared";
-  }
-
-  if (reduced) { renderAll(); return; }
-
-  // Finish: the moment is over — Replay shown. Used both at the end of
-  // play() and when pausing after all three points are already on screen,
-  // so a scroll-away in the last 400ms can never leave the mockup
-  // finished-looking with no Replay button.
-  function finish() {
-    setPill("Answer ready", "listening", false);
-    thinkingEl.classList.add("is-hidden");
-    thinkingEl.style.opacity = "";
-    replayBtn.classList.remove("is-hidden");
+    hideThinking();
+    showOnly(variant === "full" ? "full" : "layer", false);
+    if (variant !== "full") {
+      var ul = activeLayer();
+      if (ul) { setLayerBullets(ul, false); shownCount = ul.children.length; }
+    }
+    metaEl.textContent = metaWord;
+    busy = false;
+    answerShown = true;
     played = true;
+    if (!reduced) { replayBtn.classList.remove("is-hidden"); }
+    setChipsEnabled(canRework());
   }
 
-  // Pause: stop the timers and settle the meter. Called when the hero
-  // scrolls out of view or the tab hides mid-play; the sequence restarts
-  // from the beginning on return (played stays false until it completes).
-  // Exception: if all three points are already shown, the moment is
-  // over — finish it instead of restarting from scratch on return.
-  function pause() {
-    clearTimers();
-    pill.classList.remove("is-live");
-    if (shown === 3) { finish(); }
-  }
+  function renderAll() { settle(); }
 
+  // The staged moment for the loaded sample: Start is pressed, the
+  // interviewer speaks (transcript grows), the question lands whole,
+  // the app thinks, the points stream in.
   function play() {
     clearTimers();
-    shown = 0;
+    if (fetchCtl) { fetchCtl.abort(); fetchCtl = null; }
+    busy = true;
+    initialInFlight = true;
+    answerShown = false;
+    shownCount = 0;
+    variant = "base";
+    metaWord = "prepared";
+    lastRegen = -1;
+    selectChip(null);
+    setChipsEnabled(false);
     setPill("Not listening", "", false);
     startLabelEl.textContent = "Start listening";
     questionEl.textContent = "Waiting for the interviewer…";
     questionEl.classList.add("is-empty");
+    questionEl.dir = "ltr";
     transcriptEl.textContent = "";
-    thinkingEl.classList.add("is-hidden");
-    thinkingEl.style.opacity = "";
-    setBulletsHidden(true);
+    transcriptEl.dir = sample.rtl ? "rtl" : "ltr";
+    transcriptEl.lang = sample.lang || "en";
+    hideThinking();
+    showOnly("layer", true);
     metaEl.textContent = "";
     replayBtn.classList.add("is-hidden");
-    timers.push(setTimeout(function () {
-      // Start pressed: the session begins, the meter runs.
+    var words = questionText.split(" ");
+    var prefixes = words.map(function (_, i) { return words.slice(0, i + 1).join(" "); });
+    later(function () {
       startLabelEl.textContent = "Pause";
       setPill("Listening", "listening", true);
-      timers.push(setTimeout(function () {
+      later(function () {
         setPill("Hearing audio", "listening", true);
-        timers.push(setTimeout(function () {
+        later(function () {
           setPill("Transcribing", "listening", true);
-          // The live transcript grows word by word; the question itself
-          // never types — it appears whole when detected.
-          TRANSCRIPT.forEach(function (words, i) {
-            timers.push(setTimeout(function () {
-              transcriptEl.textContent = words;
-            }, i * WORD_MS));
+          prefixes.forEach(function (text, i) {
+            later(function () { transcriptEl.textContent = text; }, i * WORD_MS);
           });
-          timers.push(setTimeout(function () {
+          later(function () {
             transcriptEl.textContent = "";
-            questionEl.textContent = "“" + QUESTION + "”";
+            questionEl.textContent = "“" + questionText + "”";
             questionEl.classList.remove("is-empty");
+            questionEl.dir = sample.rtl ? "rtl" : "ltr";
+            questionEl.lang = sample.lang || "en";
             landQuestion();
             setPill("Question detected", "thinking", true);
-            timers.push(setTimeout(function () {
+            later(function () {
               setPill("Preparing answer", "thinking", false);
-              thinkingEl.classList.remove("is-hidden");
-              thinkingEl.style.opacity = "";
-              // The bullet being written shows faded until it lands: it is
-              // the pre-rendered first bullet, revealed faded.
-              var pending = list.children[0];
-              pending.classList.remove("is-hidden");
-              pending.classList.add("is-pending");
-              POINTS.forEach(function (text, i) {
-                timers.push(setTimeout(function () {
-                  var li = list.children[i];
-                  li.classList.remove("is-hidden");
-                  li.classList.remove("is-pending");
-                  li.classList.add("is-new");
-                  shown++;
-                  if (i === 0) {
-                    fadeThinking();
-                    metaEl.textContent = "prepared";
-                  }
-                  if (i === POINTS.length - 1) {
-                    timers.push(setTimeout(function () { finish(); }, END_MS));
-                  }
-                }, i * STAGE_MS));
-              });
-            }, THINK_MS));
-          }, TRANSCRIPT.length * WORD_MS + DETECT_MS));
-        }, TRANS_MS));
-      }, HEAR_MS));
-    }, START_MS));
+              showThinking();
+              reveal(layers.base, STAGE_MS);
+            }, THINK_MS);
+          }, prefixes.length * WORD_MS + DETECT_MS);
+        }, TRANS_MS);
+      }, HEAR_MS);
+    }, START_MS);
   }
 
-  replayBtn.addEventListener("click", function () { play(); });
+  // Pause: stop the timers and settle the meter. A user-initiated flow
+  // (variant, typed answer) settles to its final state; the staged
+  // moment keeps the Step 21 rule — it finishes only if every point is
+  // already on screen, otherwise it restarts when seen again.
+  function pause() {
+    if (initialInFlight) {
+      var ul = activeLayer();
+      if (ul && shownCount === ul.children.length) { settle(); return; }
+      clearTimers();
+      pill.classList.remove("is-live");
+      busy = false;
+      return;
+    }
+    if (busy || answerShown) { settle(); }
+  }
+
+  // A variant request, the app's way: same question, new style. The
+  // thinking beat runs, then the prepared variant streams in. The meta
+  // shows the style word, as the app does; Regenerate is a fresh
+  // Balanced version, so its meta returns to the source word.
+  var STYLE_META = { shorter: "shorter", technical: "technical", example: "example", full: "full" };
+  var STYLE_ANNOUNCE = {
+    shorter: "Shorter answer shown.",
+    technical: "Technical answer shown.",
+    example: "Example answer shown.",
+    full: "Full answer shown.",
+    regen: "A new version of the answer is shown.",
+    base: "Answer ready."
+  };
+  function requestVariant(name) {
+    if (busy || !answerShown) { return; }
+    if (source === "typed-ai") { askAI(name); return; }
+    if (!canRework()) { return; }
+    busy = true;
+    setChipsEnabled(false);
+    clearTimers();
+    if (name === "regen") {
+      lastRegen = (lastRegen + 1) % layers.regen.length;
+      variant = "regen";
+      metaWord = "prepared";
+      selectChip(null);
+    } else {
+      variant = name;
+      metaWord = STYLE_META[name];
+      selectChip(name);
+    }
+    setPill("Preparing answer", "thinking", false);
+    showThinking();
+    metaEl.textContent = "";
+    later(function () {
+      if (variant === "full") {
+        glideSwap(function () { showOnly("full", false); });
+        hideThinking();
+        metaEl.textContent = metaWord;
+        finishAnswer();
+      } else if (activeLayer() && stack.style.display === "none") {
+        glideSwap(function () { showOnly("layer", true); });
+        reveal(activeLayer(), SWITCH_STAGE_MS);
+      } else {
+        showOnly("layer", true);
+        reveal(activeLayer(), SWITCH_STAGE_MS);
+      }
+      announce(STYLE_ANNOUNCE[name] || "Answer ready.");
+    }, reduced ? 0 : SWITCH_THINK_MS);
+  }
+
+  chipBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      requestVariant(btn.getAttribute("data-variant"));
+    });
+  });
+
+  // Typed questions. A match against the prepared bank is answered
+  // from that sample (the app's prepared-reference path); anything else
+  // goes to the AI endpoint when one is configured, and otherwise gets
+  // the guidance answer — the shape of an answer, never an invented
+  // specific one. The content switch happens at once (prepare); only
+  // the reveal waits for the thinking beat, so a pause mid-beat can
+  // still settle onto the right answer.
+  var MATCHERS = [
+    ["tell", ["about yourself", "introduce yourself", "خودتان", "نفسك"]],
+    ["hire", ["hire you", "why you", "should we hire"]],
+    ["weakness", ["weakness", "improvement area", "weak point"]],
+    ["story", ["difficult project", "led a", "lead a", "challenging project"]],
+    ["five", ["five years", "5 years", "see yourself"]],
+    ["salary", ["salary", "compensation", "pay are you", "pay do you", "expecting"]],
+    ["conflict", ["conflict", "coworker", "co-worker", "disagreement", "disagreed"]],
+    ["why", ["work here", "work for us", "join us", "join our", "this company", "our company"]]
+  ];
+  function matchSample(text) {
+    var norm = " " + text.toLowerCase().replace(/[?.!,;:'"“”]/g, " ") + " ";
+    for (var k = 0; k < KEYS.length; k++) {
+      if (norm.indexOf(" " + SAMPLES[KEYS[k]].q.toLowerCase().replace(/[?.!]/g, "") + " ") >= 0) { return KEYS[k]; }
+    }
+    for (var i = 0; i < MATCHERS.length; i++) {
+      for (var j = 0; j < MATCHERS[i][1].length; j++) {
+        if (norm.indexOf(MATCHERS[i][1][j]) >= 0) { return MATCHERS[i][0]; }
+      }
+    }
+    return null;
+  }
+
+  var flowId = 0; // stale async completions (a fetch, a beat) bail out
+  function typedFlow(prepare, revealFn) {
+    clearTimers();
+    flowId++;
+    busy = true;
+    answerShown = false;
+    setChipsEnabled(false);
+    selectChip(null);
+    variant = "base";
+    lastRegen = -1;
+    startLabelEl.textContent = "Pause";
+    transcriptEl.textContent = "";
+    questionEl.textContent = "“" + questionText + "”";
+    questionEl.classList.remove("is-empty");
+    questionEl.dir = /[؀-ۿ]/.test(questionText) ? "rtl" : "ltr";
+    landQuestion();
+    setPill("Question detected", "thinking", true);
+    metaEl.textContent = "";
+    if (prepare) { prepare(); }
+    var myFlow = flowId;
+    later(function () {
+      if (myFlow !== flowId) { return; }
+      setPill("Preparing answer", "thinking", false);
+      showThinking();
+      if (revealFn) { revealFn(); }
+    }, reduced ? 0 : THINK_MS);
+  }
+
+  function prepareDynamic(bullets, meta, src) {
+    source = src;
+    metaWord = meta;
+    variant = "dyn";
+    var isRtl = /[\u0600-\u06FF]/.test(questionText);
+    var ul = makeLayer(bullets, isRtl, isRtl ? "fa" : "en");
+    if (layers.dyn && layers.dyn.parentNode === stack) { stack.removeChild(layers.dyn); }
+    layers.dyn = ul;
+    stack.appendChild(ul);
+    glideSwap(function () { showOnly("dyn", true); });
+  }
+
+  function prepareFallback() {
+    prepareDynamic(FALLBACK.answer.slice(), "guidance", "typed-fallback");
+  }
+
+  // The AI path — used only when IA_AI_ENDPOINT is configured (the
+  // proxy holds the key; nothing secret ever ships in this file). A
+  // variant of an AI answer is a fresh generation with that style,
+  // exactly like the app. Any failure lands on the guidance answer, so
+  // the box never hangs.
+  function askAI(styleName) {
+    if (!IA_AI_ENDPOINT) { prepareFallback(); reveal(layers.dyn, SWITCH_STAGE_MS); announce("Answer ready."); return; }
+    busy = true;
+    setChipsEnabled(false);
+    flowId++;
+    var myFlow = flowId;
+    setPill("Preparing answer", "thinking", false);
+    showThinking();
+    metaEl.textContent = "";
+    if (fetchCtl) { fetchCtl.abort(); }
+    fetchCtl = ("AbortController" in window) ? new AbortController() : null;
+    var timeout = fetchCtl ? setTimeout(function () { fetchCtl.abort(); }, 15000) : null;
+    fetch(IA_AI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: questionText, style: styleName || "base" }),
+      signal: fetchCtl ? fetchCtl.signal : undefined
+    }).then(function (res) {
+      if (!res.ok) { throw new Error("endpoint"); }
+      return res.json();
+    }).then(function (data) {
+      if (timeout) { clearTimeout(timeout); }
+      fetchCtl = null;
+      if (myFlow !== flowId) { return; }
+      if (styleName === "full" && data && typeof data.full === "string" && data.full) {
+        source = "typed-ai";
+        variant = "full";
+        metaWord = "full";
+        selectChip("full");
+        fullEl.textContent = data.full;
+        fullEl.dir = /[\u0600-\u06FF]/.test(questionText) ? "rtl" : "ltr";
+        fullEl.lang = fullEl.dir === "rtl" ? "fa" : "en";
+        glideSwap(function () { showOnly("full", false); });
+        hideThinking();
+        metaEl.textContent = metaWord;
+        finishAnswer();
+        announce(STYLE_ANNOUNCE.full);
+        return;
+      }
+      var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
+      if (!bullets.length) { throw new Error("shape"); }
+      if (styleName && styleName !== "base" && styleName !== "regen") {
+        prepareDynamic(bullets, STYLE_META[styleName] || "AI", "typed-ai");
+        selectChip(styleName);
+      } else {
+        prepareDynamic(bullets, "AI", "typed-ai");
+        selectChip(null);
+      }
+      reveal(layers.dyn, SWITCH_STAGE_MS);
+      announce(STYLE_ANNOUNCE[styleName] || "Answer ready.");
+    }).catch(function () {
+      if (timeout) { clearTimeout(timeout); }
+      fetchCtl = null;
+      if (myFlow !== flowId) { return; }
+      prepareFallback();
+      reveal(layers.dyn, SWITCH_STAGE_MS);
+      announce("Answer ready.");
+    });
+  }
+
+  function submitTyped() {
+    var text = inputEl ? inputEl.value.trim() : "";
+    if (!text || busy) { return; }
+    questionText = text;
+    if (inputEl) { inputEl.value = ""; }
+    var matched = matchSample(text);
+    if (matched) {
+      typedFlow(function () {
+        key = matched;
+        sample = SAMPLES[key];
+        variants = IA_VARIANTS[key] || null;
+        source = "typed-matched";
+        metaWord = "prepared";
+        glideSwap(function () { buildLayers(); showOnly("layer", true); });
+      }, function () {
+        reveal(layers.base, SWITCH_STAGE_MS);
+        announce("Answer ready.");
+      });
+    } else if (IA_AI_ENDPOINT) {
+      typedFlow(null, function () { askAI("base"); });
+    } else {
+      typedFlow(prepareFallback, function () {
+        reveal(layers.dyn, SWITCH_STAGE_MS);
+        announce("Answer ready.");
+      });
+    }
+  }
+  if (formEl && inputEl) {
+    formEl.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      submitTyped();
+    });
+  }
+
+  // Replay: the glyph takes one full turn as the moment restarts (the
+  // research-backed activation cue — on click, never on hover). Then
+  // the current question's arrival replays: the full staged moment for
+  // the loaded sample, the shorter typed flow for a typed question.
+  replayBtn.addEventListener("click", function () {
+    if (!reduced) {
+      replayBtn.classList.add("is-spinning");
+      if (spinTimer) { clearTimeout(spinTimer); }
+      spinTimer = setTimeout(function () { replayBtn.classList.remove("is-spinning"); }, 320);
+    }
+    if (busy) { return; }
+    if (source === "sample") {
+      play();
+    } else {
+      var keepVariant = variant, keepMeta = metaWord, keepRegen = lastRegen;
+      typedFlow(null, function () {
+        variant = keepVariant;
+        metaWord = keepMeta;
+        lastRegen = keepRegen;
+        if (variant !== "base" && variant !== "dyn") { selectChip(variant === "regen" ? null : variant); }
+        if (variant === "full") {
+          glideSwap(function () { showOnly("full", false); });
+          hideThinking();
+          metaEl.textContent = metaWord;
+          finishAnswer();
+        } else {
+          glideSwap(function () { showOnly("layer", true); });
+          reveal(activeLayer(), SWITCH_STAGE_MS);
+        }
+      });
+    }
+  });
 
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
       pause();
-    } else if (!played) {
+    } else if (!played && !busy) {
       play();
     }
   });
 
+  buildLayers();
+  if (reduced) { renderAll(); return; }
+
   // Pause when scrolled off-screen; play once when first seen.
-  var visual = list.closest ? list.closest(".hero-visual") : null;
+  var visual = stack.closest ? stack.closest(".hero-visual") : null;
   if (visual && "IntersectionObserver" in window) {
     new IntersectionObserver(function (entries) {
       if (entries[0].isIntersecting) {
-        if (!played) { play(); }
+        if (!played && !busy) { play(); }
       } else {
         pause();
       }

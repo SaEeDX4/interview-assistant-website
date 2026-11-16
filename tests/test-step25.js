@@ -40,9 +40,11 @@ const scrollers = html.match(/<div class="app-actions-scroll"[^>]*>([\s\S]*?)<\/
 check("three chip scrollers exist (hero, story live view, home demo)",
   scrollers.length === 3, `found ${scrollers.length}`);
 check("every scroller holds exactly the five chips, in order",
-  scrollers.length === 3 && scrollers.every((s) =>
-    (s.match(/class="app-chip"/g) || []).length === 5 &&
-    /Shorter<\/span><span class="app-chip">Technical<\/span><span class="app-chip">Example<\/span><span class="app-chip">Full answer<\/span><span class="app-chip">Regenerate<\/span>/.test(s)));
+  scrollers.length === 3 && scrollers.every((s) => {
+    if ((s.match(/class="app-chip"/g) || []).length !== 5) { return false; }
+    const order = ["Shorter", "Technical", "Example", "Full answer", "Regenerate"].map((t) => s.indexOf(">" + t + "<"));
+    return order.every((v, i) => v >= 0 && (i === 0 || v > order[i - 1]));
+  }));
 
 // 2. The row never wraps: .app-actions has no flex-wrap, the scroller is
 // nowrap and scrolls horizontally with a hidden scrollbar.

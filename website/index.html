@@ -79,11 +79,11 @@
         <p class="trust-line">Free Trial — 30 live minutes. Use only where you are allowed to.</p>
       </div>
 
-      <!-- APP PREVIEW (animated visual; the interactive demo is below) -->
+      <!-- APP PREVIEW — a working preview: a random prepared question plays on load; the chips and the message box are real. -->
       <div class="hero-visual">
         <span class="glow glow-violet" aria-hidden="true"></span>
         <span class="glow glow-teal" aria-hidden="true"></span>
-        <div class="app-window" role="img" aria-label="Preview of the Interview Assistant app window: the live assistant listening, a question appearing, and three short answer points.">
+        <div class="app-window">
           <div class="app-header" aria-hidden="true">
             <p class="app-pill" id="mock-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="mock-pill-text">Not listening</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
             <span class="app-header-controls" aria-hidden="true">
@@ -92,27 +92,32 @@
               <span class="app-win-btn" aria-hidden="true">×</span>
             </span>
           </div>
-          <div class="app-window-body" aria-hidden="true">
-            <section class="app-card">
+          <div class="app-window-body">
+            <section class="app-card" aria-hidden="true">
               <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
               <p class="app-question is-empty" id="mock-question">Waiting for the interviewer…</p>
               <p class="app-transcript" id="mock-transcript"></p>
             </section>
-            <section class="app-card app-card--answer">
+            <section class="app-card app-card--answer" aria-hidden="true">
               <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="mock-meta"></span></div>
               <p class="app-thinking is-hidden" id="mock-thinking">● ● ●</p>
-              <ul class="app-answer" id="mock-answer"></ul>
+              <div class="app-answer-zone" id="mock-answer-zone">
+                <div class="app-answer-stack" id="mock-answer-stack"></div>
+                <p class="app-full-answer" id="mock-full" hidden></p>
+              </div>
             </section>
             <div class="app-actions">
-              <div class="app-actions-scroll" aria-hidden="true">
-                <span class="app-chip">Shorter</span><span class="app-chip">Technical</span><span class="app-chip">Example</span><span class="app-chip">Full answer</span><span class="app-chip">Regenerate</span>
+              <div class="app-actions-scroll">
+                <button type="button" class="app-chip-btn" data-variant="shorter" aria-pressed="false" disabled><span class="app-chip">Shorter</span></button><button type="button" class="app-chip-btn" data-variant="technical" aria-pressed="false" disabled><span class="app-chip">Technical</span></button><button type="button" class="app-chip-btn" data-variant="example" aria-pressed="false" disabled><span class="app-chip">Example</span></button><button type="button" class="app-chip-btn" data-variant="full" aria-pressed="false" disabled><span class="app-chip">Full answer</span></button><button type="button" class="app-chip-btn" data-variant="regen" disabled><span class="app-chip">Regenerate</span></button>
               </div>
               <button type="button" class="app-replay is-hidden" id="hero-replay" aria-label="Replay the animated preview"><span class="app-replay-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg></span></button>
             </div>
-            <div class="app-manual" aria-hidden="true">
-              <span class="app-manual-input">Type or paste a question and press Enter</span>
-              <span class="app-manual-send" aria-hidden="true">➤</span>
-            </div>
+            <form class="app-manual" id="hero-manual-form">
+              <label class="visually-hidden" for="hero-manual-input">Type a question for the preview</label>
+              <input class="app-manual-input" id="hero-manual-input" type="text" placeholder="Type or paste a question and press Enter" autocomplete="off">
+              <button class="app-manual-send-btn" id="hero-manual-send" type="submit" aria-label="Ask the question"><span class="app-manual-send" aria-hidden="true">➤</span></button>
+            </form>
+            <span class="visually-hidden" id="hero-live" aria-live="polite"></span>
             <noscript><p>Animated preview needs JavaScript — the interactive demo below shows the same three points.</p></noscript>
           </div>
         </div>

@@ -36,8 +36,10 @@ check to confirm the fit.
 - **B4 — JS has no width breakpoints:** `app.js` uses `matchMedia`
   only for `prefers-reduced-motion`. Layout decisions live in CSS.
 - **B5 — feature queries are separate:** `prefers-reduced-motion` (×2),
-  `forced-colors` (×2) and `hover: hover` (×1) are not breakpoints and
-  are not counted in the set.
+  `forced-colors` (×2) and `hover: hover` (×2 — the second pairs it with
+  `pointer: fine`, Step 30, gating the app-window controls' hovers so
+  they can never stick after a tap) are not breakpoints and are not
+  counted in the set.
 
 ## 3. Audit log
 
@@ -103,3 +105,8 @@ check to confirm the fit.
   constant 746.59px there, was 786.59px). The block sits after the base
   header rules so its same-specificity overrides win by order (the
   Step 24 lesson). Enforced by `tests/test-step29.js`.
+- **Step 30** adds no width breakpoint. It adds the set's second
+  `hover: hover` feature query, paired with `pointer: fine`, gating
+  the app-window controls' hover states (B5 updated: hover ×2). The
+  pairing is the point: hover feedback must exist only where a pointer
+  can actually hover, so a tap on a phone never leaves a stuck hover.

@@ -169,3 +169,13 @@ are retired with the waveform itself: the real app has no waveform.
   and the layer stacks make that free — the finals are already in the
   DOM. Enforced by `tests/test-step23.js` and the sim (35 checks,
   desktop / mobile / reduced).
+- **Step 30 — control feedback + the Replay turn:** the hero's new real
+  controls follow the interaction research (M3 state layers, Fluent,
+  Apple HIG): hover and pressed feedback is colour/opacity only, plus a
+  press scale (.96 chips, .92 Replay/send) at 150ms on the standard
+  curve; hovers are gated behind `(hover: hover) and (pointer: fine)`
+  so they cannot stick after a tap. Replay's glyph takes one full turn
+  (a 300ms transform transition, -360deg) when clicked — an activation
+  cue in the SF Symbols discrete-effect family — never on hover, and
+  the reduced-motion blanket rule still kills it. No new keyframes;
+  the variant reveal reuses rise/dot-land and the 300ms height glide.
