@@ -799,7 +799,7 @@ var IA_VARIANTS = {
         dynAnswerLayer.appendChild(li);
       });
       revealRows(layer, timers, function () { return myRun !== runId; }, function () {
-        finishRender(myRun, "Live AI answer — generated for this question.");
+        finishRender(myRun, "Live answer — generated for this question.");
       });
     }).catch(function () {
       if (timeout) { clearTimeout(timeout); }
@@ -1606,10 +1606,10 @@ var IA_VARIANTS = {
       var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
       if (!bullets.length) { throw new Error("shape"); }
       if (styleName && styleName !== "base" && styleName !== "regen") {
-        prepareDynamic(bullets, STYLE_META[styleName] || "AI", "typed-ai");
+        prepareDynamic(bullets, STYLE_META[styleName] || "live", "typed-ai");
         selectChip(styleName);
       } else {
-        prepareDynamic(bullets, "AI", "typed-ai");
+        prepareDynamic(bullets, "live", "typed-ai");
         selectChip(null);
       }
       reveal(layers.dyn, SWITCH_STAGE_MS);

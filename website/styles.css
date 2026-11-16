@@ -651,7 +651,7 @@ html.story-player .story-window {
    meter (G1) — the only audio visual the app has. */
 .app-header {
   display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; border-bottom: 1px solid var(--app-border);
+  padding: 8px 16px; border-bottom: 1px solid var(--app-border);
   background: var(--app-surface);
 }
 .app-pill {
@@ -675,13 +675,17 @@ html.story-player .story-window {
 .app-start {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--app-accent-strong); color: var(--app-text);
-  border-radius: 8px; padding: 8px 12px;
+  border-radius: 14px; padding: 8px 12px;
   font-size: 12px; font-weight: 600; line-height: 1; white-space: nowrap;
 }
 .app-stop, .app-icon-btn, .app-win-btn {
   display: inline-grid; place-items: center; width: 28px; height: 28px;
   color: var(--app-dim); font-size: 13px; line-height: 1;
 }
+/* Step 34: the window's caption glyphs are one SVG family, not
+   font glyphs (the ■ rendered as a crude block in some fonts). */
+.app-stop svg, .app-win-btn svg { display: block; width: 16px; height: 16px; }
+.app-controls svg { display: block; width: 14px; height: 14px; }
 .app-badge {
   display: inline-flex; align-items: center;
   background: var(--app-accent-soft); color: var(--app-accent);

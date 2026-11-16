@@ -418,3 +418,18 @@ one line at every width, and its question card never moved within
 a beat (178.28px constant on both timed beats). The demo likewise
 has no streaming transcript. The ghost rule therefore applies
 exactly where content varies — the hero — and is satisfied there.
+
+## Step 34 audit — the slimmer window header
+
+The app-window header's vertical padding went 12px → 8px: the bar
+is now a 46px constant (was 54px), still one row at every width
+for every status word, still constant through the whole play —
+the Step 23/29 rules are unchanged, only the constant moved. The
+Start button's radius joined the status pill's (14px, one capsule
+family), and the caption glyphs (stop ■, minimise –, maximise ▢,
+close ×) are now one inline-SVG family at a matched optical size
+instead of font glyphs, whose rendering varied by platform font.
+The hero's answer-source label for a live-generated answer reads
+"live" (the word "AI" retired from the meta at the owner's
+request; "prepared" would have been false for a typed question,
+"live" is exactly what happened).

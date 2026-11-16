@@ -233,7 +233,7 @@ function answerLayer() { return visibleChild(answerStackEl); }
         questionText().includes("greatest achievement")
         && rows(answerLayer()).length === 3
         && rows(answerLayer())[0].includes("AI point one")
-        && els["demo-status"].textContent === "Live AI answer — generated for this question."
+        && els["demo-status"].textContent === "Live answer — generated for this question."
         && els["demo-sample-tag"].classList.contains("is-hidden"));
     } else {
       check("typed question: fallback question + generic structure, tag hidden (space reserved)",

@@ -131,7 +131,7 @@ check("typed questions: sample matching, then the AI endpoint, then the guidance
   /function matchSample\(text\)/.test(heroJs) &&
   /if \(matched\) \{/.test(heroJs) && /else if \(IA_AI_ENDPOINT\)/.test(heroJs) &&
   /prepareFallback/.test(heroJs) && /FALLBACK\.answer\.slice\(\)/.test(heroJs) &&
-  /"guidance"/.test(heroJs) && /"prepared"/.test(heroJs) && /"AI"/.test(heroJs));
+  /"guidance"/.test(heroJs) && /"prepared"/.test(heroJs) && /"live"/.test(heroJs));
 check("the AI path posts {question, style} and renders only validated bullets (max 4) or a full string",
   /fetch\(IA_AI_ENDPOINT, \{/.test(heroJs) &&
   /JSON\.stringify\(\{ question: questionText, style: styleName \|\| "base" \}\)/.test(heroJs) &&
@@ -162,7 +162,7 @@ check("the demo's typed box uses the same proxy in Answer mode, with the generic
   /function showTypedAI\(text\)/.test(demoJs) &&
   /if \(IA_AI_ENDPOINT && typeof fetch === "function" && mode !== "coach"\) \{\s*showTypedAI\(text\);/.test(demoJs) &&
   /showAnswer\("typed", text, null\);/.test(demoJs) &&
-  /Live AI answer — generated for this question\./.test(demoJs) &&
+  /Live answer — generated for this question\./.test(demoJs) &&
   /dynAnswerLayer = buildAnswerLayer\(\[\], false, "en"\);/.test(demoJs));
 
 /* ---------- CSS ---------- */
