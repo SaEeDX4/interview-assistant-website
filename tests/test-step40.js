@@ -41,5 +41,21 @@ check("RTL detection regex uses the escaped range everywhere",
   !js.includes("/[؀-ۿ]/") &&
   (js.match(/\[\\u0600-\\u06FF\]/g) || []).length >= 2);
 
+/* Docs batch (Step 40 inventory audit): README accuracy. */
+const readme = read("README.md");
+const testsReadme = read("tests/README.md");
+const sums = read("SHA256SUMS.txt");
+const crypto = require("crypto");
+check("README names all 13 standards and the current suite range",
+  readme.includes("13 documents") && readme.includes("navigation, radius, stability") &&
+  readme.includes("`test-step6.js` … `test-step40.js`") &&
+  !readme.includes("195 checks total") && !readme.includes("The review's latest results"));
+check("tests/README explains the numbering gaps and the sims",
+  testsReadme.includes("Step 31") && testsReadme.includes("rolled back") &&
+  testsReadme.includes("sim-step30-hero.js") && testsReadme.includes("reverify*.py") &&
+  !testsReadme.includes("The latest full-review results"));
+check("SHA256SUMS row for README.md matches the file itself",
+  sums.includes(crypto.createHash("sha256").update(read("README.md")).digest("hex") + "  README.md"));
+
 console.log("\n" + pass + " passed, " + fail + " failed");
 process.exit(fail ? 1 : 0);

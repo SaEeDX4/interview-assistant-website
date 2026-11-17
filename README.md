@@ -17,8 +17,8 @@ native Mac app are future research.
 | Path | What it is |
 |---|---|
 | `website/` | The live static site (11 pages, CSS, JS, self-hosted Inter). GitHub Pages deploys from here. |
-| `standards/` | The engineering standards the site is built to (spacing, typography, accessibility, color, SEO, motion, breakpoints, imagery, dead code) + `FINAL-REVIEW.md`, the full final review. |
-| `tests/` | Automated checks that enforce the standards, the applied fix scripts, and the full review (`review19.py` + `step19-report.json`). |
+| `standards/` | The engineering standards the site is built to — 13 documents: spacing, typography, accessibility, color, SEO, motion, breakpoints, imagery, dead code, navigation, radius, stability + `FINAL-REVIEW.md`, the Step 19 full final review. |
+| `tests/` | Automated checks that enforce the standards, the applied fix scripts, and the full review (`review19.py` + `step19-report.json`). See `tests/README.md` for the suite map and numbering notes. |
 | `docs/` | The V2 documentation package: 71 numbered specialist docs (01–08 at root, 09–71 in topic folders). |
 | `audit/` | The V2 source audit: verdict, source proof, scorecard, findings, decision log. |
 | `evidence/` | Audit traceability inputs: the original V1 attachments, preserved unmodified, plus platform references and PDF observations. |
@@ -48,17 +48,19 @@ published yet.
 ## Standards and tests
 
 Every standard in `standards/` is enforced by a test in `tests/`
-(`test-step6.js` … `test-step18.js`, 195 checks total). From the repo
+(32 suites, `test-step6.js` … `test-step40.js` — 470+ checks, all
+passing as of Step 40; the count grows with each step). From the repo
 root:
 
 ```bash
 for f in tests/test-step*.js; do node "$f"; done
-python3 tests/review19.py   # full review: suites + links + content + renders
+python3 tests/review19.py   # the Step 19 full review: suites + links + content + renders
 ```
 
-The review's latest results are in `tests/step19-report.json`
-(195/195 checks, 0 broken links, all pages exactly viewport-wide at
-320–1280px, Lighthouse 98/100/100/100).
+`tests/step19-report.json` holds the Step 19 final review's results
+(195/195 checks at that step, 0 broken links, all pages exactly
+viewport-wide at 320–1280px, Lighthouse 98/100/100/100) — a historical
+record, kept as evidence; the current battery above is the live one.
 
 ## The V2 documentation package
 
