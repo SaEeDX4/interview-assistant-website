@@ -72,7 +72,7 @@ check("caption is a stack of seven layers + a visually-hidden live region",
   /<div class="story-caption-stack" id="story-caption-stack"><\/div>/.test(html) &&
   /<p class="visually-hidden" id="story-caption-live" aria-live="polite"><\/p>/.test(html) &&
   /\.story-caption-stack \{\s*display: grid;\s*\}/.test(clean) &&
-  /\.visually-hidden \{[\s\S]*?position: absolute;[\s\S]*?clip: rect\(0, 0, 0, 0\);/.test(clean) &&
+  /\.visually-hidden[^{]*\{[\s\S]*?position: absolute;[\s\S]*?clip: rect\(0, 0, 0, 0\);/.test(clean) &&
   /showLayer\(captionItems, beat\);/.test(js) &&
   /captionLive\.textContent = caption\.title/.test(js));
 

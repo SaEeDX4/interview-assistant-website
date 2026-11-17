@@ -137,9 +137,11 @@ p { margin: 0 0 16px; }
   text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
 }
 
+/* Step 40: the single definition of .visually-hidden (a second one
+   further down, from Step 23, was merged into this block). */
 .visually-hidden, .demo-title-visually-hidden {
-  position: absolute; width: 1px; height: 1px; overflow: hidden;
-  clip: rect(0 0 0 0); white-space: nowrap;
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
 .skip-link {
@@ -317,6 +319,7 @@ p { margin: 0 0 16px; }
 }
 .chip:hover { border-color: var(--accent); }
 .demo-note { color: var(--muted-2); font-size: 13px; margin: 16px 0 0; }
+.demo-modes { margin-top: 24px; }
 .nowrap { white-space: nowrap; }
 
 /* Step 23: the skeleton placeholders are retired — the demo bullets are
@@ -682,10 +685,7 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-answer-layer, .app-coach-view { min-width: 0; }
 .app-start-icon { flex: none; display: inline-grid; place-items: center; }
 .app-start-icon svg { display: block; width: 11px; height: 11px; }
-.visually-hidden {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-}
+
 /* Step 23 — the header is one row on every beat at <=640px, as the real
    app sheds chrome below 580/640px: the Start button shows its icon only
    (the pill word carries the state) and the adaptive badge is hidden (the
@@ -1518,7 +1518,9 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   border-radius: var(--radius-lg); padding: 20px; margin: 0 0 8px;
   display: grid; gap: 8px;
 }
-.doc-summary h2 { border: 0 !important; padding: 0 !important; margin: 0 0 8px !important; font-size: 18px; }
+/* Step 40: the !important trio removed — this rule already follows
+   the .doc h2 rules at equal specificity, so source order wins. */
+.doc-summary h2 { border: 0; padding: 0; margin: 0 0 8px; font-size: 18px; }
 .doc-summary ul { margin: 0; padding-left: 20px; color: var(--muted); display: grid; gap: 8px; font-size: 15px; }
 .doc-summary ul strong { color: var(--text); }
 

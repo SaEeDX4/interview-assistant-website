@@ -770,7 +770,7 @@ var IA_VARIANTS = {
     questionLayer.textContent = "“" + text + "”";
     showLayer(questionLayers, idx);
     dynAnswerLayer.textContent = "";
-    dynAnswerLayer.dir = /[؀-ۿ]/.test(text) ? "rtl" : "ltr";
+    dynAnswerLayer.dir = /[\u0600-\u06FF]/.test(text) ? "rtl" : "ltr";
     dynAnswerLayer.lang = dynAnswerLayer.dir === "rtl" ? "fa" : "en";
     var layer = showLayer(answerLayers, answerLayers.indexOf(dynAnswerLayer));
     currentAnswerLayer = layer;
@@ -778,18 +778,22 @@ var IA_VARIANTS = {
     sampleTagEl.classList.add("is-hidden");
     setStatus("Preparing your points…");
     demoFetchCtl = ("AbortController" in window) ? new AbortController() : null;
-    var timeout = demoFetchCtl ? setTimeout(function () { demoFetchCtl.abort(); }, 15000) : null;
+    /* Step 40: capture this request's controller (see the hero's
+       askAI) — a superseded request must not null or abort its
+       successor's handle. */
+    var ctl = demoFetchCtl;
+    var timeout = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null;
     fetch(IA_AI_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: text, style: "base" }),
-      signal: demoFetchCtl ? demoFetchCtl.signal : undefined
+      signal: ctl ? ctl.signal : undefined
     }).then(function (res) {
       if (!res.ok) { throw new Error("endpoint"); }
       return res.json();
     }).then(function (data) {
       if (timeout) { clearTimeout(timeout); }
-      demoFetchCtl = null;
+      if (demoFetchCtl === ctl) { demoFetchCtl = null; }
       if (myRun !== runId) { return; }
       var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
       if (!bullets.length) { throw new Error("shape"); }
@@ -803,7 +807,7 @@ var IA_VARIANTS = {
       });
     }).catch(function () {
       if (timeout) { clearTimeout(timeout); }
-      demoFetchCtl = null;
+      if (demoFetchCtl === ctl) { demoFetchCtl = null; }
       if (myRun !== runId) { return; }
       showAnswer("typed", text, null);
     });
@@ -1540,7 +1544,7 @@ var IA_VARIANTS = {
     transcriptEl.textContent = "";
     questionEl.textContent = "“" + questionText + "”";
     questionEl.classList.remove("is-empty");
-    questionEl.dir = /[؀-ۿ]/.test(questionText) ? "rtl" : "ltr";
+    questionEl.dir = /[\u0600-\u06FF]/.test(questionText) ? "rtl" : "ltr";
     setGhosts(questionEl.dir, questionEl.lang || "en");
     landQuestion();
     setPill("Question detected", "thinking", true);
@@ -1578,6 +1582,10 @@ var IA_VARIANTS = {
   // the box never hangs.
   function askAI(styleName) {
     if (!IA_AI_ENDPOINT) { prepareFallback(); reveal(layers.dyn, SWITCH_STAGE_MS); announce("Answer ready."); return; }
+    /* Step 40: a browser without fetch lands on the same guidance
+       fallback as any other failure (the demo path already guarded
+       this; the hero path threw). */
+    if (typeof fetch !== "function") { prepareFallback(); reveal(layers.dyn, SWITCH_STAGE_MS); announce("Answer ready."); return; }
     busy = true;
     setChipsEnabled(false);
     flowId++;
@@ -1587,18 +1595,22 @@ var IA_VARIANTS = {
     metaEl.textContent = "";
     if (fetchCtl) { fetchCtl.abort(); }
     fetchCtl = ("AbortController" in window) ? new AbortController() : null;
-    var timeout = fetchCtl ? setTimeout(function () { fetchCtl.abort(); }, 15000) : null;
+    /* Step 40: capture this request's controller — a superseded
+       request's late completion (or its 15s timeout) must never
+       null or abort its successor's handle. */
+    var ctl = fetchCtl;
+    var timeout = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null;
     fetch(IA_AI_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: questionText, style: styleName || "base" }),
-      signal: fetchCtl ? fetchCtl.signal : undefined
+      signal: ctl ? ctl.signal : undefined
     }).then(function (res) {
       if (!res.ok) { throw new Error("endpoint"); }
       return res.json();
     }).then(function (data) {
       if (timeout) { clearTimeout(timeout); }
-      fetchCtl = null;
+      if (fetchCtl === ctl) { fetchCtl = null; }
       if (myFlow !== flowId) { return; }
       if (styleName === "full" && data && typeof data.full === "string" && data.full) {
         source = "typed-ai";
@@ -1628,7 +1640,7 @@ var IA_VARIANTS = {
       announce(STYLE_ANNOUNCE[styleName] || "Answer ready.");
     }).catch(function () {
       if (timeout) { clearTimeout(timeout); }
-      fetchCtl = null;
+      if (fetchCtl === ctl) { fetchCtl = null; }
       if (myFlow !== flowId) { return; }
       prepareFallback();
       reveal(layers.dyn, SWITCH_STAGE_MS);
