@@ -42,11 +42,10 @@ check("small labels take 8px (.pill, .badge, privacy never-chips)",
   /border-radius: 8px;/.test(rule(".pill")) &&
   /border-radius: 8px;/.test(rule(".badge")) &&
   /\.ethics-nevers li \{[^}]*border-radius: 8px;/.test(clean));
-check("the only 999px radii left are the five exempt track/bar rules",
-  (clean.match(/border-radius: 999px/g) || []).length === 5 &&
+check("the only 999px radii left are the four exempt track/bar rules",
+  (clean.match(/border-radius: 999px/g) || []).length === 4 &&
   /\.calc input\[type="range"\]/.test(clean) &&
-  /\.meter-track \{[^}]*border-radius: 999px;/.test(clean) &&
-  /\.inst-progress \{[^}]*border-radius: 999px;/.test(clean));
+  /\.meter-track \{[^}]*border-radius: 999px;/.test(clean));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

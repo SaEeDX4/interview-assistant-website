@@ -46,9 +46,9 @@ const readme = read("README.md");
 const testsReadme = read("tests/README.md");
 const sums = read("SHA256SUMS.txt");
 const crypto = require("crypto");
-check("README names all 13 standards and the current suite range",
-  readme.includes("13 documents") && readme.includes("navigation, radius, stability") &&
-  readme.includes("`test-step6.js` … `test-step40.js`") &&
+check("README names all 14 standards and the current suite range",
+  readme.includes("14 documents") && readme.includes("navigation, radius, stability, releases") &&
+  readme.includes("`test-step6.js` … `test-step41.js`") &&
   !readme.includes("195 checks total") && !readme.includes("The review's latest results"));
 check("tests/README explains the numbering gaps and the sims",
   testsReadme.includes("Step 31") && testsReadme.includes("rolled back") &&

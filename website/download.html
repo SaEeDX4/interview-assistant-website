@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>Download — Interview Assistant</title>
-<meta name="description" content="Get Interview Assistant for Windows 10/11, 64-bit. Installer and portable ZIP. Signed installer + SHA-256 not yet published.">
+<meta name="description" content="Download Interview Assistant. Windows is the first platform; Android, iOS and Mac are planned. This page only links files that actually exist.">
 <meta property="og:title" content="Download — Interview Assistant">
-<meta property="og:description" content="Get Interview Assistant for Windows 10/11, 64-bit. Installer and portable ZIP. Signed installer + SHA-256 not yet published.">
+<meta property="og:description" content="Download Interview Assistant. Windows is the first platform; Android, iOS and Mac are planned. This page only links files that actually exist.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -70,37 +70,85 @@
   <section class="page-hero">
     <div class="container narrow">
       <p class="eyebrow">Download</p>
-      <h1>Get Interview Assistant for Windows.</h1>
-      <p class="lead">Windows 10/11, 64-bit. Per-user install — no admin needed. Updates are delta-based and never install during an interview.</p>
+      <h1>Get Interview Assistant.</h1>
+      <p class="lead">Windows is the first platform. This page recommends the right build for the device you are on — and says so plainly when yours is not out yet.</p>
     </div>
   </section>
-  <section class="section" aria-label="Download">
-    <div class="container narrow">
-      <div class="callout callout-warn">
-        <p><strong>Signed installer + SHA-256: not yet published.</strong> There is no installer to download yet. The buttons below will go live with the first signed release — we will not link a file that does not exist, and we will not publish a file size or a version number until the release is real.</p>
+  <section class="section" aria-label="Download Interview Assistant">
+    <div class="container">
+      <div class="dl-rec" id="dl-rec">
+        <p class="dl-rec-label" id="dl-rec-label">Recommended — Windows</p>
+        <h2 class="dl-rec-title" id="dl-rec-title">Windows 10/11, 64-bit — the first platform.</h2>
+        <p class="dl-rec-status" id="dl-rec-status"><strong>Signed installer + SHA-256: not yet published.</strong> There is no installer to download yet. The buttons below will go live with the first signed release — we will not link a file that does not exist, and we will not publish a file size or a version number until the release is real.</p>
+        <p class="dl-rec-detected" id="dl-rec-detected" hidden></p>
+        <div class="dl-rec-live" id="dl-rec-live" hidden></div>
+        <p class="cta-row dl-rec-actions" id="dl-rec-actions">
+          <button class="btn btn-primary" type="button" id="dl-installer" disabled aria-disabled="true">Download the installer</button>
+          <button class="btn btn-secondary" type="button" id="dl-portable" disabled aria-disabled="true">Portable ZIP</button>
+        </p>
+        <p class="download-note" id="download-note" role="status">Download links go live with the first signed release — this page has no installer yet.</p>
       </div>
-      <p class="cta-row">
-        <button class="btn btn-primary" type="button" id="dl-installer" disabled aria-disabled="true">Download the installer</button>
-        <button class="btn btn-secondary" type="button" id="dl-portable" disabled aria-disabled="true">Portable ZIP</button>
-      </p>
-      <p class="download-note" id="download-note" role="status">Download links go live with the first signed release — this draft has no installer yet.</p>
 
-      <div class="installer app-window" role="img" aria-label="Preview of the installer window: no download is available yet, the progress bar is empty and the SHA-256 hash is not published.">
-        <div class="app-window-bar">
-          <span class="app-window-title">Interview Assistant — Setup</span>
-          <span class="app-controls" aria-hidden="true"><i>–</i><i>▢</i><i>×</i></span>
-        </div>
-        <div class="inst-body" aria-hidden="true">
-          <div class="inst-file">
-            <span class="inst-ic">IA</span>
-            <div><strong>InterviewAssistant-Setup.exe</strong><span>Signed installer · not yet published</span></div>
+      <div class="dl-after" id="dl-after" hidden>
+        <h2 class="dl-after-title">Your download has started.</h2>
+        <p class="dl-after-text" id="dl-after-text"></p>
+        <div id="dl-after-sha"></div>
+        <p class="dl-after-steps">Next: run the file, sign in, import your resume, confirm the facts — the full first-run list is <a href="#after-install">below</a>.</p>
+      </div>
+
+      <div class="grid grid-2 dl-cards" id="dl-platforms">
+        <article class="card dl-card" data-platform="windows">
+          <div class="dl-card-head">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></span>
+            <h3>Windows</h3>
           </div>
-          <div class="inst-progress"><i></i></div>
-          <p class="inst-status">Waiting for the first signed release — nothing to download yet.</p>
-          <div class="inst-sha"><span>SHA-256</span><code>Not published yet</code></div>
-        </div>
+          <p class="dl-card-req">Windows 10 or 11, 64-bit · per-user install, no admin needed</p>
+          <p class="dl-card-status">First platform — signed installer not yet published.</p>
+          <div class="dl-card-live" hidden></div>
+        </article>
+        <article class="card dl-card" data-platform="android">
+          <div class="dl-card-head">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
+            <h3>Android</h3>
+          </div>
+          <p class="dl-card-req">Companion first: preparation and practise on the go</p>
+          <p class="dl-card-status">Planned — Phase 3. No APK, no date.</p>
+          <div class="dl-card-live" hidden></div>
+        </article>
+        <article class="card dl-card" data-platform="ios">
+          <div class="dl-card-head">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 5h4"/></svg></span>
+            <h3>iOS</h3>
+          </div>
+          <p class="dl-card-req">Companion first: preparation and practise on the go</p>
+          <p class="dl-card-status">Planned — feasibility still being researched. No date.</p>
+          <div class="dl-card-live" hidden></div>
+        </article>
+        <article class="card dl-card" data-platform="mac">
+          <div class="dl-card-head">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 20h20"/></svg></span>
+            <h3>Mac</h3>
+          </div>
+          <p class="dl-card-req">A dedicated native app — not a port</p>
+          <p class="dl-card-status">Planned — feasibility still being researched. No date.</p>
+          <div class="dl-card-live" hidden></div>
+        </article>
       </div>
 
+      <section class="dl-whatsnew" id="dl-whatsnew" hidden aria-labelledby="dl-whatsnew-title">
+        <h2 id="dl-whatsnew-title">What’s new</h2>
+        <div id="dl-whatsnew-body"></div>
+      </section>
+
+      <section class="dl-all" id="dl-all" hidden aria-labelledby="dl-all-title">
+        <h2 id="dl-all-title">All downloads</h2>
+        <div id="dl-all-body"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="section" aria-label="About the download">
+    <div class="container narrow">
       <h2>Two ways to run it</h2>
       <div class="grid grid-2">
         <article class="card">
@@ -132,7 +180,7 @@
         </div>
       </div>
 
-      <h2>What happens after you install</h2>
+      <h2 id="after-install">What happens after you install</h2>
       <p>Your first run, step by step. This describes the first signed release — the installer is not published yet, so these steps are what to expect, not something you can do today.</p>
       <ol class="numbered">
         <li><strong>Install</strong> — run the signed installer and check its SHA-256 against the hash published on this page.</li>
@@ -155,7 +203,6 @@
       <a class="btn btn-primary" href="platforms.html">Platforms &amp; roadmap →</a>
     </div>
   </section>
-
 </main>
 <footer class="site-footer">
   <div class="container footer-grid">

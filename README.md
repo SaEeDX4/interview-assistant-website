@@ -17,7 +17,7 @@ native Mac app are future research.
 | Path | What it is |
 |---|---|
 | `website/` | The live static site (11 pages, CSS, JS, self-hosted Inter). GitHub Pages deploys from here. |
-| `standards/` | The engineering standards the site is built to — 13 documents: spacing, typography, accessibility, color, SEO, motion, breakpoints, imagery, dead code, navigation, radius, stability + `FINAL-REVIEW.md`, the Step 19 full final review. |
+| `standards/` | The engineering standards the site is built to — 14 documents: spacing, typography, accessibility, color, SEO, motion, breakpoints, imagery, dead code, navigation, radius, stability, releases + `FINAL-REVIEW.md`, the Step 19 full final review. |
 | `tests/` | Automated checks that enforce the standards, the applied fix scripts, and the full review (`review19.py` + `step19-report.json`). See `tests/README.md` for the suite map and numbering notes. |
 | `docs/` | The V2 documentation package: 71 numbered specialist docs (01–08 at root, 09–71 in topic folders). |
 | `audit/` | The V2 source audit: verdict, source proof, scorecard, findings, decision log. |
@@ -48,8 +48,8 @@ published yet.
 ## Standards and tests
 
 Every standard in `standards/` is enforced by a test in `tests/`
-(32 suites, `test-step6.js` … `test-step40.js` — 470+ checks, all
-passing as of Step 40; the count grows with each step). From the repo
+(33 suites, `test-step6.js` … `test-step41.js` — 490+ checks, all
+passing as of Step 41; the count grows with each step). From the repo
 root:
 
 ```bash

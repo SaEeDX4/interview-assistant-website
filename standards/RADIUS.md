@@ -26,8 +26,9 @@ are the app chips (8px) and the sticky-bar buttons (12px).
 - Dots stay round (`border-radius: 50%`): the status dot, the
   answer bullet dots, the demo dots — a dot is a dot.
 - Progress and meter tracks keep their rounded ends
-  (`.meter-track`, `.meter-fill`, `.inst-progress`, the range
-  slider tracks): a bar's fill is not a control's shape.
+  (`.meter-track`, `.meter-fill`, the range slider tracks):
+  a bar's fill is not a control's shape. (`.inst-progress` retired
+  with the installer mockup in Step 41.)
 
 ## History
 

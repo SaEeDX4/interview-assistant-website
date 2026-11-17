@@ -135,11 +135,13 @@ check("must-not-invent checklist holds (hero + story)",
 check("JS gates demo, hero and story on prefers-reduced-motion (>= 3)",
   (js.match(/matchMedia\("\(prefers-reduced-motion: reduce\)"\)/g) || []).length >= 3);
 
-// 12. Regressions: the hero mockup still has its Replay + stats strip,
-// the installer still shares the window frame.
-check("hero Replay + stats strip still present; installer frame intact",
+// 12. Regressions: the hero mockup still has its Replay + stats strip.
+// The installer mockup retired in Step 41 by design (the download
+// page's real recommendation panel replaced the picture of an
+// installer); the download page now carries that panel instead.
+check("hero Replay + stats strip still present; download panel present",
   /id="hero-replay"/.test(html) && /class="hero-stats"/.test(html) &&
-  fs.readFileSync(path.join(root, "download.html"), "utf8").includes('class="installer app-window"'));
+  fs.readFileSync(path.join(root, "download.html"), "utf8").includes('id="dl-rec"'));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

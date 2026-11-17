@@ -1385,17 +1385,44 @@ body.cta-visible { padding-bottom: 96px; }
 .meter-note { color: var(--muted); font-size: 14px; margin: 16px 0 0; }
 
 /* Installer mockup + requirements (download.html) */
-.installer { max-width: 680px; margin: 0 auto 24px; }
-.inst-body { padding: 20px; }
-.inst-file { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
-.inst-file .inst-ic { flex: none; width: 36px; height: 36px; border-radius: 9px; background: var(--accent-soft); color: var(--focus); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
-.inst-file strong { display: block; font-size: 15px; }
-.inst-file span { color: var(--muted-2); font-size: 14px; }
-.inst-progress { height: 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; margin-bottom: 8px; }
-.inst-progress i { display: block; height: 100%; width: 0%; background: var(--accent); }
-.inst-status { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
-.inst-sha { display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; font-size: 14px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 16px; }
-.inst-sha code { color: var(--muted-2); font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+/* Step 41 — download page: recommendation panel, platform cards and
+   release rendering. Availability is data-driven (standards/RELEASES.md):
+   nothing here styles a download that does not exist. */
+.dl-rec { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+.dl-rec-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-light); margin: 0 0 12px; }
+.dl-rec-title { font-size: 28px; margin: 0 0 12px; }
+.dl-rec-status { color: var(--muted); font-size: 16px; margin: 0 0 16px; }
+.dl-rec-status strong { color: var(--text); }
+.dl-rec-detected { color: var(--muted); font-size: 15px; margin: 0 0 16px; }
+.dl-rec-actions { margin-top: 0; }
+.dl-rec .download-note { margin-bottom: 0; }
+.dl-rec-meta { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+.dl-rec-req { color: var(--muted); font-size: 15px; margin: 0 0 16px; }
+.dl-after { background: var(--accent-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 24px; }
+.dl-after-title { font-size: 22px; margin: 0 0 8px; }
+.dl-after-text { color: var(--muted); font-size: 15px; margin: 0; }
+.dl-after-steps { color: var(--muted); font-size: 15px; margin: 16px 0 0; }
+.dl-rec-live { margin-top: 16px; }
+.dl-cards { align-items: stretch; }
+.dl-card { display: flex; flex-direction: column; }
+.dl-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.dl-card-head h3 { margin: 0; font-size: 20px; }
+.dl-card-req { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+.dl-card-status { color: var(--muted); font-size: 15px; margin: 0; }
+.dl-card-live { margin-top: 16px; }
+.dl-card-version { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+.dl-file { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--border); }
+.dl-file-info { flex: 1 1 auto; }
+.dl-file-name { display: block; font-size: 15px; font-weight: 600; }
+.dl-file-size { color: var(--muted); font-size: 13px; }
+.dl-sha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-top: 12px; }
+.dl-sha-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.dl-sha code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 12px; color: var(--muted-2); word-break: break-all; flex: 1 1 200px; }
+.dl-whatsnew { margin-top: 48px; }
+.dl-all { margin-top: 48px; }
+.dl-all-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--border); }
+.dl-all-row:first-child { border-top: 0; }
+@media (max-width: 640px) { .dl-rec { padding: 24px; } .dl-after { padding: 24px; } .dl-rec-title { font-size: 24px; } }
 .req-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; align-items: stretch; }
 @media (max-width: 640px) { .req-grid { grid-template-columns: 1fr; } }
 .req-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }

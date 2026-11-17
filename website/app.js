@@ -168,6 +168,7 @@ var FALLBACK = {
 // The OpenAI key lives ONLY in the proxy — never in this file, never
 // in the browser.
 var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
+var IA_RELEASES_ENDPOINT = "";
 
 // Step 30 — prepared answer variants for the hero, authored to the source
 // app's own style specs (AnswerStyleSpec): Shorter = VeryShort (2-3 bullets,
@@ -2574,6 +2575,310 @@ var IA_VARIANTS = {
       btn.setAttribute("aria-expanded", String(open));
     });
   });
+})();
+
+/* Step 41 — download page: platform detection + release-manifest
+   rendering. The static page is the honest floor (nothing published);
+   when IA_RELEASES_ENDPOINT serves a manifest, this renders only what
+   the manifest proves: real download buttons for released platforms,
+   in the owner's order — the visitor's platform first if it is
+   released, otherwise Windows first, then the rest in fixed order,
+   with unreleased platforms last as status cards
+   (standards/RELEASES.md). All manifest data is rendered with
+   textContent, never innerHTML. */
+(function () {
+  "use strict";
+  var rec = document.getElementById("dl-rec");
+  if (!rec) { return; }
+  var ORDER = ["windows", "android", "ios", "mac"];
+  var NAMES = { windows: "Windows", android: "Android", ios: "iOS", mac: "Mac" };
+  var PLANNED = {
+    android: "Interview Assistant for Android is planned — a companion first, with no date yet.",
+    ios: "Interview Assistant for iOS is planned — whether it can capture meeting audio is still being researched.",
+    mac: "Interview Assistant for Mac is planned as a dedicated native app, with no date yet."
+  };
+  var MONTHS = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  var detected = detectPlatform();
+
+  var detectedEl = document.getElementById("dl-rec-detected");
+  if (detected && detected !== "windows" && detectedEl && PLANNED[detected]) {
+    detectedEl.textContent = "You are on " + NAMES[detected] + ". " + PLANNED[detected];
+    detectedEl.hidden = false;
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || typeof t.closest !== "function") { return; }
+    var copyBtn = t.closest(".dl-sha-copy");
+    if (copyBtn) { copySha(copyBtn); return; }
+    var link = t.closest("a[data-dl-file]");
+    if (link) { showAfter(link); }
+  });
+
+  if (IA_RELEASES_ENDPOINT && typeof fetch === "function") {
+    fetch(IA_RELEASES_ENDPOINT, { headers: { "Accept": "application/json" } })
+      .then(function (r) { if (!r.ok) { throw new Error("manifest unavailable"); } return r.json(); })
+      .then(function (data) {
+        var byPlatform = pickReleases(data);
+        if (byPlatform) { render(byPlatform); }
+      })
+      .catch(function () { /* the static page is the honest floor */ });
+  }
+
+  function detectPlatform() {
+    try {
+      var uad = navigator.userAgentData;
+      if (uad && typeof uad.platform === "string" && uad.platform) {
+        var p = uad.platform.toLowerCase();
+        if (p.indexOf("win") >= 0) { return "windows"; }
+        if (p.indexOf("android") >= 0) { return "android"; }
+        if (p.indexOf("mac") >= 0) { return "mac"; }
+      }
+    } catch (err) { /* fall through to the UA string */ }
+    var ua = navigator.userAgent || "";
+    if (/Android/i.test(ua)) { return "android"; }
+    if (/iPhone|iPad|iPod/i.test(ua)) { return "ios"; }
+    if (/Windows/i.test(ua)) { return "windows"; }
+    if (/Macintosh|Mac OS X/i.test(ua)) { return "mac"; }
+    return null;
+  }
+
+  function validFile(f) {
+    return !!f && typeof f.name === "string" && f.name !== "" &&
+      typeof f.url === "string" && /^https:\/\//.test(f.url) &&
+      typeof f.size === "number" && isFinite(f.size) && f.size >= 0 &&
+      typeof f.sha256 === "string" && /^[0-9a-f]{64}$/i.test(f.sha256);
+  }
+
+  function pickReleases(data) {
+    if (!data || !Array.isArray(data.releases)) { return null; }
+    var stable = {}, beta = {}, any = false;
+    data.releases.forEach(function (r) {
+      if (!r || ORDER.indexOf(r.platform) < 0 || typeof r.version !== "string" || r.version === "") { return; }
+      var files = (Array.isArray(r.files) ? r.files : []).filter(validFile);
+      if (!files.length) { return; }
+      var rel = {
+        platform: r.platform, version: r.version,
+        channel: r.channel === "beta" ? "beta" : "stable",
+        publishedAt: typeof r.publishedAt === "string" ? r.publishedAt : "",
+        notes: typeof r.notes === "string" ? r.notes : "",
+        minRequirement: typeof r.minRequirement === "string" ? r.minRequirement : "",
+        files: files.map(function (f) {
+          return { name: f.name, url: f.url, size: f.size, sha256: f.sha256.toLowerCase(),
+            kind: typeof f.kind === "string" ? f.kind : "",
+            label: typeof f.label === "string" ? f.label : "" };
+        })
+      };
+      if (rel.channel === "beta") { if (!beta[rel.platform]) { beta[rel.platform] = rel; } }
+      else if (!stable[rel.platform]) { stable[rel.platform] = rel; }
+      any = true;
+    });
+    if (!any) { return null; }
+    var out = {};
+    ORDER.forEach(function (p) { if (stable[p]) { out[p] = stable[p]; } else if (beta[p]) { out[p] = beta[p]; } });
+    return out;
+  }
+
+  function orderPlatforms(byPlatform) {
+    var first = null;
+    if (detected && byPlatform[detected]) { first = detected; }
+    else if (byPlatform.windows) { first = "windows"; }
+    else {
+      for (var i = 0; i < ORDER.length; i++) { if (byPlatform[ORDER[i]]) { first = ORDER[i]; break; } }
+    }
+    var out = [];
+    if (first) { out.push(first); }
+    ORDER.forEach(function (p) { if (byPlatform[p] && p !== first) { out.push(p); } });
+    ORDER.forEach(function (p) { if (!byPlatform[p]) { out.push(p); } });
+    return out;
+  }
+
+  function fmtSize(bytes) {
+    if (bytes >= 1048576) { return (bytes / 1048576).toFixed(1) + " MB"; }
+    if (bytes >= 1024) { return Math.round(bytes / 1024) + " KB"; }
+    return bytes + " B";
+  }
+
+  function fmtDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+    if (!m) { return ""; }
+    var month = MONTHS[Number(m[2]) - 1];
+    if (!month) { return ""; }
+    return Number(m[3]) + " " + month + " " + m[1];
+  }
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) { node.className = cls; }
+    if (text !== undefined) { node.textContent = text; }
+    return node;
+  }
+
+  function shaBlock(sha) {
+    var box = el("div", "dl-sha");
+    box.appendChild(el("span", "dl-sha-label", "SHA-256"));
+    box.appendChild(el("code", "", sha));
+    var btn = el("button", "btn btn-secondary btn-small dl-sha-copy", "Copy");
+    btn.setAttribute("type", "button");
+    btn.setAttribute("data-sha", sha);
+    box.appendChild(btn);
+    return box;
+  }
+
+  function downloadLink(file, primary) {
+    var a = el("a", primary ? "btn btn-primary" : "btn btn-secondary", file.label || file.name);
+    a.setAttribute("href", file.url);
+    a.setAttribute("download", "");
+    a.setAttribute("data-dl-file", "");
+    a.setAttribute("data-name", file.name);
+    a.setAttribute("data-size", String(file.size));
+    a.setAttribute("data-sha", file.sha256);
+    return a;
+  }
+
+  function versionText(rel) {
+    var d = fmtDate(rel.publishedAt);
+    return "Version " + rel.version + (d ? " · " + d : "");
+  }
+
+  function fillCard(card, rel) {
+    var status = card.querySelector(".dl-card-status");
+    if (status) { status.hidden = true; }
+    var req = card.querySelector(".dl-card-req");
+    if (req && rel.minRequirement) { req.textContent = rel.minRequirement; }
+    var live = card.querySelector(".dl-card-live");
+    if (!live) { return; }
+    var head = el("p", "dl-card-version", versionText(rel));
+    if (rel.channel === "beta") {
+      head.appendChild(document.createTextNode(" "));
+      head.appendChild(el("span", "badge badge-plan", "Beta"));
+    }
+    live.appendChild(head);
+    rel.files.forEach(function (f) {
+      var row = el("div", "dl-file");
+      var info = el("div", "dl-file-info");
+      info.appendChild(el("span", "dl-file-name", f.label || f.name));
+      info.appendChild(el("span", "dl-file-size", fmtSize(f.size)));
+      row.appendChild(info);
+      var link = downloadLink(f, false);
+      link.classList.add("btn-small");
+      row.appendChild(link);
+      live.appendChild(row);
+      live.appendChild(shaBlock(f.sha256));
+    });
+    live.hidden = false;
+  }
+
+  function fillRec(rel) {
+    var label = document.getElementById("dl-rec-label");
+    if (label) { label.textContent = "Recommended — " + NAMES[rel.platform]; }
+    var title = document.getElementById("dl-rec-title");
+    if (title) { title.textContent = "Interview Assistant for " + NAMES[rel.platform] + "."; }
+    var status = document.getElementById("dl-rec-status");
+    if (status) { status.hidden = true; }
+    var actions = document.getElementById("dl-rec-actions");
+    if (actions) { actions.hidden = true; }
+    var note = document.getElementById("download-note");
+    if (note) { note.textContent = "Published and signed. After the file downloads, check its SHA-256 — shown here and on the platform card — against the file on your machine."; }
+    var live = document.getElementById("dl-rec-live");
+    if (!live) { return; }
+    var meta = el("p", "dl-rec-meta", versionText(rel));
+    if (rel.channel === "beta") {
+      meta.appendChild(document.createTextNode(" "));
+      meta.appendChild(el("span", "badge badge-plan", "Beta"));
+    }
+    live.appendChild(meta);
+    if (rel.minRequirement) { live.appendChild(el("p", "dl-rec-req", rel.minRequirement)); }
+    var row = el("p", "cta-row");
+    rel.files.forEach(function (f, i) { row.appendChild(downloadLink(f, i === 0)); });
+    live.appendChild(row);
+    live.appendChild(shaBlock(rel.files[0].sha256));
+    live.hidden = false;
+  }
+
+  function fillWhatsNew(rel) {
+    if (!rel || !rel.notes || !rel.notes.trim()) { return; }
+    var section = document.getElementById("dl-whatsnew");
+    var body = document.getElementById("dl-whatsnew-body");
+    var title = document.getElementById("dl-whatsnew-title");
+    if (!section || !body) { return; }
+    if (title) { title.textContent = "What’s new in " + rel.version; }
+    rel.notes.split(/\n\s*\n/).forEach(function (para) {
+      var t = para.trim();
+      if (t) { body.appendChild(el("p", "", t)); }
+    });
+    section.hidden = false;
+  }
+
+  function fillAll(byPlatform, order) {
+    var section = document.getElementById("dl-all");
+    var body = document.getElementById("dl-all-body");
+    if (!section || !body) { return; }
+    var rows = 0;
+    order.forEach(function (p) {
+      var rel = byPlatform[p];
+      if (!rel) { return; }
+      rel.files.forEach(function (f) {
+        var rowEl = el("div", "dl-all-row");
+        var info = el("div", "dl-file-info");
+        info.appendChild(el("span", "dl-file-name", NAMES[p] + " — " + (f.label || f.name)));
+        info.appendChild(el("span", "dl-file-size", "Version " + rel.version + " · " + fmtSize(f.size)));
+        rowEl.appendChild(info);
+        var link = downloadLink(f, false);
+        link.classList.add("btn-small");
+        link.textContent = "Download";
+        rowEl.appendChild(link);
+        body.appendChild(rowEl);
+        rows++;
+      });
+    });
+    if (rows) { section.hidden = false; }
+  }
+
+  function render(byPlatform) {
+    var order = orderPlatforms(byPlatform);
+    var grid = document.getElementById("dl-platforms");
+    var cards = {};
+    if (grid) {
+      var kids = Array.prototype.slice.call(grid.children);
+      kids.forEach(function (c) { cards[c.getAttribute("data-platform")] = c; });
+      order.forEach(function (p) { if (cards[p]) { grid.appendChild(cards[p]); } });
+    }
+    order.forEach(function (p) { if (byPlatform[p] && cards[p]) { fillCard(cards[p], byPlatform[p]); } });
+    var first = null;
+    for (var i = 0; i < order.length; i++) { if (byPlatform[order[i]]) { first = byPlatform[order[i]]; break; } }
+    if (first) { fillRec(first); fillWhatsNew(first); }
+    fillAll(byPlatform, order);
+  }
+
+  function showAfter(link) {
+    var panel = document.getElementById("dl-after");
+    var text = document.getElementById("dl-after-text");
+    var shaSlot = document.getElementById("dl-after-sha");
+    if (!panel || !text) { return; }
+    var size = Number(link.getAttribute("data-size")) || 0;
+    text.textContent = (link.getAttribute("data-name") || "Your file") + " · " +
+      fmtSize(size) + " — if the download did not start, use the download button again.";
+    if (shaSlot) {
+      shaSlot.textContent = "";
+      var sha = link.getAttribute("data-sha");
+      if (sha) { shaSlot.appendChild(shaBlock(sha)); }
+    }
+    panel.hidden = false;
+  }
+
+  function copySha(btn) {
+    var sha = btn.getAttribute("data-sha");
+    if (!sha) { return; }
+    function done() {
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+    }
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      navigator.clipboard.writeText(sha).then(done, done);
+    } else { done(); }
+  }
 })();
 
 /* Step 25 — chip-row fade edge: a scroller's mask shows only where there
