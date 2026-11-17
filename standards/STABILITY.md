@@ -433,3 +433,16 @@ The hero's answer-source label for a live-generated answer reads
 "live" (the word "AI" retired from the meta at the owner's
 request; "prepared" would have been false for a typed question,
 "live" is exactly what happened).
+
+Step 39 audit (full-site UI review, owner's mandate): a connector or
+thread between two elements must live only in the space between
+them — never across an element's interior, where it will strike
+through text, icons or labels at some width. The Timeline Trio's
+first thread crossed the phase names on desktop and the icon chips
+and text on mobile; it now exists only in the 24px gaps. The
+stacked roadmap's thread follows the same rule, segment by segment,
+inside a channel the text is padded clear of. Card rows stretch:
+any grid of cards whose items size to their own content leaves
+ragged bottoms (demo mode cards, download's two ways, platform
+cards, trouble cards) — `.grid` and `.trouble-grid` stretch by
+default; start alignment is declared per layout that needs it.

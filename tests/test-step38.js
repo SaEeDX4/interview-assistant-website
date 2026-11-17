@@ -56,10 +56,11 @@ check("nodes, phases, taglines and facts are all present",
 check("node is a rounded square (8px), never a circle",
   /\.tl-node \{[^}]*border-radius: 8px/.test(clean) &&
   !/\.tl-node \{[^}]*border-radius: 50%/.test(clean));
-check("the thread: solid into Live, dashed into Coach, vertical rail at <=1024px",
-  /\.tl-card:not\(:last-child\)::after \{[^}]*border-top: 1px solid/.test(clean) &&
+check("the thread: gap-only segments (Step 39), solid into Live, dashed into Coach, vertical in the gap at <=1024px",
+  /\.tl-card:not\(:last-child\)::after \{[^}]*left: 100%;[^}]*width: 24px;[^}]*border-top: 1px solid/.test(clean) &&
   /\.tl-card:nth-child\(2\)::after \{ border-top-style: dashed; \}/.test(clean) &&
-  /@media \(max-width: 1024px\) \{[\s\S]*?\.tl-card:not\(:last-child\)::after \{[^}]*border-left: 1px solid/.test(clean));
+  /@media \(max-width: 1024px\) \{[\s\S]*?\.tl-card:not\(:last-child\)::after \{[^}]*top: 100%;[^}]*height: 24px;[^}]*border-left: 1px solid/.test(clean) &&
+  !/\.tl-card:not\(:last-child\)::after \{[^}]*calc\(100% \+ 24px\)/.test(clean));
 check("card bodies fit the premium copy budget (<=240 chars)",
   ["only the ones you confirm are ever used.", "written to be said, not read.", "so the words stay yours."].every((t) => index.includes(t)) &&
   !index.includes("A 50–150 question bank is built for\n            that interview."));
