@@ -62,8 +62,8 @@ check("dl: planned statuses mirror the platforms page",
 
 // 7. app.js: endpoint declared empty (wiring is Step 41c), the IIFE
 //    exists, validates hard, and renders without innerHTML.
-check("js: IA_RELEASES_ENDPOINT declared empty for 41a",
-  js.includes('var IA_RELEASES_ENDPOINT = "";'));
+check("js: IA_RELEASES_ENDPOINT wired to the release service (41c)",
+  js.includes('var IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest";'));
 const iifeStart = js.indexOf("/* Step 41 — download page");
 const iifeEnd = js.indexOf("/* Step 25 — chip-row fade edge");
 check("js: download IIFE present", iifeStart > 0 && iifeEnd > iifeStart);

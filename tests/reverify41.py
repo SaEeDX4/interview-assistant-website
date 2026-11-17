@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Step 41 live markers: the redesigned download page is deployed and
-still the honest floor (no endpoint wired until 41c, so no version,
-no size, no binary link may appear on the live page)."""
+"""Step 41 live markers: the redesigned download page is deployed,
+wired to the release service (41c), and still the honest floor
+while the manifest is empty — no version, no size, no binary link
+may appear on the live page."""
 import sys
 import urllib.request
 
@@ -26,7 +27,8 @@ def main():
         ("honest static floor live",
          "Signed installer + SHA-256: not yet published" in dl),
         ("no invented version live", "Version 1" not in dl),
-        ("endpoint still empty pre-41c", 'var IA_RELEASES_ENDPOINT = "";' in js),
+        ("endpoint wired to the release service (41c)",
+         'IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest"' in js),
         ("download IIFE live", "Step 41 — download page" in js),
         ("dl styles live", ".dl-rec {" in css and ".dl-sha {" in css),
         ("installer mockup retired live", "installer app-window" not in dl),

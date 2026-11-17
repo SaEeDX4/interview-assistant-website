@@ -168,7 +168,7 @@ var FALLBACK = {
 // The OpenAI key lives ONLY in the proxy — never in this file, never
 // in the browser.
 var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
-var IA_RELEASES_ENDPOINT = "";
+var IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest";
 
 // Step 30 — prepared answer variants for the hero, authored to the source
 // app's own style specs (AnswerStyleSpec): Shorter = VeryShort (2-3 bullets,
