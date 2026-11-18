@@ -2586,6 +2586,202 @@ var IA_VARIANTS = {
   });
 })();
 
+/* Step 48 — Growth & Campaigns: renders the announcements carried
+   by the release Worker's public /growth document into the slots
+   each page declares (a top bar on every page, an update card on
+   the homepage, a callout on the pricing page). The document is
+   data, never markup: strict shape checks first, textContent-only
+   rendering, and any failure — network, shape, country mismatch,
+   a past dismissal — leaves the page exactly as authored (the
+   static page is the honest floor, the same rule as the download
+   manifest). The document carries announcements only: no prices
+   and no offers, so nothing here can promise a price that a real
+   checkout would not honor. */
+(function () {
+  "use strict";
+  var bar = document.getElementById("ia-growth-bar");
+  var home = document.getElementById("ia-growth-home");
+  var homeInner = document.getElementById("ia-growth-home-inner");
+  var pricing = document.getElementById("ia-growth-pricing");
+  if (!bar && !home && !pricing) { return; }
+  var ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/growth";
+  var TYPES = ["release", "feature", "product_news", "maintenance", "notice", "offer"];
+  var LABELS = { release: "New release", feature: "New feature", product_news: "News",
+    maintenance: "Maintenance", notice: "Notice", offer: "Offer" };
+  var dismissed = loadDismissed();
+  if (typeof fetch !== "function") { return; }
+  fetch(ENDPOINT, { headers: { "Accept": "application/json" } })
+    .then(function (r) { if (!r.ok) { throw new Error("growth unavailable"); } return r.json(); })
+    .then(function (doc) { render(doc); })
+    .catch(function () { /* the static page is the honest floor */ });
+
+  function loadDismissed() {
+    try {
+      var raw = window.localStorage.getItem("ia_growth_dismissed");
+      var arr = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(arr)) { return []; }
+      return arr.filter(function (x) { return typeof x === "string"; });
+    } catch (e) { return []; }
+  }
+  function saveDismissed() {
+    try { window.localStorage.setItem("ia_growth_dismissed", JSON.stringify(dismissed.slice(-50))); }
+    catch (e) { /* dismissal then lasts for this page view only */ }
+  }
+  function valid(a) {
+    if (!a || typeof a.id !== "string" || !a.id) { return false; }
+    if (TYPES.indexOf(a.type) < 0) { return false; }
+    if (["bar", "home_card", "pricing_callout"].indexOf(a.placement) < 0) { return false; }
+    if (typeof a.headline !== "string" || !a.headline || a.headline.length > 140) { return false; }
+    if (typeof a.body !== "string" || a.body.length > 500) { return false; }
+    if (typeof a.linkUrl !== "string" || (a.linkUrl !== "" && !/^https:\/\//.test(a.linkUrl))) { return false; }
+    if (typeof a.linkLabel !== "string" || a.linkLabel.length > 40) { return false; }
+    if (a.linkUrl && !a.linkLabel) { return false; }
+    if (a.countries !== null && !Array.isArray(a.countries)) { return false; }
+    if (Array.isArray(a.countries)) {
+      for (var i = 0; i < a.countries.length; i++) {
+        if (!/^[A-Z]{2}$/.test(a.countries[i])) { return false; }
+      }
+    }
+    if (a.endsAt !== null && (typeof a.endsAt !== "number" || !isFinite(a.endsAt))) { return false; }
+    return true;
+  }
+  function eligible(a, country) {
+    if (!a.countries) { return true; }
+    return !!country && a.countries.indexOf(country) >= 0;
+  }
+  function render(doc) {
+    if (!doc || !Array.isArray(doc.announcements)) { return; }
+    var country = typeof doc.displayCountry === "string" ? doc.displayCountry : "";
+    var nowSec = Math.floor(Date.now() / 1000);
+    var list = [];
+    doc.announcements.forEach(function (a) {
+      /* A cached document must never outlive an announcement: if
+         its end has passed by the visitor's clock, it does not
+         render, however fresh the copy looked to the cache. */
+      if (a && a.endsAt !== null && typeof a.endsAt === "number" && a.endsAt <= nowSec) { return; }
+      if (valid(a) && eligible(a, country) && dismissed.indexOf(a.id) < 0) { list.push(a); }
+    });
+    if (bar) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].placement === "bar") { renderBar(list[i]); break; }
+      }
+    }
+    if (home && homeInner) {
+      var cards = list.filter(function (a) { return a.placement === "home_card"; }).slice(0, 3);
+      if (cards.length) { renderHome(cards); }
+    }
+    if (pricing) {
+      var cos = list.filter(function (a) { return a.placement === "pricing_callout"; }).slice(0, 2);
+      if (cos.length) { renderPricing(cos); }
+    }
+  }
+  function endsLine(a) {
+    if (!a.endsAt) { return ""; }
+    try {
+      return "Until " + new Date(a.endsAt * 1000).toLocaleDateString("en-US",
+        { month: "long", day: "numeric", year: "numeric" }) + ".";
+    } catch (e) { return ""; }
+  }
+  function linkFor(a) {
+    if (!a.linkUrl) { return null; }
+    var link = document.createElement("a");
+    link.href = a.linkUrl;
+    link.textContent = a.linkLabel;
+    return link;
+  }
+  function dismissBtn(a, node, slot) {
+    if (!a.dismissible) { return null; }
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ia-dismiss";
+    btn.setAttribute("aria-label", "Dismiss this announcement");
+    btn.textContent = "×";
+    btn.addEventListener("click", function () {
+      if (dismissed.indexOf(a.id) < 0) { dismissed.push(a.id); saveDismissed(); }
+      if (node && node.parentNode) { node.parentNode.removeChild(node); }
+      if (slot && !slot.querySelector(".ia-item")) { slot.hidden = true; }
+      if (slot === bar) { bar.hidden = true; }
+    });
+    return btn;
+  }
+  function renderBar(a) {
+    bar.innerHTML = "";
+    var inner = document.createElement("div");
+    inner.className = "ia-bar-inner container ia-item";
+    var text = document.createElement("p");
+    text.className = "ia-bar-text";
+    var strong = document.createElement("strong");
+    strong.textContent = a.headline;
+    text.appendChild(strong);
+    var rest = (a.body ? " " + a.body : "") + (endsLine(a) ? " " + endsLine(a) : "");
+    if (rest) { text.appendChild(document.createTextNode(rest)); }
+    inner.appendChild(text);
+    var link = linkFor(a);
+    if (link) { link.className = "ia-bar-link"; inner.appendChild(link); }
+    var btn = dismissBtn(a, inner, bar);
+    if (btn) { inner.appendChild(btn); }
+    bar.appendChild(inner);
+    bar.hidden = false;
+  }
+  function renderHome(cards) {
+    homeInner.innerHTML = "";
+    cards.forEach(function (a) {
+      var card = document.createElement("article");
+      card.className = "card ia-update-card ia-item";
+      var eyebrow = document.createElement("p");
+      eyebrow.className = "eyebrow";
+      eyebrow.textContent = LABELS[a.type] || "News";
+      card.appendChild(eyebrow);
+      var h = document.createElement("h3");
+      h.textContent = a.headline;
+      card.appendChild(h);
+      if (a.body) {
+        var p = document.createElement("p");
+        p.textContent = a.body;
+        card.appendChild(p);
+      }
+      var tail = endsLine(a);
+      if (tail) {
+        var m = document.createElement("p");
+        m.className = "muted";
+        m.textContent = tail;
+        card.appendChild(m);
+      }
+      var link = linkFor(a);
+      if (link) { card.appendChild(link); }
+      var btn = dismissBtn(a, card, home);
+      if (btn) { card.appendChild(btn); }
+      homeInner.appendChild(card);
+    });
+    /* The slot deliberately does not carry .section while hidden:
+       .section + .section { padding-top: 0 } would otherwise strip
+       the next section's top padding and shift the page even with
+       no campaign. It gains the class only when it renders. */
+    home.classList.add("section");
+    home.hidden = false;
+  }
+  function renderPricing(cos) {
+    pricing.innerHTML = "";
+    cos.forEach(function (a) {
+      var box = document.createElement("div");
+      box.className = "callout ia-callout ia-item";
+      var p = document.createElement("p");
+      var strong = document.createElement("strong");
+      strong.textContent = a.headline;
+      p.appendChild(strong);
+      var rest = (a.body ? " " + a.body : "") + (endsLine(a) ? " " + endsLine(a) : "");
+      if (rest) { p.appendChild(document.createTextNode(rest)); }
+      box.appendChild(p);
+      var link = linkFor(a);
+      if (link) { box.appendChild(link); }
+      var btn = dismissBtn(a, box, pricing);
+      if (btn) { box.appendChild(btn); }
+      pricing.appendChild(box);
+    });
+    pricing.hidden = false;
+  }
+})();
+
 /* Step 41 — download page: platform detection + release-manifest
    rendering. The static page is the honest floor (nothing published);
    when IA_RELEASES_ENDPOINT serves a manifest, this renders only what

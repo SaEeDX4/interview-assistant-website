@@ -1578,3 +1578,20 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
 .cta-final { text-align: center; }
 .cta-final .section-intro { margin-left: auto; margin-right: auto; }
 .cta-final .cta-row { justify-content: center; }
+
+/* Step 48 — Growth & Campaigns announcement slots. Filled only from
+   the Worker's public /growth document; empty slots stay hidden and
+   the page is exactly as authored. Radii follow standards/RADIUS.md:
+   12px cards/callouts, 8px small controls — never a capsule. */
+#ia-growth-bar[hidden], #ia-growth-home[hidden], #ia-growth-pricing[hidden] { display: none; }
+#ia-growth-bar { background: var(--accent-soft); border-bottom: 1px solid var(--border); }
+.ia-bar-inner { display: flex; align-items: center; gap: 16px; padding-top: 12px; padding-bottom: 12px; }
+.ia-bar-text { margin: 0; font-size: 14px; flex: 1; }
+.ia-bar-link { font-weight: 600; white-space: nowrap; }
+.ia-dismiss { flex: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; padding: 0; }
+.ia-dismiss:hover { color: var(--text); border-color: var(--border-strong, var(--border)); }
+.ia-update-card { position: relative; margin: 0 0 20px; }
+.ia-update-card:last-child { margin-bottom: 0; }
+.ia-update-card .ia-dismiss, .ia-callout .ia-dismiss { position: absolute; top: 12px; right: 12px; }
+.ia-callout { position: relative; }
