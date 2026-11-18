@@ -1,16 +1,33 @@
 # Interview Assistant — Commercial Website
 
+[![Deploy static content to Pages](https://github.com/SaEeDX4/interview-assistant-website/actions/workflows/static.yml/badge.svg)](https://github.com/SaEeDX4/interview-assistant-website/actions/workflows/static.yml)
+
 The public home of **Interview Assistant** — a Windows interview
 preparation and practice coach with a live assist mode for interviews
 where assistance is permitted.
 
-**Live site:** https://saeedx4.github.io/interview-assistant-website/
-
 The app listens to the interviewer's audio from a headset, then shows
 three short, speakable answers one at a time — built only from facts the
 candidate confirmed. It never hides, never records the microphone, and
-never stores audio. Windows 10/11 x64 only for now; Android, iOS, and a
-native Mac app are future research.
+never stores audio. Windows 10/11 x64 only for now; native Android and
+iOS ports are being built in separate repositories under the same
+parity rules.
+
+## Live addresses
+
+| Surface | Address |
+|---|---|
+| Website | https://cybervalida.online |
+| Website (Pages origin) | https://saeedx4.github.io/interview-assistant-website/ — redirects to the custom domain once GitHub finishes binding it (still completing at the last check) |
+| Release admin panel | https://admin.cybervalida.online/admin — a separate Cloudflare Worker service (Access + password + passkey), not part of this repo |
+
+> **Current status — experimental soft launch.** The site is public,
+> but the app is **not released yet**: there is nothing to download and
+> no checkout. Pricing on the site: Trial 30 lifetime live minutes;
+> Pro USD 19.99/month with 600 live minutes. **The Pro price is a
+> Paddle sandbox reference — it must be confirmed before paid checkout
+> opens.** The full paid launch (signed installer, live price, Paddle
+> validation) is deferred until it can be done properly.
 
 ## Repository layout
 
@@ -39,23 +56,31 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-Pricing on the site: Trial 30 lifetime live minutes; Pro USD 19.99/month
-with 600 live minutes. **The Pro price is a Paddle sandbox reference —
-confirm it before paid checkout opens.** There is no checkout on the site
-yet, and the download page says plainly that the signed installer is not
-published yet.
+Deployment is one GitHub Actions workflow
+(`.github/workflows/static.yml`): on every push to `main` it checks
+out the repo, minifies `app.js` (terser) and `styles.css` (clean-css)
+**in the deploy artifact only** — the repository keeps readable
+sources — then uploads `website/` and deploys to GitHub Pages. The
+custom domain's DNS lives in Cloudflare; the panel, the AI proxy, and
+the release service are separate Cloudflare Workers and are not
+deployed from this repo.
 
 ## Standards and tests
 
 Every standard in `standards/` is enforced by a test in `tests/`
-(33 suites, `test-step6.js` … `test-step41.js` — 490+ checks, all
-passing as of Step 41; the count grows with each step). From the repo
-root:
+(37 suites, `test-step6.js` … `test-step41.js` plus the Step 46, 48,
+and 50 suites — 547 checks, all passing; the count grows with each
+step). From the repo root:
 
 ```bash
 for f in tests/test-step*.js; do node "$f"; done
 python3 tests/review19.py   # the Step 19 full review: suites + links + content + renders
 ```
+
+The DOM simulators in `tests/` (`sim-step22.js`, `sim-step23-demo.js`,
+`sim-step30-hero.js`, `sim-step41-download.js`, `sim-step48-growth.js`)
+drive the real `app.js` against a stub DOM and assert behaviour,
+including reduced-motion and RTL modes.
 
 `tests/step19-report.json` holds the Step 19 final review's results
 (195/195 checks at that step, 0 broken links, all pages exactly
@@ -95,15 +120,18 @@ but the website is the living product now.
 
 ## Status — what is still open
 
-- **16 owner decisions (D01–D16)** — brand/domain, hosting, signed
-  download, live Pro price, legal, support channel, analytics, language
-  marketing, platform scope, developer mode, launch threshold, data
-  rights, version — all deferred to the end. See
-  `audit/07-OWNER-DECISION-LOG.md`.
-- **Launch blockers:** live Paddle payment validation, signed Windows
-  installer + published SHA-256, final legal/support pages, real
-  device/audio/language E2E tests. The site is honest about all of these;
-  it is not yet a shippable paid public product.
+- **Soft launch posture (owner decision, 2026-11-18):** the site stays
+  up experimentally on the temporary domain cybervalida.online; the
+  full proper launch is deferred until everything can be done
+  correctly.
+- **Launch blockers for the paid launch:** live Pro price confirmation,
+  live Paddle payment validation (including category confirmation),
+  signed Windows installer + published SHA-256, seller legal identity
+  on the legal pages, and a support channel on the domain.
+- **Owner decisions (D01–D16)** — brand/final domain, hosting, legal,
+  analytics, language marketing, launch threshold, data rights — are
+  recorded in `audit/07-OWNER-DECISION-LOG.md`; several are settled,
+  the rest stay deferred with the paid launch.
 
 ## Working rules
 
@@ -112,7 +140,8 @@ but the website is the living product now.
    [`SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT`](https://github.com/SaEeDX4/REAL-TIME-WINDOWS-INTERVIEW-ASSISTANT)
    from this project.
 2. **No GitHub writes without Saeed's explicit permission.** That includes
-   this repo.
+   this repo. Work is built locally and shown first; if it is not
+   approved, it is never pushed.
 3. **No invented claims.** If the app does not do it, the website does not
    claim it: no hidden mode, no microphone recording, no audio storage, no
    hiring-outcome predictions, no scores, no fake testimonials, dates, or

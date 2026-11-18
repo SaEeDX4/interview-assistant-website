@@ -8,7 +8,10 @@
    - Coach mode inserts 3 keywords, then 1 structure line.
    - Rapid clicks cancel previous timers (run token + clearTimers).
    - Reduced motion renders the full result immediately, nothing hidden.
-   - The completed answer is announced once, via the status line. */
+   - The completed answer is announced once, via the status line.
+   Scope note: this header documents the demo module. app.js also
+   carries the hero and story players, pricing tools, sticky bar, FAQ,
+   growth announcements, and the download module further down. */
 
 /* Step 30 — shared prepared content, at file scope so the demo and the
    hero read the same bank. The samples are illustrative (built from the
@@ -162,9 +165,9 @@ var FALLBACK = {
   }
 };
 
-// The AI endpoint for typed questions that match no prepared sample.
-// Empty = no endpoint configured: those questions get the guidance
-// answer (FALLBACK). When the proxy is deployed, this becomes its URL.
+// The AI endpoint for typed questions that match no prepared sample:
+// the deployed AI proxy (Step 30). If this were empty, those questions
+// would get the guidance answer (FALLBACK) instead of a live answer.
 // The OpenAI key lives ONLY in the proxy — never in this file, never
 // in the browser.
 var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
