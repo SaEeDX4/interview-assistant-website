@@ -21,10 +21,13 @@ function check(name, ok) {
 
 check("hero AI path guards a missing fetch (guidance fallback, no throw)",
   js.includes('if (typeof fetch !== "function") { prepareFallback();'));
-check("both AI paths capture their controller (no cross-request nulling)",
-  (js.match(/var ctl = (fetchCtl|demoFetchCtl);/g) || []).length === 2 &&
-  js.includes("if (fetchCtl === ctl) { fetchCtl = null; }") &&
-  js.includes("if (demoFetchCtl === ctl) { demoFetchCtl = null; }") &&
+check("both AI paths share one request core that captures its controller (no cross-request nulling)",
+  (js.match(/fetch\(IA_AI_ENDPOINT, \{/g) || []).length === 1 &&
+  (js.match(/iaFetchAI\(/g) || []).length === 3 &&
+  js.includes("var ctl = (\"AbortController\" in window) ? new AbortController() : null;") &&
+  js.includes("if (getHandle() === ctl) { setHandle(null); }") &&
+  js.includes("var onTimeout = function () { ctl.abort(); };") &&
+  js.includes("var timeout = ctl ? setTimeout(onTimeout, 15000) : null;") &&
   !js.includes("var timeout = fetchCtl ? setTimeout(function () { fetchCtl.abort(); }, 15000) : null;") &&
   !js.includes("var timeout = demoFetchCtl ? setTimeout(function () { demoFetchCtl.abort(); }, 15000) : null;"));
 check(".visually-hidden has exactly one definition",

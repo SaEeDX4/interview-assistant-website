@@ -170,6 +170,43 @@ var FALLBACK = {
 var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
 var IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest";
 
+/* The one AI request core, shared by the demo and the hero (it
+   replaces the two near-identical inline copies). One controller
+   per request, captured at creation; a 15s timeout aborts through
+   the capture; on settle the caller's handle is nulled only if it
+   still points at this request — the Step 40 rule: a superseded
+   request never nulls or aborts its successor's handle.
+   getHandle/setHandle adapt each caller's own handle variable;
+   onData/onFail keep each caller's rendering and its run/flow
+   guard. A throw inside onData (the empty-bullets "shape" guard)
+   lands in onFail, exactly as the inline chains behaved. */
+function iaFetchAI(question, style, getHandle, setHandle, onData, onFail) {
+  var ctl = ("AbortController" in window) ? new AbortController() : null;
+  setHandle(ctl);
+  var onTimeout = function () { ctl.abort(); };
+  var timeout = ctl ? setTimeout(onTimeout, 15000) : null;
+  function settle() {
+    if (timeout) { clearTimeout(timeout); }
+    if (getHandle() === ctl) { setHandle(null); }
+  }
+  function onRejected() {
+    settle();
+    onFail();
+  }
+  fetch(IA_AI_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: question, style: style }),
+    signal: ctl ? ctl.signal : undefined
+  }).then(function (res) {
+    if (!res.ok) { throw new Error("endpoint"); }
+    return res.json();
+  }).then(function (data) {
+    settle();
+    onData(data);
+  }).catch(onRejected);
+}
+
 // Step 30 — prepared answer variants for the hero, authored to the source
 // app's own style specs (AnswerStyleSpec): Shorter = VeryShort (2-3 bullets,
 // 8-16 words each, 25-45 total); Technical = 3-4 bullets, 12-24 words each,
@@ -778,23 +815,10 @@ var IA_VARIANTS = {
     layer.setAttribute("aria-busy", "true");
     sampleTagEl.classList.add("is-hidden");
     setStatus("Preparing your points…");
-    demoFetchCtl = ("AbortController" in window) ? new AbortController() : null;
-    /* Step 40: capture this request's controller (see the hero's
-       askAI) — a superseded request must not null or abort its
-       successor's handle. */
-    var ctl = demoFetchCtl;
-    var timeout = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null;
-    fetch(IA_AI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: text, style: "base" }),
-      signal: ctl ? ctl.signal : undefined
-    }).then(function (res) {
-      if (!res.ok) { throw new Error("endpoint"); }
-      return res.json();
-    }).then(function (data) {
-      if (timeout) { clearTimeout(timeout); }
-      if (demoFetchCtl === ctl) { demoFetchCtl = null; }
+    iaFetchAI(text, "base",
+      function () { return demoFetchCtl; },
+      function (c) { demoFetchCtl = c; },
+      function (data) {
       if (myRun !== runId) { return; }
       var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
       if (!bullets.length) { throw new Error("shape"); }
@@ -806,12 +830,11 @@ var IA_VARIANTS = {
       revealRows(layer, timers, function () { return myRun !== runId; }, function () {
         finishRender(myRun, "Live answer — generated for this question.");
       });
-    }).catch(function () {
-      if (timeout) { clearTimeout(timeout); }
-      if (demoFetchCtl === ctl) { demoFetchCtl = null; }
+      },
+      function () {
       if (myRun !== runId) { return; }
       showAnswer("typed", text, null);
-    });
+      });
   }
 
   function setMode(next) {
@@ -1595,23 +1618,10 @@ var IA_VARIANTS = {
     showThinking();
     metaEl.textContent = "";
     if (fetchCtl) { fetchCtl.abort(); }
-    fetchCtl = ("AbortController" in window) ? new AbortController() : null;
-    /* Step 40: capture this request's controller — a superseded
-       request's late completion (or its 15s timeout) must never
-       null or abort its successor's handle. */
-    var ctl = fetchCtl;
-    var timeout = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null;
-    fetch(IA_AI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: questionText, style: styleName || "base" }),
-      signal: ctl ? ctl.signal : undefined
-    }).then(function (res) {
-      if (!res.ok) { throw new Error("endpoint"); }
-      return res.json();
-    }).then(function (data) {
-      if (timeout) { clearTimeout(timeout); }
-      if (fetchCtl === ctl) { fetchCtl = null; }
+    iaFetchAI(questionText, styleName || "base",
+      function () { return fetchCtl; },
+      function (c) { fetchCtl = c; },
+      function (data) {
       if (myFlow !== flowId) { return; }
       if (styleName === "full" && data && typeof data.full === "string" && data.full) {
         source = "typed-ai";
@@ -1639,14 +1649,13 @@ var IA_VARIANTS = {
       }
       reveal(layers.dyn, SWITCH_STAGE_MS);
       announce(STYLE_ANNOUNCE[styleName] || "Answer ready.");
-    }).catch(function () {
-      if (timeout) { clearTimeout(timeout); }
-      if (fetchCtl === ctl) { fetchCtl = null; }
+      },
+      function () {
       if (myFlow !== flowId) { return; }
       prepareFallback();
       reveal(layers.dyn, SWITCH_STAGE_MS);
       announce("Answer ready.");
-    });
+      });
   }
 
   function submitTyped() {

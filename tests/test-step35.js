@@ -42,6 +42,9 @@ check("small labels take 8px (.pill, .badge, privacy never-chips)",
   /border-radius: 8px;/.test(rule(".pill")) &&
   /border-radius: 8px;/.test(rule(".badge")) &&
   /\.ethics-nevers li \{[^}]*border-radius: 8px;/.test(clean));
+check("the story player's prev/next buttons are rectangular too (12px, not round)",
+  /border-radius: 12px;/.test(rule(".story-prev, .story-next")) &&
+  !/border-radius: 50%;/.test(rule(".story-prev, .story-next")));
 check("the only 999px radii left are the four exempt track/bar rules",
   (clean.match(/border-radius: 999px/g) || []).length === 4 &&
   /\.calc input\[type="range"\]/.test(clean) &&

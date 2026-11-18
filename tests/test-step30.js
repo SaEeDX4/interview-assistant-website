@@ -133,8 +133,9 @@ check("typed questions: sample matching, then the AI endpoint, then the guidance
   /prepareFallback/.test(heroJs) && /FALLBACK\.answer\.slice\(\)/.test(heroJs) &&
   /"guidance"/.test(heroJs) && /"prepared"/.test(heroJs) && /"live"/.test(heroJs));
 check("the AI path posts {question, style} and renders only validated bullets (max 4) or a full string",
-  /fetch\(IA_AI_ENDPOINT, \{/.test(heroJs) &&
-  /JSON\.stringify\(\{ question: questionText, style: styleName \|\| "base" \}\)/.test(heroJs) &&
+  /fetch\(IA_AI_ENDPOINT, \{/.test(js) &&
+  /JSON\.stringify\(\{ question: question, style: style \}\)/.test(js) &&
+  /iaFetchAI\(questionText, styleName \|\| "base"/.test(heroJs) &&
   /\.slice\(0, 4\)/.test(heroJs) && /typeof data\.full === "string"/.test(heroJs));
 check("the sample pick is language-matched, never a blind random of all ten (Step 31)",
   /function pickSampleKey\(\)/.test(heroJs) &&
