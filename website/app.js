@@ -2390,7 +2390,7 @@ var IA_VARIANTS = {
    the real plan limits only: Trial 30 lifetime minutes / 1 profile /
    2 preparation runs a month / 1 device; Pro 600 minutes per billing
    period / 3 profiles / 20 preparation runs a month / 2 devices.
-   Pro's USD 19.99/month is a Paddle sandbox reference price. */
+   Pro's price is not final yet, so the finder never prints one. */
 (function () {
   "use strict";
   var form = document.getElementById("plan-finder");
@@ -2451,16 +2451,16 @@ var IA_VARIANTS = {
         "<p>Try the live demo to see it work, and start free in the app when " +
         "the installer ships — the Trial is included. Move to Pro when you need " +
         "more minutes, profiles, preparation runs, or a second device — Pro is " +
-        "USD 19.99/month, sandbox reference price, final live price to be confirmed.</p>";
+        "Pro's price is not final yet — it will be confirmed before paid " +
+        "checkout opens.</p>";
     } else {
       result.innerHTML =
         "<h3>Pro fits you</h3>" +
         "<ul><li>" + reasons.join("</li><li>") + "</li></ul>" +
         "<p>Pro gives you 600 live minutes per billing period, 3 profiles, " +
-        "20 preparation runs a month, and 2 devices. Pro is USD 19.99/month — " +
-        "a Paddle sandbox reference price; the final live price will be " +
-        "confirmed before paid checkout opens, and there is no checkout on " +
-        "this website yet.</p>";
+        "20 preparation runs a month, and 2 devices. Pro's price is not " +
+        "final yet — it will be confirmed before paid checkout opens, and " +
+        "there is no checkout on this website yet.</p>";
     }
   }
 

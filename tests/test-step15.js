@@ -39,8 +39,8 @@ check("480px compacts the sticky bar (secondary hidden, primary stretches)",
   /@media \(max-width: 480px\)\s*\{[\s\S]*?\.sticky-cta \.btn-secondary\s*\{\s*display:\s*none;\s*\}[\s\S]*?\.sticky-cta \.btn-primary\s*\{\s*flex:\s*1 1 auto;\s*\}/.test(clean));
 
 // 3. Feature queries are separate and present.
-check("feature queries present (reduced-motion x2, forced-colors x2, hover x2)",
-  (clean.match(/@media \(prefers-reduced-motion: reduce\)/g) || []).length === 2
+check("feature queries present (reduced-motion x3 since Step 50, forced-colors x2, hover x2)",
+  (clean.match(/@media \(prefers-reduced-motion: reduce\)/g) || []).length === 3
   && (clean.match(/@media \(forced-colors: active\)/g) || []).length === 2
   && (clean.match(/@media \(hover: hover\)/g) || []).length === 2
   && /@media \(hover: hover\) and \(pointer: fine\)/.test(clean));

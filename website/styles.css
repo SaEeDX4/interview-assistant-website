@@ -434,7 +434,6 @@ code { overflow-wrap: anywhere; }
 /* ---------- Pricing ---------- */
 .price { margin: 8px 0 0; }
 .price-amount { font-size: 44px; font-weight: 700; letter-spacing: -.02em; }
-.price-per { color: var(--muted); font-size: 17px; }
 .check-list { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; color: var(--muted); }
 .check-list li::before { content: "✓ "; color: var(--good); font-weight: 700; }
 .check-list strong { color: var(--text); }
@@ -1595,3 +1594,28 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
 .ia-update-card:last-child { margin-bottom: 0; }
 .ia-update-card .ia-dismiss, .ia-callout .ia-dismiss { position: absolute; top: 12px; right: 12px; }
 .ia-callout { position: relative; }
+
+/* Step 50 — Cross-document View Transitions. The shared stylesheet
+   opts every page into browser-native navigation transitions, so
+   moving between pages feels like moving inside one app: the sticky
+   header stays put (named element, no animation of its own), the
+   outgoing page fades, and the incoming page rises with the house
+   easing. Browsers without support navigate exactly as before.
+   Reduced-motion users get an instant swap. */
+@view-transition { navigation: auto; }
+.site-header { view-transition-name: site-header; }
+::view-transition-old(site-header),
+::view-transition-new(site-header) { animation: none; }
+::view-transition-old(root) { animation: ia-vt-out .18s ease both; }
+::view-transition-new(root) { animation: ia-vt-in .32s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes ia-vt-out { to { opacity: 0; } }
+@keyframes ia-vt-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(site-header),
+  ::view-transition-new(site-header) { animation: none; }
+}

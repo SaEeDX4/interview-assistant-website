@@ -32,13 +32,13 @@ function check(name, cond) {
   else { fail++; console.log("FAIL " + name); }
 }
 
-check("the trust line is the offer-only sentence",
-  /<p class="trust-line">30 live minutes free — and they never expire\.<\/p>/.test(hero));
+check("the trust line is the status-only sentence (Step 51 copy pass)",
+  /<p class="trust-line">Not released yet — this demo is a simulation\.<\/p>/.test(hero));
 check("the old mixed line is gone from the hero",
-  !hero.includes("Free Trial — 30 live minutes") &&
+  !hero.includes("30 live minutes free") &&
   !/trust-line">[^<]*allowed/.test(hero));
 check("the line is short enough to hold one line at 390px (<= 50 chars)",
-  ("30 live minutes free — and they never expire.").length <= 50);
+  ("Not released yet — this demo is a simulation.").length <= 50);
 check("no unverified claims anywhere in the hero copy",
   !/credit card/i.test(hero) && !/free forever/i.test(hero) && !/cancel anytime/i.test(hero));
 check("the ethics sentence keeps its proper homes (the footer here, the privacy page's lead)",
