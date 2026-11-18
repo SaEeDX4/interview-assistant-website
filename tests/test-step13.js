@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..", "website");
-const BASE = "https://saeedx4.github.io/interview-assistant-website/";
+const BASE = "https://cybervalida.online/";
 const PAGES = ["index.html", "features.html", "how-it-works.html", "demo.html",
   "pricing.html", "download.html", "platforms.html", "privacy.html",
   "terms.html", "support.html"];
