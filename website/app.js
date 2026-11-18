@@ -168,7 +168,7 @@ var FALLBACK = {
 // The OpenAI key lives ONLY in the proxy — never in this file, never
 // in the browser.
 var IA_AI_ENDPOINT = "https://interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev";
-var IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest";
+var IA_RELEASES_ENDPOINT = "https://admin.cybervalida.online/manifest";
 
 /* The one AI request core, shared by the demo and the hero (it
    replaces the two near-identical inline copies). One controller
@@ -2604,7 +2604,7 @@ var IA_VARIANTS = {
   var homeInner = document.getElementById("ia-growth-home-inner");
   var pricing = document.getElementById("ia-growth-pricing");
   if (!bar && !home && !pricing) { return; }
-  var ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/growth";
+  var ENDPOINT = "https://admin.cybervalida.online/growth";
   var TYPES = ["release", "feature", "product_news", "maintenance", "notice", "offer"];
   var LABELS = { release: "New release", feature: "New feature", product_news: "News",
     maintenance: "Maintenance", notice: "Notice", offer: "Offer" };

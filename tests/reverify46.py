@@ -69,7 +69,7 @@ def main():
     checks.append(("story nav radius survives minification (12px)",
                    ".story-prev{width:44px;height:44px;border-radius:12px" in css_text))
     checks.append(("release endpoint survives minification",
-                   "interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest" in js_text))
+                   "admin.cybervalida.online/manifest" in js_text))
     checks.append(("AI endpoint survives minification",
                    "interview-assistant-ai-website.saeed-sharifzadeh91.workers.dev" in js_text))
     failed = 0

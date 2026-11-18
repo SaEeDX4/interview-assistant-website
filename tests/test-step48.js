@@ -23,7 +23,7 @@ const end = appJs.indexOf("/* Step 41 — download page");
 check("growth module exists in app.js before the download module", start > 0 && end > start);
 const mod = appJs.slice(start, end);
 check("module reads the public /growth endpoint",
-  mod.includes("interview-assistant-releases.saeed-sharifzadeh91.workers.dev/growth"));
+  mod.includes("admin.cybervalida.online/growth"));
 check("module renders with textContent (no data-driven innerHTML)",
   mod.includes("textContent") && !/innerHTML\s*=\s*[^"']/.test(mod.replace(/innerHTML = ""/g, "")));
 check("module validates https-only links", mod.includes("/^https:\\/\\//"));

@@ -28,7 +28,7 @@ def main():
          "Signed installer + SHA-256: not yet published" in dl),
         ("no invented version live", "Version 1" not in dl),
         ("endpoint wired to the release service (41c)",
-         'IA_RELEASES_ENDPOINT = "https://interview-assistant-releases.saeed-sharifzadeh91.workers.dev/manifest"' in js),
+         'IA_RELEASES_ENDPOINT = "https://admin.cybervalida.online/manifest"' in js),
         ("download IIFE live", "Step 41 — download page" in js),
         ("dl styles live", ".dl-rec {" in css and ".dl-sha {" in css),
         ("installer mockup retired live", "installer app-window" not in dl),
