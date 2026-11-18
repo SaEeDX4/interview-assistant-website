@@ -33,6 +33,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Minify CSS and JS
+        # Step 46: the repository keeps readable sources; only the
+        # deployed artifact is minified. The tools are pinned so the
+        # output is reproducible byte-for-byte from a local build —
+        # tests/reverify46.py rebuilds the same artifacts and compares
+        # them against the live files. If this step fails, the deploy
+        # stops and the previous version stays live.
+        run: |
+          npx --yes terser@5.51.2 website/app.js --compress --mangle -o website/app.min.js
+          mv website/app.min.js website/app.js
+          npx --yes clean-css-cli@5.6.3 -o website/styles.min.css website/styles.css
+          mv website/styles.min.css website/styles.css
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
