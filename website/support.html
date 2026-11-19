@@ -77,8 +77,50 @@
   </section>
   <section class="section" aria-label="Support">
     <div class="container narrow">
-      <div class="callout callout-info">
-        <p><strong>How to reach us:</strong> the support channel is still to be decided — there is no support email yet, and we will not invent one. When it opens, this page will name the channel, its hours, and what to include in a report. Until then, the troubleshooting below covers the common problems.</p>
+      <h2>Support assistant</h2>
+      <div class="sa" id="support-assistant">
+        <div class="sa-head">
+          <span class="sa-mark" aria-hidden="true">IA</span>
+          <div class="sa-head-copy">
+            <p class="sa-name">Support assistant</p>
+            <p class="sa-tag">Instant answers from the product’s own playbooks, a live check of our services, and a prepared email to the developer when a person is needed.</p>
+          </div>
+          <button class="btn btn-secondary btn-small sa-check-btn" type="button" id="sa-check-btn">Run system check</button>
+        </div>
+        <div class="sa-log" id="sa-log" role="log" aria-live="polite" aria-label="Conversation with the support assistant">
+          <div class="sa-msg sa-msg-bot">
+            <div class="sa-bubble">
+              <p>Hi — I walk you through the common problems: audio, sign-in, minutes, downloads, the demo, privacy. Pick a topic below, or describe what’s happening in your own words.</p>
+            </div>
+          </div>
+        </div>
+        <div class="sa-topics" id="sa-topics" role="group" aria-label="Common support topics">
+          <button class="sa-chip" type="button" data-sa-topic="audio-none">No audio</button>
+          <button class="sa-chip" type="button" data-sa-topic="signin">Sign-in</button>
+          <button class="sa-chip" type="button" data-sa-topic="minutes">Minutes</button>
+          <button class="sa-chip" type="button" data-sa-topic="download">Download</button>
+          <button class="sa-chip" type="button" data-sa-topic="demo">Demo help</button>
+          <button class="sa-chip" type="button" data-sa-topic="pricing">Pricing</button>
+          <button class="sa-chip" type="button" data-sa-topic="privacy">Privacy</button>
+          <button class="sa-chip" type="button" data-sa-topic="human">Talk to a person</button>
+        </div>
+        <form class="sa-form" id="sa-form">
+          <label class="visually-hidden" for="sa-input">Describe your problem</label>
+          <input class="sa-input" id="sa-input" type="text" autocomplete="off" placeholder="Describe what’s happening…">
+          <button class="btn btn-primary btn-small" type="submit">Send</button>
+        </form>
+        <p class="sa-note">Answers come from the support playbooks on this page and run entirely in your browser. Nothing is sent anywhere unless you choose the email handoff.</p>
+      </div>
+
+      <h2>Contact us</h2>
+      <div class="contact-card">
+        <p>Support is handled by the developer, by email: <a href="mailto:support@cybervalida.online">support@cybervalida.online</a>. Please include your Windows version and what you were doing when the problem happened.</p>
+        <p class="cta-row">
+          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20demo%20help">Demo help</a>
+          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20privacy%20request">Privacy request</a>
+          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20download%20question">Download question</a>
+          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20support">Something else</a>
+        </p>
       </div>
 
       <h2>Troubleshooting</h2>
@@ -184,6 +226,7 @@
     <nav aria-label="Resources">
       <h3>Resources</h3>
       <a href="support.html">Support &amp; FAQ</a>
+      <a href="mailto:support@cybervalida.online">support@cybervalida.online</a>
       <a href="privacy.html">Privacy &amp; ethics</a>
       <a href="terms.html">Terms (draft)</a>
     </nav>

@@ -3111,3 +3111,758 @@ var IA_VARIANTS = {
   });
   window.addEventListener("resize", updateAll);
 })();
+
+/* Step 54 — Support assistant, Phase 1 (support.html only). The
+   local brain of the approved design (step53-support/design-v2.md):
+   a procedures engine over a curated bank built only from this
+   page's own support playbooks, real live diagnostics against the
+   site's own services, and a fully prepared email handoff to the
+   developer. No AI, no answer cache, no Cmd+K — those are Phases
+   2–3, and nothing here promises them. Answers are instant: the
+   only waiting a visitor ever sees is a real network check
+   settling. Every path ends somewhere useful — a resolution, a
+   diagnostic, a related procedure, or the email handoff — and if
+   one of our own services fails, the assistant says the problem
+   is on our side. All rendering is textContent-only. */
+(function () {
+  "use strict";
+  var root = document.getElementById("support-assistant");
+  if (!root) { return; }
+  var log = document.getElementById("sa-log");
+  var form = document.getElementById("sa-form");
+  var input = document.getElementById("sa-input");
+  var topicsEl = document.getElementById("sa-topics");
+  var checkBtn = document.getElementById("sa-check-btn");
+  if (!log || !form || !input || !topicsEl || !checkBtn) { return; }
+
+  var SUPPORT_ADDR = "support@cybervalida.online";
+  var GROWTH_URL = "https://admin.cybervalida.online/growth";
+  var FA_LEAD = "متوجه شدم — راهنمای قدم‌به‌قدمِ همین مشکل را برایتان باز می‌کنم. قدم‌ها را به انگلیسی می‌آورم، دقیقاً با همان متن راهنمای محصول:";
+  var AR_LEAD = "فهمت المشكلة — أفتح لك الدليل خطوة بخطوة لهذه المشكلة بالذات. أعرض الخطوات بالإنجليزية، بالنص نفسه الوارد في دليل المنتج:";
+
+  /* The bank. Every fact below is already stated on this page or
+     on the page it links to — the assistant restructures the
+     playbooks into procedures, it does not add claims. Node
+     choices end at a node index, another procedure ("proc"), a
+     defined exit ("resolved"), or an action ("diagnostics",
+     "email", "resume", "topics"). */
+  var BANK = [
+    {
+      id: "audio-none",
+      title: "No audio — nothing is transcribed",
+      subject: "support",
+      keys: ["audio", "sound", "hear", "heard", "transcrib", "headset", "headphones", "earphones", "microphone", "mic", "wasapi", "loopback", "playback", "device", "silent", "silence", "empty", "nothing"],
+      phrases: ["no audio", "no sound", "can't hear", "cannot hear", "can't hear the interviewer", "not transcribing", "nothing is transcribed", "no transcript", "doesn't hear", "does not hear", "isn't hearing", "not hearing"],
+      faKeys: ["صدا", "هدفون", "هدست", "میکروفون", "شنیده"],
+      arKeys: ["صوت", "سماعات", "ميكروفون", "اسمع"],
+      nodes: [
+        {
+          say: ["The app hears the interviewer through your headset: it captures the playback device with WASAPI loopback, and it does not record your microphone. An empty stream is recorded as no audio — the app will not invent a transcript. Let's check the path in order."],
+          steps: ["In Windows sound settings, make the headset you are wearing the default playback device.", "Play the meeting audio and confirm you hear it in the headset — not through the speakers."],
+          choices: [
+            { label: "The meeting plays through the speakers", to: 1 },
+            { label: "It plays in the headset, still no transcript", to: 2 },
+            { label: "That fixed it", exit: "resolved" }
+          ]
+        },
+        {
+          say: ["Loopback captures the device the sound actually plays through — if the meeting is on the speakers, the app is listening to a silent stream."],
+          steps: ["In the meeting app's audio settings, set the output (speaker) to your headset.", "Keep the same headset as the default playback device in Windows sound settings.", "Ask the interviewer to say a sentence and watch for the transcript."],
+          choices: [
+            { label: "That fixed it", exit: "resolved" },
+            { label: "Still nothing", to: 2 }
+          ]
+        },
+        {
+          say: ["Next suspect is exclusive control: another app can hold the device and starve the stream."],
+          steps: ["Close other apps that use audio — music players, other calls, recorders.", "In Windows sound settings, open your headset's advanced settings and turn off “Allow applications to take exclusive control of this device”.", "Restart the app and test again while the interviewer speaks."],
+          choices: [
+            { label: "That fixed it", exit: "resolved" },
+            { label: "Still no audio", to: 3 }
+          ]
+        },
+        {
+          say: ["You have covered the whole device path. Two useful moves remain: run the live system check to confirm our services are healthy, or send the developer a prepared email — it includes everything you have tried here."],
+          choices: [
+            { label: "Run the system check", action: "diagnostics" },
+            { label: "Email the developer", action: "email" },
+            { label: "It hears the wrong app instead", proc: "audio-wrong" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "audio-wrong",
+      title: "The app hears the wrong app",
+      subject: "support",
+      keys: ["wrong", "music", "spotify", "youtube", "video", "another", "other", "background", "noise"],
+      phrases: ["wrong app", "hears the wrong", "picks up music", "hears music", "hears another call", "wrong audio"],
+      faKeys: ["اشتباه", "موزیک"],
+      arKeys: ["الخاطئ", "موسيقى"],
+      nodes: [
+        {
+          say: ["WASAPI loopback captures everything that plays through the selected playback device — if music or another call is playing through the same headset, it is in the stream."],
+          steps: ["Close other audio sources before the interview — music, videos, other calls.", "Use a headset, not speakers, so your own voice does not feed back into the stream."],
+          choices: [
+            { label: "That fixed it", exit: "resolved" },
+            { label: "My problem is no audio at all", proc: "audio-none" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "signin",
+      title: "Sign-in problems",
+      subject: "support",
+      keys: ["sign", "login", "log", "account", "password", "google", "microsoft", "browser", "locked", "access"],
+      phrases: ["sign in", "sign-in", "log in", "login", "can't sign", "cannot sign", "sign in fails", "sign-in fails", "sign in problem", "locked out"],
+      faKeys: ["ورود", "لاگین", "وارد حساب"],
+      arKeys: ["تسجيل الدخول", "الدخول"],
+      nodes: [
+        {
+          say: ["Sign-in happens in your system browser — Google, Microsoft, or an email link — not inside the app window."],
+          steps: ["Open your default browser and complete the sign-in there first, then retry from the app.", "Check that the default browser can actually open the sign-in page — no blocking extension or stale redirect.", "Retry the sign-in from the app."],
+          choices: [
+            { label: "That fixed it", exit: "resolved" },
+            { label: "It still fails", to: 1 }
+          ]
+        },
+        {
+          say: ["Worth knowing while you sort it out: prepared answers keep working offline with a cached entitlement, so a sign-in problem does not erase your preparation. If the browser sign-in still fails, send the prepared email and mention what the browser shows."],
+          choices: [
+            { label: "Check our services", action: "diagnostics" },
+            { label: "Email the developer", action: "email" },
+            { label: "That fixed it", exit: "resolved" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "minutes",
+      title: "Live minutes running out",
+      subject: "support",
+      keys: ["minutes", "minute", "meter", "metered", "quota", "allowance", "ran", "out", "used", "limit", "live"],
+      phrases: ["minutes running out", "ran out of minutes", "out of minutes", "minutes used up", "live minutes", "minutes left"],
+      faKeys: ["دقیقه"],
+      arKeys: ["الدقائق", "دقيقة"],
+      nodes: [
+        {
+          say: ["Live minutes are metered by the server, and only live sessions use them — preparation and practice never touch the meter. Which plan are you on?"],
+          choices: [
+            { label: "Trial", to: 1 },
+            { label: "Pro", to: 2 },
+            { label: "Not sure", to: 3 }
+          ]
+        },
+        {
+          say: ["Trial gives 30 lifetime live minutes. When they are used, live listening stops — but the question bank, prepared answers and practice all keep working. Pro resets the allowance to 600 minutes per billing period."],
+          link: { href: "pricing.html", label: "How live minutes work" },
+          choices: [
+            { label: "That explains it", exit: "resolved" },
+            { label: "Tell me about the price", proc: "pricing" },
+            { label: "Email the developer", action: "email" }
+          ]
+        },
+        {
+          say: ["Pro includes 600 live minutes per billing period. If live listening stopped mid-period with minutes still showing, that is worth a report — the prepared email carries the details from here."],
+          choices: [
+            { label: "Email the developer", action: "email" },
+            { label: "That explains it", exit: "resolved" }
+          ]
+        },
+        {
+          say: ["The quick way to tell: Trial shows 30 lifetime minutes; Pro shows 600 per billing period."],
+          choices: [
+            { label: "Trial, then", to: 1 },
+            { label: "Pro, then", to: 2 },
+            { label: "That explains it", exit: "resolved" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "download",
+      title: "Download problems",
+      subject: "download question",
+      keys: ["download", "installer", "install", "setup", "exe", "file", "link", "sha", "hash", "windows"],
+      phrases: ["download", "can't download", "cannot download", "download does nothing", "download not working", "where is the installer", "install the app"],
+      faKeys: ["دانلود", "نصب"],
+      arKeys: ["تحميل", "تنزيل", "تثبيت"],
+      nodes: [
+        {
+          say: ["The straight answer first: there is no installer yet. The signed installer and its SHA-256 hash are not published, so a download link that delivers nothing is the expected state right now — not a bug on your side."],
+          choices: [
+            { label: "Where will it appear?", to: 1 },
+            { label: "Email the developer", action: "email" },
+            { label: "Understood", exit: "resolved" }
+          ]
+        },
+        {
+          say: ["When the first signed build is published, it will appear on the Download page with its version, size and SHA-256 hash, served by this site's release service. There is nothing to install before then."],
+          link: { href: "download.html", label: "Open the Download page" },
+          choices: [
+            { label: "Understood", exit: "resolved" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "demo",
+      title: "Help with the demo",
+      subject: "demo help",
+      keys: ["demo", "simulator", "simulation", "sample", "samples", "practice", "practise", "try", "coach", "interrupt"],
+      phrases: ["the demo", "demo help", "demo not working", "demo stuck", "sample questions", "interruption simulator"],
+      faKeys: ["دمو", "نمونه"],
+      arKeys: ["تجريبي", "العرض"],
+      nodes: [
+        {
+          say: ["The demo on this site is a simulation — it shows the app's real answer styles with sample questions, and it is labelled simulated because the app itself does not run in the browser. Ten sample questions, in Answer and Coach modes."],
+          choices: [
+            { label: "The demo seems stuck", to: 1 },
+            { label: "A sample in my language", to: 2 },
+            { label: "That answers it", exit: "resolved" }
+          ]
+        },
+        {
+          say: ["Two things fix almost every stuck demo:"],
+          steps: ["Reload the demo page — the demo state resets on each visit.", "Run the system check: it confirms the site's services, including the AI answer service the demo uses for typed questions, are reachable from here."],
+          choices: [
+            { label: "Run the system check", action: "diagnostics" },
+            { label: "That fixed it", exit: "resolved" },
+            { label: "Email the developer", action: "email" }
+          ]
+        },
+        {
+          say: ["Samples are offered in the languages the app supports — including Persian and Arabic with right-to-left layout. Pick a sample in your language from the demo's question list."],
+          link: { href: "demo.html", label: "Open the demo" },
+          choices: [
+            { label: "That answers it", exit: "resolved" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "privacy",
+      title: "Privacy request — export or delete my data",
+      subject: "privacy request",
+      keys: ["privacy", "data", "delete", "deletion", "erase", "export", "gdpr", "request", "personal"],
+      phrases: ["delete my data", "export my data", "privacy request", "delete my account", "erase my data", "my personal data"],
+      faKeys: ["حریم", "حذف"],
+      arKeys: ["الخصوصية", "حذف بيانات"],
+      nodes: [
+        {
+          say: ["Privacy requests follow the product's own runbook, so a partial removal is never presented as a complete one:"],
+          steps: ["You submit the request through the support channel.", "Your identity is verified, so nobody can request your data but you.", "The request is traced across the local workspace, the backend and Paddle, field by field.", "Export or erasure is carried out — Paddle invoices stay outside app deletion, under Paddle's own legal retention.", "You receive a scoped confirmation: what was done, and what is still pending if anything is."],
+          choices: [
+            { label: "Start the request by email", action: "email" },
+            { label: "I just wanted the steps", exit: "resolved" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "pricing",
+      title: "Price and plans",
+      subject: "support",
+      keys: ["price", "pricing", "cost", "pay", "payment", "subscription", "subscribe", "pro", "trial", "free", "cancel", "billing", "paddle", "charge"],
+      phrases: ["how much", "what does it cost", "the price", "cancel pro", "cancel my subscription", "is it free"],
+      faKeys: ["قیمت", "اشتراک", "پرداخت"],
+      arKeys: ["السعر", "الاشتراك", "الدفع"],
+      nodes: [
+        {
+          say: ["Trial is free, with 30 lifetime live minutes. Pro is shown at $19.99 per month — that figure is a Paddle sandbox reference, and paid checkout is not open yet, so nobody can be charged today. Pro includes 600 live minutes per billing period and allows 2 devices; Trial allows 1."],
+          link: { href: "pricing.html", label: "See Pricing" },
+          choices: [
+            { label: "How do minutes work?", proc: "minutes" },
+            { label: "Can I cancel Pro?", to: 1 },
+            { label: "That answers it", exit: "resolved" }
+          ]
+        },
+        {
+          say: ["There is no live subscription to cancel — checkout is not open. When it opens, you will cancel anytime in the Paddle customer portal and keep Pro until the end of your billing period."],
+          choices: [
+            { label: "That answers it", exit: "resolved" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "platforms",
+      title: "Mac, Android or iOS",
+      subject: "support",
+      keys: ["mac", "macos", "android", "ios", "iphone", "apple", "linux", "phone", "mobile", "platform"],
+      phrases: ["on mac", "on android", "on iphone", "mac version", "android version", "does it work on"],
+      faKeys: ["مک", "اندروید", "آیفون"],
+      arKeys: ["ماك", "أندرويد", "آيفون"],
+      nodes: [
+        {
+          say: ["Windows is the only platform today. Android is planned as a companion first; iOS and a dedicated Mac app are separate research phases. No dates and no downloads for those platforms yet."],
+          link: { href: "platforms.html", label: "Platforms & roadmap" },
+          choices: [
+            { label: "That answers it", exit: "resolved" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "offline",
+      title: "Working offline",
+      subject: "support",
+      keys: ["offline", "internet", "connection", "wifi", "online"],
+      phrases: ["work offline", "without internet", "no internet", "does it work offline"],
+      faKeys: ["آفلاین", "اینترنت"],
+      arKeys: ["دون اتصال", "الإنترنت"],
+      nodes: [
+        {
+          say: ["Partly. Live transcription and AI answers need an internet connection. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC."],
+          choices: [
+            { label: "That answers it", exit: "resolved" },
+            { label: "Sign-in is my problem", proc: "signin" },
+            { label: "Email the developer", action: "email" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "ethics",
+      title: "Is this cheating?",
+      subject: "support",
+      keys: ["cheat", "cheating", "caught", "detect", "detected", "hide", "hidden", "record", "allowed", "permit"],
+      phrases: ["help me cheat", "is this cheating", "will i get caught", "get caught", "is it allowed"],
+      faKeys: ["تقلب"],
+      arKeys: ["غش"],
+      nodes: [
+        {
+          say: ["No — it is a preparation and practice coach. It does not hide, does not evade screen capture, does not record your microphone, and never presents experience that is not yours: only facts you confirmed are ever used. Live assist is only for interviews where assistance is permitted."],
+          choices: [
+            { label: "That answers it", exit: "resolved" },
+            { label: "How is my data handled?", proc: "privacy" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "human",
+      title: "Talk to a person",
+      subject: "support",
+      keys: ["human", "person", "someone", "real", "agent", "contact", "email", "mail", "talk", "speak", "developer"],
+      phrases: ["talk to a person", "real person", "human help", "contact you", "email you", "speak to someone"],
+      faKeys: ["انسان", "ایمیل"],
+      arKeys: ["شخص", "بريد"],
+      nodes: [
+        {
+          say: ["Support is handled by the developer personally, by email. The prepared email includes this conversation, the latest system check and your context — you review it in your mail app and press send; nothing leaves your device until you do."],
+          choices: [
+            { label: "Open the prepared email", action: "email" },
+            { label: "Run the system check first", action: "diagnostics" },
+            { label: "Topics instead", action: "topics" }
+          ]
+        }
+      ]
+    }
+  ];
+
+  var state = {
+    current: null,        // { proc, node } while a procedure is open
+    lastSubject: "support",
+    asked: [],            // the visitor's own words, for the handoff
+    covered: [],          // procedure titles opened, for the handoff
+    diag: null,           // last diagnostics result
+    diagRunning: false
+  };
+
+  function byId(id) {
+    for (var i = 0; i < BANK.length; i++) { if (BANK[i].id === id) { return BANK[i]; } }
+    return null;
+  }
+  function scrollLog() { log.scrollTop = log.scrollHeight; }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text !== undefined) { n.textContent = text; }
+    return n;
+  }
+  function addUserBubble(text) {
+    var msg = el("div", "sa-msg sa-msg-user");
+    var bubble = el("div", "sa-bubble");
+    var p = el("p", null, text);
+    p.setAttribute("dir", "auto");
+    bubble.appendChild(p);
+    msg.appendChild(bubble);
+    log.appendChild(msg);
+    scrollLog();
+  }
+  function addBotBubble() {
+    var msg = el("div", "sa-msg sa-msg-bot");
+    var bubble = el("div", "sa-bubble");
+    msg.appendChild(bubble);
+    log.appendChild(msg);
+    scrollLog();
+    return bubble;
+  }
+  function sayBubble(paras) {
+    var bubble = addBotBubble();
+    paras.forEach(function (t) { bubble.appendChild(el("p", null, t)); });
+    scrollLog();
+    return bubble;
+  }
+
+  var choicesBox = null;
+  function clearChoices() {
+    if (choicesBox && choicesBox.parentNode) {
+      choicesBox.parentNode.removeChild(choicesBox);
+    }
+    choicesBox = null;
+  }
+  function renderChoices(choices) {
+    clearChoices();
+    if (!choices || !choices.length) { return; }
+    choicesBox = el("div", "sa-choices");
+    choices.forEach(function (choice) {
+      var b = el("button", "sa-choice", choice.label);
+      b.setAttribute("type", "button");
+      b.addEventListener("click", function () { onChoice(choice); });
+      choicesBox.appendChild(b);
+    });
+    log.appendChild(choicesBox);
+    scrollLog();
+  }
+  function onChoice(choice) {
+    clearChoices();
+    addUserBubble(choice.label);
+    if (choice.exit === "resolved") { resolvedExit(); }
+    else if (typeof choice.to === "number" && state.current) {
+      renderNode(state.current.proc, choice.to);
+    }
+    else if (choice.proc) { startProc(byId(choice.proc), null); }
+    else if (choice.action === "diagnostics") { runDiagnostics(); }
+    else if (choice.action === "email") { renderEmailOffer(); }
+    else if (choice.action === "resume") { resumeChoices(); }
+    if (choice.action === "topics") {
+      state.current = null;
+      sayBubble(["Pick any topic below the conversation, or type what's happening in your own words."]);
+    }
+    input.focus();
+  }
+  function resumeChoices() {
+    if (state.current) {
+      var node = state.current.proc.nodes[state.current.node];
+      sayBubble(["Back to “" + state.current.proc.title + "” — where were we?"]);
+      renderChoices(node.choices);
+    } else {
+      sayBubble(["Pick any topic below the conversation, or type what's happening in your own words."]);
+    }
+  }
+  function resolvedExit() {
+    state.current = null;
+    sayBubble(["Good — that is what the playbook is for. If something else comes up, pick a topic or type it here."]);
+  }
+
+  function startProc(proc, lang) {
+    if (!proc) { return; }
+    state.current = { proc: proc, node: 0 };
+    state.lastSubject = proc.subject;
+    if (state.covered.indexOf(proc.title) === -1 && state.covered.length < 6) {
+      state.covered.push(proc.title);
+    }
+    var bubble = addBotBubble();
+    if (lang === "fa") {
+      var fa = el("p", "sa-rtl", FA_LEAD);
+      fa.setAttribute("lang", "fa");
+      bubble.appendChild(fa);
+    } else if (lang === "ar") {
+      var ar = el("p", "sa-rtl", AR_LEAD);
+      ar.setAttribute("lang", "ar");
+      bubble.appendChild(ar);
+    }
+    var head = el("p");
+    head.appendChild(el("strong", null, proc.title));
+    bubble.appendChild(head);
+    fillNode(bubble, proc.nodes[0]);
+    renderChoices(proc.nodes[0].choices);
+  }
+  function renderNode(proc, idx) {
+    state.current = { proc: proc, node: idx };
+    var bubble = addBotBubble();
+    fillNode(bubble, proc.nodes[idx]);
+    renderChoices(proc.nodes[idx].choices);
+  }
+  function fillNode(bubble, node) {
+    (node.say || []).forEach(function (t) { bubble.appendChild(el("p", null, t)); });
+    if (node.steps && node.steps.length) {
+      var ol = el("ol", "sa-steps");
+      node.steps.forEach(function (s) { ol.appendChild(el("li", null, s)); });
+      bubble.appendChild(ol);
+    }
+    if (node.link) {
+      var p = el("p");
+      var a = el("a", null, node.link.label);
+      a.setAttribute("href", node.link.href);
+      p.appendChild(a);
+      bubble.appendChild(p);
+    }
+    scrollLog();
+  }
+
+  /* Matching: normalized keyword + phrase + curated FA/AR scoring.
+     Deterministic and instant — the same input always routes the
+     same way, which the behavioural sim pins down. */
+  function normalize(text) {
+    return String(text || "")
+      .toLowerCase()
+      .replace(/[\u200C\u200D]/g, " ")
+      .replace(/[^\p{L}\p{N}\s]/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  BANK.forEach(function (p) { p._phrases = p.phrases.map(normalize); });
+  function scoreProc(proc, norm, raw) {
+    var score = 0, lang = null, i, k;
+    for (i = 0; i < proc._phrases.length; i++) {
+      if (norm.indexOf(proc._phrases[i]) !== -1) { score += 6; }
+    }
+    var tokens = norm.split(" ");
+    for (i = 0; i < proc.keys.length; i++) {
+      k = proc.keys[i];
+      for (var j = 0; j < tokens.length; j++) {
+        if (tokens[j] === k || (k.length >= 4 && tokens[j].indexOf(k) === 0)) { score += 3; break; }
+      }
+    }
+    var faHit = false, arHit = false;
+    for (i = 0; i < proc.faKeys.length; i++) { if (raw.indexOf(proc.faKeys[i]) !== -1) { score += 6; faHit = true; } }
+    for (i = 0; i < proc.arKeys.length; i++) { if (raw.indexOf(proc.arKeys[i]) !== -1) { score += 6; arHit = true; } }
+    if (faHit) { lang = "fa"; } else if (arHit) { lang = "ar"; }
+    return { proc: proc, score: score, lang: lang };
+  }
+  function route(text) {
+    var norm = normalize(text);
+    var raw = String(text || "");
+    var scored = BANK.map(function (p) { return scoreProc(p, norm, raw); })
+      .filter(function (s) { return s.score > 0; })
+      .sort(function (a, b) { return b.score - a.score; });
+    if (scored.length && scored[0].score >= 6 &&
+        (scored.length === 1 || scored[0].score - scored[1].score >= 3)) {
+      startProc(scored[0].proc, scored[0].lang);
+      return;
+    }
+    if (scored.length && scored[0].score >= 4) {
+      offerMatches(scored.slice(0, 3));
+      return;
+    }
+    openResponse(scored.slice(0, 2));
+  }
+  function offerMatches(list) {
+    state.current = null;
+    sayBubble(["A couple of playbooks fit that — pick the closest one and I'll walk it with you:"]);
+    var choices = list.map(function (s) { return { label: s.proc.title, proc: s.proc.id }; });
+    choices.push({ label: "Run the system check", action: "diagnostics" });
+    choices.push({ label: "Email the developer", action: "email" });
+    renderChoices(choices);
+  }
+  function openResponse(list) {
+    state.current = null;
+    sayBubble(["That one doesn't match a standard playbook yet, so let's take the paths that always work: the live system check, the closest topics, or a prepared email to the developer with this conversation attached — you won't have to retype anything."]);
+    var choices = list.map(function (s) { return { label: s.proc.title, proc: s.proc.id }; });
+    if (!choices.length) {
+      choices.push({ label: "No audio — nothing is transcribed", proc: "audio-none" });
+      choices.push({ label: "Download problems", proc: "download" });
+    }
+    choices.push({ label: "Run the system check", action: "diagnostics" });
+    choices.push({ label: "Email the developer", action: "email" });
+    renderChoices(choices);
+  }
+
+  /* Diagnostics: four real probes against the site's own services,
+     plus the visitor context the browser can state. Each row
+     settles when its probe settles — the checklist is the work,
+     not an animation of it. */
+  var CHECKS = [
+    { id: "releases", label: "Release service", url: IA_RELEASES_ENDPOINT, mode: "json" },
+    { id: "growth", label: "Announcements service", url: GROWTH_URL, mode: "json" },
+    { id: "ai", label: "AI answer service", url: IA_AI_ENDPOINT, mode: "any" },
+    { id: "demo", label: "Demo page", url: "demo.html", mode: "ok" }
+  ];
+  function probe(check) {
+    if (typeof fetch !== "function") { return Promise.resolve(false); }
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var timeout = new Promise(function (res) {
+      setTimeout(function () { if (ctl) { ctl.abort(); } res(false); }, 8000);
+    });
+    var work = fetch(check.url, {
+      headers: { "Accept": "application/json" },
+      signal: ctl ? ctl.signal : undefined
+    }).then(function (r) {
+      if (check.mode === "any") { return true; }
+      if (!r.ok) { return false; }
+      if (check.mode === "json") {
+        return r.json().then(function () { return true; }, function () { return false; });
+      }
+      return true;
+    }).catch(function () { return false; });
+    return Promise.race([work, timeout]);
+  }
+  function browserSummary() {
+    var ua = navigator.userAgent || "";
+    var browser = "Browser";
+    if (/Edg\//.test(ua)) { browser = "Edge"; }
+    else if (/OPR\/|Opera/.test(ua)) { browser = "Opera"; }
+    else if (/Chrome\//.test(ua)) { browser = "Chrome"; }
+    else if (/Firefox\//.test(ua)) { browser = "Firefox"; }
+    else if (/Safari\//.test(ua)) { browser = "Safari"; }
+    var os = "";
+    if (/Windows/.test(ua)) { os = "Windows"; }
+    else if (/Android/.test(ua)) { os = "Android"; }
+    else if (/iPhone|iPad|iOS/.test(ua)) { os = "iOS"; }
+    else if (/Mac OS/.test(ua)) { os = "macOS"; }
+    else if (/Linux/.test(ua)) { os = "Linux"; }
+    return os ? browser + " on " + os : browser;
+  }
+  function contextLine() {
+    return "Browser: " + browserSummary()
+      + " · Language: " + (navigator.language || "unknown")
+      + " · Connection: " + (navigator.onLine ? "online" : "offline")
+      + " · Page: support.html";
+  }
+  function runDiagnostics() {
+    if (state.diagRunning) { return; }
+    state.diagRunning = true;
+    checkBtn.disabled = true;
+    clearChoices();
+    var bubble = addBotBubble();
+    var card = el("div", "sa-diag");
+    card.appendChild(el("p", "sa-diag-title", "System check"));
+    var rows = CHECKS.map(function (check) {
+      var row = el("div", "sa-diag-row");
+      var dot = el("span", "sa-dot sa-dot-wait");
+      dot.setAttribute("aria-hidden", "true");
+      var label = el("span", "sa-diag-label", check.label);
+      var st = el("span", "sa-diag-state", "checking…");
+      row.appendChild(dot); row.appendChild(label); row.appendChild(st);
+      card.appendChild(row);
+      return { check: check, dot: dot, st: st };
+    });
+    var ctx = el("p", "sa-diag-ctx", contextLine());
+    card.appendChild(ctx);
+    bubble.appendChild(card);
+    scrollLog();
+    var results = [];
+    var pending = rows.length;
+    rows.forEach(function (r) {
+      probe(r.check).then(function (ok) {
+        r.dot.className = "sa-dot " + (ok ? "sa-dot-ok" : "sa-dot-bad");
+        r.st.textContent = ok ? "reachable" : "not responding";
+        results.push({ label: r.check.label, ok: ok });
+        pending--;
+        if (pending === 0) { finishDiagnostics(results); }
+      });
+    });
+  }
+  function finishDiagnostics(results) {
+    state.diagRunning = false;
+    checkBtn.disabled = false;
+    state.diag = { at: new Date().toISOString(), rows: results };
+    var failed = results.filter(function (r) { return !r.ok; });
+    var choices = [];
+    if (!navigator.onLine) {
+      sayBubble(["Your browser reports this device is offline, so the checks can't reach anything. Reconnect, then run the check again — or send the prepared email and it will carry this result."]);
+      choices.push({ label: "Check again", action: "diagnostics" });
+      choices.push({ label: "Email the developer", action: "email" });
+    } else if (!failed.length) {
+      sayBubble(["Every service this check covers is reachable from here — the problem is not a service outage on our side."]);
+      if (state.current) { choices.push({ label: "Continue: " + state.current.proc.title, action: "resume" }); }
+      choices.push({ label: "Email the developer", action: "email" });
+      choices.push({ label: "Another topic", action: "topics" });
+    } else {
+      var names = failed.map(function (r) { return r.label; }).join(", ");
+      sayBubble(["This part is on our side: " + names + " not responding. That is not your setup, and retrying on your device won't change it. The prepared email includes this result, so the developer sees it exactly as you do."]);
+      choices.push({ label: "Check again", action: "diagnostics" });
+      choices.push({ label: "Email the developer", action: "email" });
+      if (state.current) { choices.push({ label: "Continue: " + state.current.proc.title, action: "resume" }); }
+    }
+    renderChoices(choices);
+    scrollLog();
+  }
+
+  /* The email handoff: composed at click time from the live
+     conversation, the latest diagnostics and the context — the
+     developer never has to ask round-1 questions. */
+  function renderEmailOffer() {
+    var lines = [];
+    lines.push("Hi — I used the support assistant on cybervalida.online and still need a hand.");
+    lines.push("");
+    if (state.asked.length) {
+      lines.push("What I asked:");
+      state.asked.forEach(function (q) { lines.push("- " + q); });
+      lines.push("");
+    }
+    if (state.covered.length) {
+      lines.push("Playbooks covered: " + state.covered.join("; "));
+      lines.push("");
+    }
+    if (state.diag) {
+      lines.push("System check (" + state.diag.at + "):");
+      state.diag.rows.forEach(function (r) {
+        lines.push("- " + r.label + ": " + (r.ok ? "reachable" : "not responding"));
+      });
+      lines.push("");
+    } else {
+      lines.push("System check: not run.");
+      lines.push("");
+    }
+    lines.push("Context:");
+    lines.push("- Browser: " + (navigator.userAgent || "unknown"));
+    lines.push("- Language: " + (navigator.language || "unknown"));
+    lines.push("- Page: support.html");
+    lines.push("- Connection: " + (navigator.onLine ? "online" : "offline"));
+    lines.push("");
+    lines.push("My Windows version and what I was doing:");
+    lines.push("(please add a line here — it helps)");
+    var body = lines.join("\n");
+    if (body.length > 1800) { body = body.slice(0, 1800); }
+    var href = "mailto:" + SUPPORT_ADDR
+      + "?subject=" + encodeURIComponent("Interview Assistant — " + state.lastSubject)
+      + "&body=" + encodeURIComponent(body);
+    var bubble = sayBubble(["Here is the prepared email — it includes what you asked, the playbooks we covered, and the latest system check. Review it in your mail app and press send; nothing leaves your device until you do."]);
+    var actions = el("p", "sa-actions");
+    var a = el("a", "btn btn-primary btn-small", "Open the prepared email");
+    a.setAttribute("href", href);
+    actions.appendChild(a);
+    bubble.appendChild(actions);
+    scrollLog();
+    state.current = null;
+    renderChoices([
+      { label: "Run the system check", action: "diagnostics" },
+      { label: "Another topic", action: "topics" }
+    ]);
+  }
+
+  /* Wiring. */
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var text = input.value.trim();
+    if (!text) { return; }
+    input.value = "";
+    addUserBubble(text);
+    if (state.asked.length < 6) { state.asked.push(text.slice(0, 200)); }
+    clearChoices();
+    route(text);
+    input.focus();
+  });
+  var chips = topicsEl.children;
+  for (var i = 0; i < chips.length; i++) {
+    (function (chip) {
+      chip.addEventListener("click", function () {
+        addUserBubble(chip.textContent);
+        clearChoices();
+        startProc(byId(chip.getAttribute("data-sa-topic")), null);
+        input.focus();
+      });
+    })(chips[i]);
+  }
+  checkBtn.addEventListener("click", function () { runDiagnostics(); });
+})();

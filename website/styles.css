@@ -573,7 +573,6 @@ code { overflow-wrap: anywhere; }
 .callout p:last-child { margin-bottom: 0; }
 .callout-warn { border-left-color: var(--warn); }
 .callout-draft { border-left-color: var(--coach); }
-.callout-info { border-left-color: var(--accent-2); }
 .table-wrap { overflow-x: auto; margin: 0 0 16px; }
 table.compare { width: 100%; border-collapse: collapse; font-size: 15px; }
 table.compare th, table.compare td {
@@ -1619,4 +1618,112 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   ::view-transition-new(root),
   ::view-transition-old(site-header),
   ::view-transition-new(site-header) { animation: none; }
+}
+
+/* Step 53 — Support contact card. One panel in the house card
+   language (surface, border, --radius 12px) holding the support
+   address and the four topic buttons (.btn family, 12px). Spacing
+   on the Step 9 scale: 24px card padding, 28px below the card,
+   the topic row set 20px under the text. */
+.contact-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin: 0 0 28px;
+}
+.contact-card p:last-child { margin-bottom: 0; }
+.contact-card .cta-row { margin: 20px 0 0; }
+
+/* Step 54 — Support assistant (support.html). A chat panel in the
+   house language: a --surface panel at --radius (12px) with a
+   darker inset log, bot bubbles on --surface-2, visitor bubbles
+   on the accent wash, and small controls (topic chips, branch
+   choices, the text input) at the 8px small-control radius.
+   The only round shapes are the diagnostics status dots — dots
+   are exempt from the radius family (RADIUS.md). Spacing is on
+   the Step 9 scale throughout. Motion: messages rise in with
+   the house easing; the global reduced-motion rule already
+   disables every animation, so this block adds no media query
+   of its own. */
+.sa {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin: 0 0 28px;
+  box-shadow: var(--shadow-card);
+}
+.sa-head { display: flex; gap: 16px; align-items: flex-start; margin: 0 0 20px; }
+.sa-mark {
+  flex: none; display: inline-grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 8px;
+  background: var(--accent); color: var(--bg);
+  font-size: 15px; font-weight: 800;
+}
+.sa-head-copy { flex: 1; min-width: 0; }
+.sa-name { font-size: 17px; font-weight: 700; margin: 0 0 4px; }
+.sa-tag { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0; }
+.sa-check-btn { flex: none; }
+.sa-log {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin: 0 0 16px;
+  max-height: 560px; overflow-y: auto;
+}
+.sa-msg { display: flex; max-width: 88%; animation: sa-in .28s cubic-bezier(.2,.7,.3,1) both; }
+.sa-msg-bot { align-self: flex-start; }
+.sa-msg-user { align-self: flex-end; }
+@keyframes sa-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sa-bubble {
+  padding: 12px 16px; border-radius: var(--radius);
+  font-size: 15px; line-height: 1.6; min-width: 0;
+}
+.sa-msg-bot .sa-bubble { background: var(--surface-2); border: 1px solid var(--border); }
+.sa-msg-user .sa-bubble { background: var(--accent-soft); border: 1px solid var(--border-strong); }
+.sa-bubble p { margin: 0 0 8px; }
+.sa-bubble p:last-child { margin-bottom: 0; }
+.sa-bubble a { color: var(--accent-light); }
+.sa-rtl { direction: rtl; text-align: right; line-height: 1.65; }
+.sa-steps { margin: 8px 0 0; padding-inline-start: 20px; }
+.sa-steps li { margin: 0 0 8px; }
+.sa-steps li:last-child { margin-bottom: 0; }
+.sa-actions { margin: 12px 0 0; }
+.sa-choices { display: flex; flex-wrap: wrap; gap: 8px; align-self: flex-start; max-width: 88%; animation: sa-in .28s cubic-bezier(.2,.7,.3,1) both; }
+.sa-choice, .sa-chip {
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  font: 600 14px/1.4 inherit; font-family: inherit; color: var(--text);
+  transition: background .15s ease, border-color .15s ease;
+}
+.sa-choice { background: var(--surface); border: 1px solid var(--border-strong); }
+.sa-choice:hover { background: var(--accent-soft); border-color: var(--accent); }
+.sa-diag { min-width: 0; }
+.sa-diag-title { font-weight: 700; margin: 0 0 12px; }
+.sa-diag-row { display: flex; gap: 8px; align-items: baseline; margin: 0 0 8px; font-size: 14px; }
+.sa-diag-row:last-of-type { margin-bottom: 0; }
+.sa-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--muted-2); }
+.sa-dot-wait { animation: sa-pulse 1s ease-in-out infinite; }
+.sa-dot-ok { background: var(--good); }
+.sa-dot-bad { background: var(--danger); }
+@keyframes sa-pulse { 50% { opacity: .3; } }
+.sa-diag-label { flex: 1; }
+.sa-diag-state { color: var(--muted); }
+.sa-diag-ctx { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+.sa-topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.sa-chip { background: var(--bg-soft); border: 1px solid var(--border); }
+.sa-chip:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.sa-form { display: flex; gap: 12px; }
+.sa-input {
+  flex: 1; min-width: 0; padding: 12px 16px; border-radius: 8px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  color: var(--text); font: 400 15px/1.4 inherit; font-family: inherit;
+}
+.sa-input::placeholder { color: var(--muted-2); }
+.sa-input:focus { border-color: var(--accent); }
+.sa-note { color: var(--muted-2); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+@media (max-width: 640px) {
+  .sa { padding: 20px; }
+  .sa-head { flex-wrap: wrap; }
+  .sa-check-btn { width: 100%; }
+  .sa-log { padding: 16px; }
+  .sa-msg, .sa-choices { max-width: 96%; }
+  .sa-form { flex-direction: column; }
+  .sa-form .btn { width: 100%; }
 }
