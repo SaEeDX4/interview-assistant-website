@@ -3632,7 +3632,7 @@ var IA_VARIANTS = {
     bubble.appendChild(head);
     fillNode(bubble, proc.nodes[idx]);
     renderChoices(proc.nodes[idx].choices);
-    input.focus();
+    focusInput();
   }
   if (resumeBtn) {
     resumeBtn.addEventListener("click", resumeSaved);
@@ -3652,13 +3652,88 @@ var IA_VARIANTS = {
   function refreshEntryAria() {
     input.setAttribute("aria-expanded", resultsOpen ? "true" : "false");
   }
+  /* Step 58 — motion & scroll discipline for the reveal. Three
+     rules, each measured against the owner's live report (see
+     step58-support-motion/report.md):
+     1. The module never lets the browser scroll on focus: every
+        focus() goes through focusInput() with preventScroll, so
+        the only page scroll is the one the module asks for.
+     2. When a trigger outside the panel opens the conversation
+        (a symptom card, a topic tile, a deep-link arrival), the
+        module performs ONE smooth scroll that lands the panel
+        top under the sticky header — revealAssistant() — instead
+        of the browser's focus scroll, which landed the page at
+        the document top. The panel top never moves while its own
+        body grows (growth extends downward), so the target is
+        exact from the first frame.
+     3. The opening itself is animated: the body's height unfolds
+        over 340ms in the house easing instead of snapping to
+        full height in one frame. The content is already computed
+        — only its reveal is animated, nothing waits. Reduced
+        motion keeps the instant behaviour, and every capability
+        is guarded so the older stub harnesses run unchanged. */
+  var reduceMotion = false;
+  try {
+    reduceMotion = !!(typeof window !== "undefined" && window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  } catch (e) { reduceMotion = false; }
+  function focusInput() {
+    try { input.focus({ preventScroll: true }); }
+    catch (e) { try { input.focus(); } catch (e2) { /* stub */ } }
+  }
+  var HEADER_OFFSET = 84; /* the html scroll-padding-top */
+  function revealAssistant() {
+    try {
+      if (!root || typeof root.getBoundingClientRect !== "function") { return; }
+      if (typeof window === "undefined" || typeof window.scrollTo !== "function") { return; }
+      var y = (typeof window.scrollY === "number") ? window.scrollY : 0;
+      var target = Math.round(root.getBoundingClientRect().top + y - HEADER_OFFSET);
+      if (target < 0) { target = 0; }
+      if (Math.abs(target - y) < 2) { return; }
+      window.scrollTo({ top: target, behavior: reduceMotion ? "auto" : "smooth" });
+    } catch (e) { /* scrolling is an enhancement, never a dependency */ }
+  }
+  var bodyAnimGen = 0;
+  function clearBodyAnimStyles() {
+    if (!bodyEl || !bodyEl.style) { return; }
+    bodyEl.style.transition = "";
+    bodyEl.style.height = "";
+    bodyEl.style.overflow = "";
+  }
+  function animateBodyOpen() {
+    if (reduceMotion || !bodyEl) { return; }
+    if (typeof requestAnimationFrame !== "function") { return; }
+    var gen = ++bodyAnimGen;
+    requestAnimationFrame(function () {
+      try {
+        if (gen !== bodyAnimGen || bodyEl.hidden || !bodyEl.style) { return; }
+        var h = bodyEl.offsetHeight;
+        if (!h || h < 8) { return; }
+        bodyEl.style.overflow = "hidden";
+        bodyEl.style.height = "0px";
+        void bodyEl.offsetHeight; /* commit the closed state */
+        bodyEl.style.transition = "height .34s cubic-bezier(.2,.7,.3,1)";
+        bodyEl.style.height = h + "px";
+        setTimeout(function () {
+          if (gen === bodyAnimGen) { clearBodyAnimStyles(); }
+        }, 420);
+      } catch (e) { /* a stub DOM without layout: stay instant */ }
+    });
+  }
   function expand() {
-    if (bodyEl && bodyEl.hidden) { bodyEl.hidden = false; }
+    if (bodyEl && bodyEl.hidden) {
+      bodyEl.hidden = false;
+      animateBodyOpen();
+    }
     refreshEntryAria();
   }
   function collapse() {
     hideResults();
-    if (bodyEl) { bodyEl.hidden = true; }
+    if (bodyEl) {
+      bodyAnimGen++;
+      clearBodyAnimStyles();
+      bodyEl.hidden = true;
+    }
     refreshEntryAria();
   }
   function hideResults() {
@@ -3754,7 +3829,7 @@ var IA_VARIANTS = {
       state.current = null;
       sayBubble(["Pick any topic below the conversation, or type what's happening in your own words."]);
     }
-    input.focus();
+    focusInput();
   }
   function resumeChoices() {
     if (state.current) {
@@ -4332,7 +4407,7 @@ var IA_VARIANTS = {
         { label: "Email the developer", action: "email" }
       ]);
     }
-    input.focus();
+    focusInput();
   }
 
   /* Wiring. */
@@ -4346,7 +4421,7 @@ var IA_VARIANTS = {
     rememberAsked(text);
     clearChoices();
     route(text);
-    input.focus();
+    focusInput();
   }
   form.addEventListener("submit", function (ev) {
     ev.preventDefault();
@@ -4391,9 +4466,15 @@ var IA_VARIANTS = {
   root.addEventListener("keydown", function (ev) {
     if (!ev || ev.key !== "Escape") { return; }
     if (resultsOpen) { hideResults(); return; }
-    if (bodyEl && !bodyEl.hidden) { collapse(); input.focus(); }
+    if (bodyEl && !bodyEl.hidden) { collapse(); focusInput(); }
   });
-  function wireTopicButtons(container) {
+  /* Step 58 — containers outside the panel (the topic tiles and
+     the symptom cards sit below it) pass reveal=true: after the
+     expansion renders, the module makes its one managed scroll
+     to the panel. Containers inside the panel (the topic chips,
+     the entry suggestions) never scroll the page — the visitor
+     is already looking at it. */
+  function wireTopicButtons(container, reveal) {
     if (!container) { return; }
     var btns = container.children;
     for (var i = 0; i < btns.length; i++) {
@@ -4404,15 +4485,16 @@ var IA_VARIANTS = {
           addUserBubble(chip.getAttribute("data-sa-label") || chip.textContent);
           clearChoices();
           startProc(byId(chip.getAttribute("data-sa-topic")), null);
-          input.focus();
+          if (reveal) { revealAssistant(); }
+          focusInput();
         });
       })(btns[i]);
     }
   }
-  wireTopicButtons(topicsEl);
-  wireTopicButtons(suggestEl);
-  wireTopicButtons(tilesEl);
-  wireTopicButtons(symptomsEl);
+  wireTopicButtons(topicsEl, false);
+  wireTopicButtons(suggestEl, false);
+  wireTopicButtons(tilesEl, true);
+  wireTopicButtons(symptomsEl, true);
   showResumeChip();
   checkBtn.addEventListener("click", function () { runDiagnostics(); });
 
@@ -4456,10 +4538,12 @@ var IA_VARIANTS = {
     addUserBubble(link.label);
     clearChoices();
     startProc(proc, null);
-    if (root && typeof root.scrollIntoView === "function") {
-      root.scrollIntoView({ block: "start" });
-    }
-    input.focus();
+    /* Step 58 — the arrival takes the same managed scroll as a
+       tile click (one smooth scroll to the panel under the
+       header), replacing the scrollIntoView + focus pair, whose
+       two browser scrolls fought the expansion. */
+    revealAssistant();
+    focusInput();
   }
   arriveFromTopic();
 })();

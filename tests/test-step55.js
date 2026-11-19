@@ -131,9 +131,14 @@ check("module: blended search covers the bank and a FAQ index, labelled by type"
   js.includes("function searchIndex(text)") && js.includes("var FAQ_INDEX =")
   && js.includes('"Guide"') && js.includes('"FAQ"')
   && js.includes("Ask the assistant:"));
+/* Step 58 annotation: the shared wiring gained a second
+   parameter — containers outside the panel (tiles, symptoms)
+   pass reveal=true so the module makes its one managed scroll
+   after expanding; in-panel containers pass false. The "one
+   wiring for all topic buttons" contract is unchanged. */
 check("module: tiles, suggestions and chips share one wiring",
-  js.includes("function wireTopicButtons(container)")
-  && js.includes("wireTopicButtons(tilesEl)") && js.includes("wireTopicButtons(suggestEl)"));
+  js.includes("function wireTopicButtons(container, reveal)")
+  && js.includes("wireTopicButtons(tilesEl, true)") && js.includes("wireTopicButtons(suggestEl, false)"));
 const submitSeg = js.slice(js.indexOf("function submitQuery()"), js.indexOf("function submitQuery()") + 600);
 check("module: submit expands before routing",
   submitSeg.includes("expand();") && submitSeg.indexOf("expand();") < submitSeg.indexOf("route(text);"));
@@ -151,8 +156,11 @@ const block = (css.match(/\/\* Step 55 — Support page restructure[\s\S]*$/) ||
 check("css step55: tiles are a 3-column grid of --radius panels",
   block.includes(".topic-tiles") && block.includes("repeat(3, 1fr)")
   && block.includes(".topic-tile") && block.includes("border-radius: var(--radius)"));
+/* Step 58 annotation: the phone rule also resets
+   grid-auto-rows to auto — in a single column each tile is its
+   own row and sizes to its content again. */
 check("css step55: tiles go single-column on phones (one calm list)",
-  block.includes(".topic-tiles { grid-template-columns: 1fr; }"));
+  block.includes(".topic-tiles { grid-template-columns: 1fr; grid-auto-rows: auto; }"));
 check("css step55: no capsule radius, no new sticky or fixed element",
   !block.includes("999px") && !/position:\s*(sticky|fixed)/.test(block));
 const SCALE = new Set(["0", "4px", "8px", "12px", "16px", "20px", "24px", "28px",

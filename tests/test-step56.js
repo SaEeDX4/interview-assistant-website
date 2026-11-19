@@ -81,8 +81,11 @@ check("module: APG keyboard machinery (active option + activation)",
   && js.includes("aria-activedescendant") && js.includes("function announce(msg)"));
 check("module: the no-result reply echoes the visitor's words",
   js.includes("You asked: “") && js.includes("openResponse(scored.slice(0, 2), text)"));
+/* Step 58 annotation: the symptom wiring now passes
+   reveal=true (the cards sit below the panel, so the module
+   makes its one managed scroll after expanding). */
 check("module: symptom cards share the topic wiring",
-  js.includes("wireTopicButtons(symptomsEl)"));
+  js.includes("wireTopicButtons(symptomsEl, true)"));
 
 // 5. CSS: the Step 56 block — strip guards, symptom grid, the
 //    active-option state — on the house scales, no capsules.
