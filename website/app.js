@@ -800,6 +800,23 @@ var IA_VARIANTS = {
   // 30). The proxy returns speakable points, so this runs in Answer
   // mode only; Coach keeps the generic structure. Any failure lands
   // on exactly the pre-AI behaviour: the honest generic structure.
+  /* Step 57 — the demo page's contextual help block reflects
+     the live-answer state. Only the genuine failure path sets
+     it: a typed question whose live answer could not be fetched
+     (or came back empty) and fell back to the sample structure.
+     Coach mode and the no-fetch local path are deliberate, not
+     failures, and never set it; a later successful live answer
+     clears it. A border colour and one quiet line — the block
+     never pops up, moves, or expands itself. */
+  function setDemoHelpFlag(on) {
+    var block = document.getElementById("demo-help");
+    if (!block) { return; }
+    if (on) { block.classList.add("is-alert"); }
+    else { block.classList.remove("is-alert"); }
+    var note = document.getElementById("demo-help-note");
+    if (note) { note.hidden = !on; }
+  }
+
   function showTypedAI(text) {
     clearTimers();
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
@@ -825,6 +842,7 @@ var IA_VARIANTS = {
       if (myRun !== runId) { return; }
       var bullets = (data && Array.isArray(data.bullets)) ? data.bullets.filter(function (b) { return typeof b === "string" && b; }).slice(0, 4) : [];
       if (!bullets.length) { throw new Error("shape"); }
+      setDemoHelpFlag(false);
       bullets.forEach(function (b) {
         var li = makeBullet(b);
         li.classList.add("is-hidden");
@@ -837,6 +855,7 @@ var IA_VARIANTS = {
       function () {
       if (myRun !== runId) { return; }
       showAnswer("typed", text, null);
+      setDemoHelpFlag(true);
       });
   }
 
@@ -2824,14 +2843,27 @@ var IA_VARIANTS = {
     if (link) { showAfter(link); }
   });
 
+  /* Step 57 — the contextual help block's state line mirrors
+     this page's real release state. It appears exactly when the
+     rendered page offers no download: the manifest fetch failed,
+     the manifest carried no valid published release, or no
+     fetch could run at all. When a release does render, the
+     line stays hidden — the block never claims a state the
+     manifest did not produce. */
+  var helpState = document.getElementById("dl-help-state");
+  function markNoRelease() { if (helpState) { helpState.hidden = false; } }
+
   if (IA_RELEASES_ENDPOINT && typeof fetch === "function") {
     fetch(IA_RELEASES_ENDPOINT, { headers: { "Accept": "application/json" } })
       .then(function (r) { if (!r.ok) { throw new Error("manifest unavailable"); } return r.json(); })
       .then(function (data) {
         var byPlatform = pickReleases(data);
         if (byPlatform) { render(byPlatform); }
+        else { markNoRelease(); }
       })
-      .catch(function () { /* the static page is the honest floor */ });
+      .catch(function () { markNoRelease(); /* the static page is the honest floor */ });
+  } else {
+    markNoRelease();
   }
 
   function detectPlatform() {
@@ -3144,6 +3176,20 @@ var IA_VARIANTS = {
   var resultsEl = document.getElementById("sa-results");
   var tilesEl = document.getElementById("sa-tiles");
   var suggestEl = document.getElementById("sa-suggest");
+  /* Step 56 — the state strip (resume chip + services status),
+     the symptom cards and the live region. All optional, like
+     the Step 55 elements: older harnesses keep running. */
+  var stateEl = document.getElementById("sa-state");
+  var resumeBtn = document.getElementById("sa-resume");
+  var statusEl = document.getElementById("sa-status");
+  var symptomsEl = document.getElementById("sa-symptoms");
+  var liveEl = document.getElementById("sa-live");
+  if (!liveEl) {
+    liveEl = el("p", "visually-hidden");
+    liveEl.setAttribute("role", "status");
+    liveEl.setAttribute("aria-live", "polite");
+    root.appendChild(liveEl);
+  }
 
   var SUPPORT_ADDR = "support@cybervalida.online";
   var GROWTH_URL = "https://admin.cybervalida.online/growth";
@@ -3477,13 +3523,36 @@ var IA_VARIANTS = {
     }
   ];
 
+  /* Step 56 — one-line answer previews for the blended results:
+     the static form of an answer box. Every line is pre-authored
+     from the procedure's own first node — the result list can
+     answer before it is clicked, and it can never promise more
+     than the procedure itself says. */
+  var PREVIEWS = {
+    "audio-none": "First check: the meeting must play through the headset set as Windows’ default playback device.",
+    "audio-wrong": "Loopback captures everything on the device — close music, videos and other calls first.",
+    "signin": "Sign-in runs in your system browser — Google, Microsoft or an email link — not inside the app.",
+    "minutes": "Trial is 30 lifetime live minutes; preparation and practice are never metered.",
+    "download": "There is no installer yet — the signed build and its SHA-256 are not published.",
+    "demo": "The demo is a labelled simulation: ten sample questions in Answer and Coach modes.",
+    "privacy": "Five steps: submit, identity check, field-by-field trace, export or erase, scoped confirmation.",
+    "pricing": "Trial is free; Pro shows $19.99/month as a Paddle sandbox reference — checkout is not open.",
+    "platforms": "Windows only today; Android is planned as a companion, iOS and Mac are research phases.",
+    "offline": "Prepared answers work offline with a cached entitlement; live answers need a connection.",
+    "ethics": "Only facts you confirmed are ever used — it never presents experience that is not yours.",
+    "human": "Support is the developer personally, by email — the prepared email carries this conversation."
+  };
+  BANK.forEach(function (p) { p.preview = PREVIEWS[p.id] || ""; });
+
   var state = {
     current: null,        // { proc, node } while a procedure is open
     lastSubject: "support",
     asked: [],            // the visitor's own words, for the handoff
     covered: [],          // procedure titles opened, for the handoff
     diag: null,           // last diagnostics result
-    diagRunning: false
+    diagRunning: false,
+    origin: null          // Step 57: { page, label } when the visit
+                          // arrived via a contextual help deep link
   };
 
   function byId(id) {
@@ -3492,6 +3561,83 @@ var IA_VARIANTS = {
   }
   function scrollLog() { log.scrollTop = log.scrollHeight; }
 
+  /* Step 56 — resume state. An unfinished procedure (id + node
+     index) persists in localStorage so a returning visitor gets
+     a "Continue where you left off" chip in the state strip.
+     Storage is best-effort: any failure (private mode, blocked
+     storage, an old harness) degrades silently to no chip.
+     The state clears when the visitor confirms a resolution or
+     takes the email handoff — never on silence. */
+  var RESUME_KEY = "ia-sa-resume";
+  function ls() {
+    try { return (typeof localStorage !== "undefined") ? localStorage : null; }
+    catch (e) { return null; }
+  }
+  function storeGet() {
+    var s = ls(); if (!s) { return null; }
+    try {
+      var v = s.getItem(RESUME_KEY);
+      var parsed = v ? JSON.parse(v) : null;
+      return (parsed && byId(parsed.proc)) ? parsed : null;
+    } catch (e) { return null; }
+  }
+  function saveResume() {
+    var s = ls(); if (!s || !state.current) { return; }
+    try {
+      s.setItem(RESUME_KEY, JSON.stringify({
+        proc: state.current.proc.id, node: state.current.node
+      }));
+    } catch (e) { /* storage is an enhancement, never a dependency */ }
+  }
+  function clearResume() {
+    var s = ls(); if (!s) { return; }
+    try { s.removeItem(RESUME_KEY); } catch (e) { /* silent */ }
+    hideResumeChip();
+  }
+  function syncStrip() {
+    if (!stateEl) { return; }
+    var show = (resumeBtn && !resumeBtn.hidden) || (statusEl && !statusEl.hidden);
+    stateEl.hidden = !show;
+  }
+  function hideResumeChip() {
+    if (resumeBtn) { resumeBtn.hidden = true; }
+    syncStrip();
+  }
+  function showResumeChip() {
+    if (!resumeBtn) { return; }
+    var saved = storeGet();
+    if (!saved) { return; }
+    var proc = byId(saved.proc);
+    resumeBtn.textContent = "Continue where you left off: " + proc.title;
+    resumeBtn.hidden = false;
+    syncStrip();
+  }
+  function resumeSaved() {
+    var saved = storeGet();
+    if (!saved) { return; }
+    var proc = byId(saved.proc);
+    hideResumeChip();
+    hideResults();
+    expand();
+    addUserBubble("Continue: " + proc.title);
+    var idx = Math.min(Math.max(saved.node || 0, 0), proc.nodes.length - 1);
+    state.current = { proc: proc, node: idx };
+    state.lastSubject = proc.subject;
+    if (state.covered.indexOf(proc.title) === -1 && state.covered.length < 6) {
+      state.covered.push(proc.title);
+    }
+    var bubble = addBotBubble();
+    var head = el("p");
+    head.appendChild(el("strong", null, proc.title));
+    bubble.appendChild(head);
+    fillNode(bubble, proc.nodes[idx]);
+    renderChoices(proc.nodes[idx].choices);
+    input.focus();
+  }
+  if (resumeBtn) {
+    resumeBtn.addEventListener("click", resumeSaved);
+  }
+
   /* Step 55 — disclosure state. At rest the conversation body is
      collapsed and the entry stands alone; the first real action
      (a submit, a result pick, a tile, a chip, the system check)
@@ -3499,9 +3645,12 @@ var IA_VARIANTS = {
      results first, then the body. The entry input carries the
      truthful aria-expanded for both regions it controls. */
   var resultsOpen = false;
-  function bodyOpen() { return !bodyEl || !bodyEl.hidden; }
+  /* Step 56 — aria-expanded now follows the W3C APG combobox
+     pattern: it describes the results popup only. The body's
+     expansion is announced by the log's live region and by the
+     tiles' aria-controls, not by the combobox state. */
   function refreshEntryAria() {
-    input.setAttribute("aria-expanded", (resultsOpen || bodyOpen()) ? "true" : "false");
+    input.setAttribute("aria-expanded", resultsOpen ? "true" : "false");
   }
   function expand() {
     if (bodyEl && bodyEl.hidden) { bodyEl.hidden = false; }
@@ -3514,6 +3663,9 @@ var IA_VARIANTS = {
   }
   function hideResults() {
     resultsOpen = false;
+    resultItems = [];
+    activeIdx = -1;
+    input.setAttribute("aria-activedescendant", "");
     if (resultsEl) {
       resultsEl.hidden = true;
       while (resultsEl.children.length) {
@@ -3577,6 +3729,20 @@ var IA_VARIANTS = {
     clearChoices();
     addUserBubble(choice.label);
     if (choice.exit === "resolved") { resolvedExit(); }
+    else if (choice.action === "confirm-yes") {
+      /* Step 56 — a resolution counts only when the visitor
+         confirms it. Silence is never treated as success. */
+      clearResume();
+      sayBubble(["Confirmed — glad it's sorted. If something else comes up, pick a topic or type it here."]);
+    }
+    else if (choice.action === "confirm-no") {
+      sayBubble(["Then let's keep going — two paths that always work:"]);
+      renderChoices([
+        { label: "Run the system check", action: "diagnostics" },
+        { label: "Email the developer", action: "email" },
+        { label: "Another topic", action: "topics" }
+      ]);
+    }
     else if (typeof choice.to === "number" && state.current) {
       renderNode(state.current.proc, choice.to);
     }
@@ -3600,13 +3766,23 @@ var IA_VARIANTS = {
     }
   }
   function resolvedExit() {
+    /* Step 56 — the resolution-confirmation loop: every resolved
+       exit asks, and only a "Yes" closes the matter (and clears
+       any saved resume state, inside onChoice). "Not yet" keeps
+       the ladder open — diagnostics or the prepared email. */
     state.current = null;
-    sayBubble(["Good — that is what the playbook is for. If something else comes up, pick a topic or type it here."]);
+    sayBubble(["Good — that is what the playbook is for. Did that fix it?"]);
+    renderChoices([
+      { label: "Yes — fixed", action: "confirm-yes" },
+      { label: "Not yet", action: "confirm-no" }
+    ]);
   }
 
   function startProc(proc, lang) {
     if (!proc) { return; }
+    hideResumeChip();
     state.current = { proc: proc, node: 0 };
+    saveResume();
     state.lastSubject = proc.subject;
     if (state.covered.indexOf(proc.title) === -1 && state.covered.length < 6) {
       state.covered.push(proc.title);
@@ -3629,6 +3805,7 @@ var IA_VARIANTS = {
   }
   function renderNode(proc, idx) {
     state.current = { proc: proc, node: idx };
+    saveResume();
     var bubble = addBotBubble();
     fillNode(bubble, proc.nodes[idx]);
     renderChoices(proc.nodes[idx].choices);
@@ -3695,7 +3872,7 @@ var IA_VARIANTS = {
       offerMatches(scored.slice(0, 3));
       return;
     }
-    openResponse(scored.slice(0, 2));
+    openResponse(scored.slice(0, 2), text);
   }
   function offerMatches(list) {
     state.current = null;
@@ -3705,12 +3882,17 @@ var IA_VARIANTS = {
     choices.push({ label: "Email the developer", action: "email" });
     renderChoices(choices);
   }
-  function openResponse(list) {
+  function openResponse(list, text) {
+    /* Step 56 — no-result recovery: the visitor's own words are
+       echoed back (so a typo is visible), the closest topics are
+       offered, and the email handoff carries the query in its
+       body — it is already in state.asked via submitQuery. */
     state.current = null;
-    sayBubble(["That one doesn't match a standard playbook yet, so let's take the paths that always work: the live system check, the closest topics, or a prepared email to the developer with this conversation attached — you won't have to retype anything."]);
+    sayBubble(["You asked: “" + text + "” — that doesn't match a standard playbook yet, so let's take the paths that always work: the live system check, the closest topics, or a prepared email to the developer with this conversation attached — you won't have to retype anything."]);
     var choices = list.map(function (s) { return { label: s.proc.title, proc: s.proc.id }; });
     if (!choices.length) {
       choices.push({ label: "No audio — nothing is transcribed", proc: "audio-none" });
+      choices.push({ label: "Sign-in problems", proc: "signin" });
       choices.push({ label: "Download problems", proc: "download" });
     }
     choices.push({ label: "Run the system check", action: "diagnostics" });
@@ -3747,6 +3929,45 @@ var IA_VARIANTS = {
     }).catch(function () { return false; });
     return Promise.race([work, timeout]);
   }
+  /* Step 56 — the state strip's services chip. It is fed ONLY
+     by real probe results: the full diagnostics run, or a quiet
+     probe pass on the visitor's first interaction with the
+     entry. Before any probe has run the chip does not exist —
+     the strip never invents an "all systems normal". */
+  function updateStatusChip(results) {
+    if (!statusEl) { return; }
+    while (statusEl.children.length) {
+      statusEl.removeChild(statusEl.children[0]);
+    }
+    var dot = el("span", "sa-dot");
+    dot.setAttribute("aria-hidden", "true");
+    var failed = results.filter(function (r) { return !r.ok; });
+    var text;
+    if (!navigator.onLine) {
+      dot.className = "sa-dot sa-dot-bad";
+      text = "Connection: offline, per your browser — checks can't run";
+    } else if (!failed.length) {
+      dot.className = "sa-dot sa-dot-ok";
+      text = "Services: all reachable just now";
+    } else {
+      dot.className = "sa-dot sa-dot-bad";
+      text = "Services: " + failed.map(function (r) { return r.label; }).join(", ")
+        + " not responding — that part is on our side";
+    }
+    statusEl.appendChild(dot);
+    statusEl.appendChild(el("span", null, text));
+    statusEl.hidden = false;
+    syncStrip();
+  }
+  var quietProbed = false;
+  function quietProbe() {
+    if (quietProbed) { return; }
+    quietProbed = true;
+    if (!statusEl || typeof fetch !== "function") { return; }
+    Promise.all(CHECKS.map(function (c) {
+      return probe(c).then(function (ok) { return { label: c.label, ok: ok }; });
+    })).then(updateStatusChip);
+  }
   function browserSummary() {
     var ua = navigator.userAgent || "";
     var browser = "Browser";
@@ -3767,7 +3988,8 @@ var IA_VARIANTS = {
     return "Browser: " + browserSummary()
       + " · Language: " + (navigator.language || "unknown")
       + " · Connection: " + (navigator.onLine ? "online" : "offline")
-      + " · Page: support.html";
+      + " · Page: support.html"
+      + (state.origin ? " · Arrived from: " + state.origin.page : "");
   }
   function runDiagnostics() {
     if (state.diagRunning) { return; }
@@ -3808,6 +4030,7 @@ var IA_VARIANTS = {
     state.diagRunning = false;
     checkBtn.disabled = false;
     state.diag = { at: new Date().toISOString(), rows: results };
+    updateStatusChip(results);
     var failed = results.filter(function (r) { return !r.ok; });
     var choices = [];
     if (!navigator.onLine) {
@@ -3834,6 +4057,7 @@ var IA_VARIANTS = {
      conversation, the latest diagnostics and the context — the
      developer never has to ask round-1 questions. */
   function renderEmailOffer() {
+    clearResume();
     var lines = [];
     lines.push("Hi — I used the support assistant on cybervalida.online and still need a hand.");
     lines.push("");
@@ -3860,6 +4084,10 @@ var IA_VARIANTS = {
     lines.push("- Browser: " + (navigator.userAgent || "unknown"));
     lines.push("- Language: " + (navigator.language || "unknown"));
     lines.push("- Page: support.html");
+    if (state.origin) {
+      lines.push("- Started from: " + state.origin.page
+        + " (help link: " + state.origin.label + ")");
+    }
     lines.push("- Connection: " + (navigator.onLine ? "online" : "offline"));
     lines.push("");
     lines.push("My Windows version and what I was doing:");
@@ -3938,7 +4166,21 @@ var IA_VARIANTS = {
       phrases: ["delete my data", "how do i delete", "delete my account"]
     }
   ];
-  FAQ_INDEX.forEach(function (f) { f._phrases = f.phrases.map(normalize); });
+  /* Step 56 — FAQ previews, same rule as the bank's: one line,
+     pre-authored from the entry's own answer. */
+  var FAQ_PREVIEWS = {
+    "What happens if the interviewer interrupts me?": "The next answer gets shorter automatically — Concise, then Rapid; reset with Ctrl+Alt+R.",
+    "What do I get after the interview?": "An honest report of the questions and suggestions — no scores, no hiring predictions.",
+    "Does it work offline?": "Live transcription and AI answers need internet; prepared answers keep working offline.",
+    "How do I cancel Pro?": "Checkout is not open yet, so there is no live subscription to cancel.",
+    "Does it work on Mac or Android?": "Windows only today — Android is planned as a companion; iOS and Mac are research phases.",
+    "Can it help me cheat?": "No — a preparation and practice coach that never presents experience that is not yours.",
+    "How do I delete my data?": "Export or delete from the app; Paddle keeps its own payment records under its legal retention."
+  };
+  FAQ_INDEX.forEach(function (f) {
+    f._phrases = f.phrases.map(normalize);
+    f.preview = FAQ_PREVIEWS[f.q] || "";
+  });
   function scoreFaq(f, norm) {
     var score = 0, i, j, k;
     for (i = 0; i < f._phrases.length; i++) {
@@ -3960,39 +4202,100 @@ var IA_VARIANTS = {
       .filter(function (s) { return s.score >= 4; })
       .sort(function (a, b) { return b.score - a.score; })
       .slice(0, 3)
-      .map(function (s) { return { kind: "Guide", title: s.proc.title, proc: s.proc, lang: s.lang }; });
+      .map(function (s) { return { kind: "Guide", title: s.proc.title, preview: s.proc.preview, proc: s.proc, lang: s.lang }; });
     var faqs = FAQ_INDEX.map(function (f) { return { f: f, score: scoreFaq(f, norm) }; })
       .filter(function (s) { return s.score >= 4; })
       .sort(function (a, b) { return b.score - a.score; })
       .slice(0, 2)
-      .map(function (s) { return { kind: "FAQ", title: s.f.q, faq: s.f }; });
+      .map(function (s) { return { kind: "FAQ", title: s.f.q, preview: s.f.preview, faq: s.f }; });
     return procs.concat(faqs).slice(0, 5);
+  }
+  /* Step 56 — the results popup follows the W3C APG combobox
+     pattern: the input keeps focus and role="combobox"; the
+     popup is a listbox of options tracked by
+     aria-activedescendant; a polite live region announces the
+     result count (debounced, so fast typing doesn't chatter);
+     ArrowUp/ArrowDown/Home/End move, Enter activates, Escape
+     closes (the staged root handler). Result rows carry their
+     type label in the accessible name and a one-line answer
+     preview under the title. */
+  var resultItems = [];
+  var activeIdx = -1;
+  var liveTimer = null;
+  function announce(msg) {
+    if (!liveEl) { return; }
+    if (liveTimer) { clearTimeout(liveTimer); }
+    liveTimer = setTimeout(function () { liveEl.textContent = msg; }, 450);
+  }
+  function setActive(idx) {
+    if (!resultsEl) { return; }
+    activeIdx = idx;
+    var opts = [];
+    for (var j = 0; j < resultsEl.children.length; j++) {
+      if (resultsEl.children[j].getAttribute("role") === "option") {
+        opts.push(resultsEl.children[j]);
+      }
+    }
+    for (var i = 0; i < opts.length; i++) {
+      var on = i === idx;
+      opts[i].setAttribute("aria-selected", on ? "true" : "false");
+      if (opts[i].classList) {
+        if (on) { opts[i].classList.add("sa-result-active"); }
+        else { opts[i].classList.remove("sa-result-active"); }
+      }
+    }
+    input.setAttribute("aria-activedescendant",
+      idx >= 0 && opts[idx] ? opts[idx].id : "");
+    if (idx >= 0 && opts[idx] && typeof opts[idx].scrollIntoView === "function") {
+      opts[idx].scrollIntoView({ block: "nearest" });
+    }
+  }
+  function activateOption(idx) {
+    var item = resultItems[idx];
+    if (!item) { return; }
+    if (item.ask) { submitQuery(); }
+    else { pickResult(item); }
   }
   function renderResults() {
     if (!resultsEl) { return; }
     var text = input.value.trim();
     if (text.length < 2) { hideResults(); return; }
     var items = searchIndex(text);
+    resultItems = items.concat([{ ask: true }]);
+    activeIdx = -1;
+    input.setAttribute("aria-activedescendant", "");
     while (resultsEl.children.length) {
       resultsEl.removeChild(resultsEl.children[0]);
     }
-    items.forEach(function (item) {
-      var b = el("button", "sa-result");
+    if (!items.length) {
+      resultsEl.appendChild(el("p", "sa-result-none",
+        "No matching guide or FAQ for that — the assistant can still help:"));
+    }
+    resultItems.forEach(function (item, idx) {
+      var b = el("button", "sa-result" + (item.ask ? " sa-result-ask" : ""));
       b.setAttribute("type", "button");
-      b.appendChild(el("span", "sa-result-kind", item.kind));
-      b.appendChild(el("span", "sa-result-title", item.title));
-      b.addEventListener("click", function () { pickResult(item); });
+      b.setAttribute("role", "option");
+      b.id = "sa-opt-" + idx;
+      b.setAttribute("aria-selected", "false");
+      b.appendChild(el("span", "sa-result-kind",
+        item.ask ? "Assistant" : item.kind));
+      var main = el("span", "sa-result-main");
+      main.appendChild(el("span", "sa-result-title",
+        item.ask ? "Ask the assistant: “" + text + "”" : item.title));
+      if (!item.ask && item.preview) {
+        main.appendChild(el("span", "sa-result-preview", item.preview));
+      }
+      b.appendChild(main);
+      b.addEventListener("click", function () { activateOption(idx); });
       resultsEl.appendChild(b);
     });
-    var ask = el("button", "sa-result sa-result-ask");
-    ask.setAttribute("type", "button");
-    ask.appendChild(el("span", "sa-result-kind", "Assistant"));
-    ask.appendChild(el("span", "sa-result-title", "Ask the assistant: “" + text + "”"));
-    ask.addEventListener("click", function () { submitQuery(); });
-    resultsEl.appendChild(ask);
     resultsEl.hidden = false;
     resultsOpen = true;
     refreshEntryAria();
+    announce(items.length
+      ? items.length + (items.length === 1 ? " result" : " results")
+        + " available. Use the arrow keys to choose, Enter to open."
+      : "No matches. Press Enter to ask the assistant, or choose a topic below.");
   }
   function rememberAsked(text) {
     if (text && state.asked.length < 6) { state.asked.push(text.slice(0, 200)); }
@@ -4050,7 +4353,40 @@ var IA_VARIANTS = {
     submitQuery();
   });
   if (resultsEl) {
-    input.addEventListener("input", function () { renderResults(); });
+    input.addEventListener("input", function () { quietProbe(); renderResults(); });
+    input.addEventListener("focus", function () { quietProbe(); });
+    /* Step 56 — APG keyboard model for the combobox: focus
+       never leaves the input; arrows/Home/End move the active
+       option, Enter activates it (or submits when none is
+       active), Escape is the staged root handler above. */
+    input.addEventListener("keydown", function (ev) {
+      if (!ev) { return; }
+      if (!resultsOpen) {
+        if (ev.key === "ArrowDown" && input.value.trim().length >= 2) {
+          renderResults();
+          if (resultsOpen) { ev.preventDefault(); setActive(0); }
+        }
+        return;
+      }
+      var n = resultItems.length;
+      if (!n) { return; }
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        setActive(activeIdx < 0 ? 0 : (activeIdx + 1) % n);
+      } else if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        setActive(activeIdx < 0 ? n - 1 : (activeIdx - 1 + n) % n);
+      } else if (ev.key === "Home") {
+        ev.preventDefault();
+        setActive(0);
+      } else if (ev.key === "End") {
+        ev.preventDefault();
+        setActive(n - 1);
+      } else if (ev.key === "Enter" && activeIdx >= 0) {
+        ev.preventDefault();
+        activateOption(activeIdx);
+      }
+    });
   }
   root.addEventListener("keydown", function (ev) {
     if (!ev || ev.key !== "Escape") { return; }
@@ -4076,7 +4412,56 @@ var IA_VARIANTS = {
   wireTopicButtons(topicsEl);
   wireTopicButtons(suggestEl);
   wireTopicButtons(tilesEl);
+  wireTopicButtons(symptomsEl);
+  showResumeChip();
   checkBtn.addEventListener("click", function () { runDiagnostics(); });
+
+  /* Step 57 — contextual deep links. The help blocks on the
+     demo, download and pricing pages link here as
+     support.html?topic=demo|download|pricing: help offered at
+     the moment of failure, on the page where it happens, lands
+     in the one assistant with that page's procedure already
+     open — the visitor never starts over. Arrival replays the
+     topic-button path exactly (expand in place, the topic's
+     label as the opening bubble, the procedure from node 0),
+     and seeds state.origin so the diagnostics context line and
+     the email handoff name the page the visitor came from.
+     An absent or unknown topic leaves the Step 55/56 rest
+     state untouched. The parameter is read once, from
+     location.search, at module init — nothing is written back
+     to the URL, so Back returns to the origin page as usual. */
+  var TOPIC_LINKS = {
+    demo: { proc: "demo", label: "Demo help", page: "demo.html" },
+    download: { proc: "download", label: "Download problems", page: "download.html" },
+    pricing: { proc: "pricing", label: "Pricing", page: "pricing.html" }
+  };
+  function topicParam() {
+    var s = "";
+    try {
+      s = (typeof location !== "undefined" && typeof location.search === "string")
+        ? location.search : "";
+    } catch (e) { return null; }
+    var m = /[?&]topic=([a-z]+)/.exec(s);
+    return m ? m[1] : null;
+  }
+  function arriveFromTopic() {
+    var key = topicParam();
+    if (!key || !TOPIC_LINKS[key]) { return; }
+    var link = TOPIC_LINKS[key];
+    var proc = byId(link.proc);
+    if (!proc) { return; }
+    state.origin = { page: link.page, label: link.label };
+    hideResults();
+    expand();
+    addUserBubble(link.label);
+    clearChoices();
+    startProc(proc, null);
+    if (root && typeof root.scrollIntoView === "function") {
+      root.scrollIntoView({ block: "start" });
+    }
+    input.focus();
+  }
+  arriveFromTopic();
 })();
 
 /* Step 55 — Privacy runbook disclosure (support.html only). The

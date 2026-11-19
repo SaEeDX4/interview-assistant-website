@@ -37,16 +37,22 @@ check("entry: exactly one input on the page — the assistant entry",
   (sup.match(/<input/g) || []).length === 1 && sup.includes('id="sa-input"'));
 check("entry: visible label is the page's one starting instruction",
   sup.includes('<label class="sa-label" for="sa-input">Describe your problem</label>'));
+/* Step 56 annotation: the input is now a spec APG combobox —
+   aria-controls names the listbox popup alone (the body's
+   expansion is carried by the log's live region and the tiles'
+   aria-controls). The at-rest value is still false. */
 check("entry: input carries aria-expanded + aria-controls for results and body",
-  sup.includes('aria-expanded="false" aria-controls="sa-results sa-body"'));
+  sup.includes('aria-expanded="false" aria-controls="sa-results"'));
 
 // 3. Calm at rest: no open chat panel, no results list, no panel
 //    head. The conversation body and the results start hidden;
 //    the Step 54 head (mark / name / tagline) is retired.
 check("at rest: the conversation body starts collapsed",
   sup.includes('<div class="sa-body" id="sa-body" hidden>'));
+/* Step 56 annotation: the results container gained its APG
+   listbox role + label; still hidden and empty at rest. */
 check("at rest: the results list starts hidden and empty",
-  sup.includes('<div class="sa-results" id="sa-results" hidden></div>'));
+  sup.includes('<div class="sa-results" id="sa-results" role="listbox" aria-label="Search results" hidden></div>'));
 check("at rest: the old always-open panel head is gone",
   !sup.includes('class="sa-head"') && !sup.includes('class="sa-mark"')
   && !sup.includes('class="sa-tag"'));

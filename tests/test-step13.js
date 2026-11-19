@@ -96,7 +96,12 @@ for (const f of [...PAGES, "404.html"]) {
   for (const m of html[f].matchAll(/href="([^"]+)"/g)) {
     const href = m[1];
     if (/^(https?:|mailto:|tel:|#)/.test(href) || href === "") continue;
-    const [file, anchor] = href.split("#");
+    const [filePart, anchor] = href.split("#");
+    /* Step 57 annotation: internal links may now carry a query
+       string — the contextual help deep links (support.html?topic=…).
+       The file check resolves the path only; the query is runtime
+       state for the target page's module, not part of the file. */
+    const file = filePart.split("?")[0];
     const target = file || f;
     if (!fs.existsSync(path.join(root, target))) { linksOk = false; linksNotes.push(`${f}: ${href} (no such file)`); continue; }
     if (anchor && !idsByFile[target].has(anchor)) { linksOk = false; linksNotes.push(`${f}: ${href} (no such id)`); }

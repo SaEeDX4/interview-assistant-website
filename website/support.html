@@ -82,10 +82,15 @@
         <form class="sa-form" id="sa-form">
           <label class="sa-label" for="sa-input">Describe your problem</label>
           <div class="sa-entry-row">
-            <input class="sa-input" id="sa-input" type="text" autocomplete="off" placeholder="e.g. I can’t hear the interviewer…" aria-expanded="false" aria-controls="sa-results sa-body">
+            <input class="sa-input" id="sa-input" type="text" autocomplete="off" placeholder="e.g. I can’t hear the interviewer…" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sa-results" aria-activedescendant="">
             <button class="btn btn-primary btn-small" type="submit">Ask</button>
           </div>
-          <div class="sa-results" id="sa-results" hidden></div>
+          <div class="sa-state" id="sa-state" hidden>
+            <button class="sa-resume" id="sa-resume" type="button" hidden></button>
+            <span class="sa-status" id="sa-status" hidden></span>
+          </div>
+          <div class="sa-results" id="sa-results" role="listbox" aria-label="Search results" hidden></div>
+          <p class="visually-hidden" id="sa-live" role="status" aria-live="polite"></p>
           <div class="sa-entry-actions">
             <div class="sa-suggest" id="sa-suggest" role="group" aria-label="Suggested topics">
               <button class="sa-chip" type="button" data-sa-topic="audio-none">No audio</button>
@@ -116,6 +121,17 @@
           </div>
           <p class="sa-note">Answers come from the product’s support playbooks and run entirely in your browser. Nothing is sent anywhere unless you choose the email handoff.</p>
         </div>
+      </div>
+
+      <h2>What’s happening?</h2>
+      <div class="symptom-grid" id="sa-symptoms" role="group" aria-label="Common symptoms">
+        <button class="symptom-card" type="button" data-sa-topic="audio-none" data-sa-label="I can’t hear the interviewer" aria-controls="sa-body">I can’t hear the interviewer</button>
+        <button class="symptom-card" type="button" data-sa-topic="audio-wrong" data-sa-label="It transcribes the wrong conversation" aria-controls="sa-body">It transcribes the wrong conversation</button>
+        <button class="symptom-card" type="button" data-sa-topic="signin" data-sa-label="Sign-in keeps looping" aria-controls="sa-body">Sign-in keeps looping</button>
+        <button class="symptom-card" type="button" data-sa-topic="minutes" data-sa-label="My minutes ran out" aria-controls="sa-body">My minutes ran out</button>
+        <button class="symptom-card" type="button" data-sa-topic="download" data-sa-label="The download won’t start" aria-controls="sa-body">The download won’t start</button>
+        <button class="symptom-card" type="button" data-sa-topic="demo" data-sa-label="The demo gives no answer" aria-controls="sa-body">The demo gives no answer</button>
+        <button class="symptom-card" type="button" data-sa-topic="ethics" data-sa-label="It answers with facts I never gave" aria-controls="sa-body">It answers with facts I never gave</button>
       </div>
 
       <h2>Common topics</h2>

@@ -212,8 +212,12 @@ function submit(dom, text) {
       !!resultBtn(dom, "Ask the assistant:"));
     resultBtn(dom, "Price and plans").click();
     await sleep(10);
+    /* Step 56 annotation: aria-expanded now follows the APG
+       combobox pattern (popup only), so after a pick it reads
+       false while the body stands expanded — the expansion half
+       of this check is unchanged. */
     check("T2 picking the Guide expands the conversation in place",
-      dom.body.hidden === false && dom.input.getAttribute("aria-expanded") === "true");
+      dom.body.hidden === false && dom.input.getAttribute("aria-expanded") === "false");
     check("T2 the procedure opens, seeded with the visitor's words",
       dom.log.textContent.includes("$19.99")
       && userBubbles(dom).some((t) => t.includes("how much does Pro cost")));
