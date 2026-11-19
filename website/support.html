@@ -72,84 +72,78 @@
     <div class="container narrow">
       <p class="eyebrow">Support & FAQ</p>
       <h1>Help, troubleshooting, and the hard questions.</h1>
-      <p class="lead">Start with the FAQ — it answers the questions people actually ask, including the uncomfortable ones. If you are stuck on something technical, the troubleshooting sections below are written from the product’s own support playbooks.</p>
+      <p class="lead">Describe your problem — the assistant searches the product’s own playbooks, runs a live check of our services, and prepares an email to the developer when a person is needed.</p>
     </div>
   </section>
   <section class="section" aria-label="Support">
     <div class="container narrow">
       <h2>Support assistant</h2>
       <div class="sa" id="support-assistant">
-        <div class="sa-head">
-          <span class="sa-mark" aria-hidden="true">IA</span>
-          <div class="sa-head-copy">
-            <p class="sa-name">Support assistant</p>
-            <p class="sa-tag">Instant answers from the product’s own playbooks, a live check of our services, and a prepared email to the developer when a person is needed.</p>
+        <form class="sa-form" id="sa-form">
+          <label class="sa-label" for="sa-input">Describe your problem</label>
+          <div class="sa-entry-row">
+            <input class="sa-input" id="sa-input" type="text" autocomplete="off" placeholder="e.g. I can’t hear the interviewer…" aria-expanded="false" aria-controls="sa-results sa-body">
+            <button class="btn btn-primary btn-small" type="submit">Ask</button>
           </div>
-          <button class="btn btn-secondary btn-small sa-check-btn" type="button" id="sa-check-btn">Run system check</button>
-        </div>
-        <div class="sa-log" id="sa-log" role="log" aria-live="polite" aria-label="Conversation with the support assistant">
-          <div class="sa-msg sa-msg-bot">
-            <div class="sa-bubble">
-              <p>Hi — I walk you through the common problems: audio, sign-in, minutes, downloads, the demo, privacy. Pick a topic below, or describe what’s happening in your own words.</p>
+          <div class="sa-results" id="sa-results" hidden></div>
+          <div class="sa-entry-actions">
+            <div class="sa-suggest" id="sa-suggest" role="group" aria-label="Suggested topics">
+              <button class="sa-chip" type="button" data-sa-topic="audio-none">No audio</button>
+              <button class="sa-chip" type="button" data-sa-topic="signin">Sign-in</button>
+              <button class="sa-chip" type="button" data-sa-topic="minutes">Minutes</button>
+              <button class="sa-chip" type="button" data-sa-topic="download">Download</button>
+            </div>
+            <button class="btn btn-secondary btn-small" type="button" id="sa-check-btn">Run system check</button>
+          </div>
+        </form>
+        <div class="sa-body" id="sa-body" hidden>
+          <div class="sa-log" id="sa-log" role="log" aria-live="polite" aria-label="Conversation with the support assistant" tabindex="-1">
+            <div class="sa-msg sa-msg-bot">
+              <div class="sa-bubble">
+                <p>Hi — I walk you through the common problems: audio, sign-in, minutes, downloads, the demo, privacy. Pick a topic below, or describe what’s happening in your own words.</p>
+              </div>
             </div>
           </div>
+          <div class="sa-topics" id="sa-topics" role="group" aria-label="Common support topics">
+            <button class="sa-chip" type="button" data-sa-topic="audio-none">No audio</button>
+            <button class="sa-chip" type="button" data-sa-topic="signin">Sign-in</button>
+            <button class="sa-chip" type="button" data-sa-topic="minutes">Minutes</button>
+            <button class="sa-chip" type="button" data-sa-topic="download">Download</button>
+            <button class="sa-chip" type="button" data-sa-topic="demo">Demo help</button>
+            <button class="sa-chip" type="button" data-sa-topic="pricing">Pricing</button>
+            <button class="sa-chip" type="button" data-sa-topic="privacy">Privacy</button>
+            <button class="sa-chip" type="button" data-sa-topic="human">Talk to a person</button>
+          </div>
+          <p class="sa-note">Answers come from the product’s support playbooks and run entirely in your browser. Nothing is sent anywhere unless you choose the email handoff.</p>
         </div>
-        <div class="sa-topics" id="sa-topics" role="group" aria-label="Common support topics">
-          <button class="sa-chip" type="button" data-sa-topic="audio-none">No audio</button>
-          <button class="sa-chip" type="button" data-sa-topic="signin">Sign-in</button>
-          <button class="sa-chip" type="button" data-sa-topic="minutes">Minutes</button>
-          <button class="sa-chip" type="button" data-sa-topic="download">Download</button>
-          <button class="sa-chip" type="button" data-sa-topic="demo">Demo help</button>
-          <button class="sa-chip" type="button" data-sa-topic="pricing">Pricing</button>
-          <button class="sa-chip" type="button" data-sa-topic="privacy">Privacy</button>
-          <button class="sa-chip" type="button" data-sa-topic="human">Talk to a person</button>
-        </div>
-        <form class="sa-form" id="sa-form">
-          <label class="visually-hidden" for="sa-input">Describe your problem</label>
-          <input class="sa-input" id="sa-input" type="text" autocomplete="off" placeholder="Describe what’s happening…">
-          <button class="btn btn-primary btn-small" type="submit">Send</button>
-        </form>
-        <p class="sa-note">Answers come from the support playbooks on this page and run entirely in your browser. Nothing is sent anywhere unless you choose the email handoff.</p>
       </div>
 
-      <h2>Contact us</h2>
-      <div class="contact-card">
-        <p>Support is handled by the developer, by email: <a href="mailto:support@cybervalida.online">support@cybervalida.online</a>. Please include your Windows version and what you were doing when the problem happened.</p>
-        <p class="cta-row">
-          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20demo%20help">Demo help</a>
-          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20privacy%20request">Privacy request</a>
-          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20download%20question">Download question</a>
-          <a class="btn btn-secondary btn-small" href="mailto:support@cybervalida.online?subject=Interview%20Assistant%20%E2%80%94%20support">Something else</a>
-        </p>
-      </div>
-
-      <h2>Troubleshooting</h2>
-      <div class="trouble-grid">
-        <article class="trouble-card">
-          <span class="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="2" y="13" width="4" height="7" rx="2"/><rect x="18" y="13" width="4" height="7" rx="2"/></svg>Audio</span>
-          <h3>No audio / wrong playback device</h3>
-          <p>The app captures the interviewer’s audio from your headset via WASAPI loopback. If nothing is transcribed: check that the headset is the <strong>default playback device</strong> in Windows sound settings, that the meeting audio is actually playing through it (not your speakers), and that no other app has exclusive control of the device. If the stream is empty, the app records that as no audio — an empty stream is not a pass, and it will not invent a transcript.</p>
-        </article>
-        <article class="trouble-card">
-          <span class="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="2" y="13" width="4" height="7" rx="2"/><rect x="18" y="13" width="4" height="7" rx="2"/></svg>Audio</span>
-          <h3>The app hears the wrong app</h3>
-          <p>WASAPI loopback captures what plays through the selected playback device. If music or another call is playing through the same headset, it is in the stream. Close other audio sources before the interview, and use a headset — not speakers — so your own voice does not feed back.</p>
-        </article>
-        <article class="trouble-card">
-          <span class="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Account</span>
-          <h3>Sign-in problems</h3>
-          <p>Sign-in happens in your system browser (Google, Microsoft, or an email link). If sign-in fails, try a fresh browser sign-in, check that your default browser can reach the sign-in page, and retry. Prepared answers keep working offline with a cached entitlement, so a sign-in problem does not erase your preparation.</p>
-        </article>
-        <article class="trouble-card">
-          <span class="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Billing</span>
-          <h3>Minutes running out</h3>
-          <p>Live minutes are metered by the server. If live listening stops, check how many live minutes you have used — Trial gives 30 lifetime minutes. Preparation and practise do not use live minutes, so a “minutes used up” message only ever concerns live sessions. See <a href="pricing.html">how live minutes work</a>.</p>
-        </article>
-        <article class="trouble-card">
-          <span class="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M6 11l6 6 6-6"/><path d="M4 21h16"/></svg>Download</span>
-          <h3>Download problems</h3>
-          <p>There is no installer yet — the signed installer and its SHA-256 hash are not published. If a link on this site does not download anything, that is expected for now, not a bug. See <a href="download.html">Download</a>.</p>
-        </article>
+      <h2>Common topics</h2>
+      <div class="topic-tiles" id="sa-tiles">
+        <button class="topic-tile" type="button" data-sa-topic="audio-none" data-sa-label="No audio" aria-controls="sa-body">
+          <span class="topic-tile-title">Audio &amp; the interviewer’s voice</span>
+          <span class="topic-tile-desc">Nothing is transcribed, or the wrong sound is captured.</span>
+        </button>
+        <button class="topic-tile" type="button" data-sa-topic="signin" data-sa-label="Sign-in" aria-controls="sa-body">
+          <span class="topic-tile-title">Sign-in &amp; account</span>
+          <span class="topic-tile-desc">Browser sign-in with Google, Microsoft, or an email link.</span>
+        </button>
+        <button class="topic-tile" type="button" data-sa-topic="minutes" data-sa-label="Minutes" aria-controls="sa-body">
+          <span class="topic-tile-title">Trial &amp; minutes</span>
+          <span class="topic-tile-desc">How live minutes work, and what happens when they run out.</span>
+        </button>
+        <button class="topic-tile" type="button" data-sa-topic="download" data-sa-label="Download" aria-controls="sa-body">
+          <span class="topic-tile-title">Download &amp; install</span>
+          <span class="topic-tile-desc">Installer status and download problems.</span>
+        </button>
+        <button class="topic-tile" type="button" data-sa-topic="demo" data-sa-label="Demo help" aria-controls="sa-body">
+          <span class="topic-tile-title">The demo</span>
+          <span class="topic-tile-desc">Sample questions, Answer and Coach modes, interruptions.</span>
+        </button>
+        <button class="topic-tile" type="button" data-sa-topic="privacy" data-sa-label="Privacy" aria-controls="sa-body">
+          <span class="topic-tile-title">Privacy &amp; your data</span>
+          <span class="topic-tile-desc">Export or delete your data, step by step.</span>
+        </button>
       </div>
 
       <h2>Frequently asked questions</h2>
@@ -184,18 +178,33 @@
         </div>
       </div>
 
-      <h2 id="runbook">Privacy-request runbook (summary)</h2>
-      <p>When the support channel opens, a privacy request (export or erasure) will follow these steps, from the product’s own runbook:</p>
-      <ol class="numbered">
-        <li><strong>You submit the request</strong> through the support channel.</li>
-        <li><strong>Your identity is verified</strong>, so nobody can request your data.</li>
-        <li><strong>The request is traced</strong> across the local workspace, the backend, and Paddle, field by field.</li>
-        <li><strong>Export or erasure is carried out</strong>, with Paddle invoices explicitly outside app deletion.</li>
-        <li><strong>You receive a scoped confirmation</strong> — what was done, and what is still pending if anything is.</li>
-      </ol>
-      <p>A partial removal is never presented as a complete one.</p>
-      <p class="cta-row"><a class="btn btn-primary" href="demo.html">Try the demo</a>
-      <a class="btn btn-secondary" href="download.html">Download for Windows</a></p>
+      <div class="privacy-card">
+        <div class="privacy-card-copy">
+          <h2>Privacy &amp; your data</h2>
+          <p>Privacy requests — export or delete your data — follow the product’s own runbook: identity first, then a field-by-field trace, then a scoped confirmation.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="runbook-toggle" aria-expanded="false" aria-controls="runbook-wrap">See how a privacy request works</button>
+      </div>
+      <div class="runbook-wrap" id="runbook-wrap" hidden>
+        <h2 id="runbook">Privacy-request runbook (summary)</h2>
+        <p>A privacy request (export or erasure) follows these steps, from the product’s own runbook:</p>
+        <ol class="numbered">
+          <li><strong>You submit the request</strong> through the support channel.</li>
+          <li><strong>Your identity is verified</strong>, so nobody can request your data.</li>
+          <li><strong>The request is traced</strong> across the local workspace, the backend, and Paddle, field by field.</li>
+          <li><strong>Export or erasure is carried out</strong>, with Paddle invoices explicitly outside app deletion.</li>
+          <li><strong>You receive a scoped confirmation</strong> — what was done, and what is still pending if anything is.</li>
+        </ol>
+        <p>A partial removal is never presented as a complete one.</p>
+        <p class="cta-row"><a class="btn btn-primary" href="demo.html">Try the demo</a>
+        <a class="btn btn-secondary" href="download.html">Download for Windows</a></p>
+      </div>
+
+      <h2>Contact us</h2>
+      <div class="contact-strip">
+        <p>Still stuck? Support is handled by the developer, by email: <a href="mailto:support@cybervalida.online">support@cybervalida.online</a>. Please include your Windows version and what you were doing when the problem happened.</p>
+      </div>
+
     </div>
   </section>
 

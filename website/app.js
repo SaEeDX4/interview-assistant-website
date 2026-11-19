@@ -3134,6 +3134,16 @@ var IA_VARIANTS = {
   var topicsEl = document.getElementById("sa-topics");
   var checkBtn = document.getElementById("sa-check-btn");
   if (!log || !form || !input || !topicsEl || !checkBtn) { return; }
+  /* Step 55 — the page is a router now: the conversation lives in
+     a collapsible body under the single entry, blended results
+     render under the input, and tiles/suggestions start
+     procedures from outside the panel. All four elements are
+     optional here so the Phase 1 harness keeps running the module
+     against the original panel shape. */
+  var bodyEl = document.getElementById("sa-body");
+  var resultsEl = document.getElementById("sa-results");
+  var tilesEl = document.getElementById("sa-tiles");
+  var suggestEl = document.getElementById("sa-suggest");
 
   var SUPPORT_ADDR = "support@cybervalida.online";
   var GROWTH_URL = "https://admin.cybervalida.online/growth";
@@ -3481,6 +3491,37 @@ var IA_VARIANTS = {
     return null;
   }
   function scrollLog() { log.scrollTop = log.scrollHeight; }
+
+  /* Step 55 — disclosure state. At rest the conversation body is
+     collapsed and the entry stands alone; the first real action
+     (a submit, a result pick, a tile, a chip, the system check)
+     expands it in place. Escape walks back one level at a time:
+     results first, then the body. The entry input carries the
+     truthful aria-expanded for both regions it controls. */
+  var resultsOpen = false;
+  function bodyOpen() { return !bodyEl || !bodyEl.hidden; }
+  function refreshEntryAria() {
+    input.setAttribute("aria-expanded", (resultsOpen || bodyOpen()) ? "true" : "false");
+  }
+  function expand() {
+    if (bodyEl && bodyEl.hidden) { bodyEl.hidden = false; }
+    refreshEntryAria();
+  }
+  function collapse() {
+    hideResults();
+    if (bodyEl) { bodyEl.hidden = true; }
+    refreshEntryAria();
+  }
+  function hideResults() {
+    resultsOpen = false;
+    if (resultsEl) {
+      resultsEl.hidden = true;
+      while (resultsEl.children.length) {
+        resultsEl.removeChild(resultsEl.children[0]);
+      }
+    }
+    refreshEntryAria();
+  }
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) { n.className = cls; }
@@ -3730,6 +3771,7 @@ var IA_VARIANTS = {
   }
   function runDiagnostics() {
     if (state.diagRunning) { return; }
+    expand();
     state.diagRunning = true;
     checkBtn.disabled = true;
     clearChoices();
@@ -3841,28 +3883,220 @@ var IA_VARIANTS = {
     ]);
   }
 
+  /* Step 55 — blended results. Typing in the entry searches the
+     same bank the router uses, plus the page's FAQ — restated
+     here once, exactly like the playbooks above, so the page
+     keeps one canonical wording per answer. Matches render as a
+     compact list under the input, labelled by type (Guide /
+     FAQ), with a final row that hands the raw words to the
+     assistant. Picking a result expands the conversation in
+     place, seeded with the visitor's own words. */
+  var FAQ_INDEX = [
+    {
+      q: "What happens if the interviewer interrupts me?",
+      a: ["The next answer gets shorter automatically (Concise, then Rapid), so you can keep up. You can reset it with Ctrl+Alt+R."],
+      link: { href: "demo.html", label: "Try it in the interruption simulator" },
+      keys: ["interrupts", "interrupt", "interruption", "shorter", "concise", "rapid", "reset", "cuts"],
+      phrases: ["interrupts me", "interrupted", "interrupt me", "cuts me off", "cut off"]
+    },
+    {
+      q: "What do I get after the interview?",
+      a: ["An honest report: the questions asked and the suggestions shown, plus what to prepare next time. No scores, no hiring predictions."],
+      keys: ["after", "report", "results", "score", "scores", "feedback", "summary"],
+      phrases: ["after the interview", "what do i get"]
+    },
+    {
+      q: "Does it work offline?",
+      a: ["Live transcription and AI answers need an internet connection. Prepared answers keep working offline with a cached entitlement, and your reports stay on your PC."],
+      keys: ["offline", "internet", "connection"],
+      phrases: ["work offline", "without internet", "does it work offline"]
+    },
+    {
+      q: "How do I cancel Pro?",
+      a: ["Paid checkout is not open yet — there is no live subscription to cancel. When it opens, you will cancel anytime in the Paddle customer portal and keep Pro until the end of your billing period. The Pro price shown is a Paddle sandbox reference."],
+      keys: ["cancel", "subscription", "refund", "paddle", "portal"],
+      phrases: ["cancel pro", "cancel my subscription", "cancel the subscription"]
+    },
+    {
+      q: "Does it work on Mac or Android?",
+      a: ["Not yet. Windows is the only platform today. Android is planned as a companion first, and iOS and a dedicated Mac app are separate research phases. No dates, no downloads for those platforms yet."],
+      link: { href: "platforms.html", label: "Platforms & roadmap" },
+      keys: ["mac", "android", "ios", "iphone", "platform"],
+      phrases: ["on mac", "on android", "mac or android", "work on mac"]
+    },
+    {
+      q: "Can it help me cheat?",
+      a: ["No. It is a preparation and practice coach. It does not hide, does not evade screen capture, does not record your microphone, and does not present experience that is not yours. Only facts you confirmed are ever used — and live assist is only for interviews where assistance is permitted."],
+      keys: ["cheat", "cheating", "hide", "evade", "caught"],
+      phrases: ["help me cheat", "can it help me cheat", "is it cheating"]
+    },
+    {
+      q: "How do I delete my data?",
+      a: ["You can export or delete your workspace from the app. Deleting app data does not delete Paddle’s own payment records, which follow Paddle’s legal retention. A deletion request shows a scoped pending/export/erase status rather than a false “all done”."],
+      link: { href: "privacy.html", label: "Privacy" },
+      keys: ["delete", "data", "export", "erase", "workspace"],
+      phrases: ["delete my data", "how do i delete", "delete my account"]
+    }
+  ];
+  FAQ_INDEX.forEach(function (f) { f._phrases = f.phrases.map(normalize); });
+  function scoreFaq(f, norm) {
+    var score = 0, i, j, k;
+    for (i = 0; i < f._phrases.length; i++) {
+      if (norm.indexOf(f._phrases[i]) !== -1) { score += 6; }
+    }
+    var tokens = norm.split(" ");
+    for (i = 0; i < f.keys.length; i++) {
+      k = f.keys[i];
+      for (j = 0; j < tokens.length; j++) {
+        if (tokens[j] === k || (k.length >= 4 && tokens[j].indexOf(k) === 0)) { score += 3; break; }
+      }
+    }
+    return score;
+  }
+  function searchIndex(text) {
+    var norm = normalize(text);
+    var raw = String(text || "");
+    var procs = BANK.map(function (p) { return scoreProc(p, norm, raw); })
+      .filter(function (s) { return s.score >= 4; })
+      .sort(function (a, b) { return b.score - a.score; })
+      .slice(0, 3)
+      .map(function (s) { return { kind: "Guide", title: s.proc.title, proc: s.proc, lang: s.lang }; });
+    var faqs = FAQ_INDEX.map(function (f) { return { f: f, score: scoreFaq(f, norm) }; })
+      .filter(function (s) { return s.score >= 4; })
+      .sort(function (a, b) { return b.score - a.score; })
+      .slice(0, 2)
+      .map(function (s) { return { kind: "FAQ", title: s.f.q, faq: s.f }; });
+    return procs.concat(faqs).slice(0, 5);
+  }
+  function renderResults() {
+    if (!resultsEl) { return; }
+    var text = input.value.trim();
+    if (text.length < 2) { hideResults(); return; }
+    var items = searchIndex(text);
+    while (resultsEl.children.length) {
+      resultsEl.removeChild(resultsEl.children[0]);
+    }
+    items.forEach(function (item) {
+      var b = el("button", "sa-result");
+      b.setAttribute("type", "button");
+      b.appendChild(el("span", "sa-result-kind", item.kind));
+      b.appendChild(el("span", "sa-result-title", item.title));
+      b.addEventListener("click", function () { pickResult(item); });
+      resultsEl.appendChild(b);
+    });
+    var ask = el("button", "sa-result sa-result-ask");
+    ask.setAttribute("type", "button");
+    ask.appendChild(el("span", "sa-result-kind", "Assistant"));
+    ask.appendChild(el("span", "sa-result-title", "Ask the assistant: “" + text + "”"));
+    ask.addEventListener("click", function () { submitQuery(); });
+    resultsEl.appendChild(ask);
+    resultsEl.hidden = false;
+    resultsOpen = true;
+    refreshEntryAria();
+  }
+  function rememberAsked(text) {
+    if (text && state.asked.length < 6) { state.asked.push(text.slice(0, 200)); }
+  }
+  function pickResult(item) {
+    var text = input.value.trim();
+    input.value = "";
+    hideResults();
+    expand();
+    rememberAsked(text);
+    if (item.proc) {
+      addUserBubble(text || item.title);
+      startProc(item.proc, item.lang);
+    } else if (item.faq) {
+      addUserBubble(item.faq.q);
+      state.current = null;
+      state.lastSubject = "support";
+      var bubble = addBotBubble();
+      var head = el("p");
+      head.appendChild(el("strong", null, item.faq.q));
+      bubble.appendChild(head);
+      item.faq.a.forEach(function (t) { bubble.appendChild(el("p", null, t)); });
+      if (item.faq.link) {
+        var p = el("p");
+        var a = el("a", null, item.faq.link.label);
+        a.setAttribute("href", item.faq.link.href);
+        p.appendChild(a);
+        bubble.appendChild(p);
+      }
+      scrollLog();
+      renderChoices([
+        { label: "That answers it", exit: "resolved" },
+        { label: "Run the system check", action: "diagnostics" },
+        { label: "Email the developer", action: "email" }
+      ]);
+    }
+    input.focus();
+  }
+
   /* Wiring. */
-  form.addEventListener("submit", function (ev) {
-    ev.preventDefault();
+  function submitQuery() {
     var text = input.value.trim();
     if (!text) { return; }
     input.value = "";
+    hideResults();
+    expand();
     addUserBubble(text);
-    if (state.asked.length < 6) { state.asked.push(text.slice(0, 200)); }
+    rememberAsked(text);
     clearChoices();
     route(text);
     input.focus();
-  });
-  var chips = topicsEl.children;
-  for (var i = 0; i < chips.length; i++) {
-    (function (chip) {
-      chip.addEventListener("click", function () {
-        addUserBubble(chip.textContent);
-        clearChoices();
-        startProc(byId(chip.getAttribute("data-sa-topic")), null);
-        input.focus();
-      });
-    })(chips[i]);
   }
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    submitQuery();
+  });
+  if (resultsEl) {
+    input.addEventListener("input", function () { renderResults(); });
+  }
+  root.addEventListener("keydown", function (ev) {
+    if (!ev || ev.key !== "Escape") { return; }
+    if (resultsOpen) { hideResults(); return; }
+    if (bodyEl && !bodyEl.hidden) { collapse(); input.focus(); }
+  });
+  function wireTopicButtons(container) {
+    if (!container) { return; }
+    var btns = container.children;
+    for (var i = 0; i < btns.length; i++) {
+      (function (chip) {
+        chip.addEventListener("click", function () {
+          hideResults();
+          expand();
+          addUserBubble(chip.getAttribute("data-sa-label") || chip.textContent);
+          clearChoices();
+          startProc(byId(chip.getAttribute("data-sa-topic")), null);
+          input.focus();
+        });
+      })(btns[i]);
+    }
+  }
+  wireTopicButtons(topicsEl);
+  wireTopicButtons(suggestEl);
+  wireTopicButtons(tilesEl);
   checkBtn.addEventListener("click", function () { runDiagnostics(); });
+})();
+
+/* Step 55 — Privacy runbook disclosure (support.html only). The
+   runbook sits behind its one-line card: a sequential procedure
+   does not belong in the FAQ accordion (GOV.UK — accordions are
+   for single-answer lookup), so it opens staged beneath the card
+   instead. One toggle, aria-expanded kept truthful, and a
+   #runbook deep link — privacy.html points here — opens it on
+   arrival so the link never lands on a hidden section. */
+(function () {
+  "use strict";
+  var toggle = document.getElementById("runbook-toggle");
+  var wrap = document.getElementById("runbook-wrap");
+  if (!toggle || !wrap) { return; }
+  function setOpen(open) {
+    wrap.hidden = !open;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  toggle.addEventListener("click", function () { setOpen(wrap.hidden); });
+  if (typeof location !== "undefined" && location.hash === "#runbook") {
+    setOpen(true);
+  }
 })();

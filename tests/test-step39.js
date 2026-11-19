@@ -18,9 +18,13 @@ function check(name, ok) {
   else { fail++; console.log("FAIL " + name); }
 }
 
+/* Step 55 annotation: the .trouble-grid clause left this check
+   with the troubleshooting cards themselves — the owner-ordered
+   support UX redesign removed that component (its substance
+   lives in the assistant's procedures now), so the stretch
+   family is pinned on the grids that remain. */
 check("card grids stretch by default (ragged-bottom family)",
   /\.grid \{ display: grid; gap: 20px; align-items: stretch; \}/.test(css) &&
-  /\.trouble-grid \{[^}]*align-items: stretch/.test(css) &&
   /\.two-col \{[^}]*align-items: start/.test(css));
 check("terms: the h2 after the summary card keeps its divider",
   /\.doc \.doc-summary \+ h2 \{ border-top: 1px solid var\(--border\); padding-top: 28px; margin-top: 32px; \}/.test(css));

@@ -7,8 +7,8 @@ runnable from a fresh clone (from the repo root).
 
 | Files | What they are |
 |---|---|
-| `test-step6.js` … `test-step41.js`, `test-step46.js`, `test-step48.js`, `test-step50.js`, `test-step53.js`, `test-step54.js` | The test suites — one per build step. Each enforces the matching standard in `standards/` plus that step's own contracts. 579 checks across 39 suites, all green. |
-| `sim-step22.js`, `sim-step23-demo.js`, `sim-step30-hero.js`, `sim-step41-download.js`, `sim-step48-growth.js`, `sim-step54-assistant.js` | DOM simulations of the story player, the demo, the hero, the download page, the growth announcements, and the support assistant — they drive the real `app.js` against a stub DOM and assert behaviour (modes: `--reduced`, `--ai`, `--fa`, `--ar`, `--fr`). |
+| `test-step6.js` … `test-step41.js`, `test-step46.js`, `test-step48.js`, `test-step50.js`, `test-step53.js`, `test-step54.js`, `test-step55.js` | The test suites — one per build step. Each enforces the matching standard in `standards/` plus that step's own contracts. 611 checks across 40 suites, all green. |
+| `sim-step22.js`, `sim-step23-demo.js`, `sim-step30-hero.js`, `sim-step41-download.js`, `sim-step48-growth.js`, `sim-step54-assistant.js`, `sim-step55-assistant.js` | DOM simulations of the story player, the demo, the hero, the download page, the growth announcements, and the support assistant — they drive the real `app.js` against a stub DOM and assert behaviour (modes: `--reduced`, `--ai`, `--fa`, `--ar`, `--fr`). |
 | `reverify*.py` | Post-push checks: each asserts its step's markers against the live GitHub Pages output. |
 | `fix-step9.py` … `fix-step19.py` | The fix scripts that applied each early step's changes. Historical record — already applied, count-asserted (they abort if the old text is not found exactly the expected number of times). Do not re-run them on the live files. |
 | `review19.py` | The Step 19 full final review: runs every suite, audits every internal link + anchor, checks content consistency (prices, minutes, languages), renders every page at several widths, and queries PageSpeed. Results go to `step19-report.json`. |

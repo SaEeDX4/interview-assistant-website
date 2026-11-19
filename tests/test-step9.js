@@ -82,9 +82,14 @@ check("R20 footer link rows 12px vertical (Step 11: 44px touch target)",
 check("R11 flow-node padding 20px, icon -> title 12px",
   /\.flow-node[^{]*\{[^}]*padding:\s*20px;/s.test(css)
   && /margin:\s*0 auto 12px;/.test(css));
+/* Step 55 annotation: the .trouble-card sample left this check
+   with the troubleshooting cards — removed by the owner-ordered
+   support UX redesign (substance moved into the assistant's
+   procedures). The 24px small-card standard stays pinned on
+   .req-item, and the generic scale scan above still covers
+   every margin/padding/gap in the sheet. */
 check("R9 small cards padding 24px",
-  /\.req-item\s*\{[^}]*padding:\s*24px;/s.test(css)
-  && /\.trouble-card\s*\{[^}]*padding:\s*24px;/s.test(css));
+  /\.req-item\s*\{[^}]*padding:\s*24px;/s.test(css));
 check("sticky CTA gap 12px, 16px side padding, no 56px reserve (Step 27)",
   /gap:\s*12px;\s*padding:\s*12px 16px 12px 20px;/.test(css));
 

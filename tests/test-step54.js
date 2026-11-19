@@ -27,19 +27,26 @@ const mod = sliceStart === -1 ? "" : js.slice(sliceStart);
 const htmlBlock = (sup.match(/<div class="sa" id="support-assistant">[\s\S]*?\n      <\/div>\n/) || [""])[0];
 
 // 1. The panel: present, wired, and the page's primary experience —
-//    above the Step 53 contact card, which stays intact below it.
+//    above the Step 53 contact section (a card in Step 54's day;
+//    Step 55 slimmed it to the bottom strip, same order).
 const iAssist = sup.indexOf('<h2>Support assistant</h2>');
 const iContact = sup.indexOf("<h2>Contact us</h2>");
-check("support: assistant section exists above the contact card",
+check("support: assistant section exists above the contact section",
   iAssist !== -1 && iContact !== -1 && iAssist < iContact);
 check("support: panel carries every wiring point the module needs",
   ["support-assistant", "sa-log", "sa-form", "sa-input", "sa-topics", "sa-check-btn"]
     .every((id) => sup.includes(`id="${id}"`)));
 check("support: the log is an aria-live conversation region",
   sup.includes('id="sa-log" role="log" aria-live="polite"'));
+/* Step 55 annotation: the entry is a search-style router now, so
+   the label is visible (it is the page's one starting
+   instruction: "Describe your problem") instead of visually
+   hidden, and the submit reads "Ask" instead of "Send". The
+   guarantee is unchanged: a real <label for> and a real submit
+   button. */
 check("support: the form has a real label and a submit button",
-  sup.includes('<label class="visually-hidden" for="sa-input">')
-  && sup.includes('<button class="btn btn-primary btn-small" type="submit">Send</button>'));
+  sup.includes('<label class="sa-label" for="sa-input">Describe your problem</label>')
+  && sup.includes('<button class="btn btn-primary btn-small" type="submit">Ask</button>'));
 
 // 2. Topic chips mirror bank procedures, one for one.
 const chipIds = [...sup.matchAll(/data-sa-topic="([a-z-]+)"/g)].map((m) => m[1]);
