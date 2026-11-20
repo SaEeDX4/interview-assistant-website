@@ -92,17 +92,29 @@ const panels = [...html.matchAll(/<section class="hw-panel" data-panel="(\d)"[\s
 
 /* ---------- 2. The composition law in CSS ---------- */
 {
-  check("fill: the panel row is one track sized by this panel's taller column (Step 66: natural height, items stretch, no align-items: start)",
+  // Step 67 re-pin: these three checks pinned the stretch-and-
+  // spread composition (items stretch to the row; the window
+  // grows; the last card and the points distribute). The owner
+  // measured the spread INSIDE the columns (fact rows floated
+  // apart, the fear line adrift) and Step 67 retired it: the
+  // row is still sized by the taller column, but the shorter
+  // column is CENTRED as one compact block and nothing inside
+  // the panel grows or distributes. The invariants below are
+  // the new model, stated as presence/absence pairs.
+  check("fill: the panel row is one track sized by this panel's taller column; the shorter column is CENTRED, never stretched (Step 67 re-pin)",
     block.includes("grid-template-rows: minmax(0, 1fr);")
+    && /\.hw-panel \{[^}]*align-items: center;/.test(block)
     && !/\.hw-panel \{[^}]*align-items: start/.test(block));
-  check("fill: the window fills its row — frame/window/body are flex columns, window grows (Step 66: within-panel fill only)",
+  check("fill: frame/window/body are flex columns and NOTHING in the window chain grows (Step 67 re-pin)",
     block.includes(".hw-panel .hw-frame { display: flex; flex-direction: column; }")
-    && block.includes(".hw-panel .app-window { flex: 1 1 auto; display: flex; flex-direction: column; }")
-    && block.includes(".hw-panel .app-window-body { flex: 1 1 auto; display: flex; flex-direction: column; }"));
-  check("fill: the last card grows and spreads; a lone card spreads its rows; the points spread",
+    && block.includes(".hw-panel .app-window { display: flex; flex-direction: column; }")
+    && block.includes(".hw-panel .app-window-body { display: flex; flex-direction: column; }")
+    && !block.includes(".hw-panel .app-window { flex: 1 1 auto;")
+    && !block.includes(".hw-panel .app-window-body { flex: 1 1 auto;"));
+  check("fill: NOTHING spreads — the last-card and points space-between rules are deleted (Step 67 re-pin: internal spread retired)",
     block.includes(".hw-panel .app-card { display: flex; flex-direction: column; }")
-    && block.includes(".hw-panel .app-card:last-of-type { flex: 1 1 auto; justify-content: space-between; }")
-    && block.includes(".hw-panel .hw-bullets { flex: 1 1 auto; align-content: space-between; }"));
+    && !block.includes(".hw-panel .app-card:last-of-type")
+    && !block.includes("align-content: space-between"));
   // Step 66 re-pin: this check pinned the auto-margin spread
   // (fear centred, thread pinned). That model failed on the
   // owner's taller phone; the caption is now plain flow and

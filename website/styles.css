@@ -1623,8 +1623,16 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
    to protect: off, page-scoped, the Step 58/61 pattern. */
 body:has(.hw-trace) { overflow-anchor: none; }
 
-/* Hero clock strip — Concept 2's discipline, as three captions. */
-.hw-clocks { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+/* Hero clock strip — Concept 2's discipline, as three captions.
+   Step 67: a true 3-column grid with equal columns and aligned
+   starts — as a wrapping flex row the captions took their
+   natural widths, overflowed the hero measure and wrapped 2+1,
+   the third orphaned on a second line (owner's desktop shot).
+   The grid holds at every width above the phone breakpoint
+   (the narrow hero measure gives each column an honest share
+   down to 641px); at 640px and below it stacks, one caption
+   per line on the same left edge. Never a 2+1 wrap. */
+.hw-clocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 24px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
 .hw-clock { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
 .hw-clock strong { color: var(--text); }
 
@@ -1660,7 +1668,7 @@ body:has(.hw-trace) { overflow-anchor: none; }
 .hw-node.is-active .hw-node-name { color: var(--text); }
 .hw-stage { display: grid; gap: 16px; }
 .hw-trace.is-live .hw-stage { display: block; }
-.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; }
+.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; align-items: center; }
 .hw-trace.is-live .hw-panel.is-hidden { display: none; }
 .hw-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .hw-frame { min-width: 0; }
@@ -1692,13 +1700,35 @@ body:has(.hw-trace) { overflow-anchor: none; }
    rows, the points spread inside their card (measured: the
    window's content reaches its bottom edge within 1px at
    every width, so there is no window void to fix). No new
-   facts: the strip names only the thread the page traces. */
+   facts: the strip names only the thread the page traces.
+   Step 67 — the INTERNAL SPREAD is retired too. Step 66
+   measured only the void at a column's bottom; the owner
+   measured inside it (his desktop shot, stage 1: the fact
+   rows floated apart across the card, the fear line adrift
+   mid-caption — "this space only fills on number 5"). The
+   window composition above was the mechanism: whenever a
+   column was stretched to the row, its last card grew and
+   distributed its rows, the points distributed inside their
+   card, and the shorter caption sat on top of its stretch
+   with the slack trailing under the clock line (measured
+   before the fix, desktop: answer-card children 34.4 and
+   34.5px apart against natural gaps of 16 and 20, points
+   57.8px apart against a natural 12, caption trailing slack
+   69.4 and 93.5px on stages 1 and 2). Now nothing in the panel grows
+   or distributes: the two space-between rules are deleted,
+   the window chain no longer grows, and the panel centres
+   the shorter column (align-items on the .hw-panel rule) —
+   each column is one compact natural block, its breathing
+   room split evenly above and below it, never interleaved
+   between its elements. Stage 5, naturally full on both
+   sides, is unchanged in content and panel height; its
+   points now sit at their natural 12px rhythm like every
+   other row on the page. On phones the columns stack, so
+   the same deletions simply keep the cards compact there. */
 .hw-panel .hw-frame { display: flex; flex-direction: column; }
-.hw-panel .app-window { flex: 1 1 auto; display: flex; flex-direction: column; }
-.hw-panel .app-window-body { flex: 1 1 auto; display: flex; flex-direction: column; }
+.hw-panel .app-window { display: flex; flex-direction: column; }
+.hw-panel .app-window-body { display: flex; flex-direction: column; }
 .hw-panel .app-card { display: flex; flex-direction: column; }
-.hw-panel .app-card:last-of-type { flex: 1 1 auto; justify-content: space-between; }
-.hw-panel .hw-bullets { flex: 1 1 auto; align-content: space-between; }
 .hw-thread { margin: 0 0 8px; }
 .hw-thread-bar { display: flex; gap: 4px; margin-bottom: 8px; }
 .hw-thread-seg { flex: 1 1 0; height: 8px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--border); }
@@ -1812,6 +1842,9 @@ body:has(.hw-trace) { overflow-anchor: none; }
   .hw-nodes { padding-bottom: 0; }
   .hw-node-name { display: none; }
   .hw-progress { order: 3; flex-basis: 100%; }
+  /* Step 67: the hero clock strip stacks — one caption per
+     line, full width, the same left edge for all three. */
+  .hw-clocks { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Step 53 — Support contact. Step 53 put the channel on the page
