@@ -243,9 +243,13 @@ function check(name, ok, detail) {
   check("js63: the Step 58 law — no scrolling, no focus moves, no timers in the module",
     !mod.includes("scrollIntoView") && !mod.includes(".focus(") && !mod.includes("setTimeout")
     && !mod.includes("setInterval") && !mod.includes("scrollTo"));
-  check("js63: reduced-motion is the module's only matchMedia call (guard + one call)",
-    (mod.match(/matchMedia\(/g) || []).length === 1
-    && mod.includes('window.matchMedia("(prefers-reduced-motion: reduce)")'));
+  // Step 65 re-pin: the module's reduceMotion variable was defined but
+  // never read — dead code, removed in the Step 65 final review. The
+  // module's motion is CSS-only and the global reduced-motion rule
+  // stills it (Step 65 S4 audit measured 0s durations), so the true
+  // invariant is stronger: no matchMedia call in the module at all.
+  check("js63: no matchMedia call in the module (Step 65 re-pin: CSS-only motion, global reduced-motion rule stills it)",
+    (mod.match(/matchMedia\(/g) || []).length === 0);
   check("js63: announcements are words, not silence (stage + mapping + verdict)",
     mod.includes('"Stage "') && mod.includes('" stands on "') && mod.includes('" stands behind "')
     && mod.includes('"Exactly right. "') && mod.includes('"Not quite. "'));

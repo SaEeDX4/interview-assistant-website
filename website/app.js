@@ -4995,14 +4995,6 @@ var IA_VARIANTS = {
 (function () {
   "use strict";
 
-  var reduceMotion = typeof window !== "undefined" && window.matchMedia
-    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
-  /* Safe query, the Step 59 pattern: a partial DOM must never make
-     this module throw — it finds nothing and stays inert. */
-  var qsa = function (sel) {
-    try { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
-    catch (e) { return []; }
-  };
   var slice = function (list) { return Array.prototype.slice.call(list); };
 
   /* ---- S1: the trace — a guided 5-stage stepper ----

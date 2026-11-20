@@ -1639,22 +1639,64 @@ body:has(.hw-trace) { overflow-anchor: none; }
    faint accent wash at its head so the mechanism reads as the
    page's centrepiece, not another text block. */
 .hw-trace { background: linear-gradient(180deg, rgba(124, 108, 255, .06), rgba(124, 108, 255, 0) 160px), var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-top: 32px; box-shadow: var(--shadow-card); }
-.hw-nodes { position: relative; display: flex; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
+.hw-nodes { position: relative; display: flex; justify-content: space-between; gap: 8px; margin-bottom: 24px; padding-bottom: 24px; }
 .hw-nodes-line { position: absolute; left: 22px; right: 22px; top: 22px; height: 2px; background: var(--border); border-radius: 2px; }
 .hw-nodes-fill { display: block; height: 100%; background: var(--accent); border-radius: 2px; transform: scaleX(0); transform-origin: left center; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
-.hw-node { position: relative; display: grid; justify-items: center; gap: 8px; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; color: var(--muted); }
+.hw-node { position: relative; display: grid; justify-items: center; gap: 8px; width: 44px; flex: none; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; color: var(--muted); }
 .hw-node-num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 600; line-height: 1; color: var(--muted); transition: color .15s ease, background-color .25s cubic-bezier(.2,.7,.3,1), border-color .25s cubic-bezier(.2,.7,.3,1); }
 .hw-node:hover .hw-node-num { color: var(--text); border-color: var(--accent); }
 .hw-node.is-done .hw-node-num { color: var(--accent-light); border-color: var(--accent); }
 .hw-node.is-active .hw-node-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-.hw-node-name { font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+/* Step 65: the done rule sits after the hover rule at equal
+   specificity, so a done node's numeral never took the hover
+   colour — the feedback every other node state shows. Restored
+   for that state. The active numeral keeps its dark-on-accent
+   treatment: --text on the accent measures 3.48:1, under the
+   4.5 floor for 14px text. */
+.hw-node.is-done:hover .hw-node-num { color: var(--text); }
+.hw-node-name { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+.hw-node:first-of-type .hw-node-name { left: 0; transform: none; }
+.hw-node:last-of-type .hw-node-name { left: auto; right: 0; transform: none; }
 .hw-node.is-active .hw-node-name { color: var(--text); }
 .hw-stage { display: grid; gap: 16px; }
 .hw-trace.is-live .hw-stage { gap: 0; }
-.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; min-width: 0; }
+.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; }
 .hw-trace.is-live .hw-panel { grid-area: 1 / 1; }
 .hw-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .hw-frame { min-width: 0; }
+
+/* Step 64 — the panels FILL their stage. Step 63 set the stage
+   height by its fullest panel (stage 5) so stepping never moves
+   the page, but stages 1–4 then rendered as content floating at
+   the top of a taller box: the window ended mid-panel and the
+   caption's text stopped ~40% down, darkness below both (owner-
+   reported on his phone). The height law is unchanged — the
+   stage is still one fixed height, set by the same tallest
+   panel — but each panel is now composed to its full height:
+   the window stretches (its last card grows; a lone card spreads
+   its rows; stage 5's points spread inside their card), and the
+   caption becomes three zones — the telling at the top, the
+   fear line centred in the open space by the auto margins, and
+   a footer zone pinned to the bottom edge: the thread strip
+   (the traced thread as five segments, filled to this stage —
+   the same progress the nodes row shows, restated as the
+   thread's own artefact) over the clock line. On phones the
+   frame keeps its natural height and the caption row absorbs
+   the stage's remaining height the same way. No new facts:
+   the strip names only the thread the page is already tracing. */
+.hw-panel .hw-frame { display: flex; flex-direction: column; }
+.hw-panel .app-window { flex: 1 1 auto; display: flex; flex-direction: column; }
+.hw-panel .app-window-body { flex: 1 1 auto; display: flex; flex-direction: column; }
+.hw-panel .app-card { display: flex; flex-direction: column; }
+.hw-panel .app-card:last-of-type { flex: 1 1 auto; justify-content: space-between; }
+.hw-panel .hw-bullets { flex: 1 1 auto; align-content: space-between; }
+.hw-cap .hw-cap-fear { margin-top: auto; }
+.hw-thread { margin-top: auto; }
+.hw-thread-bar { display: flex; gap: 4px; margin-bottom: 8px; }
+.hw-thread-seg { flex: 1 1 0; height: 8px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--border); }
+.hw-thread-seg.is-done { background: var(--accent); border-color: var(--accent); opacity: .55; }
+.hw-thread-seg.is-now { background: var(--accent); border-color: var(--accent); }
+.hw-thread-line { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1.5; color: var(--muted-2); margin: 0; }
 
 /* Inside the frames — fact rows and bank rows share one row shape;
    the thread marker (a small rotated square, the accent diamond)
@@ -1672,7 +1714,7 @@ body:has(.hw-trace) { overflow-anchor: none; }
 
 /* Stage captions — count, one idea, the fear answered at the step
    where it arises, and the clock line that prices the stage. */
-.hw-cap { min-width: 0; }
+.hw-cap { display: flex; flex-direction: column; min-width: 0; }
 .hw-cap-count { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 8px; }
 .hw-cap-title { margin: 0 0 12px; }
 .hw-cap-body { color: var(--muted); margin: 0 0 16px; }
@@ -1748,7 +1790,7 @@ body:has(.hw-trace) { overflow-anchor: none; }
 .hw-bound p:last-child { margin-bottom: 0; }
 
 @media (max-width: 860px) {
-  .hw-panel { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .hw-panel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 24px; }
   .hw-myths { grid-template-columns: minmax(0, 1fr); }
   .hw-opts { grid-template-columns: minmax(0, 1fr); }
   .hw-bounds { grid-template-columns: minmax(0, 1fr); }
@@ -1759,6 +1801,7 @@ body:has(.hw-trace) { overflow-anchor: none; }
   .hw-trace { padding: 20px; }
   /* Phones keep the numbered journey line; the stage name rides
      in the progress line under the stage instead. */
+  .hw-nodes { padding-bottom: 0; }
   .hw-node-name { display: none; }
   .hw-progress { order: 3; flex-basis: 100%; }
 }
