@@ -135,11 +135,19 @@ function check(name, ok, detail) {
   check("myths: the three arrivals fears, named verbatim",
     JSON.stringify(says) === JSON.stringify(
       ["“It records me.”", "“It invents answers.”", "“It hides and works in secret.”"]));
-  check("myths: each refuted in one breath, from sourced product facts",
-    html.includes("It never records your microphone, and it never stores audio.")
-    && html.includes("It has nothing to invent from.")
-    && html.includes("an unconfirmed fact is never used")
-    && html.includes("The window is small, visible, and never hides itself."));
+  // Step 68 re-pin: Concept A compressed each refutation to a
+  // one-line truth (the paragraphs became verdict cards). The
+  // check pins the new truth lines verbatim, plus the stage-5
+  // fear line that now carries the "nothing to invent from"
+  // fact the second card's line no longer spells out — the
+  // preservation map is in step68-hero-fears-ideation/
+  // report.md (items M2-1 and M2-5).
+  check("myths: each refuted in one breath, from sourced product facts (Step 68 one-line truths)",
+    html.includes("Never your microphone. Never stored.")
+    && html.includes("only the interviewer — through your headset, only while you listen.")
+    && html.includes("Built only from your confirmed facts and your bank — an unconfirmed fact is never used.")
+    && html.includes("Small, visible, never hides itself.")
+    && html.includes("Nothing here is invented: if a fact was never confirmed, no point can stand on it"));
   check("myths: each card routes onward (trace / privacy / controls)",
     (html.match(/class="hw-myth-links"/g) || []).length === 3
     && html.includes('href="#trace"') && html.includes('href="#first-run"'));
@@ -187,11 +195,16 @@ function check(name, ok, detail) {
     && html.includes("Simulated from the demo’s own sample data"));
   check("honesty: no 'AI' label for answers anywhere on the page",
     !/\bAI\b/.test(visible));
-  check("hotkeys: canonical here — L and C exactly once, R in its three honest places",
+  // Step 68 re-pin: Ctrl+Alt+Space now appears twice — the
+  // canonical telling in the first-run hotkey list, plus the
+  // aria-hidden window-bar replica in myth card 3, which
+  // pictures the key rather than defining it a second time.
+  // L and C stay at exactly once; R in its three honest places.
+  check("hotkeys: canonical here — L and C exactly once, R in its three honest places, Space in the list + the Step 68 replica",
     (html.match(/Ctrl\+Alt\+L/g) || []).length === 1
     && (html.match(/Ctrl\+Alt\+C/g) || []).length === 1
     && (html.match(/Ctrl\+Alt\+R/g) || []).length === 3
-    && (html.match(/Ctrl\+Alt\+Space/g) || []).length === 1);
+    && (html.match(/Ctrl\+Alt\+Space/g) || []).length === 2);
   check("hotkeys: no orphaned period after </kbd> (the Step 6 law)",
     !html.includes("</kbd>."));
 }

@@ -76,16 +76,45 @@
        confirmed fact, followed through the bank and the live moment
        until it comes back as three sourced points. Every frame is a
        labelled simulation built from the demo's canonical sample
-       data (SAMPLES.tell + the INT shortenings in app.js). -->
+       data (SAMPLES.tell + the INT shortenings in app.js).
+       Step 68 (Concept A, owner-approved): the top of the page
+       now speaks the trace's own grammar — the lead became a
+       kicker plus a drawn thread map (the same nodes, line and
+       diamond, at hero scale), the clocks became tiles, and
+       each myth card became a verdict: the struck assumption,
+       one truth line, and the proving stage's own artefact
+       (stage 3's listening status, stage 5's source chain,
+       the window bar with its show / hide key). Same facts,
+       carried by drawing instead of paragraphs. -->
   <section class="page-hero">
     <div class="container narrow">
       <p class="eyebrow">How it works</p>
       <h1>One question, followed end to end.</h1>
-      <p class="lead">Most explanations list steps. This one follows a single thread instead: one fact the candidate confirmed, the question that fact earned, and the three points it became — in the order it actually happens, with nothing hidden in between.</p>
+      <p class="hw-thread-kicker">Most explanations list steps. This one follows a single thread, in the order it happens, with nothing hidden:</p>
+      <figure class="hw-threadmap">
+        <div class="hw-tm-track">
+          <span class="hw-nodes-line" aria-hidden="true"></span>
+          <div class="hw-tm-node">
+            <span class="hw-tm-disc is-thread">1</span>
+            <span class="hw-tm-name">Fact confirmed</span>
+            <span class="hw-tm-chip">Five years building web products <span class="hw-thread-tag"><span class="hw-diamond" aria-hidden="true"></span>The thread</span></span>
+          </div>
+          <div class="hw-tm-node">
+            <span class="hw-tm-disc">2</span>
+            <span class="hw-tm-name">The question it earned</span>
+            <span class="hw-tm-chip">“Tell me about yourself.”</span>
+          </div>
+          <div class="hw-tm-node">
+            <span class="hw-tm-disc">3</span>
+            <span class="hw-tm-name">Three points, sourced</span>
+          </div>
+        </div>
+        <figcaption class="hw-thread-line hw-tm-caption"><span class="hw-diamond" aria-hidden="true"></span><span>Fact 1 → “Tell me about yourself.” → three points, sourced</span></figcaption>
+      </figure>
       <div class="hw-clocks" aria-label="The three time frames">
-        <p class="hw-clock"><strong>Before the day</strong> — free, unhurried, repeatable.</p>
-        <p class="hw-clock"><strong>The live seconds</strong> — the only part that uses minutes.</p>
-        <p class="hw-clock"><strong>Afterwards</strong> — a report that stays on your PC.</p>
+        <p class="hw-clock"><strong>Before the day</strong><span>free · unhurried · repeatable</span></p>
+        <p class="hw-clock"><strong>The live seconds</strong><span>only this uses minutes</span></p>
+        <p class="hw-clock"><strong>Afterwards</strong><span>report stays on your PC</span></p>
       </div>
     </div>
   </section>
@@ -94,22 +123,63 @@
     <div class="container">
       <p class="eyebrow">First, the fears</p>
       <h2 id="myths-title">Three things people assume. None of them is true.</h2>
-      <p class="section-intro">Every visitor arrives with a model of what an app like this must be doing. Three parts of that model are wrong — and until they are named, every fact on this page lands on top of them. So, first:</p>
+      <p class="section-intro">Three assumptions arrive with every visitor. Each is wrong — and each is proven wrong in the trace below.</p>
       <div class="hw-myths">
         <article class="hw-myth">
-          <p class="hw-myth-say">“It records me.”</p>
-          <p class="hw-myth-truth">It never records your microphone, and it never stores audio. It hears the interviewer through your headset — that is the only audio it touches, and only while you have it listening.</p>
-          <p class="hw-myth-links"><a href="#trace">Watch it happen — Stage 3 of the trace</a><a href="privacy.html">The full boundary: Privacy &amp; ethics</a></p>
+          <div class="hw-myth-head">
+            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+            <p class="hw-myth-say">“It records me.”</p>
+          </div>
+          <div class="hw-myth-verdict">
+            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+            <p class="hw-myth-truth">Never your microphone. Never stored. It hears only the interviewer — through your headset, only while you listen.</p>
+          </div>
+          <div class="hw-myth-viz" aria-hidden="true">
+            <div class="hw-viz-listen">
+              <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening to system audio · microphone off</span></p>
+              <span class="hw-viz-mic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/><path d="M4.5 4.5 L19.5 19.5" stroke="#f87171"/></svg></span>
+            </div>
+          </div>
+          <p class="hw-myth-links"><a href="#trace">Watch it happen — Stage 3 of the trace</a><a href="privacy.html">Privacy &amp; ethics</a></p>
         </article>
         <article class="hw-myth">
-          <p class="hw-myth-say">“It invents answers.”</p>
-          <p class="hw-myth-truth">It has nothing to invent from. Every point is built from facts you confirmed and your prepared bank — an unconfirmed fact is never used, and a guess is never dressed up as your experience.</p>
-          <p class="hw-myth-links"><a href="#trace">See a point traced to its facts — Stage 5</a><a href="features.html">The evidence: Features</a></p>
+          <div class="hw-myth-head">
+            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+            <p class="hw-myth-say">“It invents answers.”</p>
+          </div>
+          <div class="hw-myth-verdict">
+            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+            <p class="hw-myth-truth">Built only from your confirmed facts and your bank — an unconfirmed fact is never used.</p>
+          </div>
+          <div class="hw-myth-viz" aria-hidden="true">
+            <div class="hw-viz-panel">
+              <div class="hw-viz-chain">
+                <span class="hw-viz-chip">Fact 1</span><span class="hw-viz-op">+</span><span class="hw-viz-chip">Fact 2</span><span class="hw-viz-op">→</span><span class="hw-viz-chip is-point">Point 1</span>
+              </div>
+              <p class="hw-viz-caption">Built from facts 1 + 2</p>
+            </div>
+          </div>
+          <p class="hw-myth-links"><a href="#trace">See a point traced to its facts — Stage 5</a><a href="features.html">Features</a></p>
         </article>
         <article class="hw-myth">
-          <p class="hw-myth-say">“It hides and works in secret.”</p>
-          <p class="hw-myth-truth">The window is small, visible, and never hides itself. You start listening, you stop it, and the show / hide hotkey is yours. Use it only where you are allowed to.</p>
-          <p class="hw-myth-links"><a href="#first-run">Your controls — the first-run guide</a><a href="privacy.html">Visibility, in Privacy &amp; ethics</a></p>
+          <div class="hw-myth-head">
+            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+            <p class="hw-myth-say">“It hides and works in secret.”</p>
+          </div>
+          <div class="hw-myth-verdict">
+            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+            <p class="hw-myth-truth">Small, visible, never hides itself. You start it, you stop it, the key is yours. Only where allowed.</p>
+          </div>
+          <div class="hw-myth-viz" aria-hidden="true">
+            <div class="hw-viz-window">
+              <div class="app-window-bar">
+                <span class="app-window-title">Interview Assistant</span>
+                <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+              </div>
+              <div class="hw-viz-window-body"><kbd>Ctrl+Alt+Space</kbd><span>show / hide</span></div>
+            </div>
+          </div>
+          <p class="hw-myth-links"><a href="#first-run">Your controls — the first-run guide</a><a href="privacy.html">Privacy &amp; ethics</a></p>
         </article>
       </div>
     </div>
