@@ -4,15 +4,26 @@
    1) THE VOID: Step 63's fixed stage (height set by stage 5, the
    fullest) left stages 1–4 as content floating at the top of a
    taller box — the window ended mid-panel, caption text stopped
-   ~40% down, darkness below both. The height law is unchanged
-   (one fixed stage height, stepping never moves the page); each
-   panel is now COMPOSED to that height: the window stretches
-   (last card grows, a lone card spreads its rows, stage 5's
-   points spread inside their card) and the caption is three
-   zones — telling at top, fear line centred by auto margins,
-   and a footer pinned to the bottom edge: the thread strip
-   (five segments filled to this stage, naming only the thread
-   the page already traces — no new facts) over the clock line.
+   ~40% down, darkness below both. Step 64 composed each panel
+   to that height: the window stretches (last card grows, a
+   lone card spreads its rows, stage 5's points spread inside
+   their card) and the caption spread as three zones — telling
+   at top, fear line centred by auto margins, and a footer
+   pinned to the bottom edge: the thread strip (five segments
+   filled to this stage, naming only the thread the page
+   already traces — no new facts) over the clock line.
+   STEP 66 RE-PIN: the shared height and the caption spread
+   were retired a day later — on the owner's taller phone
+   (Galaxy Z Fold 7, ~403x928 vs the 390x844 audit viewport)
+   the centred fear line floated in a ~340-470px chasm. Each
+   panel now takes its NATURAL height and the module glides
+   the stage height between stages; the caption is plain flow
+   (telling, fear, strip, clock — no auto margins), and the
+   window composition below survives only as the within-panel
+   fill when a caption is the taller column. The strip, its
+   states and its place above the clock line are unchanged.
+   The new model is pinned by test-step66.js and the audit in
+   step66-stepper-natural/audit.py (98 checks).
    2) THE TRACK: the nodes' connecting line ran past the last
    node as a dangling stub (and short of the first), because the
    line's fixed 22px insets assumed 44px buttons while the name
@@ -69,7 +80,7 @@ const panels = [...html.matchAll(/<section class="hw-panel" data-panel="(\d)"[\s
   });
   check("fill: each strip's segments fill exactly to its own stage (done < now < untouched)",
     statesOk);
-  check("fill: the strip is the caption's footer zone (inside .hw-cap, above the clock line)",
+  check("fill: the strip closes the caption's flow (inside .hw-cap, above the clock line; Step 66: flow, not a pinned footer)",
     orderOk);
   const lines = [...html.matchAll(/<p class="hw-thread-line"><span class="hw-diamond"><\/span><span>([^<]+)<\/span><\/p>/g)]
     .map((m) => m[1]);
@@ -81,10 +92,10 @@ const panels = [...html.matchAll(/<section class="hw-panel" data-panel="(\d)"[\s
 
 /* ---------- 2. The composition law in CSS ---------- */
 {
-  check("fill: the panel row is one full-height track, items stretch (no align-items: start)",
+  check("fill: the panel row is one track sized by this panel's taller column (Step 66: natural height, items stretch, no align-items: start)",
     block.includes("grid-template-rows: minmax(0, 1fr);")
     && !/\.hw-panel \{[^}]*align-items: start/.test(block));
-  check("fill: the window stretches — frame/window/body are flex columns, window grows",
+  check("fill: the window fills its row — frame/window/body are flex columns, window grows (Step 66: within-panel fill only)",
     block.includes(".hw-panel .hw-frame { display: flex; flex-direction: column; }")
     && block.includes(".hw-panel .app-window { flex: 1 1 auto; display: flex; flex-direction: column; }")
     && block.includes(".hw-panel .app-window-body { flex: 1 1 auto; display: flex; flex-direction: column; }"));
@@ -92,11 +103,16 @@ const panels = [...html.matchAll(/<section class="hw-panel" data-panel="(\d)"[\s
     block.includes(".hw-panel .app-card { display: flex; flex-direction: column; }")
     && block.includes(".hw-panel .app-card:last-of-type { flex: 1 1 auto; justify-content: space-between; }")
     && block.includes(".hw-panel .hw-bullets { flex: 1 1 auto; align-content: space-between; }"));
-  check("fill: the caption is a flex column; fear and thread ride auto margins (centred + footer zones)",
+  // Step 66 re-pin: this check pinned the auto-margin spread
+  // (fear centred, thread pinned). That model failed on the
+  // owner's taller phone; the caption is now plain flow and
+  // the true invariant is the ABSENCE of auto margins here.
+  check("fill: the caption is a flex column in plain flow — NO auto margins (Step 66 re-pin: the spread is retired)",
     block.includes(".hw-cap { display: flex; flex-direction: column; min-width: 0; }")
-    && block.includes(".hw-cap .hw-cap-fear { margin-top: auto; }")
-    && block.includes(".hw-thread { margin-top: auto; }"));
-  check("fill: phone panels — frame row natural, caption row absorbs the rest of the stage",
+    && !block.includes(".hw-cap .hw-cap-fear { margin-top: auto; }")
+    && !block.includes(".hw-thread { margin-top: auto; }")
+    && block.includes(".hw-thread { margin: 0 0 8px; }"));
+  check("fill: phone panels — frame row natural, caption row resolves to the caption's own content at natural panel height (Step 66)",
     block.includes(".hw-panel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 24px; }"));
   check("fill: segment states exist (done = dimmed accent, now = full accent)",
     block.includes(".hw-thread-seg.is-done") && block.includes(".hw-thread-seg.is-now")

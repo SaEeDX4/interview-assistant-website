@@ -1659,39 +1659,47 @@ body:has(.hw-trace) { overflow-anchor: none; }
 .hw-node:last-of-type .hw-node-name { left: auto; right: 0; transform: none; }
 .hw-node.is-active .hw-node-name { color: var(--text); }
 .hw-stage { display: grid; gap: 16px; }
-.hw-trace.is-live .hw-stage { gap: 0; }
+.hw-trace.is-live .hw-stage { display: block; }
 .hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; }
-.hw-trace.is-live .hw-panel { grid-area: 1 / 1; }
+.hw-trace.is-live .hw-panel.is-hidden { display: none; }
 .hw-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .hw-frame { min-width: 0; }
 
-/* Step 64 — the panels FILL their stage. Step 63 set the stage
-   height by its fullest panel (stage 5) so stepping never moves
-   the page, but stages 1–4 then rendered as content floating at
-   the top of a taller box: the window ended mid-panel and the
-   caption's text stopped ~40% down, darkness below both (owner-
-   reported on his phone). The height law is unchanged — the
-   stage is still one fixed height, set by the same tallest
-   panel — but each panel is now composed to its full height:
-   the window stretches (its last card grows; a lone card spreads
-   its rows; stage 5's points spread inside their card), and the
-   caption becomes three zones — the telling at the top, the
-   fear line centred in the open space by the auto margins, and
-   a footer zone pinned to the bottom edge: the thread strip
-   (the traced thread as five segments, filled to this stage —
-   the same progress the nodes row shows, restated as the
-   thread's own artefact) over the clock line. On phones the
-   frame keeps its natural height and the caption row absorbs
-   the stage's remaining height the same way. No new facts:
-   the strip names only the thread the page is already tracing. */
+/* Step 64 composed each panel to the stage's shared height
+   (Step 63's law: the tallest panel — stage 5 — set one fixed
+   height so stepping never moved the page): the window
+   stretched to fill, and the caption spread across the height
+   as three zones — telling, a fear line centred by paired
+   auto margins, and a footer zone (the thread strip over the
+   clock line) pinned to the bottom edge.
+   Step 66 — the shared height is RETIRED (owner's real phone:
+   a Galaxy Z Fold 7, ≈403×928 — taller than the 390×844 audit
+   viewport, where the spread read as rhythm; on his device
+   stages 1–4 carried two ~340–470px chasms inside the caption,
+   the fear line floating between them). Each panel now takes
+   its NATURAL height: in live mode only the shown panel is in
+   flow (.hw-stage becomes a block, hidden panels display:
+   none — the rules above), and the module glides the stage
+   height between panels (the Step 58 unfold technique), so
+   nothing is ever spread across another stage's height. The
+   caption is plain flow — telling, fear line, thread strip,
+   clock line, standard margins, no auto margins anywhere —
+   and the strip simply closes the caption, directly under
+   the fear line. The WINDOW composition from Step 64 stays,
+   narrowed to its one honest job: when a panel's caption is
+   the taller column (stage 5 on desktop), the window fills
+   its own row — its last card grows, a lone card spreads its
+   rows, the points spread inside their card (measured: the
+   window's content reaches its bottom edge within 1px at
+   every width, so there is no window void to fix). No new
+   facts: the strip names only the thread the page traces. */
 .hw-panel .hw-frame { display: flex; flex-direction: column; }
 .hw-panel .app-window { flex: 1 1 auto; display: flex; flex-direction: column; }
 .hw-panel .app-window-body { flex: 1 1 auto; display: flex; flex-direction: column; }
 .hw-panel .app-card { display: flex; flex-direction: column; }
 .hw-panel .app-card:last-of-type { flex: 1 1 auto; justify-content: space-between; }
 .hw-panel .hw-bullets { flex: 1 1 auto; align-content: space-between; }
-.hw-cap .hw-cap-fear { margin-top: auto; }
-.hw-thread { margin-top: auto; }
+.hw-thread { margin: 0 0 8px; }
 .hw-thread-bar { display: flex; gap: 4px; margin-bottom: 8px; }
 .hw-thread-seg { flex: 1 1 0; height: 8px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--border); }
 .hw-thread-seg.is-done { background: var(--accent); border-color: var(--accent); opacity: .55; }

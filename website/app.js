@@ -4984,14 +4984,28 @@ var IA_VARIANTS = {
 
 /* Step 63 — How It Works, "One Question, Traced". One module,
    guarded behaviours, all on pre-rendered panels: the trace
-   stepper steps five staged frames in one grid cell (the stage
-   never changes height), the stage-5 points and facts highlight
-   each other through their data links (the trace closing its own
-   loop on the demo's SAMPLES.tell data), and the faded second
-   question arms a prediction, then reveals the INT shortenings.
-   Nothing here scrolls, focuses or re-flows the page: class swaps
-   only (the Step 58 law). With JS off, the panels stack as the
-   numbered small-multiples and the reveal simply sits open. */
+   stepper steps five staged frames, the stage-5 points and
+   facts highlight each other through their data links (the
+   trace closing its own loop on the demo's SAMPLES.tell data),
+   and the faded second question arms a prediction, then
+   reveals the INT shortenings. With JS off, the panels stack
+   as the numbered small-multiples and the reveal sits open.
+   Step 66 — the stage takes each panel's NATURAL height.
+   Steps 63/64 shared one fixed height (the tallest panel's)
+   so stepping never moved the page, but on the owner's tall
+   phone the short captions spread across that height as a
+   chasm (Step 64's centred fear line, floating). Now only
+   the shown panel is in flow; a stage change glides the
+   stage height from the old panel's height to the new one's
+   over .34s in the house easing — the Step 58 unfold
+   technique: lock the current height, swap the panels,
+   measure the new one, transition, and hand the height back
+   to the layout when the transition ends. The stage's top
+   edge cannot move (nothing above it changes height), so
+   the page never needs a compensating scroll and the module
+   still moves no focus and keeps no clock of its own: the
+   glide is a CSS transition, and the sheet's reduced-motion
+   rule stills it into an instant swap. */
 (function () {
   "use strict";
 
@@ -4999,12 +5013,15 @@ var IA_VARIANTS = {
 
   /* ---- S1: the trace — a guided 5-stage stepper ----
      Static HTML stacks all five panels (the no-JS small
-     multiples); init switches the stage to one grid cell and
-     steps by visibility, so the stage is one fixed height. */
+     multiples); init takes the hidden panels out of flow so
+     the stage is exactly the shown panel's natural height,
+     and stepping glides the stage height between panels
+     (Step 66 — see the module header). */
   var trace = document.getElementById("hw-trace");
   if (trace) {
     var nodes = slice(trace.querySelectorAll(".hw-node"));
     var panels = slice(trace.querySelectorAll(".hw-panel"));
+    var stageEl = trace.querySelector(".hw-stage");
     var prevBtn = document.getElementById("hw-prev");
     var nextBtn = document.getElementById("hw-next");
     var progress = document.getElementById("hw-progress");
@@ -5037,9 +5054,59 @@ var IA_VARIANTS = {
           + " — " + names[cur];
         if (announce && live) { live.textContent = progress.textContent; }
       };
+      /* Step 66 — the stage-height glide (see the module
+         header). Guarded throughout: a DOM without layout
+         (the sim harness) reports no numeric height, and the
+         stepper then swaps instantly, exactly as it did
+         before. The transition's end hands the height back
+         to the layout; a viewport resize does the same, so
+         the stage can never stay locked at a stale height —
+         under reduced motion the sheet stills the transition
+         itself, the swap lands instantly at the new panel's
+         natural height, and the next step or resize clears
+         the inline height the same way. */
+      var clearStageHeight = function () {
+        if (!stageEl || !stageEl.style) { return; }
+        stageEl.style.transition = "";
+        stageEl.style.height = "";
+        stageEl.style.overflow = "";
+      };
+      if (stageEl && stageEl.addEventListener) {
+        var onStageSettled = function (e) {
+          if (e && e.propertyName && e.propertyName !== "height") { return; }
+          clearStageHeight();
+        };
+        stageEl.addEventListener("transitionend", onStageSettled);
+        stageEl.addEventListener("transitioncancel", onStageSettled);
+      }
+      if (typeof window !== "undefined" && window
+          && typeof window.addEventListener === "function") {
+        window.addEventListener("resize", clearStageHeight);
+      }
       var stepTo = function (n) {
-        cur = Math.max(0, Math.min(panels.length - 1, n));
+        var target = Math.max(0, Math.min(panels.length - 1, n));
+        if (target === cur || !stageEl || !stageEl.style
+            || typeof stageEl.offsetHeight !== "number"
+            || !stageEl.offsetHeight) {
+          cur = target;
+          renderStep(true);
+          return;
+        }
+        clearStageHeight();
+        var fromH = stageEl.offsetHeight;
+        stageEl.style.overflow = "hidden";
+        stageEl.style.height = fromH + "px";
+        cur = target;
         renderStep(true);
+        var toH = panels[cur].offsetHeight;
+        if (typeof toH !== "number" || !toH
+            || Math.abs(toH - fromH) < 1) {
+          clearStageHeight();
+          return;
+        }
+        void stageEl.offsetHeight; /* commit the locked height */
+        stageEl.style.transition = "height .34s cubic-bezier(.2,.7,.3,1)";
+        stageEl.style.height = toH + "px";
       };
       nodes.forEach(function (b, i) {
         b.addEventListener("click", function () { stepTo(i); });
