@@ -1512,10 +1512,22 @@ body.cta-visible { padding-bottom: 96px; }
    lives in the assistant's procedures now, per DEADCODE D1) */
 .acc { display: grid; gap: 12px; margin: 0 0 16px; }
 .acc-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+/* Step 61: the global h3 margin (0 0 12px) lived inside the item,
+   leaving a 12px dead strip of item background under the button —
+   invisible at rest (both --surface) but a hard two-tone band the
+   moment the button carried its hover background (which sticks
+   after a tap on touch devices). The heading is the bar; it takes
+   no margin inside the component, so the bar is one surface. */
+.acc-item > h3 { margin: 0; }
 .acc-btn {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
   background: none; border: 0; color: var(--text); cursor: pointer; text-align: left;
-  font: 600 17px/1.4 inherit; font-family: inherit; padding: 20px;
+  /* Step 61: the old shorthand "font: 600 17px/1.4 inherit" was
+     invalid (inherit is only legal as the shorthand's sole value),
+     so browsers dropped it whole and the title silently rendered
+     at the UA button default — 13.33px/400 instead of 17px/600 —
+     on every accordion site-wide. Longhands restore the design. */
+  font-size: 17px; font-weight: 600; line-height: 1.4; font-family: inherit; padding: 20px;
 }
 .acc-btn:hover { background: var(--surface-2); }
 .acc-btn .chev { flex: none; color: var(--muted); font-size: 20px; line-height: 1; transition: transform .25s ease; }
@@ -1909,7 +1921,13 @@ body:has(#support-assistant) { overflow-anchor: none; }
    tables sit side by side under their own headings. */
 .feat-hero { padding-bottom: 32px; }
 .feat-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: center; }
-.feat-caption-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; }
+/* Step 61: min-height reserves the Replay button's row before the
+   button exists — measured, the row grew 23.1px -> 45px when the
+   hero finished and Replay appeared, shifting everything below
+   the hero by ~22px (the page's only unattended reflow, and the
+   reason a nav click in the first seconds could land ~22px deep).
+   48px is the scale value above the button's measured 45px. */
+.feat-caption-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; min-height: 48px; }
 .feat-caption { color: var(--muted); font-size: 14px; margin: 0; }
 #feat-replay[hidden] { display: none; }
 .feat-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 32px 0 0; padding: 20px 0 0; border-top: 1px solid var(--border); }
@@ -1917,10 +1935,14 @@ body:has(#support-assistant) { overflow-anchor: none; }
 .feat-stat dd { order: -1; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.12; color: var(--text); }
 .feat-stat dt { font-size: 14px; line-height: 1.5; color: var(--muted); }
 /* The global scroll-padding-top (84px) also counts toward anchor
-   landings, so the margin only tops it up: 84 + 12 = the intended
-   96px of clearance under header + chapter nav (measured: with a
-   96px margin the chapters landed 180px short — both applied). */
-body:has(.feat-nav) section[id] { scroll-margin-top: 12px; }
+   landings, so the margin only tops it up. Step 61 correction: the
+   original 12px assumed the stuck chrome (header + chapter nav)
+   totalled ~96px; measured, it is 132.8px on desktop (header 65 +
+   nav 68.8, sharing a border) and 129.1px on phones — so chapters
+   landed with the eyebrow hidden behind the nav and the h2's top
+   ~5px under it. 84 + 64 = a 148px landing: the eyebrow clears
+   the chrome by ~15px (desktop) / ~19px (phone), the h2 by ~39px. */
+body:has(.feat-nav) section[id] { scroll-margin-top: 64px; }
 /* The chaptered page is dense; its sections breathe a little less
    than the site-wide rhythm. Bottom only: the house rule zeroes
    top padding between stacked sections, and that stays. */
@@ -2051,3 +2073,25 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .feat-tile-live { grid-column: 1 / 3; }
   .feat-tile-wide { grid-column: span 2; }
 }
+
+/* ---------- Step 61: Features audit fixes ----------
+   Scroll anchoring off for the chaptered page (the Step 58 pattern,
+   scoped by :has like the support page's rule): with anchoring on,
+   opening the Report accordion near the viewport bottom drifted
+   scrollY +21px mid-animation as the browser chased the growing
+   panel; nothing on this page changes height unattended (every
+   window is a fixed stage), so anchoring has nothing to protect. */
+body:has(.feat-nav) { overflow-anchor: none; }
+/* Report-style window rows (Report chapter + Prepare's bank
+   summary) as a true two-column grid. The shared
+   .app-report-line flex (space-between) sized both spans by
+   content, so the value column had no fixed x — values started
+   anywhere from 142px to 307px in a 324px row and wrapped into
+   fragments ("Coach keywords / shown") whenever the label was
+   long. Equal halves are deliberate: the value column then fits
+   the longest short value ("Coach keywords shown", ~130px) on
+   one line even at 390px (154px column), labels wrap inside
+   their own column, and both columns start at fixed positions
+   at every width. The home story player's report view keeps the
+   flex rows — its values are 1–2 words inside a fixed stage. */
+.feat-report-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }

@@ -277,8 +277,12 @@ check("privacy: the never list (5 items) + never pills in the bento tile only",
     block.length > 0
     && /\.feat-nav \{ position: sticky; top: 64px;/.test(block)
     && /\.feat-rail \{ position: sticky; top: 136px;/.test(block)
-    && block.includes("body:has(.feat-nav) section[id] { scroll-margin-top: 12px; }")
-    && block.includes("84 + 12 = the intended"));
+    // Step 61 re-pin (deliberate): the margin was 12px ("84 + 12 = the
+    // intended 96px") until the Step 61 audit measured the stuck chrome
+    // at 132.8px desktop / 129.1px phone — chapters landed with the
+    // eyebrow behind the nav. 64px restores the intent (148px landing).
+    && block.includes("body:has(.feat-nav) section[id] { scroll-margin-top: 64px; }")
+    && block.includes("84 + 64 = a 148px landing"));
   check("css59: no capsule radius, no 999px, dots are 4px on 8px boxes",
     block.length > 0 && !block.includes("999px") && !block.includes("border-radius: 50%")
     && block.includes(".feat-frag-dots i { width: 8px; height: 8px; border-radius: 4px;"));
