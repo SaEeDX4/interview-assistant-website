@@ -68,171 +68,530 @@
   </div>
 </header>
 <main id="main" tabindex="-1">
-  <section class="page-hero">
-    <div class="container narrow">
-      <p class="eyebrow">Features</p>
-      <h1>Everything it does, and the evidence for each claim.</h1>
-      <p class="lead">Interview Assistant is a preparation and practice coach first, and a live assist tool second. Every feature below traces to the source product. Where something is internal test evidence rather than a guarantee, we say so.</p>
+  <!-- Step 59 — Concept F, "One Window, Five Chapters": the hero stages
+       one simulated live moment in the faithful app window. Step 60 —
+       UX revision: the bounded bento band now sits directly under the
+       chapter nav as the page's map, then five chapters (Prepare ·
+       Live · Languages · Report · Privacy), each with one focal
+       working mechanic, and a datasheet close. Every window is a
+       depiction, labelled simulated; every number traces to the
+       source product. -->
+  <section class="page-hero feat-hero">
+    <div class="container feat-hero-grid">
+      <div>
+        <p class="eyebrow">Features</p>
+        <h1>Everything it does, and the evidence for each claim.</h1>
+        <p class="lead">Interview Assistant is a Windows app for job interviews — a preparation and practice coach first, and a live assist tool second. Every feature below traces to the source product. Where something is internal test evidence rather than a guarantee, we say so.</p>
+        <p class="cta-row">
+          <a class="btn btn-primary" href="demo.html">Try it in the simulated demo</a>
+          <a class="btn btn-secondary" href="how-it-works.html">See how it works</a>
+        </p>
+      </div>
+      <div>
+        <div class="app-window" id="feat-window" aria-hidden="true">
+          <div class="app-header">
+            <p class="app-pill" id="feat-pill"><span class="app-pill-dot"></span><span id="feat-pill-text">Answer ready</span><span class="app-meter"><i></i></span></p>
+            <span class="app-header-controls">
+              <span class="app-start"><span class="app-start-icon"><span id="feat-ico-play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z" fill="currentColor"/></svg></span><span id="feat-ico-pause" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg></span></span><span class="app-start-label" id="feat-start-label">Start listening</span></span>
+              <span class="app-stop"><svg viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+              <span class="app-win-btn"><svg viewBox="0 0 16 16"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+            </span>
+          </div>
+          <div class="app-window-body">
+            <section class="app-card">
+              <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+              <div class="app-question-stack">
+                <p class="app-question" id="feat-question">“Tell me about yourself.”</p>
+                <p class="app-question app-ghost" id="feat-question-ghost">“Tell me about yourself.”</p>
+              </div>
+              <div class="app-transcript-stack">
+                <p class="app-transcript" id="feat-transcript"></p>
+                <p class="app-transcript app-ghost" id="feat-transcript-ghost">Tell me about yourself.</p>
+              </div>
+            </section>
+            <section class="app-card app-card--answer">
+              <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="feat-meta">prepared</span></div>
+              <p class="app-thinking is-hidden" id="feat-thinking">● ● ●</p>
+              <ul class="app-answer" id="feat-answer">
+                <li><span class="app-dot"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+                <li><span class="app-dot"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+                <li><span class="app-dot"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <div class="feat-caption-row">
+          <p class="feat-caption">Simulated preview of the Windows app.</p>
+          <button class="btn btn-secondary btn-small" id="feat-replay" type="button" hidden>Replay</button>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <dl class="feat-stats">
+        <div class="feat-stat">
+          <dt>speakable points, one at a time</dt>
+          <dd>3</dd>
+        </div>
+        <div class="feat-stat">
+          <dt>questions built per interview</dt>
+          <dd>50–150</dd>
+        </div>
+        <div class="feat-stat">
+          <dt>languages, right-to-left included</dt>
+          <dd>10</dd>
+        </div>
+        <div class="feat-stat">
+          <dt>live minutes on the free Trial</dt>
+          <dd>30</dd>
+        </div>
+      </dl>
     </div>
   </section>
-  <section class="section" aria-labelledby="prepare-title">
+
+  <nav class="feat-nav" id="feat-nav" aria-label="Feature chapters">
+    <div class="container feat-nav-inner">
+      <div class="feat-nav-links">
+        <a class="feat-nav-link" href="#glance">At a glance</a>
+        <a class="feat-nav-link" href="#prepare">Prepare</a>
+        <a class="feat-nav-link" href="#live">Live</a>
+        <a class="feat-nav-link" href="#languages">Languages</a>
+        <a class="feat-nav-link" href="#report">Report</a>
+        <a class="feat-nav-link" href="#privacy">Privacy</a>
+        <a class="feat-nav-link" href="#compare">Datasheet</a>
+      </div>
+      <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+    </div>
+  </nav>
+
+  <!-- Bento band — the page's map, up front (Step 60: moved from
+       below the chapters, where it sat at ~70% depth and could only
+       recap; as the second screen it orients, and its tiles jump
+       down to their chapters). -->
+  <section class="section" id="glance" aria-labelledby="glance-title">
     <div class="container">
-      <div class="two-col">
-        <div>
+      <p class="eyebrow">At a glance</p>
+      <h2 id="glance-title">Everything, at a glance</h2>
+      <p class="section-intro">The whole page in ten seconds. Every tile is a door to its chapter.</p>
+      <div class="feat-bento">
+        <a class="feat-tile feat-tile-live" href="#live">
+          <span class="feat-tile-title">Live</span>
+          <span class="feat-mini app-window" aria-hidden="true">
+            <span class="app-header">
+              <span class="app-pill is-listening" id="feat-tile-pill"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></span>
+            </span>
+            <span class="feat-mini-body">
+              <span class="feat-mini-q">“Tell me about yourself.”</span>
+              <span class="feat-mini-row"><span class="app-dot"></span><span>Five years building web products…</span></span>
+              <span class="feat-mini-row"><span class="app-dot"></span><span>I start from the outcome…</span></span>
+              <span class="feat-mini-row"><span class="app-dot"></span><span>What draws me here is this team…</span></span>
+            </span>
+          </span>
+          <span class="feat-tile-cap">Three speakable points, the moment the question ends.</span>
+        </a>
+        <a class="feat-tile feat-tile-wide" href="#prepare">
+          <span class="feat-tile-title">Prepare</span>
+          <span class="feat-frag" aria-hidden="true">
+            <span class="app-chip">✓ Five years building web products</span>
+            <span class="app-chip">✓ Led a small team</span>
+            <span class="app-chip">✓ Staged-rollout rescue</span>
+          </span>
+          <span class="feat-tile-cap">50–150 questions from facts you confirmed.</span>
+        </a>
+        <a class="feat-tile" href="#languages">
+          <span class="feat-tile-title">Languages</span>
+          <span class="feat-frag feat-frag-rtl" lang="fa" dir="rtl" aria-hidden="true">«درباره خودتان بگویید.»</span>
+          <span class="feat-tile-cap">10 languages — RTL included.</span>
+        </a>
+        <a class="feat-tile" href="#live">
+          <span class="feat-tile-title">Coach Mode</span>
+          <span class="feat-frag feat-frag-keys" aria-hidden="true">EXPERIENCE · OUTCOME · FIT</span>
+          <span class="feat-tile-cap">Keywords and a structure — the words stay yours.</span>
+        </a>
+        <a class="feat-tile" href="#prepare">
+          <span class="feat-tile-title">Pipeline</span>
+          <span class="feat-frag feat-frag-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="feat-tile-cap">15 stages, one calm plan.</span>
+        </a>
+        <a class="feat-tile" href="#report">
+          <span class="feat-tile-title">Report</span>
+          <span class="feat-frag" aria-hidden="true">Q1 — 3 points shown</span>
+          <span class="feat-tile-cap">No scores. Ever.</span>
+        </a>
+        <a class="feat-tile feat-tile-wide" href="#privacy">
+          <span class="feat-tile-title">Privacy</span>
+          <span class="feat-frag" aria-hidden="true">
+            <span class="pill">Never hidden</span>
+            <span class="pill">Never records</span>
+            <span class="pill">Never stores audio</span>
+          </span>
+          <span class="feat-tile-cap">Visible window. Nothing stored.</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 1 · Prepare -->
+  <section class="section" id="prepare" aria-labelledby="prepare-title">
+    <div class="container">
+      <div class="feat-chapter">
+        <div class="feat-copy">
           <p class="eyebrow">1 · Prepare</p>
           <h2 id="prepare-title">A question bank built for this interview, not a generic list</h2>
-          <p>Import your resume (PDF, DOCX or TXT) and the job description. The app extracts facts about your experience — and then you review every single one. <strong>Only facts you confirm are ever used.</strong> Nothing inferred, nothing guessed, nothing presented as your experience unless you said so.</p>
-          <p>From your confirmed facts and the role, a <strong>15-stage preparation pipeline</strong> builds a bank of <strong>50–150 questions</strong> for that interview: role-specific, behavioural, and follow-up questions, matched to what the job actually asks for.</p>
-          <p>Questions are classified as <strong>Verified</strong> (grounded in a confirmed fact), <strong>Hypothetical</strong> (a reasonable scenario to practise), or <strong>Bridge</strong> (connecting your experience to the role) — so you always know which answers rest on your real history and which are practice.</p>
-        </div>
-        <div class="card">
-          <h3>What the pipeline does with your resume</h3>
-          <ul class="check-list">
+          <p>Everything the app prepares starts from facts you confirmed. The app extracts candidates from your resume and the job description — and then you review every single one before any of it is used. <strong>Only facts you confirm are ever used.</strong> Nothing inferred, nothing guessed, nothing presented as your experience unless you said so.</p>
+          <ol class="feat-beats">
             <li><strong>Import</strong> — PDF, DOCX or TXT resume, plus the job description.</li>
             <li><strong>Extract</strong> — facts, roles, results, and skills, as candidates — not as truth.</li>
             <li><strong>Confirm</strong> — you approve, edit, or reject every fact before it is used.</li>
             <li><strong>Match</strong> — the role and job description shape which questions matter.</li>
             <li><strong>Build</strong> — a 50–150 question bank, classified Verified / Hypothetical / Bridge.</li>
             <li><strong>Practise</strong> — work through the bank before the day, and review afterwards.</li>
-          </ul>
+          </ol>
+          <p>From your confirmed facts and the role, a <strong>15-stage preparation pipeline</strong> builds a bank of <strong>50–150 questions</strong> for that interview: role-specific, behavioural, and follow-up questions, matched to what the job actually asks for.</p>
+          <p>Questions are classified as <strong>Verified</strong> (grounded in a confirmed fact), <strong>Hypothetical</strong> (a reasonable scenario to practise), or <strong>Bridge</strong> (connecting your experience to the role) — so you always know which answers rest on your real history and which are practice.</p>
           <p class="muted">Preparation runs are metered: 2 per month on Trial, 20 per month on Pro. Preparation itself never uses live minutes.</p>
         </div>
+        <div class="feat-rail">
+          <div class="app-window">
+            <div class="app-window-bar" aria-hidden="true">
+              <span class="app-window-title">Interview Assistant — Prepare</span>
+              <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+            </div>
+            <div class="app-window-body">
+              <fieldset class="feat-facts">
+                <legend class="app-card-label">Extracted facts — sample · confirm to use</legend>
+                <label class="feat-fact"><input type="checkbox" class="feat-fact-box" checked><span>Five years building web products</span></label>
+                <label class="feat-fact"><input type="checkbox" class="feat-fact-box" checked><span>Led a small team on a customer-facing tool</span></label>
+                <label class="feat-fact"><input type="checkbox" class="feat-fact-box" checked><span>Rescued a slipping launch with staged rollouts</span></label>
+                <label class="feat-fact"><input type="checkbox" class="feat-fact-box" checked><span>Works outcome-first; trade-offs written down</span></label>
+              </fieldset>
+              <section class="app-card feat-answer-card">
+                <div class="app-card-head"><span class="app-card-label">Sample answer</span><span class="app-card-meta">built from confirmed facts only</span></div>
+                <p class="feat-answer-text">I have <span class="feat-clause">five years building web products</span>, most recently <span class="feat-clause">leading a small team on a customer-facing tool</span>. When a launch slipped, I <span class="feat-clause">split it into staged rollouts and shipped on the revised date</span>. I work <span class="feat-clause">outcome-first, with every trade-off written down</span>.</p>
+                <p class="feat-sources" id="feat-sources">Sources used by this answer: Five years building web products · Led a small team on a customer-facing tool · Rescued a slipping launch with staged rollouts · Works outcome-first; trade-offs written down</p>
+                <p class="feat-count" id="feat-count">4 of 4 facts confirmed — the app uses only confirmed facts.</p>
+              </section>
+              <p class="app-report-line"><span>Question bank</span><span>50–150 questions</span></p>
+              <p class="app-report-line"><span>Classes</span><span>Verified · Hypothetical · Bridge</span></p>
+            </div>
+          </div>
+          <p class="feat-win-note">Sample facts and a sample answer. Untick one: its clause is struck from the answer and its source disappears — the app’s rule, made touchable. It does not run the app’s extraction.</p>
+        </div>
       </div>
+      <h3>Fifteen stages. One calm plan.</h3>
+      <p class="section-intro">The product’s preparation pipeline names fifteen stages, in order — every stage works only from facts you confirmed. Step through them:</p>
+      <div class="feat-stepper" id="feat-stepper">
+        <div class="feat-step-nums" role="group" aria-label="Pipeline stages">
+          <button type="button" class="feat-step-num is-active" aria-current="true" aria-label="Stage 1: Verify profile">1</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 2: JD extraction">2</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 3: Candidate↔role match map">3</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 4: Gap analysis">4</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 5: Terminology">5</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 6: Company/product context">6</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 7: Story ranking by role relevance">7</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 8: Likely questions">8</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 9: Fast answers">9</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 10: Coach keywords/structure">10</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 11: Playbook">11</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 12: Truth policy">12</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 13: Difficult questions">13</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 14: Questions to ask">14</button>
+          <button type="button" class="feat-step-num" aria-label="Stage 15: Runtime cache">15</button>
+        </div>
+        <div class="feat-step-stage" id="feat-step-stage" tabindex="0" aria-label="Pipeline stage detail. Use the left and right arrow keys to move between stages.">
+          <div class="feat-step-panel"><p class="feat-step-count">Stage 1 of 15</p><p class="feat-step-name">Verify profile</p><p class="feat-step-desc">At least one confirmed fact required; unconfirmed facts raise a warning.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 2 of 15</p><p class="feat-step-name">JD extraction</p><p class="feat-step-desc">Multilingual headings; injection lines removed.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 3 of 15</p><p class="feat-step-name">Candidate↔role match map</p><p class="feat-step-desc">Token overlap per requirement.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 4 of 15</p><p class="feat-step-name">Gap analysis</p><p class="feat-step-desc">The gaps between your profile and the role, named so they can be bridged honestly.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 5 of 15</p><p class="feat-step-name">Terminology</p><p class="feat-step-desc">Acronyms and capitalised terms, preserved verbatim across languages.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 6 of 15</p><p class="feat-step-name">Company/product context</p><p class="feat-step-desc">From your sources only, labelled as such, plus domain playbooks.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 7 of 15</p><p class="feat-step-name">Story ranking by role relevance</p><p class="feat-step-desc">Your strongest stories, ranked for this role.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 8 of 15</p><p class="feat-step-name">Likely questions</p><p class="feat-step-desc">The questions this interview is most likely to ask.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 9 of 15</p><p class="feat-step-name">Fast answers</p><p class="feat-step-desc">Verified answers shown instantly.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 10 of 15</p><p class="feat-step-name">Coach keywords/structure</p><p class="feat-step-desc">Three keywords and a one-line structure per question.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 11 of 15</p><p class="feat-step-name">Playbook</p><p class="feat-step-desc">The interview playbook for this role.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 12 of 15</p><p class="feat-step-name">Truth policy</p><p class="feat-step-desc">Verified, hypothetical, or bridge; a guess is never shown as a fact.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 13 of 15</p><p class="feat-step-name">Difficult questions</p><p class="feat-step-desc">The hard ones, prepared in advance.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 14 of 15</p><p class="feat-step-name">Questions to ask</p><p class="feat-step-desc">At least ten questions for the interviewer.</p></div><div class="feat-step-panel"><p class="feat-step-count">Stage 15 of 15</p><p class="feat-step-name">Runtime cache</p><p class="feat-step-desc">The compact pack the live engine actually uses.</p></div></div>
+        <div class="feat-step-controls">
+          <button type="button" class="btn btn-secondary btn-small" id="feat-step-prev">← Prev</button>
+          <button type="button" class="btn btn-secondary btn-small" id="feat-step-play" aria-pressed="false">Play all</button>
+          <button type="button" class="btn btn-secondary btn-small" id="feat-step-next">Next →</button>
+          <span class="visually-hidden" id="feat-step-live" aria-live="polite"></span>
+        </div>
+      </div>
+      <p class="feat-proof">Where this comes from: the source product’s preparation pipeline — all fifteen stages, in order.</p>
     </div>
   </section>
 
-  <!-- PREPARATION PIPELINE (schematic visual) -->
-  <section class="section" aria-labelledby="pipeline-title">
+  <!-- Chapter 2 · Live -->
+  <section class="section section-soft" id="live" aria-labelledby="live-title">
     <div class="container">
-      <p class="eyebrow">The preparation pipeline</p>
-      <h2 id="pipeline-title">Fifteen stages. One calm plan.</h2>
-      <p class="section-intro">The product’s preparation pipeline names fifteen stages, in order — every stage works only from facts you confirmed.</p>
-      <ol class="pipe-list">
-        <li><span class="num" aria-hidden="true">1</span><span><strong>Verify profile</strong> — at least one confirmed fact required; unconfirmed facts raise a warning.</span></li>
-        <li><span class="num" aria-hidden="true">2</span><span><strong>JD extraction</strong> — multilingual headings; injection lines removed.</span></li>
-        <li><span class="num" aria-hidden="true">3</span><span><strong>Candidate↔role match map</strong> — token overlap per requirement.</span></li>
-        <li><span class="num" aria-hidden="true">4</span><span><strong>Gap analysis</strong> — the gaps between your profile and the role, named so they can be bridged honestly.</span></li>
-        <li><span class="num" aria-hidden="true">5</span><span><strong>Terminology</strong> — acronyms and capitalised terms, preserved verbatim across languages.</span></li>
-        <li><span class="num" aria-hidden="true">6</span><span><strong>Company/product context</strong> — from your sources only, labelled as such, plus domain playbooks.</span></li>
-        <li><span class="num" aria-hidden="true">7</span><span><strong>Story ranking by role relevance</strong> — your strongest stories, ranked for this role.</span></li>
-        <li><span class="num" aria-hidden="true">8</span><span><strong>Likely questions</strong> — the questions this interview is most likely to ask.</span></li>
-        <li><span class="num" aria-hidden="true">9</span><span><strong>Fast answers</strong> — verified answers shown instantly.</span></li>
-        <li><span class="num" aria-hidden="true">10</span><span><strong>Coach keywords/structure</strong> — three keywords and a one-line structure per question.</span></li>
-        <li><span class="num" aria-hidden="true">11</span><span><strong>Playbook</strong> — the interview playbook for this role.</span></li>
-        <li><span class="num" aria-hidden="true">12</span><span><strong>Truth policy</strong> — verified, hypothetical, or bridge; a guess is never shown as a fact.</span></li>
-        <li><span class="num" aria-hidden="true">13</span><span><strong>Difficult questions</strong> — the hard ones, prepared in advance.</span></li>
-        <li><span class="num" aria-hidden="true">14</span><span><strong>Questions to ask</strong> — at least ten questions for the interviewer.</span></li>
-        <li><span class="num" aria-hidden="true">15</span><span><strong>Runtime cache</strong> — the compact pack the live engine actually uses.</span></li>
-      </ol>
-      <p class="pipe-note">Verified, Hypothetical and Bridge labels mark what is grounded in your confirmed facts and what is not — so the app never presents a guess as a fact.</p>
-    </div>
-  </section>
-
-  <section class="section section-soft" aria-labelledby="live-title">
-    <div class="container">
-      <p class="eyebrow">2 · Live</p>
-      <h2 id="live-title">Three short, speakable points — when the question ends</h2>
-      <div class="two-col">
-        <div>
+      <div class="feat-chapter feat-chapter-flip">
+        <div class="feat-copy">
+          <p class="eyebrow">2 · Live</p>
+          <h2 id="live-title">Three short, speakable points — when the question ends</h2>
           <p>In the interview, the app listens to the interviewer’s audio from your headset (WASAPI loopback on Windows — no browser extension, no meeting-app plugin). It transcribes the question as it streams, detects the end of the question, and merges multi-part questions into one.</p>
           <p>Then it shows <strong>three short, speakable bullets, one at a time</strong>. Short enough to say in your own words — not a script to read out. Every point is built only from facts you confirmed and your prepared question bank.</p>
-          <p><a class="btn btn-secondary" href="demo.html">Try it in the simulated demo →</a></p>
-        </div>
-        <div class="card">
           <h3>Coach Mode</h3>
-          <p>Prefer a nudge over full points? Coach Mode shows <strong>three keywords and a one-line structure</strong> instead — so the words stay yours. Toggle it live, mid-interview, with the <kbd>Ctrl+Alt+C</kbd> shortcut.</p>
+          <p>Prefer a nudge over full points? Coach Mode shows <strong>three keywords and a one-line structure</strong> instead — so the words stay yours. Toggle it live, mid-interview, with the <kbd>Ctrl+Alt+C</kbd> shortcut. Try the toggle under the window: it swaps the same answer between points and keywords.</p>
           <p class="muted">Coach Mode is included in both Trial and Pro.</p>
           <h3>It adapts when you’re interrupted</h3>
-          <p>If the interviewer follows up fast, the next answer shortens automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Reset it any time with the <kbd>Ctrl+Alt+R</kbd> shortcut.</p>
+          <p>If the interviewer follows up fast, the next answer shortens automatically — <strong>Concise</strong>, then <strong>Rapid</strong> — so you can keep up. Step through the three lengths with the buttons under the window. Reset it any time with the <kbd>Ctrl+Alt+R</kbd> shortcut.</p>
           <h3>It doesn’t repeat your stories</h3>
           <p>The app remembers what you already said in the interview: a story used in the last two answers is set aside, and the next answer reaches for a fresh one. Memory stays bounded — the last twelve records in detail, older ones compacted into a rolling summary — so it works the same in a long interview as in a short one.</p>
+          <div class="feat-memory" aria-label="How the app treats stories already used">
+            <span class="feat-memory-item is-set-aside">Staged-rollout story <em>set aside — used in the last two answers</em></span>
+            <span class="feat-memory-item is-set-aside">Decision-log story <em>set aside — used recently</em></span>
+            <span class="feat-memory-item">Fresh story <em>next in line</em></span>
+          </div>
+          <p><a class="btn btn-secondary" href="demo.html">Try it in the simulated demo →</a></p>
+        </div>
+        <div class="feat-rail">
+          <div class="app-window">
+            <div class="app-header" aria-hidden="true">
+              <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></p>
+              <span class="app-header-controls">
+                <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg></span><span class="app-start-label">Pause</span></span>
+                <span class="app-stop"><svg viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+                <span class="app-win-btn"><svg viewBox="0 0 16 16"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+              </span>
+            </div>
+            <div class="app-window-body">
+              <section class="app-card" aria-hidden="true">
+                <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+                <p class="app-question">“Tell me about yourself.”</p>
+              </section>
+              <section class="app-card app-card--answer">
+                <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">prepared</span></div>
+                <div class="app-answer-stack" aria-hidden="true">
+                  <ul class="app-answer" id="feat-live-normal">
+                    <li><span class="app-dot"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+                    <li><span class="app-dot"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+                    <li><span class="app-dot"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+                  </ul>
+                  <ul class="app-answer is-hidden" id="feat-live-concise">
+                    <li><span class="app-dot"></span><span>Five years building web products, most recently leading a small team.</span></li>
+                    <li><span class="app-dot"></span><span>Drawn here by this team’s focus on honest, useful software.</span></li>
+                  </ul>
+                  <ul class="app-answer is-hidden" id="feat-live-rapid">
+                    <li><span class="app-dot"></span><span>Five years building web products — and this team’s focus is why I’m here.</span></li>
+                  </ul>
+                  <div class="is-hidden" id="feat-live-coach">
+                    <p class="app-coach-label">Keywords</p>
+                    <p class="app-coach-keys">Experience · Outcome · Fit</p>
+                    <p class="app-coach-label">Structure</p>
+                    <p class="app-coach-structure">Present role → one result → why this role</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="feat-controls">
+            <div class="mode-toggle" role="group" aria-label="Answer mode">
+              <button type="button" class="mode-btn is-active" id="feat-mode-answer" aria-pressed="true">Answer</button>
+              <button type="button" class="mode-btn" id="feat-mode-coach" aria-pressed="false">Coach</button>
+            </div>
+            <div class="seg" role="group" aria-label="Answer length">
+              <button type="button" class="seg-btn" id="feat-int-normal" aria-pressed="true">Normal — 3 points</button>
+              <button type="button" class="seg-btn" id="feat-int-concise" aria-pressed="false">Concise — 2 short points</button>
+              <button type="button" class="seg-btn" id="feat-int-rapid" aria-pressed="false">Rapid — 1 line</button>
+            </div>
+            <p class="seg-state"><span class="dot" aria-hidden="true"></span><span class="seg-label">Current length:</span> <strong id="feat-int-state">Normal — 3 points</strong></p>
+            <p class="demo-status" id="feat-live-status" role="status">Normal (3 points) ready — simulated.</p>
+          </div>
         </div>
       </div>
+      <p class="feat-proof">Simulated from the app’s real answer sets — the same samples the demo uses. In the app, this runs on your confirmed facts, not samples.</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="lang-title">
+  <!-- Chapter 3 · Languages -->
+  <section class="section" id="languages" aria-labelledby="lang-title">
     <div class="container">
-      <p class="eyebrow">3 · Languages</p>
-      <h2 id="lang-title">Ten languages. Arabic and Persian, properly right&#8209;to&#8209;left.</h2>
-      <p class="section-intro">Answers follow the interviewer’s language. Arabic and Persian render right-to-left — as a first-class layout, not as an afterthought. The full list of the ten languages is not stated in the source docs we reviewed, so we do not print a list we cannot source; language support is as listed in the app, and live quality is being validated language by language.</p>
-      <div class="grid grid-2">
-        <article class="card">
-          <h3>Persian — <span lang="fa">فارسی</span></h3>
-          <p lang="fa" dir="rtl">«درباره خودتان بگویید.»</p>
-          <p class="muted">“Tell me about yourself.” — answered in Persian, laid out right-to-left, with the structure of the answer preserved.</p>
-        </article>
-        <article class="card">
-          <h3>Arabic — <span lang="ar">العربية</span></h3>
-          <p lang="ar" dir="rtl">«حدّثني عن نفسك.»</p>
-          <p class="muted">“Tell me about yourself.” — answered in Arabic, laid out right-to-left. Try both in the <a href="demo.html">live demo</a>.</p>
-        </article>
-      </div>
-      <div class="lang-show" aria-label="Language showcase: an English question answered in Persian">
-        <div class="lang-card">
-          <p class="lang-tag">Interviewer · English</p>
-          <p class="q">“Tell me about yourself.”</p>
-          <p class="muted">The question arrives in the interviewer’s language. The answer follows it.</p>
+      <div class="feat-chapter">
+        <div class="feat-copy">
+          <p class="eyebrow">3 · Languages</p>
+          <h2 id="lang-title">Ten languages, in the interviewer’s language.</h2>
+          <p>Answers follow the interviewer’s language, across all ten of the app’s languages. The source docs do not state the full list of the ten, so we do not print one we cannot source; support is as listed in the app, validated language by language.</p>
+          <h3>The worked example: right-to-left</h3>
+          <p>Most of the ten run left-to-right; the hardest layout case runs the other way — so that is the case we show, rather than the easiest. Arabic and Persian render right-to-left as a first-class layout, not as an afterthought:</p>
+          <div class="feat-lang-cards">
+            <article class="card">
+              <h3>Persian — <span lang="fa">فارسی</span></h3>
+              <p lang="fa" dir="rtl">«درباره خودتان بگویید.»</p>
+              <p class="muted">“Tell me about yourself.” — answered in Persian, laid out right-to-left, with the structure of the answer preserved.</p>
+            </article>
+            <article class="card">
+              <h3>Arabic — <span lang="ar">العربية</span></h3>
+              <p lang="ar" dir="rtl">«حدّثني عن نفسك.»</p>
+              <p class="muted">“Tell me about yourself.” — answered in Arabic, laid out right-to-left. Try both in the <a href="demo.html">live demo</a>.</p>
+            </article>
+          </div>
         </div>
-        <span class="lang-arrow" aria-hidden="true">→</span>
-        <div class="lang-card">
-          <p class="lang-tag">Answer · Persian — <span lang="fa">فارسی</span></p>
-          <ul class="a" lang="fa" dir="rtl">
-            <li><span class="num">1</span>با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.</li>
-            <li><span class="num">2</span>بعد یک مثال واقعی از تجربه‌ام می‌آورم، نه حرف کلی.</li>
-            <li><span class="num">3</span>در پایان می‌گویم چرا این نقش برایم مناسب است.</li>
-          </ul>
-          <p class="muted">Simulated example — in the real app, these points are built from your confirmed facts.</p>
+        <div class="feat-rail">
+          <div class="lang-card feat-lang-card">
+            <div class="chips" role="group" aria-label="Sample language">
+              <button type="button" class="chip feat-lang-chip" data-lang="en" aria-pressed="true">English</button>
+              <button type="button" class="chip feat-lang-chip" data-lang="fa" aria-pressed="false"><span lang="fa">فارسی</span></button>
+              <button type="button" class="chip feat-lang-chip" data-lang="ar" aria-pressed="false"><span lang="ar">العربية</span></button>
+            </div>
+            <div class="feat-lang-layers">
+              <div class="feat-lang-layer" data-layer="en">
+                <p class="lang-tag">Answer · English</p>
+                <p class="q">“Tell me about yourself.”</p>
+                <ul class="a">
+                  <li><span class="num">1</span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+                  <li><span class="num">2</span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+                  <li><span class="num">3</span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+                </ul>
+                <p class="feat-lang-coach">EXPERIENCE · OUTCOME · FIT — Present role → one result → why this role</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="fa">
+                <p class="lang-tag">Answer · Persian — <span lang="fa">فارسی</span></p>
+                <p class="q" lang="fa" dir="rtl">«درباره خودتان بگویید.»</p>
+                <ul class="a" lang="fa" dir="rtl">
+                  <li><span class="num">1</span><span>با نقش فعلی‌ام شروع می‌کنم و یک نتیجه مشخص را می‌گویم.</span></li>
+                  <li><span class="num">2</span><span>بعد یک مثال واقعی از تجربه‌ام می‌آورم، نه حرف کلی.</span></li>
+                  <li><span class="num">3</span><span>در پایان می‌گویم چرا این نقش برایم مناسب است.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="fa" dir="rtl">تجربه · نتیجه · تناسب — نقش فعلی ← یک نتیجه ← چرا این نقش</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="ar">
+                <p class="lang-tag">Answer · Arabic — <span lang="ar">العربية</span></p>
+                <p class="q" lang="ar" dir="rtl">«حدّثني عن نفسك.»</p>
+                <ul class="a" lang="ar" dir="rtl">
+                  <li><span class="num">1</span><span>أبدأ بدوري الحالي وأذكر نتيجة محددة حققتها.</span></li>
+                  <li><span class="num">2</span><span>ثم أذكر مثالاً حقيقياً من تجربتي، لا كلاماً عاماً.</span></li>
+                  <li><span class="num">3</span><span>وأختم بتوضيح سبب ملاءمة هذا الدور لي.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="ar" dir="rtl">الخبرة · النتيجة · الملاءمة — الدور الحالي ← نتيجة واحدة ← لماذا هذا الدور</p>
+              </div>
+            </div>
+            <p class="muted">Three of the app’s ten languages, shown with the demo’s sample question.</p>
+          </div>
+          <p class="feat-win-note">Switch the language: English, plus the two right-to-left examples — the same question and answer re-render, and the whole card flips, structure arrows included.</p>
         </div>
       </div>
+      <p class="feat-proof">Sample texts are the demo’s; in the app, answers are built from your confirmed facts in the interviewer’s language.</p>
     </div>
   </section>
 
-  <section class="section section-soft" aria-labelledby="report-title">
+  <!-- Chapter 4 · Report -->
+  <section class="section" id="report" aria-labelledby="report-title">
     <div class="container">
-      <div class="two-col">
-        <div>
+      <div class="feat-chapter">
+        <div class="feat-copy">
           <p class="eyebrow">4 · Report</p>
           <h2 id="report-title">An honest report. No scores, no hiring predictions.</h2>
-          <p>After you stop, you get the questions that were asked and the suggestions that were shown — plus what to prepare next time. That is all. There is no score, no grade, no pass/fail, and no prediction about whether you will be hired, because the app does not know that and never claims to.</p>
+          <p><strong>There is no score, no grade, no pass/fail, and no prediction about whether you will be hired</strong> — because the app does not know that and never claims to.</p>
+          <p>After you stop, you get the questions that were asked and the suggestions that were shown — plus what to prepare next time. That is all.</p>
           <p>Reports stay on your PC by default. Trial reports are kept 14 days; Pro reports 365 days.</p>
         </div>
-        <div>
+        <div class="feat-rail feat-rail-static">
+          <div class="app-window">
+            <div class="app-window-bar" aria-hidden="true">
+              <span class="app-window-title">Interview Assistant — Report</span>
+              <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+            </div>
+            <div class="app-window-body">
+              <p class="app-report-line"><span>“Tell me about yourself.”</span><span>3 points shown</span></p>
+              <p class="app-report-line"><span>“What is your biggest weakness?”</span><span>Coach keywords shown</span></p>
+              <p class="app-report-line"><span>“Tell me about a time you led a difficult project.”</span><span>3 points shown</span></p>
+              <p class="app-report-line"><span>Prepare next time</span><span>Follow-ups on the staged-rollout story</span></p>
+              <p class="app-report-line"><span>Stored</span><span>On your PC, by default</span></p>
+              <p class="app-report-line"><span>Trial keeps reports</span><span>14 days</span></p>
+              <p class="app-report-line"><span>Pro keeps reports</span><span>365 days</span></p>
+              <p class="app-report-note">Sample report — simulated data.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="acc feat-acc">
+        <div class="acc-item">
+          <h3>
+            <button class="acc-btn" type="button" aria-expanded="false" aria-controls="feat-never-panel" id="feat-never-btn">What a report never contains <span class="chev" aria-hidden="true">+</span></button>
+          </h3>
+          <div class="acc-panel" id="feat-never-panel" role="region" aria-labelledby="feat-never-btn">
+            <div><p>And no audio — nothing from the interview is recorded, so no report can contain a recording. What a report holds is only the questions that were asked and the suggestions that were shown.</p></div>
+          </div>
+        </div>
+      </div>
+      <p class="feat-proof">Retention and contents as implemented in the source product.</p>
+    </div>
+  </section>
+
+  <!-- Chapter 5 · Privacy -->
+  <section class="section section-soft" id="privacy" aria-labelledby="privacy-title">
+    <div class="container">
+      <div class="feat-chapter">
+        <div class="feat-copy">
           <p class="eyebrow">5 · Privacy, built in</p>
-          <h2 id="report-title-2">A visible window. Nothing hidden, nothing stored.</h2>
+          <h2 id="privacy-title">A visible window. Nothing hidden, nothing stored.</h2>
           <p>Interview Assistant is a normal, visible window. It never hides, never evades screen capture, and never pretends to be something else. It does not record your microphone, and it does not store audio — audio is transcribed live and never written to disk.</p>
           <p>Your workspace is encrypted on your PC (DPAPI). Payment data lives with Paddle only. <a href="privacy.html">Read the full privacy page →</a></p>
         </div>
+        <div class="feat-rail feat-rail-static">
+          <div class="card">
+            <h3>The never list</h3>
+            <ul class="check-list">
+              <li><strong>Never hidden</strong> — a normal, visible window; no screen-capture evasion.</li>
+              <li><strong>Never records</strong> — your microphone is not recorded.</li>
+              <li><strong>Never stores audio</strong> — transcribed live, never written to disk.</li>
+              <li><strong>Encrypted workspace</strong> — your data is encrypted on your PC (DPAPI).</li>
+              <li><strong>Payments stay with Paddle</strong> — payment data never touches the app.</li>
+            </ul>
+          </div>
+        </div>
       </div>
+      <p class="feat-proof">Full policy: <a href="privacy.html">the privacy page</a> — this section summarises; it does not replace it.</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="evidence-title">
+  <!-- Datasheet close -->
+  <section class="section" id="compare" aria-labelledby="compare-title">
     <div class="container narrow">
-      <p class="eyebrow">Evidence, not promises</p>
-      <h2 id="evidence-title">Tested — not guaranteed</h2>
-      <p>These are internal test results from the source product’s own status report. We label them as tested evidence, not as a guarantee of what you will experience on your machine.</p>
+      <p class="eyebrow">The datasheet</p>
+      <h2 id="compare-title">The details, in full</h2>
       <div class="table-wrap">
         <table class="compare">
-          <thead><tr><th scope="col">What was tested</th><th scope="col">Result</th></tr></thead>
+          <thead><tr><th scope="col">What you get</th><th scope="col">Trial</th><th scope="col">Pro</th></tr></thead>
           <tbody>
-            <tr><td>Core tests</td><td data-label="Result"><strong>201 / 201</strong> passing</td></tr>
-            <tr><td>Backend tests</td><td data-label="Result"><strong>44 / 44</strong> passing</td></tr>
-            <tr><td>In-app self-test</td><td data-label="Result"><strong>28 / 28</strong> passing</td></tr>
-            <tr><td>Real-EXE smoke startup</td><td data-label="Result"><strong>1.3 s</strong> (internal evidence)</td></tr>
+            <tr><td>Live minutes</td><td data-label="Trial"><strong>30 lifetime</strong></td><td data-label="Pro"><strong>600 per billing period</strong></td></tr>
+            <tr><td>Preparation runs / month</td><td data-label="Trial">2</td><td data-label="Pro">20</td></tr>
+            <tr><td>Coach Mode</td><td data-label="Trial">Included</td><td data-label="Pro">Included</td></tr>
+            <tr><td>Report retention</td><td data-label="Trial">14 days</td><td data-label="Pro">365 days</td></tr>
+            <tr><td>Question bank per interview</td><td data-label="Trial">50–150</td><td data-label="Pro">50–150</td></tr>
+            <tr><td>10 languages, incl. RTL</td><td data-label="Trial">Included</td><td data-label="Pro">Included</td></tr>
           </tbody>
         </table>
       </div>
+      <p class="muted">Pro is billed by Paddle. The live price is confirmed on the pricing page before checkout opens — no price is printed here.</p>
+      <div class="feat-sheet-grid">
+        <div>
+          <h3>Keyboard shortcuts</h3>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th scope="col">Keyboard shortcuts</th><th scope="col">What it does</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Ctrl+Alt+C</kbd></td><td data-label="What it does">Toggle Coach Mode, live, mid-interview</td></tr>
+                <tr><td><kbd>Ctrl+Alt+R</kbd></td><td data-label="What it does">Reset the answer length after an interruption</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>What was tested</h3>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th scope="col">What was tested</th><th scope="col">Result</th></tr></thead>
+              <tbody>
+                <tr><td>Core tests</td><td data-label="Result"><strong>201 / 201</strong> passing</td></tr>
+                <tr><td>Backend tests</td><td data-label="Result"><strong>44 / 44</strong> passing</td></tr>
+                <tr><td>In-app self-test</td><td data-label="Result"><strong>28 / 28</strong> passing</td></tr>
+                <tr><td>Real-EXE smoke startup</td><td data-label="Result"><strong>1.3 s</strong> (internal evidence)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <p>These are internal test results from the source product’s own status report. We label them as tested evidence, not as a guarantee of what you will experience on your machine.</p>
       <p class="muted">A 1.3&nbsp;s startup in a test environment is not end-to-end speech latency, and test counts do not promise your interview will go well. What they do show is that the product is tested, not just described.</p>
-      <p><a class="btn btn-primary" href="demo.html">See it working — simulated demo</a>
-      <a class="btn btn-secondary" href="pricing.html">See pricing</a></p>
+      <p class="feat-req"><strong>Requirements:</strong> Windows 10 or 11 · a headset (the app hears the interviewer through it) · interviews where assistance is permitted.</p>
     </div>
   </section>
 
   <section class="next-band" aria-label="Next step">
     <div class="container">
-      <p><strong>Next step:</strong> See how it works, end to end: Profile → Prepare → Live → Report.</p>
-      <a class="btn btn-primary" href="how-it-works.html">How it works →</a>
+      <p><strong>The honest way to judge it is to use it.</strong></p>
+      <a class="btn btn-primary" href="demo.html">Try the simulated demo</a>
+      <a class="btn btn-secondary" href="download.html">Download for Windows</a>
     </div>
   </section>
 

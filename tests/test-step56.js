@@ -89,7 +89,9 @@ check("module: symptom cards share the topic wiring",
 
 // 5. CSS: the Step 56 block — strip guards, symptom grid, the
 //    active-option state — on the house scales, no capsules.
-const block = (css.match(/\/\* Step 56 — Support upgrade pass[\s\S]*$/) || [""])[0];
+/* Step 59 annotation: slice bounded at the Step 59 block (see
+   test-step54.js) — Steps 56–58 CSS still fully scanned. */
+const block = (css.match(/\/\* Step 56 — Support upgrade pass[\s\S]*?(?=\/\* -+ Step 59|$)/) || [""])[0];
 check("css step56: hidden guards for strip and both chips",
   block.includes(".sa-state[hidden] { display: none; }")
   && block.includes(".sa-resume[hidden] { display: none; }")

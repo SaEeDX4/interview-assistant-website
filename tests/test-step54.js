@@ -112,7 +112,11 @@ check("module: textContent-only rendering (no innerHTML)",
 //    standards — panel at --radius, small controls at 8px, the
 //    only 50% radius is the exempt status dot, spacing on scale,
 //    line-heights on the typography set.
-const block = (css.match(/\/\* Step 54[\s\S]*$/) || [""])[0];
+/* Step 59 annotation: the slice is bounded at the Step 59 block —
+   Steps 54–58 CSS is still fully scanned; the Features block has
+   its own suite (test-step59.js) and its own law (sticky rails are
+   the blueprint's core mechanic there, banned here by design). */
+const block = (css.match(/\/\* Step 54[\s\S]*?(?=\/\* -+ Step 59|$)/) || [""])[0];
 check("step54 CSS: block exists with the panel at --radius (12px)",
   block.includes(".sa {") && block.includes("border-radius: var(--radius)"));
 check("step54 CSS: no capsule radius; 50% only on the status dot",

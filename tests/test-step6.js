@@ -51,23 +51,39 @@ check("tables: data-label shown via ::before",
 check("tables: first cell styled as card heading",
   css.includes("table.compare td:first-child { font-size: 16px; font-weight: 700;"));
 // A4. data-labels: every value cell labelled with its exact thead text.
+/* Step 59 annotation: the check now iterates PER TABLE (each table's
+   rows against its own thead) instead of the whole page against the
+   first thead. The Features datasheet carries three compare tables
+   (plan matrix, shortcuts, evidence) with different headers; the old
+   page-wide form could never validate them — and would silently
+   mis-check any second table on pricing/privacy too. The rule itself
+   is unchanged and now strictly stronger. */
 for (const f of ["pricing.html", "privacy.html", "features.html"]) {
   const html = read(f);
-  const thead = html.match(/<thead>([\s\S]*?)<\/thead>/);
-  const headers = [...thead[1].matchAll(/<th[^>]*>(.*?)<\/th>/g)].map((m) => m[1].trim());
-  const rows = [...html.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)]
-    .flatMap((m) => [...m[1].matchAll(/<tr>(.*?)<\/tr>/g)].map((r) => r[1]));
-  let ok = rows.length > 0;
-  for (const row of rows) {
-    const cells = [...row.matchAll(/<td([^>]*)>/g)].map((m) => m[1]);
-    if (cells.length !== headers.length) { ok = false; break; }
-    if (cells[0].includes("data-label")) { ok = false; break; }
-    for (let i = 1; i < cells.length; i++) {
-      if (!cells[i].includes(`data-label="${headers[i]}"`)) { ok = false; break; }
+  const tables = [...html.matchAll(/<table class="compare">([\s\S]*?)<\/table>/g)].map((m) => m[1]);
+  let ok = tables.length > 0;
+  let totalRows = 0;
+  const allHeaders = [];
+  for (const t of tables) {
+    const thead = t.match(/<thead>([\s\S]*?)<\/thead>/);
+    if (!thead) { ok = false; break; }
+    const headers = [...thead[1].matchAll(/<th[^>]*>(.*?)<\/th>/g)].map((m) => m[1].trim());
+    allHeaders.push(headers.join(" | "));
+    const rows = [...t.matchAll(/<tr>(.*?)<\/tr>/g)].map((r) => r[1])
+      .filter((r) => r.includes("<td"));
+    totalRows += rows.length;
+    for (const row of rows) {
+      const cells = [...row.matchAll(/<td([^>]*)>/g)].map((m) => m[1]);
+      if (cells.length !== headers.length) { ok = false; break; }
+      if (cells[0].includes("data-label")) { ok = false; break; }
+      for (let i = 1; i < cells.length; i++) {
+        if (!cells[i].includes(`data-label="${headers[i]}"`)) { ok = false; break; }
+      }
+      if (!ok) break;
     }
     if (!ok) break;
   }
-  check(`data-labels: ${f} (${rows.length} rows, headers: ${headers.join(" | ")})`, ok);
+  check(`data-labels: ${f} (${totalRows} rows, headers: ${allHeaders.join(" ;; ")})`, ok);
 }
 // A5. teaser divider.
 check("teaser: divider between stacked plans at <=640px",
@@ -118,7 +134,12 @@ check("finder: 4th question pf-prep present",
   const FUNNEL = {"pricing.html": "download.html", "download.html": "platforms.html",
     "platforms.html": "privacy.html", "privacy.html": "terms.html",
     "terms.html": "support.html", "support.html": "demo.html",
-    "demo.html": "pricing.html", "features.html": "how-it-works.html",
+    /* Step 59: the Features page now closes with the blueprint's
+       demo/download decision band ("The honest way to judge it is
+       to use it." — primary: the simulated demo), replacing the old
+       how-it-works next-band. The band still links how-it-works via
+       the hero's secondary CTA. */
+    "demo.html": "pricing.html", "features.html": "demo.html",
     "how-it-works.html": "demo.html", "index.html": "demo.html"};
   for (const [p, nxt] of Object.entries(FUNNEL)) {
     const m = read(p).match(/<section class="next-band"[\s\S]*?<\/section>/);

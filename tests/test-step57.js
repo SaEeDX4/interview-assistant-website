@@ -130,7 +130,10 @@ check("demo state: the flag is set on the AI failure path and cleared on success
 // 7. CSS: the Step 57 block — one card pattern in the radius
 //    family, the alert frame, the hidden guard — on the house
 //    scales, with no fixed/sticky positioning anywhere in it.
-const block = (css.match(/\/\* Step 57 — Contextual help entries[\s\S]*$/) || [""])[0];
+/* Step 59 annotation: slice bounded at the Step 59 block (see
+   test-step54.js) — the Step 57/58 CSS is still fully scanned;
+   "never sticky" governs the help blocks, not the Features page. */
+const block = (css.match(/\/\* Step 57 — Contextual help entries[\s\S]*?(?=\/\* -+ Step 59|$)/) || [""])[0];
 check("css step57: the card pattern is defined at the family radius",
   block.includes(".help-block {") && block.includes("border-radius: var(--radius)")
   && block.includes(".help-block-title") && block.includes(".help-block-line"));

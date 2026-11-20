@@ -152,7 +152,9 @@ check("css: hidden guards beat the display rules for all three regions",
   css.includes(".sa-results[hidden] { display: none; }")
   && css.includes(".sa-body[hidden] { display: none; }")
   && css.includes(".runbook-wrap[hidden] { display: none; }"));
-const block = (css.match(/\/\* Step 55 — Support page restructure[\s\S]*$/) || [""])[0];
+/* Step 59 annotation: slice bounded at the Step 59 block (see
+   test-step54.js) — Steps 55–58 CSS still fully scanned. */
+const block = (css.match(/\/\* Step 55 — Support page restructure[\s\S]*?(?=\/\* -+ Step 59|$)/) || [""])[0];
 check("css step55: tiles are a 3-column grid of --radius panels",
   block.includes(".topic-tiles") && block.includes("repeat(3, 1fr)")
   && block.includes(".topic-tile") && block.includes("border-radius: var(--radius)"));

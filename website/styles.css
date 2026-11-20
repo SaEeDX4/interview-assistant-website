@@ -471,6 +471,9 @@ code { overflow-wrap: anywhere; }
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .hero-visual { min-width: 0; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  /* Step 59: the features bento halves to two columns. */
+  .feat-bento { grid-template-columns: repeat(2, 1fr); }
+  .feat-tile-live { grid-column: 1 / 3; grid-row: auto; }
 }
 @media (max-width: 1024px) {
   /* Step 32: the mobile menu is a full-screen overlay in the
@@ -919,6 +922,8 @@ html.story-player .story-window {
   .app-replay:hover .app-replay-box { color: var(--app-text); border-color: var(--app-text); }
   .app-manual-send-btn:hover .app-manual-send { background: var(--app-accent); }
   .text-link:hover .text-link-arrow { transform: translateX(4px); }
+  /* Step 59: the features bento tiles lift on hover (fine pointers only). */
+  .feat-tile:hover { border-color: var(--accent); transform: translateY(-2px); }
 }
 /* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
@@ -1274,15 +1279,14 @@ body.cta-visible { padding-bottom: 96px; }
 }
 .pipe-list li span:last-child { color: var(--muted); }
 .pipe-list strong { color: var(--text); }
-.pipe-note { color: var(--muted-2); font-size: 14px; margin: 0; }
 /* Step 6: the generic 640px block above sets .pipe-list to 1fr, but this
    base rule comes later in the file and wins at equal specificity, leaving
    the 15-stage grid at 2 columns on phones — its min-content forced the
    page to ~443px wide at a 390px viewport. Re-assert 1fr here. */
 @media (max-width: 640px) { .pipe-list { grid-template-columns: 1fr; } }
 
-/* Language showcase (features.html) */
-.lang-show { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin: 24px 0; }
+/* Language card (features.html) — Step 59: the switcher card;
+   the old two-card showcase retired with the chapter rebuild. */
 .lang-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
 .lang-card .lang-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 12px; }
 /* Step 39: any non-zero letter-spacing breaks Arabic-script joining
@@ -1297,11 +1301,6 @@ body.cta-visible { padding-bottom: 96px; }
   flex: none; width: 21px; height: 21px; border-radius: 50%;
   background: var(--accent-soft); color: var(--focus);
   display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; margin-top: 1px;
-}
-.lang-arrow { align-self: center; color: var(--accent-2); font-size: 24px; font-weight: 700; }
-@media (max-width: 640px) {
-  .lang-show { grid-template-columns: 1fr; }
-  .lang-arrow { justify-self: center; transform: rotate(90deg); }
 }
 
 /* Connected step timeline (how-it-works.html) */
@@ -1612,6 +1611,12 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   ::view-transition-new(root),
   ::view-transition-old(site-header),
   ::view-transition-new(site-header) { animation: none; }
+  /* Step 59: the features bento tiles' hover lift is motion too —
+     under reduced motion the tiles stay put (border colour only). */
+  .feat-tile:hover { transform: none; }
+  /* Step 59: on the chaptered page, reduced motion also means
+     instant anchor landings — its jumps are the longest on the site. */
+  html:has(.feat-nav) { scroll-behavior: auto; }
 }
 
 /* Step 53 — Support contact. Step 53 put the channel on the page
@@ -1883,3 +1888,166 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
    easing, skipped under reduced motion), so this block carries
    no keyframes and no media query of its own. */
 body:has(#support-assistant) { overflow-anchor: none; }
+
+/* ---------- Step 59: Features — Concept F, "One Window, Five Chapters" ----------
+   The features page rebuilt as the giants' chaptered narrative around
+   the one faithful .app-window component: a hero that stages one
+   simulated moment over a four-number stat strip, a sticky chapter
+   nav with scroll-spy, five chapters (Prepare · Live · Languages ·
+   Report · Privacy) whose desktop rails stick while the copy scrolls,
+   one focal working mechanic per chapter, one bounded bento index
+   band, and a datasheet close. All state changes are visibility swaps
+   of pre-rendered layers (the Step 23 fixed stage) — no height, top
+   or margin animation, no scroll-linked writes (the Step 58 law).
+   With JS off, every window shows its final state and the pipeline
+   stepper reads as the full 15-stage list.
+   Step 60 (UX revision): the bento band moved up under the chapter
+   nav as the page's map; single-column layout reads in DOM order
+   (the Live chapter's DOM was reordered copy-first, its desktop
+   rail-left look kept by grid order via .feat-chapter-flip); the
+   chapter nav sticks on phones too; the datasheet's two small
+   tables sit side by side under their own headings. */
+.feat-hero { padding-bottom: 32px; }
+.feat-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+.feat-caption-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; }
+.feat-caption { color: var(--muted); font-size: 14px; margin: 0; }
+#feat-replay[hidden] { display: none; }
+.feat-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 32px 0 0; padding: 20px 0 0; border-top: 1px solid var(--border); }
+.feat-stat { display: flex; flex-direction: column; gap: 4px; }
+.feat-stat dd { order: -1; margin: 0; font-size: 28px; font-weight: 700; line-height: 1.12; color: var(--text); }
+.feat-stat dt { font-size: 14px; line-height: 1.5; color: var(--muted); }
+/* The global scroll-padding-top (84px) also counts toward anchor
+   landings, so the margin only tops it up: 84 + 12 = the intended
+   96px of clearance under header + chapter nav (measured: with a
+   96px margin the chapters landed 180px short — both applied). */
+body:has(.feat-nav) section[id] { scroll-margin-top: 12px; }
+/* The chaptered page is dense; its sections breathe a little less
+   than the site-wide rhythm. Bottom only: the house rule zeroes
+   top padding between stacked sections, and that stays. */
+body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
+.feat-nav { position: sticky; top: 64px; z-index: 40; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.feat-nav-inner { display: flex; align-items: center; gap: 24px; padding-top: 8px; padding-bottom: 8px; }
+.feat-nav-links { display: flex; gap: 4px; overflow-x: auto; flex: 1 1 auto; min-width: 0; scrollbar-width: none; }
+.feat-nav-links::-webkit-scrollbar { display: none; }
+.feat-nav-link { padding: 8px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; transition: color .15s ease, background-color .15s ease; }
+.feat-nav-link:hover { color: var(--text); }
+.feat-nav-link.is-active { color: var(--text); background: var(--surface-2); }
+.feat-nav .btn { flex: none; }
+.feat-chapter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.feat-copy { min-width: 0; }
+.feat-copy h3 { margin-top: 28px; }
+.feat-rail { position: sticky; top: 136px; min-width: 0; }
+/* Step 60: Live's DOM reads copy-first like the other chapters;
+   the flip restores its desktop look (window left, copy right)
+   by grid order alone. Cancelled in the single-column layout. */
+.feat-chapter-flip .feat-rail { order: -1; }
+.feat-rail-static { position: static; }
+.feat-win-note { color: var(--muted-2); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+.feat-proof { color: var(--muted-2); font-size: 14px; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 16px; margin: 32px 0 0; }
+.feat-beats { margin: 0 0 16px; padding-left: 24px; display: grid; gap: 8px; color: var(--muted); }
+.feat-beats li::marker { color: var(--accent); font-weight: 700; }
+.feat-beats strong { color: var(--text); }
+/* Prepare — the fact-confirm mechanic, inside the window. */
+.feat-facts { border: 0; margin: 0 0 12px; padding: 0; }
+.feat-facts legend { padding: 0; margin-bottom: 8px; }
+.feat-fact { display: flex; gap: 12px; align-items: center; min-height: 44px; padding: 8px 12px; margin: 0 0 8px; background: var(--app-surface); border: 1px solid var(--app-border); border-radius: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); cursor: pointer; }
+.feat-fact:last-child { margin-bottom: 0; }
+.feat-fact-box { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--app-accent); cursor: pointer; }
+.feat-answer-card { margin-bottom: 16px; }
+.feat-answer-text { font-size: 15px; line-height: 1.6; color: var(--app-text); margin: 0 0 12px; }
+.feat-clause { transition: opacity .15s ease; }
+.feat-clause.is-off { opacity: .45; text-decoration: line-through; }
+.feat-sources { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 0 0 8px; }
+.feat-count { font-size: 12px; line-height: 1.5; color: var(--app-faint); margin: 0; }
+/* Prepare — the 15-stage pipeline stepper. Static: the panels stack
+   as the full list. Live (JS): one grid cell, visibility swaps only,
+   so the stage never changes height while stepping or playing. */
+.feat-stepper { margin-top: 24px; }
+.feat-step-nums { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.feat-step-num { width: 44px; height: 44px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font: 600 14px/1 inherit; font-family: inherit; cursor: pointer; transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
+.feat-step-num:hover { color: var(--text); border-color: var(--accent); }
+.feat-step-num.is-active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.feat-step-stage { display: grid; gap: 12px; }
+.feat-stepper.is-live .feat-step-stage { gap: 0; }
+.feat-step-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-width: 0; }
+.feat-stepper.is-live .feat-step-panel { grid-area: 1 / 1; }
+.feat-step-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.feat-step-count { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 8px; }
+.feat-step-name { font-size: 19px; font-weight: 600; line-height: 1.3; color: var(--text); margin: 0 0 8px; }
+.feat-step-desc { color: var(--muted); margin: 0; }
+.feat-step-controls { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+/* Live — the control deck under the chapter window. */
+.feat-controls { display: grid; gap: 12px; justify-items: start; margin-top: 16px; }
+.feat-memory { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.feat-memory-item { font-size: 13px; line-height: 1.4; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+.feat-memory-item em { display: block; font-style: normal; font-size: 12px; color: var(--muted-2); margin-top: 4px; }
+.feat-memory-item.is-set-aside { opacity: .55; }
+/* Languages — the switcher card. The three Q&A layers share one grid
+   cell (tallest reserves the height); FA/AR layers are pre-rendered
+   with dir=rtl, so the flip is a visibility swap, never a relayout
+   animation, and focus and scroll never move. */
+.feat-lang-cards { display: grid; gap: 20px; margin-top: 24px; }
+.feat-lang-card .chips { margin: 0 0 16px; }
+.feat-lang-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.feat-lang-layers { display: grid; }
+.feat-lang-layer { grid-area: 1 / 1; min-width: 0; }
+.feat-lang-layer.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.feat-lang-coach { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 12px 0 0; }
+/* Report — the never-contains disclosure reuses the site accordion. */
+.feat-acc { margin-top: 32px; }
+/* The bento band — one bounded summary grid; tiles are anchors, the
+   only animated element is the anchor tile's meter, IO-gated by JS
+   through .is-live and static under reduced motion. */
+.feat-bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+.feat-tile { display: flex; flex-direction: column; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; color: var(--text); text-decoration: none; transition: border-color .15s ease, transform .15s ease; }
+.feat-tile-live { grid-column: 1 / 3; grid-row: 1 / 3; }
+.feat-tile-wide { grid-column: span 2; }
+.feat-tile-title { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.feat-tile-cap { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.feat-frag { display: flex; flex-wrap: wrap; flex: 1 1 auto; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.feat-frag-rtl { font-size: 17px; color: var(--text); }
+.feat-frag-keys { color: var(--app-accent); font-weight: 600; letter-spacing: .04em; }
+.feat-frag-dots { gap: 4px; align-items: center; }
+.feat-frag-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--accent); display: block; }
+.feat-mini { display: block; flex: 1 1 auto; }
+.feat-mini-body { display: block; padding: 12px 16px; }
+.feat-mini-q { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin-bottom: 8px; }
+.feat-mini-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--app-dim); margin-top: 4px; }
+.feat-mini-row .app-dot { margin-top: 4px; }
+/* Datasheet close. Step 60: the two small reference tables sit
+   side by side under their own headings; the Trial-vs-Pro matrix
+   above them stays the full-width anchor of the datasheet. */
+.feat-req { border-top: 1px solid var(--border); padding-top: 16px; margin: 24px 0 0; }
+.feat-sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; align-items: start; margin-top: 16px; }
+.feat-sheet-grid h3 { margin: 0 0 16px; }
+.feat-sheet-grid .table-wrap { margin-bottom: 0; }
+@media (max-width: 860px) {
+  .feat-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .feat-chapter { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  /* Step 60: single column reads in DOM order — heading and copy
+     first, the chapter's window after its explanation. (Step 59
+     lifted the rail above the copy with order: -1; measured, that
+     put an unexplained window before every chapter heading, in
+     a visual order no screen reader shares.) */
+  .feat-rail { position: static; }
+  .feat-chapter-flip .feat-rail { order: 0; }
+  .feat-sheet-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  /* Step 60: the chapter nav sticks on phones too — on a page of
+     ~19 viewports it is the only wayfinding there is (Step 59
+     left it static). Its links grow into the 44px touch family. */
+  .feat-nav-link { padding-top: 12px; padding-bottom: 12px; }
+  .feat-nav .btn { display: none; }
+  body:has(.feat-nav) main > section.section { padding-bottom: 40px; }
+  .feat-stats { grid-template-columns: repeat(2, 1fr); }
+  .feat-step-nums { display: grid; grid-template-columns: repeat(5, 1fr); }
+  .feat-step-num { width: auto; }
+  /* Step 60: the glance band stays a map on phones — two columns,
+     the Live tile and the wide tiles spanning both (Step 59
+     stacked all seven tiles into a second long scroll). */
+  .feat-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .feat-tile { padding: 16px; }
+  .feat-tile-live { grid-column: 1 / 3; }
+  .feat-tile-wide { grid-column: span 2; }
+}

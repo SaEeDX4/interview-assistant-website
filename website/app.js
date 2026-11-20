@@ -4569,3 +4569,403 @@ var IA_VARIANTS = {
     setOpen(true);
   }
 })();
+
+/* Step 59 — Features page, Concept F ("One Window, Five Chapters").
+   One module, guarded behaviours, all on pre-rendered layers: the
+   hero stages one simulated moment (the Step 21 cadence, the "tell"
+   sample), the chapter nav scroll-spies, Prepare's fact-confirm
+   really strikes clauses and rewrites the sources line, the
+   pipeline stepper steps the 15 stages, Live's Coach toggle and
+   interrupt stepper swap one window's layers, the language
+   switcher swaps pre-rendered EN/FA/AR layers (the RTL flip is in
+   the markup), and the bento anchor tile's meter runs only while
+   the tile is on screen. Nothing here scrolls, resizes or re-flows
+   the page: visibility swaps only (the Step 58 law). */
+(function () {
+  "use strict";
+
+  var reduceMotion = typeof window !== "undefined" && window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
+  var hasIO = typeof IntersectionObserver === "function";
+  /* Safe query: a partial DOM (older test shims, embeds) must never
+     make this module throw — it simply finds nothing and stays
+     inert, like every other guarded module in this file. */
+  var qsa = function (sel) {
+    try { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+    catch (e) { return []; }
+  };
+
+  /* ---- S0: chapter nav scroll-spy (colour only, centre band) ---- */
+  var nav = document.getElementById("feat-nav");
+  if (nav && hasIO) {
+    var links = Array.prototype.slice.call(nav.querySelectorAll(".feat-nav-link"));
+    var byId = {};
+    links.forEach(function (l) { byId[l.getAttribute("href").slice(1)] = l; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) { return; }
+        links.forEach(function (l) {
+          l.classList.remove("is-active");
+          l.removeAttribute("aria-current");
+        });
+        var link = byId[e.target.id];
+        if (link) {
+          link.classList.add("is-active");
+          link.setAttribute("aria-current", "true");
+        }
+      });
+    }, { rootMargin: "-40% 0px -40% 0px" });
+    links.forEach(function (l) {
+      var sec = document.getElementById(l.getAttribute("href").slice(1));
+      if (sec) { spy.observe(sec); }
+    });
+  }
+
+  /* ---- S1: hero — one staged moment, played once, then Replay ----
+     Timings are MOTION.md §5's hero cadence (Start 300, Hearing 600,
+     Transcribing 600, transcript 160ms/word, question +300, thinking
+     500, points 450ms apart, Replay 400 after the last point). The
+     static HTML is the final state, so no-JS and reduced-motion
+     visitors see the settled window; Replay exists only after a
+     real play, and never under reduced motion. */
+  var pill = document.getElementById("feat-pill");
+  var pillText = document.getElementById("feat-pill-text");
+  var startLabel = document.getElementById("feat-start-label");
+  var icoPlay = document.getElementById("feat-ico-play");
+  var icoPause = document.getElementById("feat-ico-pause");
+  var questionEl = document.getElementById("feat-question");
+  var transcriptEl = document.getElementById("feat-transcript");
+  var thinkingEl = document.getElementById("feat-thinking");
+  var answerEl = document.getElementById("feat-answer");
+  var metaEl = document.getElementById("feat-meta");
+  var replayBtn = document.getElementById("feat-replay");
+  if (pill && pillText && questionEl && transcriptEl && thinkingEl && answerEl && metaEl && replayBtn) {
+    var items = Array.prototype.slice.call(answerEl.children);
+    var timers = [];
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+    function clearTimers() { timers.forEach(function (t) { clearTimeout(t); }); timers = []; }
+    function setPill(text, kind, live) {
+      pillText.textContent = text;
+      pill.classList.toggle("is-listening", kind === "listening");
+      pill.classList.toggle("is-thinking", kind === "thinking");
+      pill.classList.toggle("is-live", !!live);
+    }
+    function setFeatStart(label) {
+      if (startLabel) { startLabel.textContent = label; }
+      var pause = label === "Pause";
+      if (icoPlay) { icoPlay.hidden = pause; }
+      if (icoPause) { icoPause.hidden = !pause; }
+    }
+    function play() {
+      clearTimers();
+      replayBtn.hidden = true;
+      setPill("Not listening", "", false);
+      setFeatStart("Start listening");
+      questionEl.textContent = "Waiting for the interviewer…";
+      questionEl.classList.add("is-empty");
+      questionEl.classList.remove("is-landing");
+      transcriptEl.textContent = "";
+      thinkingEl.classList.add("is-hidden");
+      thinkingEl.style.opacity = "";
+      items.forEach(function (li) {
+        li.classList.add("is-hidden");
+        li.classList.remove("is-new");
+      });
+      metaEl.textContent = "";
+      var words = ["Tell", "me", "about", "yourself."];
+      later(function () {
+        setFeatStart("Pause");
+        setPill("Listening", "listening", true);
+        later(function () {
+          setPill("Hearing audio", "listening", true);
+          later(function () {
+            setPill("Transcribing", "listening", true);
+            words.forEach(function (w, i) {
+              later(function () { transcriptEl.textContent = words.slice(0, i + 1).join(" "); }, i * 160);
+            });
+            later(function () {
+              transcriptEl.textContent = "";
+              questionEl.textContent = "“Tell me about yourself.”";
+              questionEl.classList.remove("is-empty");
+              questionEl.classList.add("is-landing");
+              setPill("Question detected", "thinking", true);
+              later(function () {
+                setPill("Preparing answer", "thinking", false);
+                thinkingEl.classList.remove("is-hidden");
+                items.forEach(function (li, i) {
+                  later(function () {
+                    if (i === 0) {
+                      thinkingEl.style.opacity = "0";
+                      later(function () {
+                        thinkingEl.classList.add("is-hidden");
+                        thinkingEl.style.opacity = "";
+                      }, 150);
+                    }
+                    li.classList.remove("is-hidden");
+                    li.classList.add("is-new");
+                  }, i * 450);
+                });
+                later(function () {
+                  setPill("Answer ready", "listening", false);
+                  setFeatStart("Start listening");
+                  metaEl.textContent = "prepared";
+                  replayBtn.hidden = false;
+                }, items.length * 450 + 400);
+              }, 500);
+            }, words.length * 160 + 300);
+          }, 600);
+        }, 600);
+      }, 300);
+    }
+    replayBtn.addEventListener("click", play);
+    if (!reduceMotion) {
+      if (hasIO) {
+        var seen = false;
+        var heroIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting && !seen) {
+              seen = true;
+              play();
+              heroIO.disconnect();
+            }
+          });
+        }, { threshold: 0.25 });
+        heroIO.observe(pill);
+      } else {
+        play();
+      }
+    }
+  }
+
+  /* ---- S2a: Prepare — you confirm every fact (really works) ---- */
+  var boxes = qsa(".feat-fact-box");
+  var clauses = qsa(".feat-clause");
+  var sourcesEl = document.getElementById("feat-sources");
+  var countEl = document.getElementById("feat-count");
+  if (boxes.length && clauses.length === boxes.length && sourcesEl && countEl) {
+    var factLabels = boxes.map(function (b) {
+      var span = b.parentNode.querySelector("span");
+      return span ? span.textContent.trim() : "";
+    });
+    var syncFacts = function () {
+      var used = [];
+      boxes.forEach(function (b, i) {
+        clauses[i].classList.toggle("is-off", !b.checked);
+        if (b.checked) { used.push(factLabels[i]); }
+      });
+      sourcesEl.textContent = used.length
+        ? "Sources used by this answer: " + used.join(" · ")
+        : "Sources used by this answer: none — with nothing confirmed, the app builds no answer from guesses.";
+      countEl.textContent = used.length + " of " + boxes.length
+        + " facts confirmed — the app uses only confirmed facts.";
+    };
+    boxes.forEach(function (b) { b.addEventListener("change", syncFacts); });
+  }
+
+  /* ---- S2b: Prepare — the 15-stage pipeline stepper ----
+     Static HTML stacks all 15 panels as the full list (the no-JS
+     state); init switches the stage to one grid cell and steps by
+     visibility. Play all advances every 1.6s, pauses on hover,
+     focus or any manual step, and stops at stage 15. */
+  var stepper = document.getElementById("feat-stepper");
+  if (stepper) {
+    var nums = Array.prototype.slice.call(stepper.querySelectorAll(".feat-step-num"));
+    var panels = Array.prototype.slice.call(stepper.querySelectorAll(".feat-step-panel"));
+    var prevBtn = document.getElementById("feat-step-prev");
+    var nextBtn = document.getElementById("feat-step-next");
+    var playBtn = document.getElementById("feat-step-play");
+    var stepLive = document.getElementById("feat-step-live");
+    if (nums.length === 15 && panels.length === 15 && prevBtn && nextBtn && playBtn) {
+      stepper.classList.add("is-live");
+      var cur = 0;
+      var wantsPlay = false;
+      var suspended = false;
+      var playTimer = null;
+      var renderStep = function (announce) {
+        panels.forEach(function (p, i) {
+          p.classList.toggle("is-hidden", i !== cur);
+          p.classList.toggle("is-shown", i === cur);
+        });
+        nums.forEach(function (b, i) {
+          b.classList.toggle("is-active", i === cur);
+          if (i === cur) { b.setAttribute("aria-current", "true"); }
+          else { b.removeAttribute("aria-current"); }
+        });
+        prevBtn.disabled = cur === 0;
+        nextBtn.disabled = cur === panels.length - 1;
+        if (announce && stepLive) {
+          var nameEl = panels[cur].querySelector(".feat-step-name");
+          stepLive.textContent = "Stage " + (cur + 1) + " of 15"
+            + (nameEl ? ": " + nameEl.textContent : "");
+        }
+      };
+      var runTimer = function () {
+        if (playTimer) { clearInterval(playTimer); playTimer = null; }
+        if (!wantsPlay || suspended) { return; }
+        playTimer = setInterval(function () {
+          if (cur >= panels.length - 1) { stopPlay(); renderStep(true); return; }
+          cur += 1;
+          renderStep(false);
+        }, 1600);
+      };
+      var stopPlay = function () {
+        wantsPlay = false;
+        if (playTimer) { clearInterval(playTimer); playTimer = null; }
+        playBtn.setAttribute("aria-pressed", "false");
+        playBtn.textContent = "Play all";
+      };
+      var stepTo = function (n) {
+        stopPlay();
+        cur = Math.max(0, Math.min(panels.length - 1, n));
+        renderStep(true);
+      };
+      nums.forEach(function (b, i) {
+        b.addEventListener("click", function () { stepTo(i); });
+      });
+      prevBtn.addEventListener("click", function () { stepTo(cur - 1); });
+      nextBtn.addEventListener("click", function () { stepTo(cur + 1); });
+      playBtn.addEventListener("click", function () {
+        if (wantsPlay) { stopPlay(); renderStep(true); return; }
+        if (cur === panels.length - 1) { cur = 0; }
+        wantsPlay = true;
+        playBtn.setAttribute("aria-pressed", "true");
+        playBtn.textContent = "Pause";
+        renderStep(false);
+        runTimer();
+      });
+      /* Suspension is scoped to the reading surface — the stage
+         and the stage numbers. Hovering or focusing the transport
+         controls must never deadlock Play: the click that starts
+         playback lands there, pointer and focus included, and the
+         first audit's Play button appeared broken for exactly that
+         reason (hover + focus both live on the controls row). */
+      var stageEl = document.getElementById("feat-step-stage");
+      var numsWrap = stepper.querySelector(".feat-step-nums");
+      [stageEl, numsWrap].forEach(function (el) {
+        if (!el) { return; }
+        el.addEventListener("mouseenter", function () { suspended = true; runTimer(); });
+        el.addEventListener("mouseleave", function () { suspended = false; runTimer(); });
+      });
+      stepper.addEventListener("focusin", function (e) {
+        suspended = nums.indexOf(e.target) !== -1;
+        runTimer();
+      });
+      stepper.addEventListener("focusout", function () { suspended = false; runTimer(); });
+      stepper.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); stepTo(cur - 1); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); stepTo(cur + 1); }
+      });
+      renderStep(false);
+    }
+  }
+
+  /* ---- S3: Live — Coach toggle + interrupt stepper, one window ----
+     The four layers are pre-rendered in the answer stack (the demo's
+     SAMPLES.tell answer, its INT shortenings, and its Coach view),
+     so the window never changes height. Picking a length returns to
+     Answer mode, as the app shortens the answer it is showing. */
+  var modeAnswer = document.getElementById("feat-mode-answer");
+  var modeCoach = document.getElementById("feat-mode-coach");
+  var liveLayers = {
+    normal: document.getElementById("feat-live-normal"),
+    concise: document.getElementById("feat-live-concise"),
+    rapid: document.getElementById("feat-live-rapid"),
+    coach: document.getElementById("feat-live-coach")
+  };
+  var intBtns = {
+    normal: document.getElementById("feat-int-normal"),
+    concise: document.getElementById("feat-int-concise"),
+    rapid: document.getElementById("feat-int-rapid")
+  };
+  var intState = document.getElementById("feat-int-state");
+  var liveStatus = document.getElementById("feat-live-status");
+  if (modeAnswer && modeCoach && liveLayers.normal && liveLayers.concise
+      && liveLayers.rapid && liveLayers.coach && intBtns.normal && liveStatus) {
+    var mode = "answer";
+    var len = "normal";
+    var LEN_LABEL = {
+      normal: "Normal — 3 points",
+      concise: "Concise — 2 short points",
+      rapid: "Rapid — 1 line"
+    };
+    var LEN_STATUS = {
+      normal: "Normal (3 points)",
+      concise: "Concise (2 points)",
+      rapid: "Rapid (1 line)"
+    };
+    var showLive = function (announce, stage) {
+      var key = mode === "coach" ? "coach" : len;
+      Object.keys(liveLayers).forEach(function (k) {
+        var layer = liveLayers[k];
+        var on = k === key;
+        layer.classList.toggle("is-hidden", !on);
+        if (on && stage && !reduceMotion) {
+          Array.prototype.forEach.call(layer.querySelectorAll("li"), function (li) {
+            li.classList.remove("is-new");
+            void li.offsetWidth;
+            li.classList.add("is-new");
+          });
+        }
+      });
+      modeAnswer.classList.toggle("is-active", mode === "answer");
+      modeAnswer.setAttribute("aria-pressed", String(mode === "answer"));
+      modeCoach.classList.toggle("is-coach-active", mode === "coach");
+      modeCoach.setAttribute("aria-pressed", String(mode === "coach"));
+      Object.keys(intBtns).forEach(function (k) {
+        intBtns[k].setAttribute("aria-pressed", String(k === len));
+      });
+      if (intState) { intState.textContent = LEN_LABEL[len]; }
+      if (announce) {
+        liveStatus.textContent = mode === "coach"
+          ? "Coach Mode ready — simulated."
+          : LEN_STATUS[len] + " ready — simulated.";
+      }
+    };
+    modeAnswer.addEventListener("click", function () { mode = "answer"; showLive(true, true); });
+    modeCoach.addEventListener("click", function () { mode = "coach"; showLive(true, true); });
+    Object.keys(intBtns).forEach(function (k) {
+      intBtns[k].addEventListener("click", function () {
+        len = k;
+        mode = "answer";
+        showLive(true, true);
+      });
+    });
+    showLive(false, false);
+  }
+
+  /* ---- S4: Languages — EN/FA/AR switcher, real RTL flip ----
+     The three layers are pre-rendered with their own lang/dir, so
+     switching is a visibility swap: direction changes never
+     animate, and focus and scroll never move. */
+  var langChips = qsa(".feat-lang-chip");
+  var langLayers = qsa(".feat-lang-layer");
+  if (langChips.length && langLayers.length) {
+    langChips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var key = chip.getAttribute("data-lang");
+        langChips.forEach(function (c) {
+          c.setAttribute("aria-pressed", String(c === chip));
+        });
+        langLayers.forEach(function (layer) {
+          var on = layer.getAttribute("data-layer") === key;
+          layer.classList.toggle("is-hidden", !on);
+          if (on && !reduceMotion) {
+            layer.classList.remove("is-shown");
+            void layer.offsetWidth;
+            layer.classList.add("is-shown");
+          }
+        });
+      });
+    });
+  }
+
+  /* ---- S7: bento anchor tile — ambient meter, on-screen only ---- */
+  var tilePill = document.getElementById("feat-tile-pill");
+  if (tilePill && hasIO && !reduceMotion) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        tilePill.classList.toggle("is-live", e.isIntersecting);
+      });
+    }, { threshold: 0.2 }).observe(tilePill);
+  }
+})();
