@@ -4981,3 +4981,202 @@ var IA_VARIANTS = {
     }, { threshold: 0.2 }).observe(tilePill);
   }
 })();
+
+/* Step 63 — How It Works, "One Question, Traced". One module,
+   guarded behaviours, all on pre-rendered panels: the trace
+   stepper steps five staged frames in one grid cell (the stage
+   never changes height), the stage-5 points and facts highlight
+   each other through their data links (the trace closing its own
+   loop on the demo's SAMPLES.tell data), and the faded second
+   question arms a prediction, then reveals the INT shortenings.
+   Nothing here scrolls, focuses or re-flows the page: class swaps
+   only (the Step 58 law). With JS off, the panels stack as the
+   numbered small-multiples and the reveal simply sits open. */
+(function () {
+  "use strict";
+
+  var reduceMotion = typeof window !== "undefined" && window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
+  /* Safe query, the Step 59 pattern: a partial DOM must never make
+     this module throw — it finds nothing and stays inert. */
+  var qsa = function (sel) {
+    try { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+    catch (e) { return []; }
+  };
+  var slice = function (list) { return Array.prototype.slice.call(list); };
+
+  /* ---- S1: the trace — a guided 5-stage stepper ----
+     Static HTML stacks all five panels (the no-JS small
+     multiples); init switches the stage to one grid cell and
+     steps by visibility, so the stage is one fixed height. */
+  var trace = document.getElementById("hw-trace");
+  if (trace) {
+    var nodes = slice(trace.querySelectorAll(".hw-node"));
+    var panels = slice(trace.querySelectorAll(".hw-panel"));
+    var prevBtn = document.getElementById("hw-prev");
+    var nextBtn = document.getElementById("hw-next");
+    var progress = document.getElementById("hw-progress");
+    var live = document.getElementById("hw-live");
+    var fill = document.getElementById("hw-nodes-fill");
+    if (nodes.length === 5 && panels.length === 5 && prevBtn && nextBtn && progress) {
+      trace.classList.add("is-live");
+      var names = nodes.map(function (n) {
+        var nameEl = n.querySelector(".hw-node-name");
+        return nameEl ? nameEl.textContent : "";
+      });
+      var cur = 0;
+      var renderStep = function (announce) {
+        panels.forEach(function (p, i) {
+          p.classList.toggle("is-hidden", i !== cur);
+          p.classList.toggle("is-shown", i === cur);
+        });
+        nodes.forEach(function (b, i) {
+          b.classList.toggle("is-active", i === cur);
+          b.classList.toggle("is-done", i < cur);
+          if (i === cur) { b.setAttribute("aria-current", "true"); }
+          else { b.removeAttribute("aria-current"); }
+        });
+        if (fill) {
+          fill.style.transform = "scaleX(" + (cur / (panels.length - 1)) + ")";
+        }
+        prevBtn.disabled = cur === 0;
+        nextBtn.disabled = cur === panels.length - 1;
+        progress.textContent = "Stage " + (cur + 1) + " of " + panels.length
+          + " — " + names[cur];
+        if (announce && live) { live.textContent = progress.textContent; }
+      };
+      var stepTo = function (n) {
+        cur = Math.max(0, Math.min(panels.length - 1, n));
+        renderStep(true);
+      };
+      nodes.forEach(function (b, i) {
+        b.addEventListener("click", function () { stepTo(i); });
+      });
+      prevBtn.addEventListener("click", function () { stepTo(cur - 1); });
+      nextBtn.addEventListener("click", function () { stepTo(cur + 1); });
+      trace.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); stepTo(cur - 1); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); stepTo(cur + 1); }
+      });
+      renderStep(false);
+    }
+
+    /* ---- S2: stage 5 — points and facts light each other ----
+       The links are the data itself: each point names the facts
+       it stands on (data-facts), each fact names its points
+       (data-bullets). Picking either side lights the other and
+       dims the rest; picking it again lets go. Fact 3 honestly
+       has no point in this answer — it stands behind the bank's
+       second question, and its announcement says so. */
+    var bullets = slice(trace.querySelectorAll(".hw-bullet"));
+    var facts = slice(trace.querySelectorAll(".hw-fact"));
+    var traceLive = document.getElementById("hw-trace-live");
+    if (bullets.length === 3 && facts.length === 5) {
+      var selBullet = null;
+      var selFact = null;
+      var say = function (msg) { if (traceLive) { traceLive.textContent = msg; } };
+      var numOf = function (id) { return id.slice(1); };
+      var clearTrace = function () {
+        selBullet = null;
+        selFact = null;
+        var states = ["is-active", "is-lit", "is-dim"];
+        bullets.forEach(function (b) {
+          states.forEach(function (c) { b.classList.remove(c); });
+          b.setAttribute("aria-pressed", "false");
+        });
+        facts.forEach(function (f) {
+          states.forEach(function (c) { f.classList.remove(c); });
+          f.setAttribute("aria-pressed", "false");
+        });
+      };
+      var pickBullet = function (b) {
+        if (selBullet === b) { clearTrace(); say(""); return; }
+        clearTrace();
+        selBullet = b;
+        b.classList.add("is-active");
+        b.setAttribute("aria-pressed", "true");
+        var ids = (b.getAttribute("data-facts") || "").split(" ").filter(Boolean);
+        bullets.forEach(function (o) {
+          if (o !== b) { o.classList.add("is-dim"); }
+        });
+        facts.forEach(function (f) {
+          var on = ids.indexOf(f.getAttribute("data-fact")) !== -1;
+          f.classList.toggle("is-lit", on);
+          f.classList.toggle("is-dim", !on);
+        });
+        var nums = ids.map(numOf);
+        say("Point " + numOf(b.getAttribute("data-bullet")) + " stands on "
+          + (nums.length > 1 ? "facts " + nums.join(" and ") : "fact " + nums[0]) + ".");
+      };
+      var pickFact = function (f) {
+        if (selFact === f) { clearTrace(); say(""); return; }
+        clearTrace();
+        selFact = f;
+        f.classList.add("is-active");
+        f.setAttribute("aria-pressed", "true");
+        var ids = (f.getAttribute("data-bullets") || "").split(" ").filter(Boolean);
+        facts.forEach(function (o) {
+          if (o !== f) { o.classList.add("is-dim"); }
+        });
+        bullets.forEach(function (b) {
+          var on = ids.indexOf(b.getAttribute("data-bullet")) !== -1;
+          b.classList.toggle("is-lit", on);
+          b.classList.toggle("is-dim", !on);
+        });
+        if (!ids.length) {
+          say("Fact " + numOf(f.getAttribute("data-fact"))
+            + " stands behind the bank's second question — it is not in this answer.");
+        } else {
+          var nums = ids.map(numOf);
+          say("Fact " + numOf(f.getAttribute("data-fact")) + " stands behind "
+            + (nums.length > 1 ? "points " + nums.join(" and ") : "point " + nums[0]) + ".");
+        }
+      };
+      bullets.forEach(function (b) {
+        b.addEventListener("click", function () { pickBullet(b); });
+      });
+      facts.forEach(function (f) {
+        f.addEventListener("click", function () { pickFact(f); });
+      });
+    }
+  }
+
+  /* ---- S3: the faded second question — predict, then reveal ----
+     At rest the reveal is open (the no-JS truth). Init arms the
+     prediction: the reveal hides until a prediction is chosen
+     and the Reveal button is pressed; the verdict then leads the
+     same honest text the static page already carried. */
+  var faded = document.getElementById("hw-faded");
+  if (faded) {
+    var opts = slice(faded.querySelectorAll(".hw-opt"));
+    var revealBtn = document.getElementById("hw-reveal-btn");
+    var feedback = document.getElementById("hw-faded-feedback");
+    if (opts.length === 3 && revealBtn && feedback) {
+      faded.classList.add("is-armed");
+      revealBtn.disabled = true;
+      var defaultFeedback = feedback.textContent;
+      var chosen = null;
+      var revealed = false;
+      opts.forEach(function (o) {
+        o.addEventListener("click", function () {
+          if (revealed) { return; }
+          chosen = o;
+          opts.forEach(function (x) {
+            x.classList.toggle("is-chosen", x === o);
+            x.setAttribute("aria-pressed", String(x === o));
+          });
+          revealBtn.disabled = false;
+        });
+      });
+      revealBtn.addEventListener("click", function () {
+        if (!chosen || revealed) { return; }
+        revealed = true;
+        faded.classList.add("is-revealed");
+        opts.forEach(function (o) { o.disabled = true; });
+        revealBtn.hidden = true;
+        var ok = chosen.getAttribute("data-correct") === "true";
+        feedback.textContent = (ok ? "Exactly right. " : "Not quite. ") + defaultFeedback;
+      });
+    }
+  }
+})();

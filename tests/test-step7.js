@@ -52,8 +52,11 @@ check('C5 practise flow keeps the honest framing',
 // --- Regression smoke (Step 6 fixes still in place) ---
 check('smoke pipe-list 1fr rule present',
   /@media \(max-width: 640px\) \{\s*\.pipe-list \{ grid-template-columns: 1fr; \}\s*\}/.test(css));
-check('smoke mini-tag wraps at <=640px',
-  /\.mini-tag \{ white-space: normal; text-align: right; \}/.test(css));
+/* Step 63 re-pin (deliberate): the mini-tag wrap rule served the old
+   how-it-works mini card; Step 63 retired the whole mini family as
+   dead code (test-step17 census). The smoke now pins its absence. */
+check('smoke mini-tag retired with the old timeline (Step 63 re-pin)',
+  !/\.mini-tag\s*\{/.test(css));
 check('smoke sticky bar one-row rule at <=480px',
   /@media \(max-width: 480px\) \{\s*\.sticky-cta \.btn-secondary \{ display: none; \}/.test(css));
 check('smoke pricing data-labels present',

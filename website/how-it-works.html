@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>How it works — Interview Assistant</title>
-<meta name="description" content="Profile → Prepare → Live → Report. Each step explained, with hotkeys and the full first-run onboarding journey.">
+<meta name="description" content="Follow one confirmed fact through Interview Assistant — into the bank, the live question and the three sourced points — plus minutes, reports and hotkeys.">
 <meta property="og:title" content="How it works — Interview Assistant">
-<meta property="og:description" content="Profile → Prepare → Live → Report. Each step explained, with hotkeys and the full first-run onboarding journey.">
+<meta property="og:description" content="Follow one confirmed fact through Interview Assistant — into the bank, the live question and the three sourced points — plus minutes, reports and hotkeys.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -68,110 +68,342 @@
   </div>
 </header>
 <main id="main" tabindex="-1">
+  <!-- Step 63 — "One Question, Traced" (Concept 1, owner-approved,
+       with Concept 3's myth strip as the opening and Concept 2's
+       clock discipline in the captions). The old page told its four
+       steps twice (timeline + expanded cards, ~59% duplication) and
+       a third time in part; this page tells one thread once: a
+       confirmed fact, followed through the bank and the live moment
+       until it comes back as three sourced points. Every frame is a
+       labelled simulation built from the demo's canonical sample
+       data (SAMPLES.tell + the INT shortenings in app.js). -->
   <section class="page-hero">
     <div class="container narrow">
       <p class="eyebrow">How it works</p>
-      <h1>Profile → Prepare → Live → Report.</h1>
-      <p class="lead">Four steps, in order, every time. Nothing is hidden: you see what the app knows, you confirm it, and you decide when it listens.</p>
-    </div>
-  </section>
-  <section class="section" aria-label="The four steps">
-    <div class="container">
-      <div class="timeline" aria-label="The four steps at a glance">
-        <div class="tl-item">
-          <span class="tl-dot" aria-hidden="true">1</span>
-          <h2>Profile</h2>
-          <p>Import your resume. Confirm every fact — only confirmed facts are ever used.</p>
-          <div class="tl-mini mini" aria-hidden="true">
-            <div class="mini-row"><span class="mini-avatar">You</span><strong>Your profile</strong><span class="mini-tag">Example · confirmed by you</span></div>
-            <div class="mini-row"><span class="mini-check">✓</span>Your current role · years in role<span class="mini-tag">Verified</span></div>
-            <div class="mini-row"><span class="mini-check">✓</span>One result you are proud of<span class="mini-tag">Verified</span></div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-dot" aria-hidden="true">2</span>
-          <h2>Prepare</h2>
-          <p>The 15-stage pipeline builds a 50–150 question bank for this role.</p>
-          <div class="tl-mini mini" aria-hidden="true">
-            <div class="mini-qgrid">
-              <div class="mini-q"><span class="tag">Role-specific</span>Tell me about a migration you led</div>
-              <div class="mini-q"><span class="tag">Behavioural</span>A time you handled a difficult customer</div>
-              <div class="mini-q"><span class="tag">Follow-up</span>What did you learn from that?</div>
-              <div class="mini-q"><span class="tag">Role-specific</span>How do you prioritise a queue?</div>
-              <div class="mini-q"><span class="tag">Behavioural</span>A time you missed a deadline</div>
-              <div class="mini-q"><span class="tag">Follow-up</span>How would you do it differently?</div>
-            </div>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-dot" aria-hidden="true">3</span>
-          <h2>Live</h2>
-          <p>Three short, speakable points appear as each question ends. Simulated example:</p>
-          <div class="tl-mini mini" aria-hidden="true">
-            <ul class="mini-bullets">
-              <li><span class="num">1</span>Start with your current role and one clear result.</li>
-              <li><span class="num">2</span>Give one concrete example, not a general claim.</li>
-              <li><span class="num">3</span>End with why this role fits.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="tl-item">
-          <span class="tl-dot" aria-hidden="true">4</span>
-          <h2>Report</h2>
-          <p>Stop, review, and prepare better next time — no scores, no hiring predictions.</p>
-          <div class="tl-mini mini" aria-hidden="true">
-            <div class="mini-row">Questions asked<span class="mini-tag">Listed</span></div>
-            <div class="mini-row">Suggestions shown<span class="mini-tag">Listed</span></div>
-            <div class="mini-row">What to prepare next<span class="mini-tag">Suggested</span></div>
-            <div class="mini-row">Scores &amp; hiring predictions<span class="mini-tag">None — never</span></div>
-          </div>
-        </div>
+      <h1>One question, followed end to end.</h1>
+      <p class="lead">Most explanations list steps. This one follows a single thread instead: one fact the candidate confirmed, the question that fact earned, and the three points it became — in the order it actually happens, with nothing hidden in between.</p>
+      <div class="hw-clocks" aria-label="The three time frames">
+        <p class="hw-clock"><strong>Before the day</strong> — free, unhurried, repeatable.</p>
+        <p class="hw-clock"><strong>The live seconds</strong> — the only part that uses minutes.</p>
+        <p class="hw-clock"><strong>Afterwards</strong> — a report that stays on your PC.</p>
       </div>
-      <ol class="steps-expanded">
-        <li class="card">
-          <span class="step-num">01 · Profile</span>
-          <h2>Import your resume. Confirm the facts.</h2>
-          <p><strong>What happens:</strong> you import a resume (PDF, DOCX or TXT) and the app extracts facts — roles, results, skills — as candidates.</p>
-          <p><strong>What you do:</strong> review every extracted fact. Approve it, edit it, or reject it. Only confirmed facts are ever used to build answers.</p>
-          <p><strong>What you see:</strong> a profile you recognise as your own — because you built it, fact by fact. Sign-in is via your browser (Google, Microsoft, or an email link); the app holds a service AI key, so you never paste a key yourself.</p>
-        </li>
-        <li class="card">
-          <span class="step-num">02 · Prepare</span>
-          <h2>Add the role and job description. Get your question bank.</h2>
-          <p><strong>What happens:</strong> the 15-stage preparation pipeline matches your confirmed facts to the role and builds a bank of 50–150 questions — role-specific, behavioural, and follow-ups — classified Verified, Hypothetical, or Bridge.</p>
-          <p><strong>What you do:</strong> work through the bank. Practise the questions you are weakest on. Re-run preparation for a different role — 2 runs a month on Trial, 20 on Pro.</p>
-          <p><strong>What you see:</strong> a bank organised by question type, with the source fact behind each Verified question. Preparation never uses live minutes.</p>
-        </li>
-        <li class="card">
-          <span class="step-num">03 · Live</span>
-          <h2>Start listening. Three points appear as questions end.</h2>
-          <p><strong>What happens:</strong> with a headset on, the app captures the interviewer’s audio (WASAPI loopback), transcribes it as it streams, detects the end of each question, and shows three short, speakable bullets one at a time — built only from your confirmed facts.</p>
-          <p><strong>What you do:</strong> speak in your own words, using the points as a guide — or switch to Coach Mode for keywords and a structure line instead. If the interviewer interrupts, answers shorten automatically (Concise, then Rapid).</p>
-          <p><strong>What you see:</strong> a small, visible window. It never hides. It never records your microphone and never stores audio.</p>
-        </li>
-        <li class="card">
-          <span class="step-num">04 · Report</span>
-          <h2>Stop, review, and prepare better next time.</h2>
-          <p><strong>What happens:</strong> when you stop the session, the app compiles an honest report: the questions asked, the suggestions shown, and what to prepare next time.</p>
-          <p><strong>What you do:</strong> read it, mark the questions you struggled with, and fold them into your next preparation run.</p>
-          <p><strong>What you see:</strong> a record of what happened — no scores, no hiring predictions. Reports stay on your PC by default (14 days on Trial, 365 days on Pro).</p>
-        </li>
-      </ol>
     </div>
   </section>
 
-  <section class="section section-soft" aria-labelledby="onboard-title">
+  <section class="section" id="myths" aria-labelledby="myths-title">
+    <div class="container">
+      <p class="eyebrow">First, the fears</p>
+      <h2 id="myths-title">Three things people assume. None of them is true.</h2>
+      <p class="section-intro">Every visitor arrives with a model of what an app like this must be doing. Three parts of that model are wrong — and until they are named, every fact on this page lands on top of them. So, first:</p>
+      <div class="hw-myths">
+        <article class="hw-myth">
+          <p class="hw-myth-say">“It records me.”</p>
+          <p class="hw-myth-truth">It never records your microphone, and it never stores audio. It hears the interviewer through your headset — that is the only audio it touches, and only while you have it listening.</p>
+          <p class="hw-myth-links"><a href="#trace">Watch it happen — Stage 3 of the trace</a><a href="privacy.html">The full boundary: Privacy &amp; ethics</a></p>
+        </article>
+        <article class="hw-myth">
+          <p class="hw-myth-say">“It invents answers.”</p>
+          <p class="hw-myth-truth">It has nothing to invent from. Every point is built from facts you confirmed and your prepared bank — an unconfirmed fact is never used, and a guess is never dressed up as your experience.</p>
+          <p class="hw-myth-links"><a href="#trace">See a point traced to its facts — Stage 5</a><a href="features.html">The evidence: Features</a></p>
+        </article>
+        <article class="hw-myth">
+          <p class="hw-myth-say">“It hides and works in secret.”</p>
+          <p class="hw-myth-truth">The window is small, visible, and never hides itself. You start listening, you stop it, and the show / hide hotkey is yours. Use it only where you are allowed to.</p>
+          <p class="hw-myth-links"><a href="#first-run">Your controls — the first-run guide</a><a href="privacy.html">Visibility, in Privacy &amp; ethics</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" id="trace" aria-labelledby="trace-title">
+    <div class="container">
+      <p class="eyebrow">The trace</p>
+      <h2 id="trace-title">Follow one fact until it becomes something you say</h2>
+      <p class="section-intro">The sample candidate below is the same one the demo uses. Five facts are confirmed on their profile; the first — five years building web products — carries the thread marker (<span class="hw-diamond" aria-hidden="true"></span>). Follow it through the bank, into the live interview, and out the other side as a spoken point. Every frame is a labelled simulation of the Windows app, built from the demo’s sample data.</p>
+
+      <div class="hw-trace" id="hw-trace">
+        <div class="hw-nodes" role="group" aria-label="Trace stages">
+          <span class="hw-nodes-line" aria-hidden="true"><span class="hw-nodes-fill" id="hw-nodes-fill"></span></span>
+          <button type="button" class="hw-node is-active" data-stage="0" aria-current="true"><span class="hw-node-num">1</span><span class="hw-node-name">Fact confirmed</span></button>
+          <button type="button" class="hw-node" data-stage="1"><span class="hw-node-num">2</span><span class="hw-node-name">Bank built</span></button>
+          <button type="button" class="hw-node" data-stage="2"><span class="hw-node-num">3</span><span class="hw-node-name">Question asked</span></button>
+          <button type="button" class="hw-node" data-stage="3"><span class="hw-node-num">4</span><span class="hw-node-name">Pause detected</span></button>
+          <button type="button" class="hw-node" data-stage="4"><span class="hw-node-num">5</span><span class="hw-node-name">Three points, sourced</span></button>
+        </div>
+
+        <div class="hw-stage" id="hw-stage" tabindex="0" aria-label="Trace stage detail. Use the left and right arrow keys to move between stages.">
+
+          <section class="hw-panel" data-panel="0" aria-label="Stage 1: Fact confirmed">
+            <div class="hw-frame app-window">
+              <div class="app-window-bar" aria-hidden="true">
+                <span class="app-window-title">Interview Assistant — Profile</span>
+                <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+              </div>
+              <div class="app-window-body">
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Confirmed facts — sample profile</span></div>
+                  <div class="hw-factrow is-thread"><span class="hw-check" aria-hidden="true">✓</span><span>Five years building web products</span><span class="hw-thread-tag"><span class="hw-diamond" aria-hidden="true"></span>The thread</span></div>
+                  <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Led a small team on a customer-facing tool</span></div>
+                  <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Rescued a slipping launch with staged rollouts</span></div>
+                  <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Works outcome-first; trade-offs written down</span></div>
+                  <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Drawn to teams that ship carefully and review honestly</span></div>
+                </section>
+                <p class="app-context">Facts the candidate did not confirm are never used — to the app, they might as well not exist.</p>
+              </div>
+            </div>
+            <div class="hw-cap">
+              <p class="hw-cap-count">Stage 1 of 5 · Fact confirmed</p>
+              <h3 class="hw-cap-title">A fact is confirmed</h3>
+              <p class="hw-cap-body">The candidate imports a resume — PDF, DOCX or TXT — and the app proposes facts from it: roles, results, skills. The candidate approves, edits or rejects each one. Only approved facts exist, as far as the app is concerned.</p>
+              <p class="hw-cap-fear">Sign-in happens in your browser — Google, Microsoft or an email link — and the app holds the service key, so you never paste a key yourself.</p>
+              <p class="hw-cap-clock">Before the day · free — repeat it for every new role</p>
+            </div>
+          </section>
+
+          <section class="hw-panel" data-panel="1" aria-label="Stage 2: Bank built">
+            <div class="hw-frame app-window">
+              <div class="app-window-bar" aria-hidden="true">
+                <span class="app-window-title">Interview Assistant — Prepare</span>
+                <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+              </div>
+              <div class="app-window-body">
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Question bank — sample</span><span class="app-card-meta">50–150 questions</span></div>
+                  <div class="hw-qrow is-thread"><span>“Tell me about yourself.”</span><span class="hw-tag is-verified">Verified · Fact 1</span></div>
+                  <div class="hw-qrow"><span>“Tell me about a time you led a difficult project.”</span><span class="hw-tag is-verified">Verified · Fact 3</span></div>
+                  <div class="hw-qrow"><span>“How do you prioritise a queue?”</span><span class="hw-tag">Role-specific</span></div>
+                  <div class="hw-qrow"><span>“A time you missed a deadline”</span><span class="hw-tag">Hypothetical</span></div>
+                  <div class="hw-qrow"><span>“What did you learn from that?”</span><span class="hw-tag">Bridge · follow-up</span></div>
+                </section>
+                <p class="app-context">Five rows of a full bank. The pipeline behind it has fifteen stages — Features walks through every one.</p>
+              </div>
+            </div>
+            <div class="hw-cap">
+              <p class="hw-cap-count">Stage 2 of 5 · Bank built</p>
+              <h3 class="hw-cap-title">The bank is built</h3>
+              <p class="hw-cap-body">A 15-stage pipeline matches the confirmed facts to this role and builds a bank of 50–150 questions. Each is classified Verified, Hypothetical or Bridge. The traced question is Verified — it stands on the fact you are following.</p>
+              <p class="hw-cap-fear">A Verified question names its source fact. A Hypothetical is labelled as practice — never presented as your history.</p>
+              <p class="hw-cap-clock">Before the day · 2 preparation runs a month on Trial, 20 on Pro — preparation never uses live minutes</p>
+            </div>
+          </section>
+
+          <section class="hw-panel" data-panel="2" aria-label="Stage 3: Question asked">
+            <div class="hw-frame app-window">
+              <div class="app-header" aria-hidden="true">
+                <p class="app-pill is-listening is-live"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></p>
+                <span class="app-header-controls">
+                  <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg></span><span class="app-start-label">Pause</span></span>
+                  <span class="app-stop"><svg viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+                  <span class="app-win-btn"><svg viewBox="0 0 16 16"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+                </span>
+              </div>
+              <div class="app-window-body">
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+                  <p class="app-transcript">Tell me about yourself.</p>
+                  <p class="app-question">“Tell me about yourself.” <span class="hw-thread-tag"><span class="hw-diamond" aria-hidden="true"></span>The thread, live</span></p>
+                </section>
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">still listening</span></div>
+                  <p class="app-context">No points yet — the app does not answer a question it has only half heard.</p>
+                </section>
+              </div>
+            </div>
+            <div class="hw-cap">
+              <p class="hw-cap-count">Stage 3 of 5 · Question asked</p>
+              <h3 class="hw-cap-title">The question is asked</h3>
+              <p class="hw-cap-body">With a headset on, the app captures the interviewer’s audio — WASAPI loopback, the same channel your meeting app plays through — and transcribes it as it streams. You hear the question; the app hears it too.</p>
+              <p class="hw-cap-fear">Your microphone is never recorded. There is no recording of you — nothing to keep, leak or delete.</p>
+              <p class="hw-cap-clock">The live seconds · minutes run only while you are listening</p>
+            </div>
+          </section>
+
+          <section class="hw-panel" data-panel="3" aria-label="Stage 4: Pause detected">
+            <div class="hw-frame app-window">
+              <div class="app-header" aria-hidden="true">
+                <p class="app-pill is-thinking"><span class="app-pill-dot"></span><span>Question detected</span><span class="app-meter"><i></i></span></p>
+                <span class="app-header-controls">
+                  <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16"><rect x="3.8" y="3" width="2.8" height="10" rx="1" fill="currentColor"/><rect x="9.4" y="3" width="2.8" height="10" rx="1" fill="currentColor"/></svg></span><span class="app-start-label">Pause</span></span>
+                  <span class="app-stop"><svg viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+                  <span class="app-win-btn"><svg viewBox="0 0 16 16"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+                </span>
+              </div>
+              <div class="app-window-body">
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+                  <p class="app-question">“Tell me about yourself.”</p>
+                </section>
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">the pause, detected</span></div>
+                  <p class="app-thinking">● ● ●</p>
+                  <p class="app-context">Multi-part questions are merged into one before anything is built from them.</p>
+                </section>
+              </div>
+            </div>
+            <div class="hw-cap">
+              <p class="hw-cap-count">Stage 4 of 5 · Pause detected</p>
+              <h3 class="hw-cap-title">The pause is detected</h3>
+              <p class="hw-cap-body">The app waits for the question to actually end — a real pause, not the first breath — and merges multi-part questions into one. Only then does it reach for the bank and the confirmed facts behind this question.</p>
+              <p class="hw-cap-fear">Nothing is answered from half a question. A breath mid-sentence changes nothing.</p>
+              <p class="hw-cap-clock">The live seconds · the meter runs while you listen — it never ran during preparation</p>
+            </div>
+          </section>
+
+          <section class="hw-panel" data-panel="4" aria-label="Stage 5: Three points, sourced">
+            <div class="hw-frame app-window">
+              <div class="app-header" aria-hidden="true">
+                <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
+                <span class="app-header-controls">
+                  <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z" fill="currentColor"/></svg></span><span class="app-start-label">Start listening</span></span>
+                  <span class="app-stop"><svg viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+                  <span class="app-win-btn"><svg viewBox="0 0 16 16"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+                </span>
+              </div>
+              <div class="app-window-body">
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+                  <p class="app-question">“Tell me about yourself.”</p>
+                </section>
+                <section class="app-card">
+                  <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">prepared</span></div>
+                  <div class="hw-bullets">
+                    <button type="button" class="hw-bullet" data-bullet="b1" data-facts="f1 f2" aria-pressed="false">
+                      <span class="app-dot" aria-hidden="true"></span>
+                      <span class="hw-bullet-main"><span class="hw-bullet-text">Five years building web products — most recently leading a small team on a customer-facing tool.</span><span class="hw-bullet-src">Built from facts 1 + 2</span></span>
+                    </button>
+                    <button type="button" class="hw-bullet" data-bullet="b2" data-facts="f4" aria-pressed="false">
+                      <span class="app-dot" aria-hidden="true"></span>
+                      <span class="hw-bullet-main"><span class="hw-bullet-text">I start from the outcome, then the trade-off I made to get there.</span><span class="hw-bullet-src">Built from fact 4</span></span>
+                    </button>
+                    <button type="button" class="hw-bullet" data-bullet="b3" data-facts="f5" aria-pressed="false">
+                      <span class="app-dot" aria-hidden="true"></span>
+                      <span class="hw-bullet-main"><span class="hw-bullet-text">What draws me here is this team’s focus on honest, useful software.</span><span class="hw-bullet-src">Built from fact 5</span></span>
+                    </button>
+                  </div>
+                </section>
+              </div>
+            </div>
+            <div class="hw-cap">
+              <p class="hw-cap-count">Stage 5 of 5 · Three points, sourced</p>
+              <h3 class="hw-cap-title">Three points, sourced</h3>
+              <p class="hw-cap-body">Three short points appear, one at a time — speakable, not a script. Every point stands on confirmed facts. Tap a point and watch its facts light up: that closed loop is the entire method.</p>
+              <div class="hw-facts" role="group" aria-label="The confirmed facts behind the points">
+                <p class="hw-facts-label">The confirmed facts</p>
+                <button type="button" class="hw-fact" data-fact="f1" data-bullets="b1" aria-pressed="false"><span class="hw-fact-num">1</span><span>Five years building web products</span></button>
+                <button type="button" class="hw-fact" data-fact="f2" data-bullets="b1" aria-pressed="false"><span class="hw-fact-num">2</span><span>Led a small team on a customer-facing tool</span></button>
+                <button type="button" class="hw-fact" data-fact="f3" data-bullets="" aria-pressed="false"><span class="hw-fact-num">3</span><span>Rescued a slipping launch with staged rollouts</span></button>
+                <button type="button" class="hw-fact" data-fact="f4" data-bullets="b2" aria-pressed="false"><span class="hw-fact-num">4</span><span>Works outcome-first; trade-offs written down</span></button>
+                <button type="button" class="hw-fact" data-fact="f5" data-bullets="b3" aria-pressed="false"><span class="hw-fact-num">5</span><span>Drawn to teams that ship carefully and review honestly</span></button>
+                <p class="hw-facts-hint">Tap a fact to see its point — or a point to see its facts. Fact 3 stands behind the bank’s second question; it is simply not in this answer.</p>
+              </div>
+              <p class="hw-cap-fear">Nothing here is invented: if a fact was never confirmed, no point can stand on it — that is the whole design.</p>
+              <p class="hw-cap-clock">The live seconds · then the words are yours — the app goes quiet</p>
+              <span class="visually-hidden" id="hw-trace-live" aria-live="polite"></span>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="hw-controls">
+          <button type="button" class="btn btn-secondary btn-small" id="hw-prev">← Prev</button>
+          <p class="hw-progress" id="hw-progress">Stage 1 of 5 — Fact confirmed</p>
+          <button type="button" class="btn btn-secondary btn-small" id="hw-next">Next →</button>
+          <span class="visually-hidden" id="hw-live" aria-live="polite"></span>
+        </div>
+      </div>
+      <p class="hw-proof">Simulated from the demo’s own sample data — the same facts, question and points the live demo uses. In the app, this thread runs on your confirmed facts, not on samples.</p>
+    </div>
+  </section>
+
+  <section class="section" id="faded" aria-labelledby="faded-title">
+    <div class="container">
+      <p class="eyebrow">Your turn</p>
+      <h2 id="faded-title">The pause is detected. What appears?</h2>
+      <p class="section-intro">Same interview, a minute later. You are mid-answer when the interviewer cuts in with a fast follow-up — and the app detects that too. This time the last stage is yours to predict: when the next answer appears, what does it look like?</p>
+      <div class="hw-faded" id="hw-faded">
+        <div class="hw-opts" role="group" aria-label="Your prediction">
+          <button type="button" class="hw-opt" data-correct="false" aria-pressed="false"><span class="hw-opt-key" aria-hidden="true">A</span><span>The same three points, unchanged</span></button>
+          <button type="button" class="hw-opt" data-correct="true" aria-pressed="false"><span class="hw-opt-key" aria-hidden="true">B</span><span>A shorter answer — fewer points, tighter lines</span></button>
+          <button type="button" class="hw-opt" data-correct="false" aria-pressed="false"><span class="hw-opt-key" aria-hidden="true">C</span><span>Nothing — the app stops listening</span></button>
+        </div>
+        <p class="hw-faded-actions"><button type="button" class="btn btn-primary" id="hw-reveal-btn">Reveal what happens</button></p>
+        <div class="hw-reveal" id="hw-reveal">
+          <p class="hw-faded-feedback" id="hw-faded-feedback" aria-live="polite">The next answer shortens — first Concise, then Rapid — so a fast follow-up never leaves you reading a long answer while the interviewer is already talking.</p>
+          <div class="hw-faded-frames">
+            <div class="hw-frame app-window">
+              <div class="app-window-bar" aria-hidden="true">
+                <span class="app-window-title">Cut in once — Concise</span>
+                <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+              </div>
+              <div class="app-window-body">
+                <ul class="app-answer hw-answer-sm">
+                  <li><span class="app-dot"></span><span>Five years building web products, most recently leading a small team.</span></li>
+                  <li><span class="app-dot"></span><span>Drawn here by this team’s focus on honest, useful software.</span></li>
+                </ul>
+              </div>
+            </div>
+            <span class="hw-faded-arrow" aria-hidden="true">→</span>
+            <div class="hw-frame app-window">
+              <div class="app-window-bar" aria-hidden="true">
+                <span class="app-window-title">Cut in again — Rapid</span>
+                <span class="app-controls"><i>—</i><i>▢</i><i>✕</i></span>
+              </div>
+              <div class="app-window-body">
+                <ul class="app-answer hw-answer-sm">
+                  <li><span class="app-dot"></span><span>Five years building web products — and this team’s focus is why I’m here.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <p class="hw-faded-note">In the app, the shortening is automatic — Concise, then Rapid. Reset it any time with <kbd>Ctrl+Alt+R</kbd>; the full answer is one shortcut away. Staged here from the demo’s own answer sets — simulated.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" id="boundaries" aria-labelledby="boundaries-title">
+    <div class="container">
+      <p class="eyebrow">What happens when…</p>
+      <h2 id="boundaries-title">When reality interrupts the script</h2>
+      <p class="section-intro">The trace above is the clean run. Interviews are not clean. Four things that actually happen — and what the app does about each:</p>
+      <div class="hw-bounds">
+        <article class="hw-bound">
+          <h3>The interviewer interrupts</h3>
+          <p>The next answer shortens automatically — Concise, then Rapid — so you can keep up with a fast follow-up. Reset the shortening any time with <kbd>Ctrl+Alt+R</kbd>, and the full points come back.</p>
+        </article>
+        <article class="hw-bound">
+          <h3>You stop early</h3>
+          <p>Stopping is yours: press stop and the app stops listening, there and then. The report is compiled from what actually happened — a short interview is still a complete record.</p>
+        </article>
+        <article class="hw-bound">
+          <h3>The minutes question</h3>
+          <p>Minutes run only while you are live and listening. The Trial gives you 30 live minutes, once, for the life of the account. Pro gives you 600 per billing period. Practise and preparation never touch them.</p>
+        </article>
+        <article class="hw-bound">
+          <h3>Afterwards</h3>
+          <p>The report lists the questions asked, the suggestions shown and what to prepare next — no scores, no hiring predictions. It stays on your PC by default, kept 14 days on Trial and 365 on Pro.</p>
+          <p><a href="privacy.html">The full data boundary — Privacy &amp; ethics</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="first-run" aria-labelledby="onboard-title">
     <div class="container">
       <div class="two-col">
         <div>
           <p class="eyebrow">First run</p>
-          <h2 id="onboard-title">Your first hour with the app</h2>
+          <h2 id="onboard-title">From install to interview, once</h2>
+          <h3>Before the day</h3>
           <ol class="numbered">
             <li><strong>Install</strong> the Windows app (per-user, no admin needed).</li>
             <li><strong>Sign in</strong> in your browser — Google, Microsoft, or an email link.</li>
             <li><strong>Import your resume</strong> and confirm the facts it finds.</li>
             <li><strong>Add the role</strong> and the job description.</li>
             <li><strong>Run preparation</strong> and get your 50–150 question bank.</li>
+          </ol>
+          <h3>On the day</h3>
+          <ol class="numbered">
             <li><strong>Practise</strong> a few questions out loud, in Answer or Coach Mode.</li>
             <li><strong>Go live</strong> — only where you are allowed to — with 30 free Trial minutes.</li>
           </ol>

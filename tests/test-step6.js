@@ -33,13 +33,15 @@ function check(name, ok, detail) {
   check("pipe-list: 640px 1fr rule exists after the base rule", base > -1 && re > base,
     `base@${base} reassert@${re}`);
 }
-// A2. mini-tag wraps at <=640px, after the base rule.
+// A2. Step 63 re-pin (deliberate): the mini-tag rules served the old
+// how-it-works Profile mini card. Step 63 rebuilt that page and the
+// whole mini family (.mini-*, .timeline, .tl-dot, .steps-expanded)
+// was retired as dead code — the census in test-step17 owns them now.
+// What this block pins today: they stay gone.
 {
-  const base = css.indexOf(".mini-tag { margin-left: auto;");
-  const re = css.indexOf("@media (max-width: 640px) { .mini-tag { white-space: normal; text-align: right; } }");
-  check("mini-tag: base is nowrap", css.includes(".mini-tag { margin-left: auto;") && css.includes("white-space: nowrap;"));
-  check("mini-tag: 640px wrap rule exists after the base rule", base > -1 && re > base,
-    `base@${base} wrap@${re}`);
+  check("mini-tag: retired with the old timeline (Step 63 re-pin)",
+    !/\.mini-tag\s*\{/.test(css) && !/\.mini-qgrid\s*\{/.test(css)
+    && !/\.steps-expanded\s*\{/.test(css) && !/\.tl-dot\s*\{/.test(css));
 }
 // A3. stacked-cards table block.
 check("tables: thead hidden at <=640px",

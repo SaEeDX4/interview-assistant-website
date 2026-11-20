@@ -554,11 +554,6 @@ code { overflow-wrap: anywhere; }
 .numbered { margin: 0 0 16px; padding-left: 24px; display: grid; gap: 8px; color: var(--muted); }
 .numbered li::marker { color: var(--accent); font-weight: 700; }
 .numbered strong { color: var(--text); }
-.steps-expanded { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
-.steps-expanded .card { padding: 28px; }
-.steps-expanded h2 { font-size: 24px; }
-.steps-expanded p { color: var(--muted); }
-.steps-expanded p strong { color: var(--text); }
 .badge {
   display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase; padding: 4px 12px; border-radius: 8px;
@@ -1303,41 +1298,15 @@ body.cta-visible { padding-bottom: 96px; }
   display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; margin-top: 1px;
 }
 
-/* Connected step timeline (how-it-works.html) */
-.timeline { position: relative; margin: 8px 0 32px; padding-left: 40px; }
-.timeline::before {
-  content: ""; position: absolute; left: 14px; top: 14px; bottom: 14px; width: 2px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
-}
+/* Reveal hook (.tl-item stays in app.js's reveal selector list).
+   Step 63: the old how-it-works connected timeline and its mini
+   frames were retired with the page's rebuild — the dead-code
+   census (test-step17) owns that family now. */
 .tl-item { position: relative; padding: 0 0 32px; }
 .tl-item:last-child { padding-bottom: 0; }
-.tl-dot {
-  position: absolute; left: -40px; top: 2px; width: 30px; height: 30px;
-  border-radius: 50%; display: grid; place-items: center;
-  background: var(--surface-2); border: 2px solid var(--accent);
-  color: var(--focus); font-size: 13px; font-weight: 800;
-}
 .tl-item h2 { font-size: 22px; font-weight: 600; line-height: 1.3; margin-bottom: 12px; }
 .tl-item h3 { margin-bottom: 12px; }
 .tl-item p { color: var(--muted); }
-.tl-mini { margin-top: 16px; }
-.mini { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; max-width: 560px; }
-.mini-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
-.mini-row:last-child { border-bottom: 0; }
-.mini-avatar { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--focus); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
-.mini-check { flex: none; width: 20px; height: 20px; border-radius: 50%; background: rgba(52,211,153,.16); color: var(--good); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
-.mini-tag { margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
-/* Step 6: on phones the Profile card is ~282px wide and the tag
-   ("Example · confirmed by you", ~190px nowrap) overflows the card and is
-   clipped at the viewport edge. Let it wrap to two lines, right-aligned. */
-@media (max-width: 640px) { .mini-tag { white-space: normal; text-align: right; } }
-.mini-qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.mini-q { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; line-height: 1.4; }
-.mini-q .tag { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 4px; }
-.mini-bullets { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 15px; }
-.mini-bullets li { display: flex; gap: 8px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
-.mini-bullets .num { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-soft); color: var(--focus); display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
-@media (max-width: 640px) { .mini-qgrid { grid-template-columns: 1fr; } }
 
 /* Demo stage (demo.html) */
 .demo-stage {
@@ -1629,6 +1598,169 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   /* Step 59: on the chaptered page, reduced motion also means
      instant anchor landings — its jumps are the longest on the site. */
   html:has(.feat-nav) { scroll-behavior: auto; }
+}
+
+/* ---------- Step 63: How It Works — "One Question, Traced" ----------
+   The page rebuilt around one worked example (Concept 1): a myth
+   strip opens (refutation first), then a guided 5-stage stepper
+   follows one confirmed fact through the bank and the live moment
+   until it returns as three points — each point tappable back to
+   the facts it stands on, and each fact back to its point. A faded
+   second question (predict, then reveal) and four boundary cards
+   close the mechanism; the first-run content survives once,
+   compressed. All state changes are visibility swaps of
+   pre-rendered panels in one grid cell (the Step 23 fixed stage):
+   the stepper never changes height, focus and scroll never move,
+   and with JS off the five panels stack as numbered small
+   multiples — the static form the comprehension research says
+   teaches as well. Motion is the house law only: 250/300ms on
+   cubic-bezier(.2,.7,.3,1) for entrances and the trace's lit
+   states, 150ms ease for hovers; the global reduced-motion rule
+   stills all of it, so this block adds no media query of its own. */
+/* Nothing on this page changes height unattended (the stepper is a
+   fixed stage; the one expansion — the faded reveal — is a click
+   below the visitor's own button), so scroll anchoring has nothing
+   to protect: off, page-scoped, the Step 58/61 pattern. */
+body:has(.hw-trace) { overflow-anchor: none; }
+
+/* Hero clock strip — Concept 2's discipline, as three captions. */
+.hw-clocks { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+.hw-clock { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.hw-clock strong { color: var(--text); }
+
+/* The myth strip — the visitor's model, named then retired. */
+.hw-myths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+.hw-myth { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+.hw-myth-say { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.02em; color: var(--text); margin: 0 0 12px; }
+.hw-myth-truth { color: var(--muted); margin: 0 0 16px; }
+.hw-myth-links { display: grid; gap: 8px; margin: 0; font-size: 14px; line-height: 1.5; }
+
+/* The trace — one card, one stage, one thread. The card carries a
+   faint accent wash at its head so the mechanism reads as the
+   page's centrepiece, not another text block. */
+.hw-trace { background: linear-gradient(180deg, rgba(124, 108, 255, .06), rgba(124, 108, 255, 0) 160px), var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-top: 32px; box-shadow: var(--shadow-card); }
+.hw-nodes { position: relative; display: flex; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
+.hw-nodes-line { position: absolute; left: 22px; right: 22px; top: 22px; height: 2px; background: var(--border); border-radius: 2px; }
+.hw-nodes-fill { display: block; height: 100%; background: var(--accent); border-radius: 2px; transform: scaleX(0); transform-origin: left center; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+.hw-node { position: relative; display: grid; justify-items: center; gap: 8px; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; color: var(--muted); }
+.hw-node-num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 600; line-height: 1; color: var(--muted); transition: color .15s ease, background-color .25s cubic-bezier(.2,.7,.3,1), border-color .25s cubic-bezier(.2,.7,.3,1); }
+.hw-node:hover .hw-node-num { color: var(--text); border-color: var(--accent); }
+.hw-node.is-done .hw-node-num { color: var(--accent-light); border-color: var(--accent); }
+.hw-node.is-active .hw-node-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.hw-node-name { font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+.hw-node.is-active .hw-node-name { color: var(--text); }
+.hw-stage { display: grid; gap: 16px; }
+.hw-trace.is-live .hw-stage { gap: 0; }
+.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; min-width: 0; }
+.hw-trace.is-live .hw-panel { grid-area: 1 / 1; }
+.hw-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.hw-frame { min-width: 0; }
+
+/* Inside the frames — fact rows and bank rows share one row shape;
+   the thread marker (a small rotated square, the accent diamond)
+   rides the traced element from stage to stage. */
+.hw-diamond { flex: none; display: inline-block; width: 7px; height: 7px; border-radius: 2px; background: var(--accent); transform: rotate(45deg); }
+.app-window .hw-diamond { background: var(--app-accent); }
+.hw-factrow, .hw-qrow { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin: 0 0 8px; background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px; font-size: 14px; line-height: 1.4; color: var(--app-text); }
+.hw-factrow:last-child, .hw-qrow:last-child { margin-bottom: 0; }
+.hw-factrow.is-thread, .hw-qrow.is-thread { border-color: var(--app-accent); }
+.hw-check { flex: none; color: var(--app-listening); font-weight: 700; }
+.hw-thread-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--app-accent-soft); color: var(--app-accent); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; line-height: 1; white-space: nowrap; }
+.app-question .hw-thread-tag { margin-left: 8px; vertical-align: middle; }
+.hw-tag { margin-left: auto; flex: none; font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--app-faint); text-align: right; }
+.hw-tag.is-verified { color: var(--app-accent); }
+
+/* Stage captions — count, one idea, the fear answered at the step
+   where it arises, and the clock line that prices the stage. */
+.hw-cap { min-width: 0; }
+.hw-cap-count { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 8px; }
+.hw-cap-title { margin: 0 0 12px; }
+.hw-cap-body { color: var(--muted); margin: 0 0 16px; }
+.hw-cap-fear { border-left: 2px solid var(--accent-2); padding-left: 16px; color: var(--text); font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
+.hw-cap-clock { font-size: 13px; line-height: 1.5; color: var(--muted-2); margin: 0; }
+
+/* Stage 5 — the trace closes its loop. Points live in the window
+   (the app's blue); the source card beside it speaks the same
+   tokens, so one tap lights one colour on both sides of the link.
+   Lit = accent border + wash + ring; the rest dim to .45. Every
+   change is a 250ms state transition on the house curve —
+   transform/opacity/colour only, so nothing ever re-flows. */
+.hw-bullets { display: grid; gap: 12px; }
+.hw-bullet { display: flex; gap: 8px; align-items: flex-start; width: 100%; text-align: left; background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 12px; padding: 12px 16px; cursor: pointer; font-family: inherit; color: var(--app-text); transition: border-color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1), opacity .25s cubic-bezier(.2,.7,.3,1); }
+.hw-bullet:hover { border-color: var(--app-accent); }
+.hw-bullet .app-dot { margin-top: 8px; transition: transform .25s cubic-bezier(.2,.7,.3,1); }
+.hw-bullet.is-active { border-color: var(--app-accent); background: var(--app-surface-3); box-shadow: 0 0 0 1px var(--app-accent); }
+.hw-bullet.is-lit { border-color: var(--app-accent); background: var(--app-surface-3); box-shadow: 0 0 0 1px var(--app-accent), 0 8px 24px rgba(0, 0, 0, .28); }
+.hw-bullet.is-active .app-dot, .hw-bullet.is-lit .app-dot { transform: scale(1.4); }
+.hw-bullet.is-lit .hw-bullet-src { color: var(--app-accent); }
+.hw-bullet.is-dim { opacity: .45; }
+.hw-bullet-main { display: grid; gap: 4px; min-width: 0; }
+.hw-bullet-text { font-size: 19px; line-height: 1.4; }
+.hw-bullet-src { font-size: 12px; line-height: 1.5; color: var(--app-faint); transition: color .25s cubic-bezier(.2,.7,.3,1); }
+.hw-bullet.is-active .hw-bullet-src { color: var(--app-accent); }
+.hw-facts { background: var(--app-bg); border: 1px solid var(--app-border); border-radius: 12px; padding: 16px; margin: 0 0 16px; font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; }
+.hw-facts-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--app-faint); line-height: 1.4; margin: 0 0 8px; }
+.hw-fact { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--app-surface); border: 1px solid var(--app-border); border-radius: 8px; padding: 8px 12px; margin: 0 0 8px; cursor: pointer; font-family: inherit; font-size: 14px; line-height: 1.4; color: var(--app-text); transition: opacity .25s cubic-bezier(.2,.7,.3,1), border-color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
+.hw-fact:last-of-type { margin-bottom: 0; }
+.hw-fact:hover { border-color: var(--app-accent); }
+.hw-fact-num { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: var(--app-surface-2); border: 1px solid var(--app-border); font-size: 12px; font-weight: 700; line-height: 1; color: var(--app-dim); transition: color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1), border-color .25s cubic-bezier(.2,.7,.3,1); }
+.hw-fact.is-lit { border-color: var(--app-accent); background: var(--app-accent-soft); box-shadow: 0 0 0 1px var(--app-accent), 0 8px 24px rgba(0, 0, 0, .28); }
+.hw-fact.is-lit .hw-fact-num { background: var(--app-accent); border-color: var(--app-accent); color: var(--app-text); }
+.hw-fact.is-active { border-color: var(--app-accent); box-shadow: 0 0 0 1px var(--app-accent); }
+.hw-fact.is-dim { opacity: .45; }
+.hw-facts-hint { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 12px 0 0; }
+.hw-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; }
+.hw-progress { flex: 1 1 auto; text-align: center; margin: 0; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--muted); }
+.hw-proof { color: var(--muted-2); font-size: 14px; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 16px; margin: 32px 0 0; }
+
+/* The faded second question — predict first, then reveal. At rest
+   (and with JS off) the answer is simply there, as two small
+   multiples; JS arms the prediction by hiding the reveal until it
+   is earned. */
+.hw-faded { margin-top: 32px; }
+.hw-opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.hw-opt { display: flex; gap: 12px; align-items: flex-start; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; font-family: inherit; font-size: 16px; line-height: 1.5; color: var(--text); transition: border-color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1), opacity .25s cubic-bezier(.2,.7,.3,1); }
+.hw-opt:hover { border-color: var(--accent); }
+.hw-opt-key { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); font-size: 13px; font-weight: 700; line-height: 1; color: var(--muted); transition: color .25s cubic-bezier(.2,.7,.3,1), background-color .25s cubic-bezier(.2,.7,.3,1), border-color .25s cubic-bezier(.2,.7,.3,1); }
+.hw-opt.is-chosen { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
+.hw-opt.is-chosen .hw-opt-key { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.hw-opt[disabled] { cursor: default; }
+.hw-opt[disabled]:not(.is-chosen) { opacity: .55; }
+.hw-faded.is-revealed .hw-opt[data-correct="true"] { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+.hw-faded.is-revealed .hw-opt[data-correct="true"] .hw-opt-key { background: var(--good); border-color: var(--good); color: var(--bg); }
+.hw-faded.is-revealed .hw-opt.is-chosen[data-correct="false"] { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+.hw-faded-actions { margin: 24px 0 0; }
+#hw-reveal-btn[hidden] { display: none; }
+.hw-faded.is-armed .hw-reveal { display: none; }
+.hw-faded.is-revealed .hw-reveal { display: block; animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+.hw-reveal { margin-top: 24px; }
+.hw-faded-feedback { font-size: 17px; line-height: 1.6; color: var(--text); margin: 0 0 16px; }
+.hw-faded-frames { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 16px; align-items: center; }
+.hw-faded-arrow { font-size: 22px; line-height: 1; color: var(--accent); }
+.hw-answer-sm li { font-size: 15px; }
+.hw-faded-note { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 16px 0 0; }
+
+/* Boundary cards — the mechanism under reality. */
+.hw-bounds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+.hw-bound { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+.hw-bound h3 { margin: 0 0 12px; }
+.hw-bound p { color: var(--muted); margin: 0 0 12px; }
+.hw-bound p:last-child { margin-bottom: 0; }
+
+@media (max-width: 860px) {
+  .hw-panel { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .hw-myths { grid-template-columns: minmax(0, 1fr); }
+  .hw-opts { grid-template-columns: minmax(0, 1fr); }
+  .hw-bounds { grid-template-columns: minmax(0, 1fr); }
+  .hw-faded-frames { grid-template-columns: minmax(0, 1fr); }
+  .hw-faded-arrow { transform: rotate(90deg); justify-self: center; }
+}
+@media (max-width: 640px) {
+  .hw-trace { padding: 20px; }
+  /* Phones keep the numbered journey line; the stage name rides
+     in the progress line under the stage instead. */
+  .hw-node-name { display: none; }
+  .hw-progress { order: 3; flex-basis: 100%; }
 }
 
 /* Step 53 — Support contact. Step 53 put the channel on the page
