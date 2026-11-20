@@ -1626,25 +1626,47 @@ body:has(.hw-trace) { overflow-anchor: none; }
 /* Step 68 — the hero thread map (Concept A): the trace's own
    instrument, drawn once at hero scale. The 39-word lead became
    a kicker line plus this figure — three numbered stations on
-   the thread line (the stepper's .hw-nodes-line geometry,
-   re-aimed at the outer discs' centres: the stations are equal
-   thirds, so the line runs first-centre to last-centre), the
-   real sample fact riding station 1 with its thread tag, the
-   question it earned at station 2, and the page's own thread
-   line as the caption. The arrows are the causality the lead
-   used to spell out. Static — no buttons, no JS; a map of the
+   the thread line, the real sample fact riding station 1 with
+   its thread tag, the question it earned at station 2, the
+   three points themselves at station 3 (Step 69: the station
+   shipped empty; it now carries the thread's destination, the
+   canonical SAMPLES texts, the same three points the trace
+   lights up at stage 5), and the page's own thread line as
+   the caption. The arrows are the causality the lead used to
+   spell out. Static — no buttons, no JS; a map of the
    instrument below, not a second one. On phones the map turns
    vertical: the line runs down the left edge through the
-   discs, the way the stepper itself reads (rules at 640px). */
+   discs, the way the stepper itself reads (rules at 640px).
+   Step 69 — the line's construction: Step 68 drew it as one
+   span whose ends were percentages of the track, carried by a
+   single override rule beating the stepper's base rule; if
+   that one rule is missing (the owner's live screenshot,
+   minutes after the push, showed exactly the base-rule
+   fallback — a near-full-width line), the geometry fails
+   silently. The line is now drawn as connector segments
+   anchored to the nodes themselves (the Step 64 standard:
+   geometry derived from the discs, not the track): each
+   station except the last grows a segment from its own disc's
+   centre exactly one station-width onward (downward on
+   phones, by its own height plus the gap), so the ends land
+   on the next disc's centre by construction, whatever the
+   track's width. The segments sit behind the discs (each
+   node is its own stacking context, segment at z-index -1),
+   so the visible line runs edge to edge, centre to centre
+   underneath — the same picture, with no single point of
+   failure. */
 .hw-thread-kicker { color: var(--muted); font-size: 18px; line-height: 1.6; max-width: 68ch; margin: 0; }
 .hw-threadmap { margin: 24px 0 0; }
 .hw-tm-track { position: relative; display: flex; align-items: flex-start; }
-.hw-threadmap .hw-nodes-line { left: 16.6667%; right: 16.6667%; }
-.hw-tm-node { flex: 1 1 0; min-width: 0; display: grid; justify-items: center; gap: 8px; padding: 0 8px; text-align: center; }
+.hw-tm-node { flex: 1 1 0; min-width: 0; display: grid; justify-items: center; gap: 8px; padding: 0 8px; text-align: center; position: relative; z-index: 0; }
+.hw-tm-node:not(:last-child)::after { content: ""; position: absolute; z-index: -1; top: 21px; left: 50%; width: 100%; height: 2px; background: var(--border); border-radius: 2px; }
 .hw-tm-disc { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 600; line-height: 1; color: var(--muted); }
 .hw-tm-disc.is-thread { color: var(--accent-light); border-color: var(--accent); }
 .hw-tm-name { font-size: 12px; font-weight: 600; line-height: 1.4; color: var(--text); }
 .hw-tm-chip { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.4; color: var(--text); }
+.hw-tm-points { display: flex; flex-direction: column; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; text-align: left; }
+.hw-tm-point { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--text); }
+.hw-tm-point::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-top: 8px; }
 .hw-threadmap .hw-tm-caption { justify-content: center; margin-top: 16px; }
 
 /* Hero clock strip — Concept 2's discipline, as three captions.
@@ -1897,9 +1919,13 @@ body:has(.hw-trace) { overflow-anchor: none; }
   .hw-clocks { grid-template-columns: minmax(0, 1fr); }
   /* Step 68: the thread map turns vertical — the line runs
      down the left edge through the discs, stations stacked
-     with the name and chip beside each disc. */
+     with the name and chip beside each disc.
+     Step 69: the segments turn with it — each runs from its
+     own disc's centre down its own height plus the 20px gap,
+     landing on the next disc's centre at any station height
+     (station 3 is taller now that it carries the points). */
   .hw-tm-track { flex-direction: column; gap: 20px; }
-  .hw-threadmap .hw-nodes-line { left: 22px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
+  .hw-tm-node:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 20px); }
   .hw-tm-node { grid-template-columns: 44px minmax(0, 1fr); justify-items: start; text-align: left; padding: 0; }
   .hw-tm-disc { grid-row: 1 / span 2; }
   .hw-tm-chip { justify-content: flex-start; }

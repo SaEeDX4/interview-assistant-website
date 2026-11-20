@@ -23,6 +23,11 @@
    internal gaps, clock + map geometry, JS-off completeness,
    zero console errors) is pinned by the Playwright audit kept
    with the report in step68-hero-fears/audit.py.
+   Step 69 amendment (owner-flagged on the live page): the
+   hero takes the standard container, station 3 carries the
+   three points, and the map's line is rebuilt as node-
+   anchored segments — two checks below are re-pinned with
+   in-place notes, and the new pins live in test-step69.js.
    Usage: node test-step68.js   (exit 0 = all pass) */
 const fs = require("fs");
 const path = require("path");
@@ -61,8 +66,13 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
 /* ---------- 1. The word-count ceiling ---------- */
 {
   const hero = blockWords(heroSlice), myths = blockWords(mythsSlice);
-  check("words: the two blocks shrank (static count, audit-calibrated)",
-    hero + myths <= 245, `hero=${hero} myths=${myths} total=${hero + myths}`);
+  /* Step 69 re-pin (owner order): station 3 of the thread map
+     shipped empty; it now carries the thread's destination —
+     the three canonical SAMPLES points, verbatim (+41 words,
+     counted exactly). The ceiling rises by precisely those 41
+     (245 + 41 = 286) so the text still cannot quietly grow. */
+  check("words: the two blocks shrank (static count, audit-calibrated; Step 69: +41 for station 3's points)",
+    hero + myths <= 286, `hero=${hero} myths=${myths} total=${hero + myths}`);
   check("words: the 39-word lead paragraph is gone",
     !html.includes('class="lead"')
     && !html.includes("one fact the candidate confirmed, the question that fact earned"));
@@ -96,10 +106,19 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
   check("clocks: Step 67's grid survives (the tiles evolve it, geometry unchanged)",
     block.includes(".hw-clocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 24px;")
     && block.includes(".hw-clock { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }"));
-  check("map css: the line is re-aimed at the outer discs' centres; phones turn it vertical",
-    block.includes(".hw-threadmap .hw-nodes-line { left: 16.6667%; right: 16.6667%; }")
+  /* Step 69 re-pin: the Step 68 line was one span whose ends
+     were percentages of the track, carried by a single
+     override rule over the stepper's base rule — the owner's
+     live screenshot showed the base-rule fallback (a near
+     full-width line) when that one rule did not apply. The
+     line is now node-anchored connector segments (the Step 64
+     standard), correct by construction; the span is gone from
+     the map (the stepper's own span is untouched). */
+  check("map css: Step 69 — node-anchored segments replace the track-percentage span; phones turn them vertical",
+    block.includes(".hw-tm-node:not(:last-child)::after { content: \"\"; position: absolute; z-index: -1; top: 21px; left: 50%; width: 100%; height: 2px;")
     && block.slice(block.lastIndexOf("@media (max-width: 640px)"))
-      .includes(".hw-threadmap .hw-nodes-line { left: 22px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }"));
+      .includes(".hw-tm-node:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 20px); }")
+    && !html.includes('<span class="hw-nodes-line" aria-hidden="true"></span>'));
 }
 
 /* ---------- 3. Fears: one-line intro + verdict cards ---------- */
