@@ -68,9 +68,9 @@ deployed from this repo.
 ## Standards and tests
 
 Every standard in `standards/` is enforced by a test in `tests/`
-(37 suites, `test-step6.js` … `test-step41.js` plus the Step 46, 48,
-and 50 suites — 547 checks, all passing; the count grows with each
-step). From the repo root:
+(48 suites, `test-step6.js` … `test-step41.js` plus the Step 46, 48,
+50 and 53–64 suites — 855 checks, all passing; the count grows with
+each step). From the repo root:
 
 ```bash
 for f in tests/test-step*.js; do node "$f"; done
@@ -78,7 +78,10 @@ python3 tests/review19.py   # the Step 19 full review: suites + links + content 
 ```
 
 The DOM simulators in `tests/` (`sim-step22.js`, `sim-step23-demo.js`,
-`sim-step30-hero.js`, `sim-step41-download.js`, `sim-step48-growth.js`)
+`sim-step30-hero.js`, `sim-step41-download.js`, `sim-step48-growth.js`,
+`sim-step54-assistant.js`, `sim-step55-assistant.js`,
+`sim-step56-assistant.js`, `sim-step57-help.js`, `sim-step59-features.js`,
+`sim-step63-howitworks.js`)
 drive the real `app.js` against a stub DOM and assert behaviour,
 including reduced-motion and RTL modes.
 
