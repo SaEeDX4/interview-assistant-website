@@ -4577,7 +4577,7 @@ var IA_VARIANTS = {
    really strikes clauses and rewrites the sources line, the
    pipeline stepper steps the 15 stages, Live's Coach toggle and
    interrupt stepper swap one window's layers, the language
-   switcher swaps pre-rendered EN/FA/AR layers (the RTL flip is in
+   switcher swaps ten pre-rendered layers (the RTL flip is in
    the markup), and the bento anchor tile's meter runs only while
    the tile is on screen. Nothing here scrolls, resizes or re-flows
    the page: visibility swaps only (the Step 58 law). */
@@ -4933,10 +4933,13 @@ var IA_VARIANTS = {
     showLive(false, false);
   }
 
-  /* ---- S4: Languages — EN/FA/AR switcher, real RTL flip ----
-     The three layers are pre-rendered with their own lang/dir, so
+  /* ---- S4: Languages — ten-language switcher, real RTL flip ----
+     The ten layers are pre-rendered with their own lang/dir, so
      switching is a visibility swap: direction changes never
-     animate, and focus and scroll never move. */
+     animate, and focus and scroll never move. Step 62: on phones
+     the five extra chips wait behind the "+ 5 more" toggle (CSS
+     hides them at ≤640px until the group is expanded); wider
+     layouts render all ten chips and no toggle. */
   var langChips = qsa(".feat-lang-chip");
   var langLayers = qsa(".feat-lang-layer");
   if (langChips.length && langLayers.length) {
@@ -4956,6 +4959,15 @@ var IA_VARIANTS = {
           }
         });
       });
+    });
+  }
+  var langMore = qsa(".feat-lang-more");
+  var langChipsBox = document.getElementById("feat-lang-chips");
+  if (langMore.length && langChipsBox) {
+    langMore[0].addEventListener("click", function () {
+      var open = langChipsBox.classList.toggle("is-expanded");
+      langMore[0].setAttribute("aria-expanded", String(open));
+      langMore[0].textContent = open ? "Show less" : "+ 5 more";
     });
   }
 

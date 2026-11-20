@@ -73,9 +73,18 @@ check("simulated/sample labelling on the performing windows",
   html.includes("Simulated preview of the Windows app.")
   && html.includes("Sample facts and a sample answer.")
   && html.includes("Sample report — simulated data.")
-  && html.includes("Three of the app’s ten languages, shown with the demo’s sample question."));
-check("the 10-language LIST is not printed (no other language is named; number only)",
-  !/Spanish|French|German|Italian|Portuguese|Japanese|Korean|Chinese|Hindi|Turkish|Russian|Dutch/.test(visible));
+  /* Step 62 re-pin: the card now shows all ten languages, so the
+     labelling line says so. */
+  && html.includes("All ten of the app’s languages, shown with the demo’s sample question."));
+/* Step 62 re-pin (owner-directed): the list IS printed now — Step 62
+   established it from the app's own language registry (Windows
+   LanguageRegistry.cs + the 10 × 1,166-key i18n tables, mirrored in
+   the Android port), retiring the Step 59 "unsourced, do not print"
+   rule. The pin flips: exactly the registry's ten are named, and no
+   language outside the registry is. Full contract: test-step62.js. */
+check("the 10-language list is printed, exactly the registry's ten (Step 62)",
+  html.includes("English, Spanish, French, German, Portuguese, Italian, Arabic, Persian, Chinese (Simplified) and Hindi")
+  && !/Japanese|Korean|Turkish|Russian|Dutch/.test(visible));
 {
   const proofs = [
     "Where this comes from: the source product’s preparation pipeline — all fifteen stages, in order.",
@@ -181,10 +190,14 @@ const bullets = (seg) => [...seg.matchAll(/<li><span class="app-dot"><\/span><sp
 
 /* ---------- 5. Languages: switcher pinned to SAMPLES fa/ar ---------- */
 {
-  check("languages: three chips, English pressed at rest",
+  /* Step 62 re-pin: ten chips in global-speaker order (the main five,
+     then the five behind the phone toggle); English pressed at rest.
+     The full list/layer contract lives in test-step62.js. */
+  check("languages: ten chips, English pressed at rest (Step 62)",
     html.includes('class="chip feat-lang-chip" data-lang="en" aria-pressed="true"')
     && html.includes('data-lang="fa" aria-pressed="false"')
-    && html.includes('data-lang="ar" aria-pressed="false"'));
+    && html.includes('data-lang="ar" aria-pressed="false"')
+    && (html.match(/chip feat-lang-chip/g) || []).length === 10);
   const langSeg = (lang) => {
     const i = html.indexOf('data-layer="' + lang + '"');
     if (i < 0) return "";

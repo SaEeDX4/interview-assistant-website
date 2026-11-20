@@ -399,7 +399,7 @@
         <div class="feat-copy">
           <p class="eyebrow">3 · Languages</p>
           <h2 id="lang-title">Ten languages, in the interviewer’s language.</h2>
-          <p>Answers follow the interviewer’s language, across all ten of the app’s languages. The source docs do not state the full list of the ten, so we do not print one we cannot source; support is as listed in the app, validated language by language.</p>
+          <p>Answers follow the interviewer’s language, across all ten of the app’s languages — English, Spanish, French, German, Portuguese, Italian, Arabic, Persian, Chinese (Simplified) and Hindi, the list exactly as the app’s own language registry states it, each one validated language by language.</p>
           <h3>The worked example: right-to-left</h3>
           <p>Most of the ten run left-to-right; the hardest layout case runs the other way — so that is the case we show, rather than the easiest. Arabic and Persian render right-to-left as a first-class layout, not as an afterthought:</p>
           <div class="feat-lang-cards">
@@ -417,10 +417,18 @@
         </div>
         <div class="feat-rail">
           <div class="lang-card feat-lang-card">
-            <div class="chips" role="group" aria-label="Sample language">
+            <div class="chips feat-lang-chips" id="feat-lang-chips" role="group" aria-label="Sample language">
               <button type="button" class="chip feat-lang-chip" data-lang="en" aria-pressed="true">English</button>
-              <button type="button" class="chip feat-lang-chip" data-lang="fa" aria-pressed="false"><span lang="fa">فارسی</span></button>
+              <button type="button" class="chip feat-lang-chip" data-lang="zh" aria-pressed="false"><span lang="zh">简体中文</span></button>
+              <button type="button" class="chip feat-lang-chip" data-lang="hi" aria-pressed="false"><span lang="hi">हिन्दी</span></button>
+              <button type="button" class="chip feat-lang-chip" data-lang="es" aria-pressed="false"><span lang="es">Español</span></button>
               <button type="button" class="chip feat-lang-chip" data-lang="ar" aria-pressed="false"><span lang="ar">العربية</span></button>
+              <button type="button" class="chip feat-lang-chip feat-lang-extra" data-lang="fr" aria-pressed="false"><span lang="fr">Français</span></button>
+              <button type="button" class="chip feat-lang-chip feat-lang-extra" data-lang="pt" aria-pressed="false"><span lang="pt">Português</span></button>
+              <button type="button" class="chip feat-lang-chip feat-lang-extra" data-lang="de" aria-pressed="false"><span lang="de">Deutsch</span></button>
+              <button type="button" class="chip feat-lang-chip feat-lang-extra" data-lang="fa" aria-pressed="false"><span lang="fa">فارسی</span></button>
+              <button type="button" class="chip feat-lang-chip feat-lang-extra" data-lang="it" aria-pressed="false"><span lang="it">Italiano</span></button>
+              <button type="button" class="chip feat-lang-more" id="feat-lang-more" aria-expanded="false" aria-controls="feat-lang-chips">+ 5 more</button>
             </div>
             <div class="feat-lang-layers">
               <div class="feat-lang-layer" data-layer="en">
@@ -453,10 +461,80 @@
                 </ul>
                 <p class="feat-lang-coach" lang="ar" dir="rtl">الخبرة · النتيجة · الملاءمة — الدور الحالي ← نتيجة واحدة ← لماذا هذا الدور</p>
               </div>
+              <div class="feat-lang-layer is-hidden" data-layer="es">
+                <p class="lang-tag">Answer · Spanish — <span lang="es">Español</span></p>
+                <p class="q" lang="es">«Hábleme de usted.»</p>
+                <ul class="a" lang="es">
+                  <li><span class="num">1</span><span>Empiezo por mi puesto actual y menciono un resultado concreto que logré.</span></li>
+                  <li><span class="num">2</span><span>Después doy un ejemplo real de mi experiencia, no frases generales.</span></li>
+                  <li><span class="num">3</span><span>Y termino explicando por qué este puesto encaja conmigo.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="es">EXPERIENCIA · RESULTADO · ENCAJE — Puesto actual → un resultado → por qué este puesto</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="fr">
+                <p class="lang-tag">Answer · French — <span lang="fr">Français</span></p>
+                <p class="q" lang="fr">«Parlez-moi de vous.»</p>
+                <ul class="a" lang="fr">
+                  <li><span class="num">1</span><span>Je commence par mon poste actuel et je cite un résultat concret.</span></li>
+                  <li><span class="num">2</span><span>Puis je donne un exemple réel de mon expérience, pas des généralités.</span></li>
+                  <li><span class="num">3</span><span>Et je termine en expliquant pourquoi ce poste me convient.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="fr">EXPÉRIENCE · RÉSULTAT · ADÉQUATION — Poste actuel → un résultat → pourquoi ce poste</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="de">
+                <p class="lang-tag">Answer · German — <span lang="de">Deutsch</span></p>
+                <p class="q" lang="de">«Erzählen Sie mir etwas über sich.»</p>
+                <ul class="a" lang="de">
+                  <li><span class="num">1</span><span>Ich beginne mit meiner aktuellen Rolle und nenne ein konkretes Ergebnis.</span></li>
+                  <li><span class="num">2</span><span>Dann ein echtes Beispiel aus meiner Erfahrung, keine Allgemeinplätze.</span></li>
+                  <li><span class="num">3</span><span>Zum Schluss erkläre ich, warum diese Rolle zu mir passt.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="de">ERFAHRUNG · ERGEBNIS · PASSUNG — Aktuelle Rolle → ein Ergebnis → warum diese Rolle</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="pt">
+                <p class="lang-tag">Answer · Portuguese — <span lang="pt">Português</span></p>
+                <p class="q" lang="pt">«Fale-me sobre você.»</p>
+                <ul class="a" lang="pt">
+                  <li><span class="num">1</span><span>Começo pelo meu cargo atual e cito um resultado concreto.</span></li>
+                  <li><span class="num">2</span><span>Depois dou um exemplo real da minha experiência, nada de generalidades.</span></li>
+                  <li><span class="num">3</span><span>E termino explicando por que esta vaga combina comigo.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="pt">EXPERIÊNCIA · RESULTADO · ENCAIXE — Cargo atual → um resultado → por que esta vaga</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="it">
+                <p class="lang-tag">Answer · Italian — <span lang="it">Italiano</span></p>
+                <p class="q" lang="it">«Mi parli di lei.»</p>
+                <ul class="a" lang="it">
+                  <li><span class="num">1</span><span>Comincio dal mio ruolo attuale e cito un risultato concreto.</span></li>
+                  <li><span class="num">2</span><span>Poi un esempio reale della mia esperienza, niente discorsi generici.</span></li>
+                  <li><span class="num">3</span><span>E chiudo spiegando perché questo ruolo fa per me.</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="it">ESPERIENZA · RISULTATO · IDONEITÀ — Ruolo attuale → un risultato → perché questo ruolo</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="zh">
+                <p class="lang-tag">Answer · Chinese (Simplified) — <span lang="zh">简体中文</span></p>
+                <p class="q" lang="zh">«请介绍一下您自己。»</p>
+                <ul class="a" lang="zh">
+                  <li><span class="num">1</span><span>我先介绍我目前的职位，并说一个我取得的具体成果。</span></li>
+                  <li><span class="num">2</span><span>然后我会举一个亲身经历的真实例子，而不是泛泛而谈。</span></li>
+                  <li><span class="num">3</span><span>最后我会说明为什么这个职位适合我。</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="zh">经验 · 成果 · 契合 — 当前职位 → 一个成果 → 为什么是这个职位</p>
+              </div>
+              <div class="feat-lang-layer is-hidden" data-layer="hi">
+                <p class="lang-tag">Answer · Hindi — <span lang="hi">हिन्दी</span></p>
+                <p class="q" lang="hi">«अपने बारे में बताइए।»</p>
+                <ul class="a" lang="hi">
+                  <li><span class="num">1</span><span>मैं अपनी वर्तमान भूमिका से शुरुआत करता हूँ और एक ठोस परिणाम बताता हूँ।</span></li>
+                  <li><span class="num">2</span><span>फिर मैं अपने अनुभव का एक वास्तविक उदाहरण देता हूँ, कोई सामान्य बात नहीं।</span></li>
+                  <li><span class="num">3</span><span>अंत में मैं बताता हूँ कि यह भूमिका मेरे लिए क्यों सही है।</span></li>
+                </ul>
+                <p class="feat-lang-coach" lang="hi">अनुभव · परिणाम · उपयुक्तता — वर्तमान भूमिका → एक परिणाम → यह भूमिका क्यों</p>
+              </div>
             </div>
-            <p class="muted">Three of the app’s ten languages, shown with the demo’s sample question.</p>
+            <p class="muted">All ten of the app’s languages, shown with the demo’s sample question.</p>
           </div>
-          <p class="feat-win-note">Switch the language: English, plus the two right-to-left examples — the same question and answer re-render, and the whole card flips, structure arrows included.</p>
+          <p class="feat-win-note">Switch the language — the same question and answer re-render in each of the ten, and for Arabic and Persian the whole card flips right-to-left, structure arrows included.</p>
         </div>
       </div>
       <p class="feat-proof">Sample texts are the demo’s; in the app, answers are built from your confirmed facts in the interviewer’s language.</p>

@@ -2015,6 +2015,9 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .feat-lang-layer { grid-area: 1 / 1; min-width: 0; }
 .feat-lang-layer.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .feat-lang-coach { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 12px 0 0; }
+/* Step 62: the "+ 5 more" reveal exists only on phones — wider
+   layouts show all ten chips at once and never render the toggle. */
+.feat-lang-more { display: none; }
 /* Report — the never-contains disclosure reuses the site accordion. */
 .feat-acc { margin-top: 32px; }
 /* The bento band — one bounded summary grid; tiles are anchors, the
@@ -2061,6 +2064,11 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      left it static). Its links grow into the 44px touch family. */
   .feat-nav-link { padding-top: 12px; padding-bottom: 12px; }
   .feat-nav .btn { display: none; }
+  /* Step 62: phones lead with the five primary languages (global
+     speaker order); the other five wait behind the in-card toggle,
+     one tap away, so the card's rest footprint grows by one row. */
+  .feat-lang-more { display: block; }
+  .feat-lang-chips:not(.is-expanded) .feat-lang-extra { display: none; }
   body:has(.feat-nav) main > section.section { padding-bottom: 40px; }
   .feat-stats { grid-template-columns: repeat(2, 1fr); }
   .feat-step-nums { display: grid; grid-template-columns: repeat(5, 1fr); }

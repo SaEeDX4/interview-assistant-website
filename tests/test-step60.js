@@ -76,8 +76,11 @@ check("hero: the lead names product, platform and occasion in its first sentence
   check("languages: the stat strip makes the same claim (no pair in the label)",
     html.includes("<dt>languages, right-to-left included</dt>")
     && !visible.includes("Arabic & Persian RTL"));
-  check("languages: the switcher note frames English + the two RTL examples",
-    html.includes("English, plus the two right-to-left examples"));
+  /* Step 62 re-pin: the switcher now carries all ten languages; the
+     note frames the ten, with the RTL flip kept for Arabic/Persian. */
+  check("languages: the switcher note frames the ten + the RTL flip (Step 62)",
+    html.includes("re-render in each of the ten")
+    && html.includes("the whole card flips right-to-left, structure arrows included"));
 }
 
 /* ---------- 5. Duplications removed (facts kept, second tellings gone) ---------- */
