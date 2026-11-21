@@ -131,10 +131,20 @@
             <div class="call-main">
             <div class="call-cam" aria-hidden="true"><span class="call-cam-lens"></span>Webcam</div>
             <div class="call-tile" id="call-tile">
+              <!-- Step 75 (Avatar Step A): the live interviewer avatar —
+                   one synthetic persona, pre-rendered presence loops
+                   (idle / listening / thinking / greeting). The frame
+                   stays hidden until the Step 75 driver in avatar.js takes
+                   over; without JS, or if a loop fails to load, the
+                   glyph design below remains exactly as it was. -->
+              <div class="avatar-frame" id="avatar-frame" hidden aria-hidden="true">
+                <video class="avatar-video is-front" id="avatar-video-a" muted loop playsinline preload="auto" poster="avatar/p1-poster.webp"></video>
+                <video class="avatar-video" id="avatar-video-b" muted loop playsinline preload="none"></video>
+              </div>
               <svg class="call-avatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>
               <span class="call-wave" id="call-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
               <p class="call-caption" id="call-caption" hidden></p>
-              <span class="call-tile-label">Interviewer — hiring manager<span class="call-speaking" id="call-speaking" hidden> · speaking</span></span>
+              <span class="call-tile-label">AI interviewer — simulated<span class="call-speaking" id="call-speaking" hidden> · speaking</span></span>
             </div>
             <div class="call-self" id="call-self"><video id="cam-video" autoplay playsinline muted hidden></video><span class="call-self-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="call-tile-label">You</span><button type="button" class="cam-toggle" id="cam-toggle" aria-pressed="false" aria-label="Use your camera — your video tile" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="cam-toggle-text">Use your camera</span></button></div>
             <div class="app-window" id="app-window">
@@ -324,5 +334,6 @@
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>
+<script src="avatar.js"></script>
 </body>
 </html>

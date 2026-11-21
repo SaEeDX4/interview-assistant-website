@@ -1134,6 +1134,9 @@ var IA_VARIANTS = {
   function setSpeaking(on) {
     if (callTileEl) { callTileEl.classList.toggle("is-speaking", !!on); }
     if (callSpeakingEl) { callSpeakingEl.hidden = !on; }
+    // Step 76: when the interviewer stops speaking, the speak
+    // key the avatar driver reads from the stage clears with it.
+    if (!on && callStageEl) { callStageEl.removeAttribute("data-speak-key"); }
   }
 
   function sceneTick() {
@@ -1297,6 +1300,10 @@ var IA_VARIANTS = {
     var step = opts.pointStep || 400;
     sceneLater(t * 1000, function () {
       setSpeaking(true);
+      // Step 76: publish which line is being spoken and its
+      // staged length — the avatar driver lip-syncs to these.
+      callStageEl.setAttribute("data-speak-key", opts.clip || "");
+      callStageEl.setAttribute("data-speak-dur", String(Math.round(speech * 100) / 100));
       setScenePill("Listening", "listening");
       showLayer(questionLayers, q.idx);
       q.layer.classList.add("is-provisional");
@@ -1421,7 +1428,11 @@ var IA_VARIANTS = {
        you answer → 4 the closing question (why) → you answer →
        5 the interviewer's thanks, captioned in his tile, and the
        window's work is done — the download moment. */
-    var t = 0.3;
+    // Step 76: a visitor-started run (Start / Replay) first lets
+    // the avatar's greeting finish — the first question never
+    // talks over it. The autoplay run has no greeting to protect,
+    // and without a live avatar nothing changes.
+    var t = (opts && opts.greet && window.__avatarStepA && window.__avatarStepA.active) ? 2.75 : 0.3;
     t = sceneAsk(t, sceneQ.tell, answerLayers[0], {
       clip: "tell", speech: 1.25, pointStep: 400,
       tagOnReady: true, readyText: "3 points ready — sample."
@@ -1456,6 +1467,9 @@ var IA_VARIANTS = {
     var thanksSpeech = sceneClipDuration("thanks", 1.5);
     sceneLater((t + 0.4) * 1000, function () {
       setSpeaking(true);
+      // Step 76: the closing line is a spoken beat too.
+      callStageEl.setAttribute("data-speak-key", "thanks");
+      callStageEl.setAttribute("data-speak-dur", String(Math.round(thanksSpeech * 100) / 100));
       setScenePill("Listening", "listening");
       sceneClipPlay("thanks");
       if (callCaptionEl) {
@@ -1564,7 +1578,7 @@ var IA_VARIANTS = {
         }
       });
       if (sceneMuteBtn) { sceneMuteBtn.hidden = false; }
-      clipsReady().then(function () { playScene({ voice: true }); });
+      clipsReady().then(function () { playScene({ voice: true, greet: true }); });
     });
   }
   if (sceneMuteBtn) {
@@ -1641,7 +1655,7 @@ var IA_VARIANTS = {
   }
 
   if (sceneReplayBtn) {
-    sceneReplayBtn.addEventListener("click", function () { playScene(); });
+    sceneReplayBtn.addEventListener("click", function () { playScene({ greet: true }); });
   }
   if (sceneSkipBtn) {
     sceneSkipBtn.addEventListener("click", function () { settleScene(); });

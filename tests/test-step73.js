@@ -54,7 +54,7 @@ check("call stage with a LIVE bar, a running clock and the simulated label",
 check("webcam marker at the top of the frame",
   demo.includes('class="call-cam"') && demo.includes("Webcam"));
 check("interviewer tile: label, speaking marker, waveform",
-  demo.includes('id="call-tile"') && demo.includes("Interviewer — hiring manager") &&
+  demo.includes('id="call-tile"') && demo.includes("AI interviewer — simulated") /* Step 75 re-pin: the tile label now carries the honest AI-interviewer label */ &&
   demo.includes('id="call-speaking"') && demo.includes('id="call-wave"'));
 check("the app window sits inside the call frame, after the webcam marker",
   demo.indexOf('class="call-cam"') < demo.indexOf('id="app-window"') &&

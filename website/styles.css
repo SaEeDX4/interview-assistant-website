@@ -2788,6 +2788,37 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .feat-sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; align-items: start; margin-top: 16px; }
 .feat-sheet-grid h3 { margin: 0 0 16px; }
 .feat-sheet-grid .table-wrap { margin-bottom: 0; }
+/* Step 75 — Avatar Step A: the interviewer avatar frame. A framed
+   rectangle (12px radius, the house panel radius — never a capsule)
+   in the tile's left column, clear of the app window at every width.
+   The frame is hidden until the Step 75 driver takes over; the
+   glyph avatar returns untouched if the loops fail to load. */
+.avatar-frame {
+  position: absolute; left: 16px; top: 84px; width: 172px; height: 215px;
+  border-radius: 12px; overflow: hidden; z-index: 1;
+  border: 1px solid var(--border-strong); background: var(--surface-2);
+}
+.avatar-frame[hidden] { display: none; }
+.avatar-video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.avatar-video { opacity: 0; transition: opacity .25s ease; }
+.avatar-video.is-front { opacity: 1; }
+.avatar-frame.is-static .avatar-video { display: none; }
+.call-tile.has-avatar .call-avatar { display: none; }
+@media (max-width: 860px) {
+  .avatar-frame { left: 12px; top: 92px; width: 88px; height: 110px; }
+}
+@media (max-width: 640px) {
+  /* The phone tile is an 80px strip: the avatar becomes a square
+     thumb at its left, the name label moves right of the thumb, and
+     the speaking wave rides on the thumb's lower corner — the way a
+     real call tile carries its speaking indicator. */
+  .avatar-frame { left: 12px; top: 8px; width: 64px; height: 64px; border-radius: 8px; }
+  .call-tile > .call-tile-label { left: 88px; top: auto; bottom: 6px; max-width: 138px; }
+  .call-wave { left: 18px; bottom: auto; top: 50px; z-index: 2; }
+}
+
 @media (max-width: 860px) {
   .feat-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .feat-chapter { grid-template-columns: minmax(0, 1fr); gap: 24px; }

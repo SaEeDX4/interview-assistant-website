@@ -25,7 +25,10 @@ function check(name, ok, extra = "") {
 const WHITELIST = new Set(["cta-visible", "is-coach-active", "is-new", "is-open",
   "is-scrolled", "is-visible", "js", "js-acc", "open",
   "reveal", "coach", "coach-keys", "calc-note", "pricing",
-  "brand-name", "hero-copy"]);
+  "brand-name", "hero-copy",
+  /* Step 75: avatar.js state classes (the census reads app.js only;
+     has-avatar / is-static are set by the avatar driver at runtime). */
+  "has-avatar", "is-static"]);
 
 // 1. Census: every CSS class is used, referenced by JS, or whitelisted.
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
