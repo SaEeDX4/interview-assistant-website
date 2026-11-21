@@ -92,9 +92,15 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
      the stages, not new prose; the ceiling is set to the
      measured static count exactly (456) so the text still
      cannot quietly grow. Rendered counts (Playwright audit,
-     step71-one-window): 456 visible words at desktop widths. */
-  check("words: the two blocks carry the stage surfaces verbatim (static count, audit-calibrated; Step 71 ceiling = measured 456)",
-    hero + myths <= 456, `hero=${hero} myths=${myths} total=${hero + myths}`);
+     step71-one-window): 456 visible words at desktop widths.
+     Step 72 re-pin: +6 — the hero scenes' two phone disclosure
+     labels ("All five facts" / "All five questions") are static
+     text in the hero slice. They are the price of making Step
+     71's resting rows reachable on phones instead of silently
+     cut; the ceiling moves by exactly their length (456 -> 462)
+     and nothing else. */
+  check("words: the two blocks carry the stage surfaces verbatim (static count, audit-calibrated; Step 72 ceiling = 462 after the disclosure labels)",
+    hero + myths <= 462, `hero=${hero} myths=${myths} total=${hero + myths}`);
   check("words: the 39-word lead paragraph is gone",
     !html.includes('class="lead"')
     && !html.includes("one fact the candidate confirmed, the question that fact earned"));

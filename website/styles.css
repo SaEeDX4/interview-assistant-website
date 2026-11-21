@@ -72,6 +72,14 @@
   --radius: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  /* Step 72 — motion tokens (standards/MOTION.md): the duration
+     scale and the one entrance easing, as named values. Rules may
+     spell the literals (the house style) or reference these; the
+     values are the same either way and test-step72 pins them. */
+  --motion-1: 150ms;
+  --motion-2: 250ms;
+  --motion-3: 300ms;
+  --motion-ease: cubic-bezier(.2,.7,.3,1);
   --container: 1120px;
   --shadow-card: 0 12px 32px rgba(0, 0, 0, .28);
   --shadow-lift: 0 20px 48px rgba(0, 0, 0, .38);
@@ -1676,7 +1684,7 @@ body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }
 .hw-hw-disc { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 600; line-height: 1; color: var(--muted); }
 .hw-hw-disc.is-thread { color: var(--accent-light); border-color: var(--accent); }
 .hw-hw-name { font-size: 12px; font-weight: 600; line-height: 1.4; color: var(--text); }
-.hw-hw-scene .app-card { margin-bottom: 0; }
+.hw-hw-scene .app-card { margin-bottom: 0; flex: 1 1 auto; }
 .hw-hw-scene .app-card + .app-card { margin-top: 12px; }
 .hw-hw-scene .app-context { margin-top: 12px; padding: 0 4px; }
 .hw-hw-points { display: grid; gap: 12px; }
@@ -1788,7 +1796,7 @@ body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }
 .hw-node.is-active .hw-node-name { color: var(--text); }
 .hw-stage { display: grid; gap: 16px; }
 .hw-trace.is-live .hw-stage { display: block; }
-.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; align-items: center; }
+.hw-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 32px; min-width: 0; align-items: start; }
 .hw-trace.is-live .hw-panel.is-hidden { display: none; }
 .hw-panel.is-shown { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .hw-frame { min-width: 0; }
@@ -1947,6 +1955,34 @@ body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }
 .hw-bound p { color: var(--muted); margin: 0 0 12px; }
 .hw-bound p:last-child { margin-bottom: 0; }
 
+/* Step 72 — alignment, disclosure and the motion pilot.
+   Alignment: the hero scenes' cards flex (above), so the two
+   scene captions start on one line at every width; the trace
+   panel's two columns now share a top edge (align-items: start
+   above) instead of centring against each other, so stepping
+   never moves either column's top.
+   Disclosure: the hero scenes' phone toggle pair is inert at
+   desktop widths — the ≤640 block arms it where rows rest.
+   Motion (standards/MOTION.md, piloted on this page only): the
+   hero entrance — one pass on load, in the house reveal language
+   (never dimmer than .85, never lower than 6px: the Step 1
+   lesson is that the hero is never dimmed), staggered in 40ms
+   steps, transform + opacity only, stilled by the global
+   reduced-motion rule; and the respond primitive on the verdict
+   rows' links (colour, 150ms, ease). */
+.hw-fold-toggle, .hw-fold-btn { display: none; }
+@keyframes hw-enter { from { opacity: .85; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+body:has(.hw-trace) .page-hero .eyebrow,
+body:has(.hw-trace) .page-hero h1,
+body:has(.hw-trace) .hw-thread-kicker,
+body:has(.hw-trace) .hw-herowindow,
+body:has(.hw-trace) .hw-clocks { animation: hw-enter .3s cubic-bezier(.2,.7,.3,1) both; }
+body:has(.hw-trace) .page-hero h1 { animation-delay: .04s; }
+body:has(.hw-trace) .hw-thread-kicker { animation-delay: .08s; }
+body:has(.hw-trace) .hw-herowindow { animation-delay: .12s; }
+body:has(.hw-trace) .hw-clocks { animation-delay: .16s; }
+.hw-myth-links a { transition: color .15s ease; }
+
 @media (max-width: 860px) {
   .hw-panel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 24px; }
   /* Step 71 — the MOSAIC (the owner's Fold band, 641–860):
@@ -2024,6 +2060,26 @@ body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }
   .hw-verdict { padding: 24px 0; }
   .hw-verdict:first-child { padding-top: 0; }
   .hw-verdict:last-child { padding-bottom: 0; }
+  /* Step 72 — phones: the verdict rows' artefacts rest. They are
+     aria-hidden replicas; every fact they picture is carried by
+     the truth line beside them and by the full-size stage in the
+     trace below. The links move up into the vacated row. */
+  .hw-verdict { row-gap: 16px; }
+  .hw-verdict .hw-myth-viz { display: none; }
+  .hw-verdict .hw-myth-links { grid-row: 2; }
+  /* Boundary cards take the tighter phone padding. */
+  .hw-bound { padding: 20px; }
+  /* Step 72 — the hero scenes' disclosure, armed only here: the
+     label names exactly what it opens (progressive disclosure's
+     information scent), the checkbox restores rows 4–5 in place,
+     and the pair works with scripts off. */
+  .hw-fold-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .hw-fold-btn { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; margin-top: 8px; padding: 4px 12px; border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-dim); font-size: 13px; font-weight: 600; line-height: 1.4; cursor: pointer; transition: color .15s ease, border-color .15s ease; }
+  .hw-fold-btn:hover { color: var(--app-text); border-color: var(--border-strong); }
+  .hw-fold-caret { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform .25s ease; }
+  .hw-hw-scene:has(.hw-fold-toggle:checked) .hw-fold-caret { transform: rotate(225deg); }
+  .hw-hw-scene:has(.hw-fold-toggle:checked) .hw-hw-crop { display: flex; }
+  .hw-fold-toggle:focus-visible + .hw-fold-btn { outline: 2px solid var(--focus); outline-offset: 4px; }
 }
 
 /* Step 53 — Support contact. Step 53 put the channel on the page

@@ -26,7 +26,7 @@ interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
   gentle landing. One spelling, no spaces.
 - **Everything else** (hovers, state changes): `ease`.
 
-## 3. Keyframes — five, each with one job
+## 3. Keyframes — six, each with one job
 
 | Name | Duration | Job |
 |------|----------|-----|
@@ -35,6 +35,7 @@ interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
 | `dot-land` | 150ms | a bullet's 7px dot lands first (Step 25: 0.6 → 1 scale) |
 | `meter` | 1.1s | level meter in the status pill (gated by `.is-live`) |
 | `pulse` | 0.9s | status dot + thinking dots (the app's 0.9s sine pulse) |
+| `hw-enter` | 300ms | hero entrance (Step 72 pilot, How It Works): one pass on load, from the reveal floor (.85 opacity, 6px) to rest, staggered in 40ms steps |
 
 The faithful hero (Step 21) reuses `rise` (points) and `meter` (level
 meter, gated by `.is-live` — it runs only while audio is coming in, then
@@ -76,6 +77,53 @@ are retired with the waveform itself: the real app has no waveform.
   (transcript 160ms/word, thinking 500ms, points 450ms apart). Timed
   beats play once; revisiting a beat renders its final state at once.
 - These are content rhythms, not motion; they stay as-is.
+
+### Step 72 — motion tokens and primitives
+
+The system above, named. Tokens live in `:root` (styles.css) and are
+the same values the rules have always spelled literally; a rule may
+use either form, never a third value.
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--motion-1` | 150ms | micro responses (hover/focus colour, small state changes) |
+| `--motion-2` | 250ms | standard responses and the scroll reveal |
+| `--motion-3` | 300ms | entrances (the largest surface that may move) |
+| `--motion-ease` | `cubic-bezier(.2,.7,.3,1)` | entrances and reveals; everything else uses `ease` |
+
+Three primitives, and only three:
+
+1. **Entrance** — once, on load, above the fold only. From the reveal
+   floor (opacity .85, translateY 6px — never from invisible, never
+   from below 6px: the Step 1 lesson is that the hero is never
+   dimmed) to rest over `--motion-3` on `--motion-ease`, staggered in
+   40ms steps (a delay is not a duration). Nothing moves unprompted
+   after the entrance completes.
+2. **Reveal** — sections entering the viewport, via the Step 1
+   module (`.reveal` / `.is-visible`): opacity .85 → 1 and
+   translateY 6px → 0 over `--motion-2`. JS adds the pre-state, so
+   scripts-off and reduced-motion both show everything at rest.
+3. **Respond** — user-initiated feedback only: colour, border and
+   opacity changes over `--motion-1` with `ease`. No movement of
+   layout, ever; a press may scale (Step 30 precedent).
+
+What never animates: keyboard-initiated actions (stepping, accordion
+keys), anything a user triggers many times a day, layout properties
+(width, height, top, margins — transform and opacity only), and
+nothing loops except the two named ambient loops (`meter`, `pulse`),
+which depict the product's own live states. No bounce, no spin, no
+marquee, no parallax. Reduced motion stills everything (§4) and no
+primitive may gate content: with motion off or scripts off, every
+element rests fully visible.
+
+Pilot (Step 72): the primitives are applied on the How It Works page
+only — `hw-enter` on its hero, the reveal extended to its trace
+card, prediction card and boundary cards, respond on its verdict
+links and its phone disclosure control. The verdict rows themselves
+stay out of the reveal: the static-top discipline (Steps 68/71 —
+no JS names the hero or verdict blocks) outranks a 6px fade, and
+their respond primitive is CSS-only. Other pages adopt on the
+owner's order, class by class, through the same Step 1 list.
 
 ## 6. Audit log
 
@@ -189,3 +237,14 @@ are retired with the waveform itself: the real app has no waveform.
   keeping delays off the closed state makes the close a single
   unstaggered fade). The reduced-motion blanket rule kills all of
   it: the icon snaps, the panel appears at once.
+- **Step 72 — tokens, primitives, one new keyframe:** the duration
+  scale and the entrance easing are named as `:root` tokens
+  (`--motion-1/2/3`, `--motion-ease`); the three primitives
+  (entrance / reveal / respond) and the never-list are defined in
+  §5. One keyframe added: `hw-enter` (300ms, the How It Works hero
+  entrance — from the .85/6px reveal floor, 40ms stagger steps).
+  The reveal primitive's target list gains the How It Works pilot
+  classes in the Step 1 module; the verdict links and the phone
+  disclosure control take 150ms colour transitions. No duration,
+  easing or loop outside the existing standard; the reduced-motion
+  blanket rule stills all of it, and no primitive gates content.

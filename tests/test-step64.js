@@ -101,10 +101,17 @@ const panels = [...html.matchAll(/<section class="hw-panel" data-panel="(\d)"[\s
   // column is CENTRED as one compact block and nothing inside
   // the panel grows or distributes. The invariants below are
   // the new model, stated as presence/absence pairs.
-  check("fill: the panel row is one track sized by this panel's taller column; the shorter column is CENTRED, never stretched (Step 67 re-pin)",
+  // Step 72 re-pin: the compact blocks' PLACEMENT changed from
+  // centred to top-aligned on the owner's alignment order (the
+  // window and the caption now share one top edge at every
+  // stage, so stepping never moves either column's top). The
+  // compactness model itself — one track sized by the taller
+  // column, nothing grows, nothing distributes — is unchanged,
+  // and the two checks after this one still pin it.
+  check("fill: the panel row is one track sized by this panel's taller column; the shorter column is TOP-ALIGNED, never stretched (Step 72 re-pin of the Step 67 placement)",
     block.includes("grid-template-rows: minmax(0, 1fr);")
-    && /\.hw-panel \{[^}]*align-items: center;/.test(block)
-    && !/\.hw-panel \{[^}]*align-items: start/.test(block));
+    && /\.hw-panel \{[^}]*align-items: start;/.test(block)
+    && !/\.hw-panel \{[^}]*align-items: center;/.test(block));
   check("fill: frame/window/body are flex columns and NOTHING in the window chain grows (Step 67 re-pin)",
     block.includes(".hw-panel .hw-frame { display: flex; flex-direction: column; }")
     && block.includes(".hw-panel .app-window { display: flex; flex-direction: column; }")

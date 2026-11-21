@@ -2359,7 +2359,14 @@ var IA_VARIANTS = {
   var targets = document.querySelectorAll(
     ".card, .callout, .table-wrap, .ethics-strip, " +
     ".pipe-list li, .tl-item, .acc-item, .trouble-card, .vs-col, .roadmap-node, " +
-    ".flow-node, .flow-break, .meter-card, .installer, .lang-card, .req-item"
+    ".flow-node, .flow-break, .meter-card, .installer, .lang-card, .req-item, " +
+    // Step 72 — the motion pilot: How It Works adopts the reveal
+    // primitive (the trace card, the prediction card, boundary
+    // cards). These classes exist on that page only, so no other
+    // page changes behaviour. The hero and the verdict rows stay
+    // out of JS reach entirely — the static-top discipline of
+    // Steps 68/71; their motion is the CSS-only entrance.
+    ".hw-trace, .hw-faded, .hw-bound"
   );
   if (!targets.length) { return; }
   if (reduced || !("IntersectionObserver" in window)) {

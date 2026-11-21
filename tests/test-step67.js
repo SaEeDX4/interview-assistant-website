@@ -58,8 +58,14 @@ const block = (css.match(/\/\* -+ Step 63[\s\S]*?(?=\/\* Step 53)/) || [""])[0];
 
 /* ---------- 1. The panel: compact columns, shorter centred ---------- */
 {
-  check("compact: the panel centres the shorter column (no stretch)",
-    /\.hw-panel \{[^}]*align-items: center;/.test(block));
+  // Step 72 re-pin: the panel's columns are TOP-aligned now, not
+  // centred. Step 67's compactness law (nothing grows, nothing
+  // distributes — the checks below) is untouched; only the compact
+  // blocks' placement changed, on the owner's alignment order, so
+  // the window and the caption share one top edge at every stage
+  // and stepping never moves either column's top.
+  check("compact: the panel top-aligns its two compact columns (Step 72 placement; Step 67 compactness unchanged)",
+    /\.hw-panel \{[^}]*align-items: start;/.test(block));
   check("compact: nothing in the window chain grows",
     block.includes(".hw-panel .app-window { display: flex; flex-direction: column; }")
     && block.includes(".hw-panel .app-window-body { display: flex; flex-direction: column; }")
