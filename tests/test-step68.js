@@ -28,6 +28,20 @@
    three points, and the map's line is rebuilt as node-
    anchored segments — two checks below are re-pinned with
    in-place notes, and the new pins live in test-step69.js.
+   Step 71 amendment ("One Window", Step 70 Concept 1; the
+   owner rejected the 68/69 top on the live page): the thread
+   map, the clock tiles and the verdict-card grid are
+   deleted. The hero is one window holding the three frozen
+   stage scenes, the clocks are a boxless type strip, and
+   the fears are full-width verdict rows. The hero checks
+   below are re-pinned to the window (the fact contract is
+   unchanged — the item-by-item 47-fact map for the new top
+   is pinned mechanically in test-step71.js), the clocks
+   check follows the tiles into the strip, the links check
+   gains the one-line separator, viz 1 becomes stage 3's
+   fragment at stage scale, and the word ceiling is re-set
+   to the measured static count with its arithmetic noted
+   in place.
    Usage: node test-step68.js   (exit 0 = all pass) */
 const fs = require("fs");
 const path = require("path");
@@ -66,59 +80,74 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
 /* ---------- 1. The word-count ceiling ---------- */
 {
   const hero = blockWords(heroSlice), myths = blockWords(mythsSlice);
-  /* Step 69 re-pin (owner order): station 3 of the thread map
-     shipped empty; it now carries the thread's destination —
-     the three canonical SAMPLES points, verbatim (+41 words,
-     counted exactly). The ceiling rises by precisely those 41
-     (245 + 41 = 286) so the text still cannot quietly grow. */
-  check("words: the two blocks shrank (static count, audit-calibrated; Step 69: +41 for station 3's points)",
-    hero + myths <= 286, `hero=${hero} myths=${myths} total=${hero + myths}`);
+  /* Step 71 re-pin: the ceiling's basis changes, honestly.
+     Steps 68/69 counted a top made of chips and one-liners
+     (286). The One Window hero carries the three STAGE
+     SURFACES' own text verbatim instead — two full cards
+     with their context lines, the answer card with its
+     source lines, the window's own label (+165 hero words:
+     123 -> 288) — and the myths gain the stage-3 fragment's
+     card head and the three " · " link separators (+5:
+     163 -> 168). The growth is artefact text copied from
+     the stages, not new prose; the ceiling is set to the
+     measured static count exactly (456) so the text still
+     cannot quietly grow. Rendered counts (Playwright audit,
+     step71-one-window): 456 visible words at desktop widths. */
+  check("words: the two blocks carry the stage surfaces verbatim (static count, audit-calibrated; Step 71 ceiling = measured 456)",
+    hero + myths <= 456, `hero=${hero} myths=${myths} total=${hero + myths}`);
   check("words: the 39-word lead paragraph is gone",
     !html.includes('class="lead"')
     && !html.includes("one fact the candidate confirmed, the question that fact earned"));
 }
 
-/* ---------- 2. Hero: kicker + thread map + clock tiles ---------- */
+/* ---------- 2. Hero: kicker + the One Window + clock strip ---------- */
 {
   check("hero: the kicker line carries the contrast, the order, the openness (L-1/L-5/L-6)",
     html.includes('<p class="hw-thread-kicker">Most explanations list steps. This one follows a single thread, in the order it happens, with nothing hidden:</p>'));
-  check("hero: the thread map is drawn — three numbered stations in order",
-    html.includes('<figure class="hw-threadmap">')
-    && html.includes('<span class="hw-tm-disc is-thread">1</span>')
-    && html.includes('<span class="hw-tm-name">Fact confirmed</span>')
-    && html.includes('<span class="hw-tm-name">The question it earned</span>')
-    && html.includes('<span class="hw-tm-name">Three points, sourced</span>'));
-  check("hero: station 1 carries the real sample fact + its thread tag (L-2)",
-    html.includes('Five years building web products <span class="hw-thread-tag">'));
-  check("hero: station 2 carries the question the fact earned (L-3/L-4)",
-    html.includes('<span class="hw-tm-chip">“Tell me about yourself.”</span>'));
-  check("hero: the caption is the page's own thread line",
-    html.includes('<figcaption class="hw-thread-line hw-tm-caption">')
+  /* Step 71 re-pin: the thread map is deleted (it towered at
+     every width — unequal artefacts in equal columns). Its
+     three stations survive as the hero window's three frozen
+     stage scenes under the same numbered discs and names;
+     the detailed scene pins live in test-step71.js. */
+  check("hero: the One Window — three numbered scenes in order (Step 71 re-pin of the map checks)",
+    html.includes('<div class="hw-herowindow app-window">')
+    && html.includes('<span class="hw-hw-disc is-thread">1</span>')
+    && html.includes('<span class="hw-hw-name">Fact confirmed</span>')
+    && html.includes('<span class="hw-hw-name">The question it earned</span>')
+    && html.includes('<span class="hw-hw-name">Three points, sourced</span>'));
+  check("hero: scene 1 carries the real sample fact + its thread tag (L-2)",
+    html.includes('<div class="hw-factrow is-thread"><span class="hw-check" aria-hidden="true">✓</span><span>Five years building web products</span><span class="hw-thread-tag">'));
+  check("hero: scene 2 carries the question the fact earned (L-3/L-4)",
+    html.includes('<div class="hw-qrow is-thread"><span>“Tell me about yourself.”</span><span class="hw-tag is-verified">Verified · Fact 1</span></div>'));
+  check("hero: the window's footer is the page's own thread line",
+    html.includes('<p class="hw-thread-line hw-hw-foot">')
     && html.includes('Fact 1 → “Tell me about yourself.” → three points, sourced'));
-  check("hero: the map implies no interactivity (no buttons inside the figure)",
-    !html.slice(html.indexOf('<figure class="hw-threadmap">'),
-      html.indexOf('</figure>')).includes("<button"));
-  check("clocks: three tiles — label line over qualifier line (C-1..C-3)",
+  check("hero: the window implies no interactivity (no buttons inside it)",
+    !html.slice(html.indexOf('<div class="hw-herowindow app-window">'),
+      html.indexOf('<div class="hw-clocks"')).includes("<button"));
+  check("clocks: three strips — label line over qualifier line (C-1..C-3)",
     html.includes('<p class="hw-clock"><strong>Before the day</strong><span>free · unhurried · repeatable</span></p>')
     && html.includes('<p class="hw-clock"><strong>The live seconds</strong><span>only this uses minutes</span></p>')
     && html.includes('<p class="hw-clock"><strong>Afterwards</strong><span>report stays on your PC</span></p>'));
   const block = (css.match(/\/\* -+ Step 63[\s\S]*?(?=\/\* Step 53)/) || [""])[0];
-  check("clocks: Step 67's grid survives (the tiles evolve it, geometry unchanged)",
+  /* Step 71 re-pin: Step 67's grid geometry is unchanged, but
+     the tile box is deleted — the strip is type only, so the
+     .hw-clock rule no longer carries a background, border,
+     radius or padding. */
+  check("clocks: Step 67's grid survives; the tile box is deleted (Step 71 strip)",
     block.includes(".hw-clocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 24px;")
-    && block.includes(".hw-clock { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }"));
-  /* Step 69 re-pin: the Step 68 line was one span whose ends
-     were percentages of the track, carried by a single
-     override rule over the stepper's base rule — the owner's
-     live screenshot showed the base-rule fallback (a near
-     full-width line) when that one rule did not apply. The
-     line is now node-anchored connector segments (the Step 64
-     standard), correct by construction; the span is gone from
-     the map (the stepper's own span is untouched). */
-  check("map css: Step 69 — node-anchored segments replace the track-percentage span; phones turn them vertical",
-    block.includes(".hw-tm-node:not(:last-child)::after { content: \"\"; position: absolute; z-index: -1; top: 21px; left: 50%; width: 100%; height: 2px;")
+    && block.includes(".hw-clock { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }"));
+  /* Step 71 re-pin (the Step 69 check, moved with the line):
+     the thread map and its segment rules are gone entirely;
+     the node-anchored segment construction survives on the
+     hero window's scenes (the Step 64 standard), horizontal
+     at desktop, vertical down the phone rail. The stepper's
+     own span is untouched (pinned in test-step69). */
+  check("map css: the thread map is deleted; node-anchored segments live on the window's scenes (Step 71)",
+    !css.includes(".hw-tm-") && !html.includes("hw-threadmap")
+    && block.includes(".hw-hw-scene:not(:last-child)::after { content: \"\"; position: absolute; z-index: -1; top: 21px; left: 50%; width: calc(100% + 24px); height: 2px;")
     && block.slice(block.lastIndexOf("@media (max-width: 640px)"))
-      .includes(".hw-tm-node:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 20px); }")
-    && !html.includes('<span class="hw-nodes-line" aria-hidden="true"></span>'));
+      .includes(".hw-hw-scene:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 24px); }"));
 }
 
 /* ---------- 3. Fears: one-line intro + verdict cards ---------- */
@@ -148,8 +177,14 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
 
 /* ---------- 4. The artefacts + the links ---------- */
 {
-  check("viz 1: stage 3's listening status, word for word, with its struck mic (M1-3)",
-    html.includes('<p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening to system audio · microphone off</span></p>')
+  /* Step 71 re-pin: viz 1 is now stage 3's fragment at stage
+     scale — the card head (whose detail carries the listening
+     sentence verbatim, its stage-true position) over the
+     stage's own status row: the Listening pill with its meter
+     and the struck microphone. */
+  check("viz 1: stage 3's fragment at stage scale — card head + Listening pill + struck mic (M1-3)",
+    html.includes('<div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>')
+    && html.includes('<p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></p>')
     && html.includes('class="hw-viz-mic"'));
   check("viz 2: stage 5's source chain — Fact 1 + Fact 2 → Point 1, its own caption (M2-2)",
     html.includes('<span class="hw-viz-chip">Fact 1</span><span class="hw-viz-op">+</span><span class="hw-viz-chip">Fact 2</span><span class="hw-viz-op">→</span><span class="hw-viz-chip is-point">Point 1</span>')
@@ -157,10 +192,13 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
   check("viz 3: the window bar + the real show / hide key chip (M3-6)",
     html.includes('<span class="app-window-title">Interview Assistant</span>')
     && html.includes('<div class="hw-viz-window-body"><kbd>Ctrl+Alt+Space</kbd><span>show / hide</span></div>'));
-  check("links: primaries verbatim, secondaries shortened to their destinations, hrefs unchanged",
-    html.includes('<a href="#trace">Watch it happen — Stage 3 of the trace</a><a href="privacy.html">Privacy &amp; ethics</a>')
-    && html.includes('<a href="#trace">See a point traced to its facts — Stage 5</a><a href="features.html">Features</a>')
-    && html.includes('<a href="#first-run">Your controls — the first-run guide</a><a href="privacy.html">Privacy &amp; ethics</a>')
+  /* Step 71 re-pin: the links sit on ONE line at the verdict
+     rail's foot, separated by " · " (the Step 70 spec); texts
+     and hrefs are otherwise unchanged. */
+  check("links: primaries verbatim, secondaries shortened to their destinations, one line, hrefs unchanged",
+    html.includes('<a href="#trace">Watch it happen — Stage 3 of the trace</a> · <a href="privacy.html">Privacy &amp; ethics</a>')
+    && html.includes('<a href="#trace">See a point traced to its facts — Stage 5</a> · <a href="features.html">Features</a>')
+    && html.includes('<a href="#first-run">Your controls — the first-run guide</a> · <a href="privacy.html">Privacy &amp; ethics</a>')
     && !html.includes("The full boundary:") && !html.includes("The evidence: Features")
     && !html.includes("Visibility, in Privacy"));
   check("viz: every replica is aria-hidden (the facts live in the truth lines)",
@@ -170,7 +208,8 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
 /* ---------- 5. Discipline: no new JS, sheet law intact ---------- */
 {
   check("js: the Step 63 module never touches the new blocks (static build)",
-    !js.includes("hw-threadmap") && !js.includes("hw-tm-") && !js.includes("hw-myth-badge"));
+    !js.includes("hw-herowindow") && !js.includes("hw-hw-") && !js.includes("hw-verdict")
+    && !js.includes("hw-myth-badge"));
   check("law: still exactly 3 reduced-motion blocks in the whole sheet",
     (css.match(/@media \(prefers-reduced-motion: reduce\)/g) || []).length === 3);
 }

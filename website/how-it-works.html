@@ -91,36 +91,85 @@
        narrower than the rest of its own page), station 3
        carries the three points themselves, and the map's
        line is drawn as segments anchored to the nodes
-       (see the Step 69 note in styles.css). -->
+       (see the Step 69 note in styles.css).
+       Step 71 — "One Window" (Step 70 research, Concept 1,
+       owner-approved after he rejected the 68/69 top on the
+       live page): the thread map, the clock tiles and the
+       verdict-card grid are deleted. The hero carries ONE
+       window in the trace's own chrome holding the three
+       frozen stage scenes (fact / question / answer — the
+       stages' own surfaces at readable scale, so their
+       densities compare like with like), the clocks are a
+       boxless typographic strip, and the fears are
+       full-width verdict rows: rail, the proving artefact
+       at stage scale, links on one line. The 641–860 band
+       (the owner's Fold) gets a designed form — the window
+       goes mosaic — instead of a squeezed leftover. -->
   <section class="page-hero">
     <div class="container">
       <p class="eyebrow">How it works</p>
       <h1>One question, followed end to end.</h1>
       <p class="hw-thread-kicker">Most explanations list steps. This one follows a single thread, in the order it happens, with nothing hidden:</p>
-      <figure class="hw-threadmap">
-        <div class="hw-tm-track">
-          <div class="hw-tm-node">
-            <span class="hw-tm-disc is-thread">1</span>
-            <span class="hw-tm-name">Fact confirmed</span>
-            <span class="hw-tm-chip">Five years building web products <span class="hw-thread-tag"><span class="hw-diamond" aria-hidden="true"></span>The thread</span></span>
-          </div>
-          <div class="hw-tm-node">
-            <span class="hw-tm-disc">2</span>
-            <span class="hw-tm-name">The question it earned</span>
-            <span class="hw-tm-chip">“Tell me about yourself.”</span>
-          </div>
-          <div class="hw-tm-node">
-            <span class="hw-tm-disc">3</span>
-            <span class="hw-tm-name">Three points, sourced</span>
-            <span class="hw-tm-points">
-              <span class="hw-tm-point">Five years building web products — most recently leading a small team on a customer-facing tool.</span>
-              <span class="hw-tm-point">I start from the outcome, then the trade-off I made to get there.</span>
-              <span class="hw-tm-point">What draws me here is this team’s focus on honest, useful software.</span>
-            </span>
+      <div class="hw-herowindow app-window">
+        <div class="app-window-bar">
+          <span class="app-window-title">Interview Assistant<span class="hw-hw-title-tail"> — one question, traced</span></span>
+          <span class="hw-hw-tag">Simulated · sample data</span>
+          <span class="app-controls" aria-hidden="true"><i>—</i><i>▢</i><i>✕</i></span>
+        </div>
+        <div class="app-window-body">
+          <div class="hw-hw-scenes">
+            <div class="hw-hw-scene">
+              <div class="hw-hw-scene-head">
+                <span class="hw-hw-disc is-thread">1</span>
+                <span class="hw-hw-name">Fact confirmed</span>
+              </div>
+              <section class="app-card">
+                <div class="app-card-head"><span class="app-card-label">Confirmed facts — sample profile</span></div>
+                <div class="hw-factrow is-thread"><span class="hw-check" aria-hidden="true">✓</span><span>Five years building web products</span><span class="hw-thread-tag"><span class="hw-diamond" aria-hidden="true"></span>The thread</span></div>
+                <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Led a small team on a customer-facing tool</span></div>
+                <div class="hw-factrow"><span class="hw-check" aria-hidden="true">✓</span><span>Rescued a slipping launch with staged rollouts</span></div>
+                <div class="hw-factrow hw-hw-crop"><span class="hw-check" aria-hidden="true">✓</span><span>Works outcome-first; trade-offs written down</span></div>
+                <div class="hw-factrow hw-hw-crop"><span class="hw-check" aria-hidden="true">✓</span><span>Drawn to teams that ship carefully and review honestly</span></div>
+              </section>
+              <p class="app-context">Facts the candidate did not confirm are never used — to the app, they might as well not exist.</p>
+            </div>
+            <div class="hw-hw-scene">
+              <div class="hw-hw-scene-head">
+                <span class="hw-hw-disc">2</span>
+                <span class="hw-hw-name">The question it earned</span>
+              </div>
+              <section class="app-card">
+                <div class="app-card-head"><span class="app-card-label">Question bank — sample</span><span class="app-card-meta">50–150 questions</span></div>
+                <div class="hw-qrow is-thread"><span>“Tell me about yourself.”</span><span class="hw-tag is-verified">Verified · Fact 1</span></div>
+                <div class="hw-qrow"><span>“Tell me about a time you led a difficult project.”</span><span class="hw-tag is-verified">Verified · Fact 3</span></div>
+                <div class="hw-qrow"><span>“How do you prioritise a queue?”</span><span class="hw-tag">Role-specific</span></div>
+                <div class="hw-qrow hw-hw-crop"><span>“A time you missed a deadline”</span><span class="hw-tag">Hypothetical</span></div>
+                <div class="hw-qrow hw-hw-crop"><span>“What did you learn from that?”</span><span class="hw-tag">Bridge · follow-up</span></div>
+              </section>
+              <p class="app-context">Five rows of a full bank. The pipeline behind it has fifteen stages — Features walks through every one.</p>
+            </div>
+            <div class="hw-hw-scene">
+              <div class="hw-hw-scene-head">
+                <span class="hw-hw-disc">3</span>
+                <span class="hw-hw-name">Three points, sourced</span>
+              </div>
+              <section class="app-card hw-hw-qcard">
+                <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+                <p class="app-question">“Tell me about yourself.”</p>
+              </section>
+              <section class="app-card">
+                <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">prepared</span></div>
+                <div class="hw-hw-points">
+                  <div class="hw-hw-point"><span class="app-dot" aria-hidden="true"></span><span class="hw-hw-point-main"><span class="hw-hw-point-text">Five years building web products — most recently leading a small team on a customer-facing tool.</span><span class="hw-hw-point-src">Built from facts 1 + 2</span></span></div>
+                  <div class="hw-hw-point"><span class="app-dot" aria-hidden="true"></span><span class="hw-hw-point-main"><span class="hw-hw-point-text">I start from the outcome, then the trade-off I made to get there.</span><span class="hw-hw-point-src">Built from fact 4</span></span></div>
+                  <div class="hw-hw-point"><span class="app-dot" aria-hidden="true"></span><span class="hw-hw-point-main"><span class="hw-hw-point-text">What draws me here is this team’s focus on honest, useful software.</span><span class="hw-hw-point-src">Built from fact 5</span></span></div>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
-        <figcaption class="hw-thread-line hw-tm-caption"><span class="hw-diamond" aria-hidden="true"></span><span>Fact 1 → “Tell me about yourself.” → three points, sourced</span></figcaption>
-      </figure>
+        <p class="hw-thread-line hw-hw-foot"><span class="hw-diamond" aria-hidden="true"></span><span>Fact 1 → “Tell me about yourself.” → three points, sourced</span></p>
+      </div>
       <div class="hw-clocks" aria-label="The three time frames">
         <p class="hw-clock"><strong>Before the day</strong><span>free · unhurried · repeatable</span></p>
         <p class="hw-clock"><strong>The live seconds</strong><span>only this uses minutes</span></p>
@@ -134,32 +183,39 @@
       <p class="eyebrow">First, the fears</p>
       <h2 id="myths-title">Three things people assume. None of them is true.</h2>
       <p class="section-intro">Three assumptions arrive with every visitor. Each is wrong — and each is proven wrong in the trace below.</p>
-      <div class="hw-myths">
-        <article class="hw-myth">
-          <div class="hw-myth-head">
-            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
-            <p class="hw-myth-say">“It records me.”</p>
-          </div>
-          <div class="hw-myth-verdict">
-            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
-            <p class="hw-myth-truth">Never your microphone. Never stored. It hears only the interviewer — through your headset, only while you listen.</p>
-          </div>
-          <div class="hw-myth-viz" aria-hidden="true">
-            <div class="hw-viz-listen">
-              <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening to system audio · microphone off</span></p>
-              <span class="hw-viz-mic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/><path d="M4.5 4.5 L19.5 19.5" stroke="#f87171"/></svg></span>
+      <div class="hw-verdicts">
+        <article class="hw-verdict">
+          <div class="hw-verdict-rail">
+            <div class="hw-myth-head">
+              <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+              <p class="hw-myth-say">“It records me.”</p>
+            </div>
+            <div class="hw-myth-verdict">
+              <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+              <p class="hw-myth-truth">Never your microphone. Never stored. It hears only the interviewer — through your headset, only while you listen.</p>
             </div>
           </div>
-          <p class="hw-myth-links"><a href="#trace">Watch it happen — Stage 3 of the trace</a><a href="privacy.html">Privacy &amp; ethics</a></p>
-        </article>
-        <article class="hw-myth">
-          <div class="hw-myth-head">
-            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
-            <p class="hw-myth-say">“It invents answers.”</p>
+          <div class="hw-myth-viz" aria-hidden="true">
+            <div class="hw-viz-panel">
+              <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+              <div class="hw-viz-listen">
+                <p class="app-pill is-listening"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></p>
+                <span class="hw-viz-mic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/><path d="M4.5 4.5 L19.5 19.5" stroke="#f87171"/></svg></span>
+              </div>
+            </div>
           </div>
-          <div class="hw-myth-verdict">
-            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
-            <p class="hw-myth-truth">Built only from your confirmed facts and your bank — an unconfirmed fact is never used.</p>
+          <p class="hw-myth-links"><a href="#trace">Watch it happen — Stage 3 of the trace</a> · <a href="privacy.html">Privacy &amp; ethics</a></p>
+        </article>
+        <article class="hw-verdict">
+          <div class="hw-verdict-rail">
+            <div class="hw-myth-head">
+              <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+              <p class="hw-myth-say">“It invents answers.”</p>
+            </div>
+            <div class="hw-myth-verdict">
+              <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+              <p class="hw-myth-truth">Built only from your confirmed facts and your bank — an unconfirmed fact is never used.</p>
+            </div>
           </div>
           <div class="hw-myth-viz" aria-hidden="true">
             <div class="hw-viz-panel">
@@ -169,16 +225,18 @@
               <p class="hw-viz-caption">Built from facts 1 + 2</p>
             </div>
           </div>
-          <p class="hw-myth-links"><a href="#trace">See a point traced to its facts — Stage 5</a><a href="features.html">Features</a></p>
+          <p class="hw-myth-links"><a href="#trace">See a point traced to its facts — Stage 5</a> · <a href="features.html">Features</a></p>
         </article>
-        <article class="hw-myth">
-          <div class="hw-myth-head">
-            <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
-            <p class="hw-myth-say">“It hides and works in secret.”</p>
-          </div>
-          <div class="hw-myth-verdict">
-            <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
-            <p class="hw-myth-truth">Small, visible, never hides itself. You start it, you stop it, the key is yours. Only where allowed.</p>
+        <article class="hw-verdict">
+          <div class="hw-verdict-rail">
+            <div class="hw-myth-head">
+              <span class="hw-myth-badge is-no" aria-hidden="true">✕</span>
+              <p class="hw-myth-say">“It hides and works in secret.”</p>
+            </div>
+            <div class="hw-myth-verdict">
+              <span class="hw-myth-badge is-yes" aria-hidden="true">✓</span>
+              <p class="hw-myth-truth">Small, visible, never hides itself. You start it, you stop it, the key is yours. Only where allowed.</p>
+            </div>
           </div>
           <div class="hw-myth-viz" aria-hidden="true">
             <div class="hw-viz-window">
@@ -189,7 +247,7 @@
               <div class="hw-viz-window-body"><kbd>Ctrl+Alt+Space</kbd><span>show / hide</span></div>
             </div>
           </div>
-          <p class="hw-myth-links"><a href="#first-run">Your controls — the first-run guide</a><a href="privacy.html">Privacy &amp; ethics</a></p>
+          <p class="hw-myth-links"><a href="#first-run">Your controls — the first-run guide</a> · <a href="privacy.html">Privacy &amp; ethics</a></p>
         </article>
       </div>
     </div>

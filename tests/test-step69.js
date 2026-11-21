@@ -24,6 +24,17 @@
       It now carries the thread's destination: the three
       canonical SAMPLES.tell points, verbatim, the same
       three points the trace lights up at stage 5.
+   Step 71 amendment ("One Window", Step 70 Concept 1): the
+   thread map this suite pinned is deleted — the owner
+   rejected the 68/69 top on the live page. What survives of
+   this suite's three fixes, re-pinned below: the hero still
+   takes the standard container (fix 1, untouched); the
+   node-anchored segment construction (fix 2) now draws the
+   thread through the hero window's three scene heads, in
+   both orientations; and the three canonical points (fix 3)
+   are carried by the window's answer scene, over stage 5's
+   own question card. The window's full contract is pinned
+   in test-step71.js.
    Usage: node test-step69.js   (exit 0 = all pass) */
 const fs = require("fs");
 const path = require("path");
@@ -42,8 +53,8 @@ function check(name, ok, detail) {
 
 const heroSlice = html.slice(html.indexOf('<section class="page-hero">'),
   html.indexOf('<section class="section" id="myths"'));
-const mapSlice = html.slice(html.indexOf('<figure class="hw-threadmap">'),
-  html.indexOf('</figure>'));
+const mapSlice = html.slice(html.indexOf('<div class="hw-herowindow app-window">'),
+  html.indexOf('<div class="hw-clocks"'));
 const block = (css.match(/\/\* -+ Step 63[\s\S]*?(?=\/\* Step 53)/) || [""])[0];
 
 /* ---------- 1. Hero width: the page's standard container ---------- */
@@ -62,40 +73,47 @@ const block = (css.match(/\/\* -+ Step 63[\s\S]*?(?=\/\* Step 53)/) || [""])[0];
 
 /* ---------- 2. The line: node-anchored segments, no span ---------- */
 {
-  check("line: the map's track-percentage span is gone from the markup",
-    !mapSlice.includes("hw-nodes-line"));
+  /* Step 71: the map is deleted; the segment construction —
+     this suite's fix 2 — now draws the thread through the
+     hero window's scene heads. The invariant is unchanged:
+     geometry derived from the discs, never a track span. */
+  check("line: no track span in the hero window, and the thread map is gone",
+    !mapSlice.includes("hw-nodes-line") && !html.includes("hw-threadmap")
+    && !css.includes(".hw-tm-"));
   check("line: no threadmap span rule survives in the sheet (either orientation)",
     !css.includes(".hw-threadmap .hw-nodes-line"));
-  check("line: desktop segments — from each disc's centre, one station onward, behind the discs",
-    block.includes(".hw-tm-node { flex: 1 1 0; min-width: 0; display: grid; justify-items: center; gap: 8px; padding: 0 8px; text-align: center; position: relative; z-index: 0; }")
-    && block.includes(".hw-tm-node:not(:last-child)::after { content: \"\"; position: absolute; z-index: -1; top: 21px; left: 50%; width: 100%; height: 2px; background: var(--border); border-radius: 2px; }"));
-  check("line: phone segments — vertical, own height plus the gap, landing on the next centre",
+  check("line: desktop segments — from each disc's centre, one scene plus the gap onward, behind the discs",
+    block.includes(".hw-hw-scene { position: relative; z-index: 0; min-width: 0; display: flex; flex-direction: column; }")
+    && block.includes(".hw-hw-scene:not(:last-child)::after { content: \"\"; position: absolute; z-index: -1; top: 21px; left: 50%; width: calc(100% + 24px); height: 2px; background: var(--border); border-radius: 2px; }"));
+  check("line: phone segments — vertical down the rail, own height plus the gap, landing on the next centre",
     block.slice(block.lastIndexOf("@media (max-width: 640px)"))
-      .includes(".hw-tm-node:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 20px); }"));
+      .includes(".hw-hw-scene:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 24px); }"));
   check("line: the stepper's own track line is untouched (its span + fill survive)",
     html.includes('<span class="hw-nodes-line" aria-hidden="true"><span class="hw-nodes-fill" id="hw-nodes-fill"></span></span>')
     && css.includes(".hw-nodes-line { position: absolute; left: 22px; right: 22px; top: 22px;"));
 }
 
-/* ---------- 3. Station 3 carries the three canonical points ---------- */
+/* ---------- 3. The answer scene carries the three canonical points ---------- */
 {
   const POINTS = [
     "Five years building web products — most recently leading a small team on a customer-facing tool.",
     "I start from the outcome, then the trade-off I made to get there.",
     "What draws me here is this team’s focus on honest, useful software."
   ];
-  const station3 = mapSlice.slice(mapSlice.indexOf('<span class="hw-tm-disc">3</span>'));
-  check("station 3: the points block is present under the station name",
-    station3.includes('<span class="hw-tm-name">Three points, sourced</span>')
-    && station3.includes('<span class="hw-tm-points">')
-    && (station3.match(/class="hw-tm-point"/g) || []).length === 3);
-  check("station 3: the three points are the canonical texts, verbatim",
-    POINTS.every((t) => station3.includes(`<span class="hw-tm-point">${t}</span>`)));
-  check("station 3: the texts match SAMPLES.tell in app.js (single source of truth)",
+  /* Step 71: fix 3's carrier is now the hero window's third
+     scene — stage 5's answer card, over its question card. */
+  const station3 = mapSlice.slice(mapSlice.indexOf('<span class="hw-hw-disc">3</span>'));
+  check("scene 3: the points block is present under the scene name",
+    station3.includes('<span class="hw-hw-name">Three points, sourced</span>')
+    && station3.includes('<div class="hw-hw-points">')
+    && (station3.match(/class="hw-hw-point"/g) || []).length === 3);
+  check("scene 3: the three points are the canonical texts, verbatim",
+    POINTS.every((t) => station3.includes(`<span class="hw-hw-point-text">${t}</span>`)));
+  check("scene 3: the texts match SAMPLES.tell in app.js (single source of truth)",
     POINTS.every((t) => js.includes(`"${t}"`)));
-  check("station 3: the same three texts are the stage-5 bullets the trace lights up",
+  check("scene 3: the same three texts are the stage-5 bullets the trace lights up",
     POINTS.every((t) => html.includes(`<span class="hw-bullet-text">${t}</span>`)));
-  check("map: still no interactivity implied (no buttons inside the figure)",
+  check("window: still no interactivity implied (no buttons inside it)",
     !mapSlice.includes("<button"));
 }
 
@@ -103,8 +121,8 @@ const block = (css.match(/\/\* -+ Step 63[\s\S]*?(?=\/\* Step 53)/) || [""])[0];
 {
   check("law: still exactly 3 reduced-motion blocks in the whole sheet",
     (css.match(/@media \(prefers-reduced-motion: reduce\)/g) || []).length === 3);
-  check("js: app.js still never touches the map blocks (static build)",
-    !js.includes("hw-tm-points") && !js.includes("hw-tm-point"));
+  check("js: app.js still never touches the window blocks (static build)",
+    !js.includes("hw-hw-points") && !js.includes("hw-hw-point") && !js.includes("hw-herowindow"));
 }
 
 console.log(`test-step69: ${pass} passed, ${fail} failed`);
