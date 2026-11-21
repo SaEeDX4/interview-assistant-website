@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>Live demo — Interview Assistant</title>
-<meta name="description" content="Try the simulated live demo: ten sample questions, Answer and Coach modes, and an interruption simulator. No audio, no microphone, no sign-up.">
+<meta name="description" content="Watch a simulated live interview: the question heard as it is asked, answered in three short points under the webcam — then ask your own, answered live.">
 <meta property="og:title" content="Live demo — Interview Assistant">
-<meta property="og:description" content="Try the simulated live demo: ten sample questions, Answer and Coach modes, and an interruption simulator. No audio, no microphone, no sign-up.">
+<meta property="og:description" content="Watch a simulated live interview: the question heard as it is asked, answered in three short points under the webcam — then ask your own, answered live.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -57,26 +57,52 @@
       <a href="platforms.html" class="nav-mobile-only">Platforms</a>
       <a href="support.html">Support</a>
       <span class="nav-menu-foot">
-        <a class="btn btn-primary nav-menu-cta" href="demo.html">Try the live demo</a>
+        <a class="btn btn-primary nav-menu-cta" href="download.html">Download for Windows</a>
         <span class="nav-menu-legal">
           <a href="privacy.html">Privacy</a>
           <a href="terms.html">Terms (draft)</a>
         </span>
       </span>
     </nav>
-    <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
+    <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
   </div>
 </header>
 <main id="main" tabindex="-1">
   <section class="page-hero">
     <div class="container narrow">
       <p class="eyebrow">Live demo — simulated</p>
-      <h1>Try the demo. No audio, no microphone, no sign-up.</h1>
-      <p class="lead">This is a simulation of what the app shows in a live interview. The questions are samples; the answers are illustrative — in the real app, every point is built from facts you confirmed and your prepared question bank. Nothing here listens, records, or sends anything anywhere.</p>
+      <h1>Answers during the interview itself — watch it happen.</h1>
+      <p class="lead">Before the interview, you feed the app your resume, the job description and your answers to its profile questions — it builds your confirmed facts and your question bank from them. Then, while the interview is actually happening, it hears each question and answers from that preparation, in the moment.</p>
     </div>
   </section>
   <section class="section" aria-label="Demo">
     <div class="container">
+      <!-- Step 73: the preparation chain, shown not told — the scene's
+           answers are only as strong as what was fed in before the
+           interview: resume + job description + a completed profile. -->
+      <div class="prep-band" aria-label="Before the interview — the preparation the answers come from">
+        <p class="prep-band-title">Before the interview — done once</p>
+        <div class="prep-flow">
+          <ul class="prep-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+              <span class="prep-item-text"><strong>Your resume</strong><small>imported — it proposes your facts</small></span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M3 13h18"/></svg>
+              <span class="prep-item-text"><strong>The job description</strong><small>added — the bank targets this role</small></span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>
+              <span class="prep-item-text"><strong>Your profile</strong><small>its questions answered — even “What are your hobbies?”</small></span>
+            </li>
+          </ul>
+          <p class="prep-note">Its questions answered — even “What are your hobbies?”</p>
+          <span class="prep-arrow" aria-hidden="true">→</span>
+          <p class="prep-out"><strong>Confirmed facts + a 50–150 question bank</strong><small>every fact approved by you — the answers in the call come from this, and only this</small></p>
+        </div>
+      </div>
+
       <div class="demo-stage">
       <div class="demo" id="demo" aria-labelledby="demo-title">
         <div class="demo-head">
@@ -89,24 +115,70 @@
           </div>
         </div>
         <div class="demo-body">
-          <p class="demo-label">Interviewer</p>
-          <!-- Step 23: the question + answer are stacks of pre-rendered
-               layers (one per sample + mode). The static "tell" content
-               stays as layer 0, so no-JS still shows the demo. -->
-          <div class="demo-question-stack" id="demo-question-stack">
-            <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+          <!-- Step 73: the scene — a video call in progress, staged.
+               The app's small window sits under the webcam, as it does
+               in a real call. The static content below is the settled
+               scene (the no-JS / reduced-motion state); JS replays it
+               as a timed scene — Step 74's full arc: listening,
+               transcript, detection, points, the candidate answering,
+               an ambush follow-up, two more exchanges, the close. -->
+          <div class="call-stage" id="call-stage">
+            <div class="call-bar">
+              <span class="live-chip"><span class="live-dot" aria-hidden="true"></span>Live</span>
+              <span class="call-clock" id="scene-clock" aria-hidden="true">00:00</span>
+              <span class="call-bar-note">Video call — simulated</span>
+            </div>
+            <div class="call-main">
+            <div class="call-cam" aria-hidden="true"><span class="call-cam-lens"></span>Webcam</div>
+            <div class="call-tile" id="call-tile">
+              <svg class="call-avatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>
+              <span class="call-wave" id="call-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <p class="call-caption" id="call-caption" hidden></p>
+              <span class="call-tile-label">Interviewer — hiring manager<span class="call-speaking" id="call-speaking" hidden> · speaking</span></span>
+            </div>
+            <div class="call-self" id="call-self"><video id="cam-video" autoplay playsinline muted hidden></video><span class="call-self-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="call-tile-label">You</span><button type="button" class="cam-toggle" id="cam-toggle" aria-pressed="false" aria-label="Use your camera — your video tile" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="cam-toggle-text">Use your camera</span></button></div>
+            <div class="app-window" id="app-window">
+              <div class="app-header">
+                <p class="app-pill" id="scene-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="scene-pill-text">Answer ready</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
+                <span class="app-header-controls" aria-hidden="true">
+                  <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5 L12 8 L5 12.5 Z" fill="currentColor"/></svg></span><span class="app-start-label">Start listening</span></span>
+                  <span class="app-stop"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" fill="currentColor"/></svg></span>
+                  <span class="app-win-btn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+                </span>
+              </div>
+              <div class="app-window-body">
+                <p class="demo-label">Interviewer</p>
+                <!-- Step 23: the question + answer are stacks of pre-rendered
+                     layers (one per sample + mode). The static "tell" content
+                     stays as layer 0, so no-JS still shows the demo. -->
+                <div class="demo-question-stack" id="demo-question-stack">
+                  <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+                </div>
+                <div class="demo-answer-stack" id="demo-answer-stack">
+                  <ul class="demo-answer" id="demo-answer" aria-busy="false">
+                    <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+                    <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+                    <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+                  </ul>
+                </div>
+                <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
+                <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
+              </div>
+            </div>
+            </div>
           </div>
-          <div class="demo-answer-stack" id="demo-answer-stack">
-            <ul class="demo-answer" id="demo-answer" aria-busy="false">
-              <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
-              <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
-              <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
-            </ul>
+          <p class="cam-note" id="cam-note" role="status" hidden></p>
+          <div class="scene-controls" id="scene-controls" hidden>
+            <a class="btn btn-primary btn-small" id="scene-download" href="download.html" hidden>Download the app</a>
+            <button type="button" class="btn btn-primary btn-small" id="scene-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.6 5.4a9 9 0 0 1 0 13.2"/></svg> Start the interview</button>
+            <button type="button" class="btn btn-secondary btn-small" id="scene-mute" aria-pressed="false" hidden>Sound on</button>
+            <button type="button" class="btn btn-secondary btn-small" id="scene-replay">Replay the scene</button>
+            <button type="button" class="scene-skip" id="scene-skip">Skip scene</button>
+            <p class="scene-note">A staged interview — simulated. Start the interview plays it with the interviewer’s voice — recorded sample lines, spoken as the transcript arrives. The answers are the sample profile’s own.</p>
           </div>
-          <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
-          <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
         </div>
         <div class="demo-foot">
+          <p class="demo-turn-label">Your turn — type any interview question</p>
           <form id="demo-form">
             <label class="visually-hidden" for="demo-input">Type an interview question</label>
             <input id="demo-input" type="text" autocomplete="off"
@@ -130,14 +202,18 @@
             <button type="button" class="chip" data-q="fa" lang="fa" dir="rtl">درباره خودتان بگویید</button>
             <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
           </div>
-          <p class="demo-note">Simulated demo — no audio, no microphone, no recording, no network.
-            Sample answers are illustrative. In the real app, points are built from
-            your confirmed facts and your prepared question bank. If you type a
-            question of your own, you get the honest answer <em>shape</em> — outcome,
-            example, connection to the role — not a fake specific answer.</p>
+          <p class="demo-note">Simulated demo — the call above is staged with sample data.
+            The interviewer’s voice is a pre-recorded sample; your microphone is never
+            used, and if you turn your camera on it stays on this device — nothing is
+            recorded, uploaded or sent anywhere. Sample answers are illustrative.
+            In the real app, points are built from your confirmed facts and your
+            prepared question bank. If you type a question of your own, it is sent
+            to our answer service and answered live; if that does not come back,
+            you get the honest answer <em>shape</em> — outcome, example, connection
+            to the role — not a fake specific answer.</p>
         </div>
       </div>
-      <p class="demo-stage-caption">The app window, as you would see it in an interview — simulated, no audio, no microphone.</p>
+      <p class="demo-stage-caption">A simulated video call. In the real one, the app’s small window sits under your webcam — glance down, read three short points, speak. No typing: it is already listening.</p>
       </div>
 
       <div class="help-block" id="demo-help">
@@ -150,7 +226,7 @@
       </div>
 
       <div class="demo-next" id="demo-next" hidden>
-        <p class="demo-next-title"><strong id="demo-next-title">Those 3 points took about 2 minutes — here’s what 30 trial minutes buys.</strong></p>
+        <p class="demo-next-title"><strong id="demo-next-title">Those 3 points take about 30 seconds to say — here’s what 30 trial minutes buys.</strong></p>
         <ol class="journey" aria-label="Your journey so far">
           <li class="is-done"><span aria-hidden="true">✓</span> Demo</li>
           <li><span aria-hidden="true">2</span> Pricing</li>
@@ -243,8 +319,8 @@
 </footer>
 <div class="sticky-cta" id="sticky-cta" hidden>
   <p class="sticky-cta-text">Interview Assistant for Windows — free Trial, 30 live minutes.</p>
-  <a class="btn btn-primary btn-small" href="demo.html">Try the live demo</a>
-  <a class="btn btn-secondary btn-small" href="download.html">Download for Windows</a>
+  <a class="btn btn-primary btn-small" href="download.html">Download for Windows</a>
+  <a class="btn btn-secondary btn-small" href="pricing.html">See pricing</a>
   <button class="sticky-cta-close" type="button" id="sticky-cta-close" aria-label="Dismiss">×</button>
 </div>
 <script src="app.js"></script>

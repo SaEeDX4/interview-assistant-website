@@ -200,19 +200,22 @@ function answerLayer() { return visibleChild(answerStackEl); }
     check("initial play mid-stream: 1 of 3 bullets revealed, status Preparing",
       rows(answerLayer()).length === 1 && els["demo-status"].textContent === "Preparing your points…");
     await sleep(1200);
-    check("initial play final: 3 bullets, status ready, tag + next card visible",
+    // Step 73 re-pin: the next-step card is gated on a real visitor
+    // interaction — the auto-played sample no longer reveals it.
+    check("initial play final: 3 bullets, status ready, tag visible, next card still gated",
       rows(answerLayer()).length === 3
       && els["demo-status"].textContent === "3 points ready."
       && !els["demo-sample-tag"].classList.contains("is-hidden")
-      && !els["demo-next"].classList.contains("is-hidden")
-      && els["demo-next-title"].textContent.includes("30 trial minutes"));
+      && els["demo-next"].classList.contains("is-hidden"));
     chips[8].fire("click"); // conflict
     await sleep(1400);
-    check("sample switch to conflict: question + 3 long bullets, status ready",
+    check("sample switch to conflict: question + 3 long bullets, status ready, next card earned",
       questionText().includes("conflict with a coworker")
       && rows(answerLayer()).length === 3
       && rows(answerLayer())[0].includes("We disagreed on the approach")
-      && els["demo-status"].textContent === "3 points ready.");
+      && els["demo-status"].textContent === "3 points ready."
+      && !els["demo-next"].classList.contains("is-hidden")
+      && els["demo-next-title"].textContent.includes("30 trial minutes"));
     check("sample switch did not rebuild the stacks",
       questionStackEl.children.length === 11 && answerStackEl.children.length === 23);
     els["mode-coach"].fire("click");

@@ -557,11 +557,16 @@ var IA_VARIANTS = {
 
   // Step 2 — reveal the demo next-step card once an answer has completed.
   // Copy is mode-aware: Coach mode shows keywords, not 3 points.
-  // Step 5 — the card is the demo-to-plan handoff: the 3 points took
-  // about 2 minutes, and the Trial's 30 lifetime minutes buy about 15
-  // answers like this one. It also surfaces the bounded-memory story:
-  // the app remembers the stories already used, so the next answer
-  // reaches for a fresh one (source: docs/v2/LIVE_MEMORY.md).
+  // Step 5 — the card is the demo-to-plan handoff: the 3 points take
+  // about 30 seconds to say, and the Trial's 30 lifetime minutes buy
+  // about 15 answers like this one. It also surfaces the bounded-memory
+  // story: the app remembers the stories already used, so the next
+  // answer reaches for a fresh one (source: docs/v2/LIVE_MEMORY.md).
+  // Step 73 — the card is earned, never ambient: it reveals only after
+  // the visitor's own interaction (a chip, a typed question, a mode
+  // switch), never on the auto-played scene or sample. visitorActed is
+  // set by the handlers below; finishRender consults it.
+  var visitorActed = false;
   var nextEl = document.getElementById("demo-next");
   // Step 23: reserve the card's space from the first paint (see above).
   if (nextEl && nextEl.hidden) {
@@ -574,8 +579,8 @@ var IA_VARIANTS = {
     var textEl = document.getElementById("demo-next-text");
     if (titleEl) {
       titleEl.textContent = mode === "coach"
-        ? "Those Coach keywords took about a minute — here\u2019s what 30 trial minutes buys."
-        : "Those 3 points took about 2 minutes — here\u2019s what 30 trial minutes buys.";
+        ? "That Coach structure takes about 30 seconds to say — here\u2019s what 30 trial minutes buys."
+        : "Those 3 points take about 30 seconds to say — here\u2019s what 30 trial minutes buys.";
     }
     if (textEl) {
       textEl.textContent = mode === "coach"
@@ -744,7 +749,7 @@ var IA_VARIANTS = {
       currentAnswerLayer.setAttribute("aria-busy", "false");
     }
     setStatus(statusText);
-    showDemoNext();
+    if (visitorActed) { showDemoNext(); }
   }
 
   // Step 23: renderBullets / renderCoach are retired — the layers are
@@ -773,7 +778,7 @@ var IA_VARIANTS = {
     hideRows(layer);
     layer.setAttribute("aria-busy", "true");
     if (sample) {
-      sampleTagEl.textContent = "Illustrative sample — in the real app, points come from your confirmed facts.";
+      sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
       sampleTagEl.classList.remove("is-hidden");
     } else {
       sampleTagEl.classList.add("is-hidden");
@@ -817,6 +822,84 @@ var IA_VARIANTS = {
     if (note) { note.hidden = !on; }
   }
 
+  // Step 73 — a typed question that matches a prepared sample is
+  // answered from that sample: locally, instantly, at zero AI cost
+  // (the hero's Step 31 matcher, ported — the demo used to spend a
+  // live call on "Tell me about yourself" typed verbatim). The
+  // visitor's own wording stays in the question layer; the answer is
+  // the sample's, labelled as a sample like every prepared answer.
+  var MATCHERS = [
+    ["tell", ["about yourself", "introduce yourself", "خودتان", "نفسك"]],
+    ["hire", ["hire you", "why you", "should we hire"]],
+    ["weakness", ["weakness", "improvement area", "weak point"]],
+    ["story", ["difficult project", "led a", "lead a", "challenging project"]],
+    ["five", ["five years", "5 years", "see yourself"]],
+    ["salary", ["salary", "compensation", "pay are you", "pay do you", "expecting"]],
+    ["conflict", ["conflict", "coworker", "co-worker", "disagreement", "disagreed"]],
+    ["why", ["work here", "work for us", "join us", "join our", "this company", "our company"]]
+  ];
+  function matchSample(text) {
+    var norm = " " + text.toLowerCase().replace(/[?.!,;:'"“”]/g, " ") + " ";
+    for (var k = 0; k < SAMPLE_KEYS.length; k++) {
+      if (norm.indexOf(" " + SAMPLES[SAMPLE_KEYS[k]].q.toLowerCase().replace(/[?.!]/g, "") + " ") >= 0) { return SAMPLE_KEYS[k]; }
+    }
+    for (var i = 0; i < MATCHERS.length; i++) {
+      for (var j = 0; j < MATCHERS[i][1].length; j++) {
+        if (norm.indexOf(MATCHERS[i][1][j]) >= 0) { return MATCHERS[i][0]; }
+      }
+    }
+    return null;
+  }
+
+  function showTypedMatch(key, text) {
+    clearTimers();
+    if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
+    var myRun = ++runId;
+    currentKey = key;
+    currentQuestion = text;
+    var qLayer = questionLayers[SAMPLE_KEYS.length];
+    qLayer.textContent = "“" + text + "”";
+    qLayer.dir = /[\u0600-\u06FF]/.test(text) ? "rtl" : "ltr";
+    qLayer.lang = typedLang(text) || "en";
+    showLayer(questionLayers, SAMPLE_KEYS.length);
+    var idx = SAMPLE_KEYS.indexOf(key);
+    var layer = showLayer(answerLayers, idx * 2 + (mode === "coach" ? 1 : 0));
+    currentAnswerLayer = layer;
+    hideRows(layer);
+    layer.setAttribute("aria-busy", "true");
+    sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+    sampleTagEl.classList.remove("is-hidden");
+    setStatus("Preparing your points…");
+    var delay = isReducedMotion() ? 0 : 120;
+    timers.push(setTimeout(function () {
+      if (myRun !== runId) { return; }
+      revealRows(layer, timers, function () { return myRun !== runId; }, function () {
+        finishRender(myRun, mode === "coach" ? "Coach points ready." : "3 points ready.");
+      });
+    }, delay));
+  }
+
+  // Step 73 — language guard for the typed path (client side; the
+  // proxy-side guard is Phase 2). The proxy has no language field —
+  // its only input is the question — so for Arabic-script questions
+  // the instruction rides inside the question text, in the question's
+  // own language. Verified live 2026-11-21: without it, a Persian
+  // question was answered in English; with it, two Persian questions
+  // answered fully in Persian and an Arabic one fully in Arabic (the
+  // proxy prompt's own "same language" rule is followed weakly until
+  // the instruction is explicit). The page displays the visitor's own
+  // words; the instruction is a client directive on the wire only.
+  function typedLang(text) {
+    if (!/[\u0600-\u06FF]/.test(text)) { return null; }
+    return /[\u067E\u0686\u0698\u06AF\u06A9\u06CC]/.test(text) ? "fa" : "ar";
+  }
+  function wireQuestion(text) {
+    var lang = typedLang(text);
+    if (lang === "fa") { return text + " (به فارسی پاسخ دهید)"; }
+    if (lang === "ar") { return text + " (أجب بالعربية)"; }
+    return text;
+  }
+
   function showTypedAI(text) {
     clearTimers();
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
@@ -829,13 +912,13 @@ var IA_VARIANTS = {
     showLayer(questionLayers, idx);
     dynAnswerLayer.textContent = "";
     dynAnswerLayer.dir = /[\u0600-\u06FF]/.test(text) ? "rtl" : "ltr";
-    dynAnswerLayer.lang = dynAnswerLayer.dir === "rtl" ? "fa" : "en";
+    dynAnswerLayer.lang = typedLang(text) || "en";
     var layer = showLayer(answerLayers, answerLayers.indexOf(dynAnswerLayer));
     currentAnswerLayer = layer;
     layer.setAttribute("aria-busy", "true");
     sampleTagEl.classList.add("is-hidden");
     setStatus("Preparing your points…");
-    iaFetchAI(text, "base",
+    iaFetchAI(wireQuestion(text), "base",
       function () { return demoFetchCtl; },
       function (c) { demoFetchCtl = c; },
       function (data) {
@@ -873,11 +956,13 @@ var IA_VARIANTS = {
     showAnswer(currentKey, currentQuestion, sample);
   }
 
-  modeAnswerBtn.addEventListener("click", function () { setMode("answer"); });
-  modeCoachBtn.addEventListener("click", function () { setMode("coach"); });
+  modeAnswerBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("answer"); });
+  modeCoachBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("coach"); });
 
   document.querySelectorAll(".chip").forEach(function (chip) {
     chip.addEventListener("click", function () {
+      cancelScene();
+      visitorActed = true;
       var key = chip.getAttribute("data-q");
       var sample = SAMPLES[key];
       if (sample) { showAnswer(key, sample.q, sample); }
@@ -888,6 +973,7 @@ var IA_VARIANTS = {
 
   formEl.addEventListener("submit", function (e) {
     e.preventDefault();
+    cancelScene();
     var text = inputEl.value.trim();
     if (!text) {
       setStatus("Type a question, or pick a sample below.");
@@ -896,7 +982,15 @@ var IA_VARIANTS = {
       return;
     }
     inputEl.removeAttribute("aria-invalid");
-    // A typed question goes to the live AI when the proxy is
+    visitorActed = true;
+    // Step 73: a typed question that matches a prepared sample is
+    // answered from that sample first — locally, at zero AI cost.
+    var matched = matchSample(text);
+    if (matched) {
+      showTypedMatch(matched, text);
+      return;
+    }
+    // Otherwise the question goes to the live AI when the proxy is
     // configured (Answer mode — the proxy returns speakable points,
     // not Coach keywords). Any failure, and Coach mode, use the
     // honest generic structure, not a fake answer.
@@ -968,9 +1062,606 @@ var IA_VARIANTS = {
     showInt("normal", "Normal (3 points)");
   }
 
-  // Initial state: build the layers, then the default sample, staged on load.
+  /* Step 73 — the scene: "The Interview, Live" (demo.html only).
+     The demo window becomes a video call in progress: a LIVE bar
+     with a running clock, the interviewer speaking (waveform), the
+     question arriving word by word as a provisional transcript
+     under a Listening pill, "Question detected", the three points
+     landing while the moment is still live, then an ambush
+     follow-up whose answer shortens itself twice. The choreography
+     is a small state machine on its own timer list + run token; any
+     visitor interaction (chip, submit, mode switch) cancels it via
+     cancelScene() and hands the window to the classic paths above,
+     untouched. With reduced motion — and for no-JS, in the static
+     HTML — the scene is shown settled and complete instead of
+     played. On pages without the call stage (index.html shares
+     this IIFE), every scene function is a no-op and the classic
+     autoplay runs exactly as before. */
+  var callStageEl = document.getElementById("call-stage");
+  var scenePillEl = document.getElementById("scene-pill");
+  var scenePillTextEl = document.getElementById("scene-pill-text");
+  var sceneClockEl = document.getElementById("scene-clock");
+  var callTileEl = document.getElementById("call-tile");
+  var callSpeakingEl = document.getElementById("call-speaking");
+  var callSelfEl = document.getElementById("call-self");
+  var callCaptionEl = document.getElementById("call-caption");
+  var sceneControlsEl = document.getElementById("scene-controls");
+  var sceneReplayBtn = document.getElementById("scene-replay");
+  var sceneSkipBtn = document.getElementById("scene-skip");
+  var sceneDownloadEl = document.getElementById("scene-download");
+  var sceneOn = !!(callStageEl && scenePillEl && scenePillTextEl && callCaptionEl);
+  var scene = { run: 0, timers: [], clockTimer: null, clockStart: 0, done: false, playing: false };
+  /* Step 74 — the scene is now a full interview arc, not one
+     question: a warm-up, an ambush follow-up (the answer shortens
+     itself twice), a deeper behavioural question, a closing
+     question, and the interviewer's thanks — with the candidate
+     visibly answering between exchanges. Every exchange swaps
+     layers inside the same two stacks, so the one window never
+     grows; the beats are scheduled from a running cursor, and in
+     a voiced run (Step 74 Pass 3) each question's word pacing is
+     driven by its pre-generated clip's real duration. */
+  var FOLLOW_Q = "Can you give me the shorter version?";
+  var THANKS_LINE = "That’s everything I need. Thank you.";
+  var sceneQ = {};        // key -> { layer, words, idx }
+  var sceneA = {};        // key -> answer layer (story/why/concise/rapid)
+  var sceneAnswerShown = null;
+  var thanksWords = [];
+  var sceneVoiced = false;
+
+  function sceneLater(ms, fn) {
+    var myScene = scene.run;
+    scene.timers.push(setTimeout(function () {
+      if (myScene !== scene.run) { return; }
+      fn();
+    }, ms));
+  }
+
+  function clearSceneTimers() {
+    scene.timers.forEach(function (t) { clearTimeout(t); });
+    scene.timers = [];
+  }
+
+  function setScenePill(text, kind) {
+    if (!scenePillEl) { return; }
+    scenePillTextEl.textContent = text;
+    // Step 74: the pill is the canonical .app-pill of the Live
+    // window's .app-header — its states are the app's own
+    // (is-listening, with the live meter) or neutral.
+    scenePillEl.classList.toggle("is-listening", kind === "listening");
+    scenePillEl.classList.toggle("is-live", kind === "listening");
+  }
+
+  function setSpeaking(on) {
+    if (callTileEl) { callTileEl.classList.toggle("is-speaking", !!on); }
+    if (callSpeakingEl) { callSpeakingEl.hidden = !on; }
+  }
+
+  function sceneTick() {
+    if (!sceneClockEl || !scene.clockStart) { return; }
+    var s = Math.floor((Date.now() - scene.clockStart) / 1000);
+    var mm = String(Math.floor(s / 60));
+    var ss = String(s % 60);
+    sceneClockEl.textContent = (mm.length < 2 ? "0" + mm : mm) + ":" + (ss.length < 2 ? "0" + ss : ss);
+  }
+
+  function startSceneClock() {
+    scene.clockStart = Date.now();
+    if (scene.clockTimer) { clearInterval(scene.clockTimer); }
+    scene.clockTimer = setInterval(sceneTick, 500);
+    sceneTick();
+  }
+
+  function buildWordSpans(el, text) {
+    el.textContent = "";
+    var words = text.split(" ");
+    var spans = [];
+    words.forEach(function (w, i) {
+      var s = document.createElement("span");
+      s.className = "w is-hidden";
+      s.textContent = w;
+      el.appendChild(s);
+      if (i < words.length - 1) { el.appendChild(document.createTextNode(" ")); }
+      spans.push(s);
+    });
+    return spans;
+  }
+
+  function sceneReveal(layer, intervalMs, done) {
+    var rows = layer.querySelectorAll("li");
+    if (intervalMs <= 0 || isReducedMotion()) {
+      rows.forEach(function (row) { row.classList.remove("is-hidden"); });
+      if (done) { done(); }
+      return;
+    }
+    rows.forEach(function (row, i) {
+      sceneLater(i * intervalMs, function () {
+        row.classList.remove("is-hidden");
+        row.classList.add("is-new");
+      });
+    });
+    if (done) { sceneLater(Math.max(0, rows.length - 1) * intervalMs + 60, done); }
+  }
+
+  function buildSceneQuestion(key, text) {
+    var layer = document.createElement("p");
+    layer.className = "demo-question scene-q is-provisional";
+    layer.setAttribute("aria-hidden", "true");
+    questionStack.appendChild(layer);
+    questionLayers.push(layer);
+    var words = buildWordSpans(layer, "“" + text + "”");
+    layer.classList.add("is-hidden");
+    return { layer: layer, words: words, idx: questionLayers.length - 1 };
+  }
+
+  function buildSceneLayers() {
+    if (!sceneOn) { return; }
+    // One question layer per exchange, all in the classic question
+    // stack (classic indices preserved; scene layers are only ever
+    // referenced through sceneQ). The tell answer is the classic
+    // layer 0; the other exchanges get scene-owned answer layers in
+    // the same answer stack, swapped by sceneShowAnswer.
+    sceneQ.tell = buildSceneQuestion("tell", SAMPLES.tell.q);
+    sceneQ.follow = buildSceneQuestion("follow", FOLLOW_Q);
+    sceneQ.story = buildSceneQuestion("story", SAMPLES.story.q);
+    sceneQ.why = buildSceneQuestion("why", SAMPLES.why.q);
+    sceneA.story = buildAnswerLayer(SAMPLES.story.answer, false, "en");
+    answerStack.appendChild(sceneA.story);
+    sceneA.why = buildAnswerLayer(SAMPLES.why.answer, false, "en");
+    answerStack.appendChild(sceneA.why);
+    if (typeof INT !== "undefined" && INT && INT.concise && INT.rapid) {
+      sceneA.concise = buildAnswerLayer(INT.concise, false, "en");
+      answerStack.appendChild(sceneA.concise);
+      sceneA.rapid = buildAnswerLayer(INT.rapid, false, "en");
+      answerStack.appendChild(sceneA.rapid);
+    }
+    thanksWords = buildWordSpans(callCaptionEl, THANKS_LINE);
+    thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
+    sceneReserveHeights();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { sceneReserveHeights(); });
+    }
+    window.addEventListener("resize", function () {
+      if (!scene.playing) { sceneReserveHeights(); }
+    });
+  }
+
+  function measureLayer(el) {
+    if (!el) { return 0; }
+    var wasHidden = el.classList.contains("is-hidden");
+    var rows = el.querySelectorAll("li.is-hidden");
+    el.classList.remove("is-hidden");
+    el.style.visibility = "hidden";
+    // The stacks are grids whose items stretch to the cell —
+    // pin the item to its content height while measuring.
+    el.style.alignSelf = "start";
+    rows.forEach(function (li) { li.classList.remove("is-hidden"); });
+    var cs = window.getComputedStyle(el);
+    var h = el.offsetHeight + parseFloat(cs.marginTop || 0) + parseFloat(cs.marginBottom || 0);
+    rows.forEach(function (li) { li.classList.add("is-hidden"); });
+    el.style.visibility = "";
+    el.style.alignSelf = "";
+    if (wasHidden) { el.classList.add("is-hidden"); }
+    return h;
+  }
+
+  /* The classic stacks reserve the tallest layer by construction
+     (grid cell, visibility). Scene mode display:none's the
+     inactive layers, so without a reservation the window would
+     change height at every exchange. Measure the scene's own
+     layers (fonts can change wraps, widths change wraps — hence
+     the recompute hooks) and reserve exactly their maximum. */
+  function sceneReserveHeights() {
+    if (!sceneOn) { return; }
+    var maxA = 0, maxQ = 0;
+    [answerLayers[0], sceneA.story, sceneA.why, sceneA.concise, sceneA.rapid].forEach(function (l) {
+      maxA = Math.max(maxA, measureLayer(l));
+    });
+    [sceneQ.tell, sceneQ.follow, sceneQ.story, sceneQ.why].forEach(function (q) {
+      if (q) { maxQ = Math.max(maxQ, measureLayer(q.layer)); }
+    });
+    if (maxA) { callStageEl.style.setProperty("--scene-answer-min", maxA + "px"); }
+    if (maxQ) { callStageEl.style.setProperty("--scene-question-min", maxQ + "px"); }
+    if (sampleTagEl) {
+      var prev = sampleTagEl.textContent;
+      sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+      var tagH = measureLayer(sampleTagEl);
+      sampleTagEl.textContent = prev;
+      if (tagH) { callStageEl.style.setProperty("--scene-tag-min", tagH + "px"); }
+    }
+  }
+
+  function sceneShowAnswer(layer) {
+    hideAllLayers(answerLayers);
+    if (sceneAnswerShown && sceneAnswerShown !== layer) {
+      sceneAnswerShown.classList.add("is-hidden");
+    }
+    sceneAnswerShown = layer || null;
+    if (layer) {
+      layer.classList.remove("is-hidden");
+      currentAnswerLayer = layer;
+    }
+  }
+
+  function setSelfSpeaking(on) {
+    if (callSelfEl) { callSelfEl.classList.toggle("is-speaking", !!on); }
+  }
+
+  /* One exchange, scheduled from cursor t (seconds). The words
+     pace over the speech duration — the clip's real duration in a
+     voiced run, the staged pacing otherwise — detection lands
+     just after the voice ends, and the points land while the
+     moment is still live. Returns the cursor for the next beat. */
+  function sceneAsk(t, q, aLayer, opts) {
+    var speech = sceneClipDuration(opts.clip, opts.speech);
+    var rows = aLayer.querySelectorAll("li").length;
+    var step = opts.pointStep || 400;
+    sceneLater(t * 1000, function () {
+      setSpeaking(true);
+      setScenePill("Listening", "listening");
+      showLayer(questionLayers, q.idx);
+      q.layer.classList.add("is-provisional");
+      q.words.forEach(function (w) { w.classList.add("is-hidden"); });
+      sceneShowAnswer(aLayer);
+      hideRows(aLayer);
+      sceneClipPlay(opts.clip);
+      var wstep = (speech * 1000) / Math.max(1, q.words.length);
+      q.words.forEach(function (w, i) {
+        sceneLater(150 + i * wstep, function () { w.classList.remove("is-hidden"); });
+      });
+    });
+    var detectedAt = t + 0.15 + speech + 0.2;
+    sceneLater(detectedAt * 1000, function () {
+      setSpeaking(false);
+      setScenePill("Question detected", "detected");
+      q.layer.classList.remove("is-provisional");
+    });
+    var pointsAt = detectedAt + 0.4;
+    sceneLater(pointsAt * 1000, function () {
+      if (opts.statusText) { setStatus(opts.statusText); } else { setStatus("Preparing your points…"); }
+      sceneReveal(aLayer, step, function () {
+        setScenePill("Answer ready", "ready");
+        if (opts.tagOnReady) {
+          sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+          sampleTagEl.classList.remove("is-hidden");
+        }
+        if (opts.readyText) { setStatus(opts.readyText); }
+      });
+    });
+    return pointsAt + Math.max(0, rows - 1) * step / 1000 + 0.5;
+  }
+
+  /* The candidate answers: the self tile speaks, the status says
+     what the visitor is seeing. Returns the next cursor. */
+  function sceneYou(t, dur, statusText) {
+    sceneLater(t * 1000, function () {
+      if (statusText) { setStatus(statusText); }
+      setSelfSpeaking(true);
+    });
+    sceneLater((t + dur) * 1000, function () { setSelfSpeaking(false); });
+    return t + dur;
+  }
+
+  function cancelScene() {
+    if (!sceneOn) { return; }
+    scene.run++;
+    clearSceneTimers();
+    sceneClipStopAll();
+    scene.playing = false;
+    callStageEl.classList.remove("is-scene");
+    setSpeaking(false);
+    setSelfSpeaking(false);
+    if (callCaptionEl) { callCaptionEl.hidden = true; }
+    if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
+    setScenePill("Not listening", "");
+  }
+
+  function settleScene() {
+    if (!sceneOn) { return; }
+    scene.run++;
+    clearSceneTimers();
+    sceneClipStopAll();
+    clearTimers();
+    if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
+    scene.playing = false;
+    scene.done = true;
+    callStageEl.classList.add("is-scene");
+    setSpeaking(false);
+    setSelfSpeaking(false);
+    if (callCaptionEl) { callCaptionEl.hidden = true; }
+    if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
+    setScenePill("Answer ready", "ready");
+    showLayer(questionLayers, sceneQ.tell.idx);
+    sceneQ.tell.layer.classList.remove("is-provisional");
+    sceneQ.tell.words.forEach(function (w) { w.classList.remove("is-hidden"); });
+    var layer = showLayer(answerLayers, 0);
+    currentAnswerLayer = layer;
+    sceneAnswerShown = null;
+    layer.querySelectorAll("li").forEach(function (row) { row.classList.remove("is-hidden"); });
+    sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+    sampleTagEl.classList.remove("is-hidden");
+    setStatus("The scene, settled: the app hears each question as it is asked and answers in three short points — the same small window through the whole interview, follow-ups included. Your turn below — typed questions are answered live.");
+  }
+
+  function playScene(opts) {
+    if (!sceneOn || isReducedMotion()) { settleScene(); return; }
+    sceneVoiced = !!(opts && opts.voice);
+    scene.run++;
+    clearSceneTimers();
+    sceneClipStopAll();
+    clearTimers();
+    if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
+    runId++;
+    scene.playing = true;
+    scene.done = false;
+    callStageEl.classList.add("is-scene");
+    if (sceneSkipBtn) { sceneSkipBtn.hidden = false; }
+    if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
+    if (mode !== "answer") {
+      mode = "answer";
+      modeAnswerBtn.classList.add("is-active");
+      modeCoachBtn.classList.remove("is-active");
+      modeCoachBtn.classList.remove("is-coach-active");
+      modeAnswerBtn.setAttribute("aria-pressed", "true");
+      modeCoachBtn.setAttribute("aria-pressed", "false");
+    }
+    currentKey = "tell";
+    currentQuestion = SAMPLES.tell.q;
+    // Reset the stage.
+    sampleTagEl.classList.add("is-hidden");
+    if (callCaptionEl) { callCaptionEl.hidden = true; }
+    thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
+    setSelfSpeaking(false);
+    setStatus("The interview is live — the app is listening.");
+    startSceneClock();
+
+    /* The arc, beat by beat (cursor in seconds; a voiced run
+       stretches each ask to its clip's real length):
+       1 warm-up (tell) → you answer → 2 ambush follow-up (Concise,
+       then Rapid) → you answer → 3 the difficult-project story →
+       you answer → 4 the closing question (why) → you answer →
+       5 the interviewer's thanks, captioned in his tile, and the
+       window's work is done — the download moment. */
+    var t = 0.3;
+    t = sceneAsk(t, sceneQ.tell, answerLayers[0], {
+      clip: "tell", speech: 1.25, pointStep: 400,
+      tagOnReady: true, readyText: "3 points ready — sample."
+    });
+    t = sceneYou(t + 0.4, 1.8, "You answer — the three points, in your own words.");
+    // The ambush: asked fast, answered shorter, then shorter still.
+    t = sceneAsk(t + 0.35, sceneQ.follow, sceneA.concise, {
+      clip: "follow", speech: 1.1, pointStep: 250,
+      statusText: "The follow-up came fast — the answer shortened itself."
+    });
+    sceneLater((t + 0.9) * 1000, function () {
+      sceneShowAnswer(sceneA.rapid);
+      sceneReveal(sceneA.rapid, 0, null);
+      setScenePill("Answer ready", "ready");
+      setStatus("Faster still — one line. In the real app, this shortening is automatic.");
+    });
+    t = t + 1.4;
+    t = sceneYou(t, 1.4, "You answer — one line, said in seconds.");
+    t = sceneAsk(t + 0.35, sceneQ.story, sceneA.story, {
+      clip: "story", speech: 2.0, pointStep: 400,
+      statusText: "A harder question — its answer was already in the question bank."
+    });
+    t = sceneYou(t + 0.4, 2.0, "You answer — the difficult-project story, already prepared.");
+    t = sceneAsk(t + 0.35, sceneQ.why, sceneA.why, {
+      clip: "why", speech: 1.3, pointStep: 400,
+      statusText: "The closing question — the same preparation answers it."
+    });
+    t = sceneYou(t + 0.4, 1.8, "You answer — calm, because it was ready.");
+    // The close: the interviewer thanks you — captioned in his
+    // tile, paced by the thanks clip in a voiced run — and the
+    // pill rests at Interview complete over the download anchor.
+    var thanksSpeech = sceneClipDuration("thanks", 1.5);
+    sceneLater((t + 0.4) * 1000, function () {
+      setSpeaking(true);
+      setScenePill("Listening", "listening");
+      sceneClipPlay("thanks");
+      if (callCaptionEl) {
+        callCaptionEl.hidden = false;
+        if (window.getComputedStyle(callCaptionEl).display === "none") {
+          // Narrow layouts: the caption chip stands down (the CSS
+          // decides), so the status line carries the closing line
+          // verbatim instead.
+          setStatus("The interviewer closes: “That’s everything I need. Thank you.”");
+        }
+      }
+      var wstep = (thanksSpeech * 1000) / Math.max(1, thanksWords.length);
+      thanksWords.forEach(function (w, i) {
+        sceneLater(150 + i * wstep, function () { w.classList.remove("is-hidden"); });
+      });
+    });
+    sceneLater((t + 0.4 + thanksSpeech + 0.4) * 1000, function () {
+      setSpeaking(false);
+      scene.playing = false;
+      scene.done = true;
+      if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
+      if (sceneDownloadEl) { sceneDownloadEl.hidden = false; }
+      setScenePill("Interview complete", "ready");
+      setStatus("Four questions — every answer from the same preparation: your resume, the job description, your profile. That is the whole interview, in one small window.");
+    });
+  }
+
+  /* Step 74 Pass 3 — the spoken interviewer. The interviewer's
+     lines are pre-generated clips shipped with the site (small
+     static MP3s, zero runtime cost); a voiced run is started
+     only by the visitor's gesture on "Start the interview",
+     which doubles as the sound opt-in. Word pacing in a voiced
+     run is driven by each clip's measured duration, and muting
+     uses the muted property so playback position — and with it
+     the sync — keeps advancing. If a clip fails to load or play,
+     that beat falls back to the staged pacing and the visual
+     choreography runs unchanged. */
+  var CLIP_FILES = { tell: "tell", follow: "followup", story: "story", why: "why", thanks: "thanks" };
+  var sceneClips = {};
+  var sceneMuted = false;
+  if (sceneOn) {
+    Object.keys(CLIP_FILES).forEach(function (key) {
+      var el = new Audio();
+      el.preload = "auto";
+      el.src = "audio/scene-" + CLIP_FILES[key] + ".mp3";
+      var rec = { el: el, dur: 0, failed: false };
+      el.addEventListener("loadedmetadata", function () { rec.dur = el.duration || 0; });
+      el.addEventListener("error", function () { rec.failed = true; });
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+      callStageEl.appendChild(el);
+      sceneClips[key] = rec;
+    });
+  }
+  var sceneStartBtn = document.getElementById("scene-start");
+  var sceneMuteBtn = document.getElementById("scene-mute");
+
+  function sceneClipDuration(key, fallback) {
+    if (sceneVoiced && key && sceneClips[key] && !sceneClips[key].failed && sceneClips[key].dur > 0) {
+      return sceneClips[key].dur + 0.1;
+    }
+    return fallback;
+  }
+  function sceneClipPlay(key) {
+    if (!sceneVoiced || !key || !sceneClips[key] || sceneClips[key].failed) { return; }
+    var rec = sceneClips[key];
+    try {
+      rec.el.muted = sceneMuted;
+      rec.el.currentTime = 0;
+      var p = rec.el.play();
+      if (p && p.catch) { p.catch(function () { rec.failed = true; }); }
+    } catch (e) { rec.failed = true; }
+  }
+  function sceneClipStopAll() {
+    Object.keys(sceneClips).forEach(function (key) {
+      var el = sceneClips[key].el;
+      try { el.pause(); el.currentTime = 0; } catch (e) {}
+    });
+  }
+  function clipsReady() {
+    var waits = Object.keys(sceneClips).map(function (key) {
+      var rec = sceneClips[key];
+      if (rec.failed || rec.dur > 0) { return Promise.resolve(); }
+      return new Promise(function (resolve) {
+        var done = false;
+        var finish = function () { if (!done) { done = true; resolve(); } };
+        rec.el.addEventListener("loadedmetadata", finish);
+        rec.el.addEventListener("error", finish);
+        setTimeout(finish, 2500);
+      });
+    });
+    return Promise.all(waits);
+  }
+  if (sceneStartBtn) {
+    sceneStartBtn.addEventListener("click", function () {
+      // The gesture unlocks every clip element (play + pause at
+      // zero volume), then the run starts once durations are
+      // known, so the transcript can pace to the real voice.
+      Object.keys(sceneClips).forEach(function (key) {
+        var el = sceneClips[key].el;
+        el.muted = true;
+        var p = el.play();
+        if (p && p.then) {
+          p.then(function () { el.pause(); el.currentTime = 0; el.muted = sceneMuted; })
+           .catch(function () { sceneClips[key].failed = true; });
+        }
+      });
+      if (sceneMuteBtn) { sceneMuteBtn.hidden = false; }
+      clipsReady().then(function () { playScene({ voice: true }); });
+    });
+  }
+  if (sceneMuteBtn) {
+    sceneMuteBtn.addEventListener("click", function () {
+      sceneMuted = !sceneMuted;
+      Object.keys(sceneClips).forEach(function (key) { sceneClips[key].el.muted = sceneMuted; });
+      sceneMuteBtn.textContent = sceneMuted ? "Sound off" : "Sound on";
+      sceneMuteBtn.setAttribute("aria-pressed", String(sceneMuted));
+    });
+  }
+
+  /* Step 74 Pass 3 — the visitor's own camera in the "You" tile.
+     Opt-in only (a real button, unhidden by JS — never a dead
+     control without JS), gesture-only getUserMedia, video only.
+     The stream never leaves the device: no recording, no upload,
+     no frame capture; the note under the stage says so. Tracks
+     stop on toggle-off, on page hide, and on unload; denial,
+     no-camera and insecure-context failures fall back to the
+     labelled tile with the choreography untouched. */
+  var camToggleBtn = document.getElementById("cam-toggle");
+  var camToggleText = document.getElementById("cam-toggle-text");
+  var camVideo = document.getElementById("cam-video");
+  var camNoteEl = document.getElementById("cam-note");
+  var camStream = null;
+  var camOn = false;
+  function camNote(text) {
+    if (!camNoteEl) { return; }
+    if (text) { camNoteEl.textContent = text; camNoteEl.hidden = false; }
+    else { camNoteEl.hidden = true; }
+  }
+  function camStop() {
+    if (camStream) {
+      camStream.getTracks().forEach(function (tr) { tr.stop(); });
+      camStream = null;
+    }
+    if (camVideo) { camVideo.srcObject = null; camVideo.hidden = true; }
+    camOn = false;
+    if (callSelfEl) { callSelfEl.classList.remove("cam-on"); }
+    if (camToggleBtn) { camToggleBtn.setAttribute("aria-pressed", "false"); }
+    if (camToggleText) { camToggleText.textContent = "Use your camera"; }
+  }
+  function camFail(message) {
+    camStop();
+    camNote(message);
+  }
+  if (camToggleBtn && camVideo && callSelfEl) {
+    camToggleBtn.hidden = false;
+    callSelfEl.classList.add("cam-ready");
+    camToggleBtn.addEventListener("click", function () {
+      if (camOn) { camStop(); camNote(null); return; }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        camFail("Camera is not available in this browser or on this connection — the labelled tile stays. Nothing was recorded or sent.");
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false }).then(function (stream) {
+        camStream = stream;
+        camVideo.srcObject = stream;
+        camVideo.hidden = false;
+        var p = camVideo.play();
+        if (p && p.catch) { p.catch(function () {}); }
+        camOn = true;
+        callSelfEl.classList.add("cam-on");
+        camToggleBtn.setAttribute("aria-pressed", "true");
+        camToggleText.textContent = "Stop camera";
+        camNote("Your camera is live in the tile — on this device only. Nothing is recorded, uploaded or sent anywhere; stopping the camera or leaving the page ends it.");
+      }).catch(function () {
+        camFail("The camera did not start — permission was not given, or no camera is available. The labelled tile stays; nothing was recorded or sent.");
+      });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && camOn) { camStop(); camNote(null); }
+    });
+    window.addEventListener("pagehide", function () { camStop(); });
+  }
+
+  if (sceneReplayBtn) {
+    sceneReplayBtn.addEventListener("click", function () { playScene(); });
+  }
+  if (sceneSkipBtn) {
+    sceneSkipBtn.addEventListener("click", function () { settleScene(); });
+  }
+
+  // Initial state: build the layers, then — on the demo page — play
+  // the scene (or settle it, for reduced motion); everywhere else
+  // the classic default sample, staged on load, exactly as before.
   buildDemoLayers();
-  showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);
+  buildSceneLayers();
+  if (sceneOn) {
+    if (isReducedMotion()) {
+      settleScene();
+    } else {
+      if (sceneControlsEl) { sceneControlsEl.hidden = false; }
+      playScene();
+    }
+  } else {
+    showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);
+  }
 })();
 
 /* Download buttons (draft): no installer yet — say so, don't 404.

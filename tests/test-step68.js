@@ -126,8 +126,12 @@ const mythsSlice = html.slice(html.indexOf('<section class="section" id="myths"'
   check("hero: scene 2 carries the question the fact earned (L-3/L-4)",
     html.includes('<div class="hw-qrow is-thread"><span>“Tell me about yourself.”</span><span class="hw-tag is-verified">Verified · Fact 1</span></div>'));
   check("hero: the window's footer is the page's own thread line",
-    html.includes('<p class="hw-thread-line hw-hw-foot">')
-    && html.includes('Fact 1 → “Tell me about yourself.” → three points, sourced'));
+    // Step 74 re-pin: the foot is now a strip holding the thread
+    // line plus the simulated/sample label (moved out of the bar
+    // when the bar took the canonical title form).
+    html.includes('<div class="hw-hw-foot"><p class="hw-thread-line">')
+    && html.includes('Fact 1 → “Tell me about yourself.” → three points, sourced')
+    && html.includes('<span class="hw-hw-tag">Simulated · sample data</span>'));
   check("hero: the window implies no interactivity (no buttons inside it)",
     !html.slice(html.indexOf('<div class="hw-herowindow app-window">'),
       html.indexOf('<div class="hw-clocks"')).includes("<button"));

@@ -23,8 +23,12 @@ function navLinks(html) {
 const expectedNav = ['index.html', 'features.html', 'how-it-works.html', 'demo.html', 'pricing.html',
   'download.html', 'platforms.html', 'support.html', 'demo.html', 'privacy.html', 'terms.html'];
 for (const [f, html] of Object.entries(pages)) {
+  // Step 73: demo.html's menu CTA (the 9th link) points to
+  // download.html — on the demo page itself, "Try the live demo"
+  // would be a self-link. The Demo nav link itself is unchanged.
+  const exp = f === "demo.html" ? expectedNav.map((x, i) => (i === 8 ? "download.html" : x)) : expectedNav;
   check(`D2 ${f} nav has exactly the 11 standard links (Step 32 set + Step 36 Home)`,
-    JSON.stringify(navLinks(html)) === JSON.stringify(expectedNav));
+    JSON.stringify(navLinks(html)) === JSON.stringify(exp));
 }
 // --- D3: simulator state row stacks cleanly on small phones ---
 check('D3 demo seg-label span exists',

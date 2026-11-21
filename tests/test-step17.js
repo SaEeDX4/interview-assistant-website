@@ -48,10 +48,20 @@ check("every HTML class is defined in CSS or whitelisted",
   undefinedCls.length === 0, `undefined: ${undefinedCls.sort().join(", ")}`);
 
 // 3. Nav + footer identical on all pages (modulo aria-current).
+// Step 73 annotation: demo.html's menu CTA deliberately points to
+// download.html — a "Try the live demo" button on the demo page
+// itself would be a self-link. Identity is therefore asserted
+// exactly for the other ten pages, and for demo.html after swapping
+// that one CTA back to the standard form (nothing else may differ).
 function norm(s) { return s.replace(/ aria-current="page"/g, ""); }
-const navs = new Set(PAGES.map((f) => norm((html[f].match(/<nav[^>]*>[\s\S]*?<\/nav>/) || [""])[0])));
+const navOfPage = (f) => norm((html[f].match(/<nav[^>]*>[\s\S]*?<\/nav>/) || [""])[0]);
+const navs = new Set(PAGES.filter((f) => f !== "demo.html").map(navOfPage));
+const demoNavSwapped = navOfPage("demo.html").replace(
+  '<a class="btn btn-primary nav-menu-cta" href="download.html">Download for Windows</a>',
+  '<a class="btn btn-primary nav-menu-cta" href="demo.html">Try the live demo</a>');
 const foots = new Set(PAGES.map((f) => norm((html[f].match(/<footer[^>]*>[\s\S]*?<\/footer>/) || [""])[0])));
-check("nav markup identical on all 11 pages", navs.size === 1, `${navs.size} variants`);
+check("nav markup identical on all 11 pages (Step 73: modulo demo.html's CTA target)",
+  navs.size === 1 && demoNavSwapped === [...navs][0], `${navs.size} variants`);
 check("footer markup identical on all 11 pages", foots.size === 1, `${foots.size} variants`);
 
 // 4. Funnel + sticky bar placement.

@@ -52,13 +52,22 @@ check("Platforms is the mobile-only restore; Privacy is only in the menu's legal
   htmls.every((h) => /<a href="platforms\.html" class="nav-mobile-only"/.test(navOf(h))) &&
   htmls.every((h) => (navOf(h).match(/href="privacy\.html"/g) || []).length === 1) &&
   htmls.every((h) => /<span class="nav-menu-legal">\s*<a href="privacy\.html"/.test(navOf(h))));
+// Step 73 annotation: on demo.html itself, both CTAs point onward to
+// download.html — a "Try the live demo" button there is a self-link.
+// Every other page keeps the standard demo CTA; the shape (one
+// full-width menu CTA, exactly one header CTA) is unchanged.
 check("the menu foot carries the full-width CTA and the legal row",
-  htmls.every((h) => /<a class="btn btn-primary nav-menu-cta" href="demo\.html">Try the live demo<\/a>/.test(navOf(h))) &&
+  htmls.every((h, i) => PAGES[i] === "demo.html"
+    ? /<a class="btn btn-primary nav-menu-cta" href="download\.html">Download for Windows<\/a>/.test(navOf(h))
+    : /<a class="btn btn-primary nav-menu-cta" href="demo\.html">Try the live demo<\/a>/.test(navOf(h))) &&
   htmls.every((h) => /<a href="terms\.html"( aria-current="page")?>Terms \(draft\)<\/a>/.test(navOf(h))));
 check("exactly one header CTA button, at the far right of the bar",
-  htmls.every((h) => {
+  htmls.every((h, i) => {
     const head = (h.match(/<header class="site-header">[\s\S]*?<\/header>/) || [""])[0];
-    return (head.match(/class="btn btn-primary btn-small" href="demo\.html"/g) || []).length === 1;
+    return PAGES[i] === "demo.html"
+      ? (head.match(/class="btn btn-primary btn-small" href="download\.html"/g) || []).length === 1 &&
+        !(head.match(/class="btn btn-primary btn-small" href="demo\.html"/g) || []).length
+      : (head.match(/class="btn btn-primary btn-small" href="demo\.html"/g) || []).length === 1;
   }));
 
 /* ---------- the morph + the overlay ---------- */

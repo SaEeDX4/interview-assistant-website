@@ -107,6 +107,12 @@ for (const p of PAGES) {
   const hasBar = html.includes('id="sticky-cta"');
   if (p === "download.html") {
     check("sticky bar: download.html has none by design", !hasBar);
+  } else if (p === "demo.html") {
+    // Step 73: on the demo page itself the sticky bar must not
+    // self-link — primary points to the download, secondary to pricing.
+    check(`sticky bar classes: ${p}`, hasBar &&
+      html.includes('class="btn btn-primary btn-small" href="download.html"') &&
+      html.includes('class="btn btn-secondary btn-small" href="pricing.html"'));
   } else {
     check(`sticky bar classes: ${p}`, hasBar &&
       html.includes('class="btn btn-primary btn-small" href="demo.html"') &&
@@ -116,7 +122,13 @@ for (const p of PAGES) {
 
 // ---------- B. Regression smoke (Step 5 invariants) ----------
 for (const p of PAGES) {
-  check(`cta reframe: ${p} offers the live demo`, read(p).includes("Try the live demo"));
+  if (p === "demo.html") {
+    // Step 73: the demo page's CTAs point onward (download), never at itself.
+    check(`cta reframe: ${p} offers the download, not a self-link`,
+      read(p).includes("Download for Windows") && !read(p).includes('href="demo.html">Try the live demo'));
+  } else {
+    check(`cta reframe: ${p} offers the live demo`, read(p).includes("Try the live demo"));
+  }
 }
 check("kbd: no orphaned period after </kbd> anywhere",
   !PAGES.some((p) => read(p).includes("</kbd>.")));

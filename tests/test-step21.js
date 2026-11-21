@@ -103,6 +103,11 @@ check("story header shows the full control set (? + … + min/max/close)",
 const demoLists = [...html.matchAll(/<ul class="demo-answer"[^>]*>[\s\S]*?<\/ul>/g)].map((m) => m[0])
   .concat([...demoHtml.matchAll(/<ul class="demo-answer"[^>]*>[\s\S]*?<\/ul>/g)].map((m) => m[0]));
 check("demo bullets are blue dots, not numbered cards",
+  // Step 73: 4 lists — the scene's follow-up Rapid list joins the
+  // three pre-rendered ones, in the same dot-bullet form.
+  // Step 74 re-pin: 3 static lists — the Rapid list is now built
+  // by JS from the canonical INT strings (same dot form, asserted
+  // by the app-dot builder clause below).
   demoLists.length === 3 &&
   demoLists.every((ul) => !ul.includes('class="num"') && ul.includes('class="app-dot"')) &&
   /dot\.className = "app-dot";/.test(js) &&

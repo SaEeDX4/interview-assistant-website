@@ -71,11 +71,15 @@ const band640 = block.slice(block.lastIndexOf("@media (max-width: 640px)"));
 
 /* ---------- 1. The hero window: chrome + three frozen scenes ---------- */
 {
-  check("window: the trace's own chrome — bar, title with its tail span, the simulated/sample label",
+  check("window: the trace's own chrome — bar, canonical title, the simulated/sample label",
+    // Step 74 re-pin (One Window Everywhere): the bar carries the
+    // canonical title alone (no slogan tail) with the shared SVG
+    // control glyphs; the simulated/sample label moved to the
+    // window's foot strip.
     winSlice.includes('<div class="app-window-bar">')
-    && winSlice.includes('<span class="app-window-title">Interview Assistant<span class="hw-hw-title-tail"> — one question, traced</span></span>')
+    && winSlice.includes('<span class="app-window-title">Interview Assistant</span>')
     && winSlice.includes('<span class="hw-hw-tag">Simulated · sample data</span>')
-    && winSlice.includes('<span class="app-controls" aria-hidden="true"><i>—</i><i>▢</i><i>✕</i></span>'));
+    && winSlice.includes('<span class="app-controls" aria-hidden="true"><i><svg viewBox="0 0 16 16"'));
   check("window: exactly three scenes, discs numbered in the thread's order, only the first lit as the thread's start",
     (winSlice.match(/class="hw-hw-scene"/g) || []).length === 3
     && (winSlice.match(/class="hw-hw-disc is-thread"/g) || []).length === 1
@@ -103,7 +107,9 @@ const band640 = block.slice(block.lastIndexOf("@media (max-width: 640px)"));
     && winSlice.includes('<span class="hw-hw-point-src">Built from fact 4</span>')
     && winSlice.includes('<span class="hw-hw-point-src">Built from fact 5</span>'));
   check("window: the footer strip is the page's thread line, and nothing in the window is a control",
-    winSlice.includes('<p class="hw-thread-line hw-hw-foot"><span class="hw-diamond" aria-hidden="true"></span><span>Fact 1 → “Tell me about yourself.” → three points, sourced</span></p>')
+    // Step 74 re-pin: the foot strip now also carries the
+    // simulated/sample label at its right edge.
+    winSlice.includes('<div class="hw-hw-foot"><p class="hw-thread-line"><span class="hw-diamond" aria-hidden="true"></span><span>Fact 1 → “Tell me about yourself.” → three points, sourced</span></p>')
     && !winSlice.includes("<button"));
   check("hero: the H1 takes the page-scoped display step (the shared page-hero clamp is untouched)",
     block.includes('body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }')
@@ -139,7 +145,10 @@ const band640 = block.slice(block.lastIndexOf("@media (max-width: 640px)"));
   check("proof: the artefacts take stage scale (panel padding, chip size, window radius)",
     block.includes(".hw-viz-panel { background: var(--app-bg); border: 1px solid var(--app-border); border-radius: 12px; padding: 16px; }")
     && block.includes(".hw-viz-chip { background: var(--app-surface-2); border: 1px solid var(--app-border); border-radius: 8px; padding: 8px 12px; font-size: 13px;")
-    && block.includes(".hw-viz-window { background: var(--app-bg); border: 1px solid var(--app-border); border-radius: 12px; overflow: hidden; }"));
+    // Step 74 re-pin: the viz fragment wears the canonical
+    // .app-window shell (radius 14, shared tokens) and sheds
+    // only the shadow at fragment scale.
+    && block.includes(".hw-viz-window { overflow: hidden; box-shadow: none; }"));
 }
 
 /* ---------- 4. The band rules ---------- */
@@ -163,11 +172,12 @@ const band640 = block.slice(block.lastIndexOf("@media (max-width: 640px)"));
     && band640.includes(".hw-hw-scene { padding-left: 56px; }")
     && band640.includes(".hw-hw-disc { position: absolute; left: 0; top: 0; }")
     && band640.includes(".hw-hw-scene:not(:last-child)::after { top: 22px; left: 21px; width: 2px; height: calc(100% + 24px); }"));
-  check("bands: the phone crops — card rows 4–5 and the context lines rest; the bar sheds its title tail",
+  check("bands: the phone crops — card rows 4–5 and the context lines rest; the bar sheds its extra controls",
+    // Step 74 re-pin: the title tail no longer exists (canonical
+    // title), so the phone bar sheds only its extra controls.
     (winSlice.match(/hw-hw-crop/g) || []).length === 4
     && band640.includes(".hw-hw-crop { display: none; }")
     && band640.includes(".hw-hw-scene .app-context { display: none; }")
-    && band640.includes(".hw-hw-title-tail { display: none; }")
     && band640.includes(".hw-herowindow .app-controls i:not(:last-child) { display: none; }"));
 }
 
