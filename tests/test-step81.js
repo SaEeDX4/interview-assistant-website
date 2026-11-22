@@ -68,7 +68,23 @@
    the primed frame at every width, PRIMED-HUG counts the
    docked tile as band content, and a new TEXT-OVERLAP line
    pins that no element overlaps the window's text body in
-   any state at any width. */
+   any state at any width.
+   Under-the-webcam staging (annotated re-pin, 2026-11-22):
+   the owner clarified he always wanted the FEELING of the
+   window under the webcam — the label executions were the
+   problem. The frame's top bezel now carries a hardware lens
+   (.call-bezel/.call-lens: dark glass, no text, no glow) and
+   the window hangs centred beneath it at every ≥641 width:
+   window top 52 -> 16; the band's +50px offset is deleted;
+   the band participant unit anchors bottom-left (frame
+   bottom-offset 76, label bottom 16) because a centred
+   window cannot clear a top-left unit at 712-768; the band
+   primed hug is re-derived as 404 (unit top 218 below the
+   hanging window's bottom 207.7; hug = tallest content 388
+   + 16). The F2 absence pins are untouched — no call-cam
+   markup or rules exist; the lens is staging, not a marker.
+   Desktop composition otherwise stands: unit top-left at
+   52, base hug 342, PiP clear of the window. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -102,31 +118,39 @@ check("F1 while preparing, the band head sheds the pill (its label lives in the 
 check("F1 app.js mirrors the preparing state onto the head (is-preparing)",
   /classList\.toggle\("is-preparing", mode === "preparing"\)/.test(js));
 
-/* F2 — the zero-height notch marker. */
-check("F2 the marker is absolutely positioned on the frame's top border (reserves 0px)",
-  /\.call-cam \{\s*position: absolute; top: 0; left: 50%; transform: translate\(-50%, -50%\);/.test(clean));
-check("F2 the old in-flow strip rules are gone (no full-width band, no call-main padding-top)",
-  !has(".call-cam { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px 8px; }") &&
+/* F2 — the webcam marker. Step 81 built its third form (a
+   zero-height notch on the frame's top border); the owner
+   rejected it on the live build too (2026-11-22) — pill (79),
+   bezel strip (79b), notch (81): three forms, three rejections.
+   OWNER DECISION: the marker is REMOVED ENTIRELY. No element,
+   no rules, no replacement, no new placement — a real video
+   call carries no such label; the tiles carry the meaning.
+   The pins below assert absence, plus the one stage-geometry
+   invariant the notch era introduced and the removal keeps. */
+check("F2 (owner removal 2026-11-22): no webcam-marker markup remains in demo.html",
+  !demo.includes("call-cam"));
+check("F2 (owner removal 2026-11-22): no webcam-marker rules remain in the stylesheet (notch, strip and pill forms all deleted)",
+  !/\.call-cam/.test(clean) && !clean.includes("call-cam") &&
   !has(".call-main { padding-top: 0; }"));
-check("F2 the caption is a hideable span, and phones show the dot alone",
-  demo.includes('<span class="call-cam-text">Webcam</span>') &&
-  has(".call-cam-text { display: none; }"));
-check("F2 the stage no longer clips (the notch must be allowed to straddle the border)",
+check("F2 (owner removal 2026-11-22): the frame top is clean — the LIVE bar is followed directly by the call area",
+  demo.indexOf('class="call-bar"') < demo.indexOf('class="call-main"'));
+check("F2 (retained): the stage keeps its standing overflow geometry (visible stage, hidden call area) — introduced in the notch era, unchanged by the removal",
   /\.call-stage \{[^}]*overflow: visible;/.test(clean) &&
   /\.call-main \{[^}]*overflow: hidden;/.test(clean));
 
 /* F3 — the unfolded participant unit + primed hug. */
-check("F3 the avatar shares the window's pinned top line (52px) in base and band rules",
+check("F3 the participant unit: desktop frame top-left at 52px, below the hanging window's top line (16px); band frame bottom-anchored (under-the-webcam re-pin 2026-11-22: band top 52px → bottom 76px — a centred window cannot clear a top-left unit at 712-768, so the unit anchors bottom-left)",
   /\.avatar-frame \{[^}]*position: absolute; left: 16px; top: 52px;/.test(clean) &&
-  has(".avatar-frame { left: 12px; top: 52px; width: 88px; height: 110px; }"));
-check("F3 the tile label hangs under the frame, left edges shared (base + band)",
+  has(".avatar-frame { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }"));
+check("F3 the tile label hangs under the frame, left edges shared (base: under the top-left frame; band: bottom-anchored under the bottom-left frame, on the frame's bottom line)",
   /\.call-tile-label \{[^}]*left: 16px; top: 275px;/.test(clean) &&
-  has(".call-tile > .call-tile-label { left: 12px; top: 170px; max-width: 104px; font-size: 12px; }"));
-check("F3 the band window centres in the canvas right of the participant column",
-  has(".call-main .app-window { left: calc(50% + 50px); }"));
-check("F3 the primed frame hugs its tallest content + the standard 16px padding (Step 81b re-pin: 342 base / 260 band — 480 still reserved the self tile's row; the PiP paints above the window. Step 81c re-pin: band 260 → 352 — the parent rejected the PiP covering the hint lines, so at the band the tile docks below the window in its own row and window ∩ tile = 0) and is countermanded on phones",
+  has(".call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; max-width: 104px; font-size: 12px; }"));
+check("F3 the band window hangs centred on the bezel lens's axis (under-the-webcam re-pin 2026-11-22: Step 81's +50px offset, which centred the window in the canvas right of the participant column, is deleted — the unit anchors bottom-left instead)",
+  !has(".call-main .app-window { left: calc(50% + 50px); }"));
+check("F3 the primed frame hugs its tallest content + the standard 16px padding (Step 81b re-pin: 342 base / 260 band — 480 still reserved the self tile's row; the PiP paints above the window. Step 81c re-pin: band 260 → 352 — the parent rejected the PiP covering the hint lines, so at the band the tile docks below the window in its own row and window ∩ tile = 0. Under-the-webcam re-pin 2026-11-22: band 352 → 404 — the window hangs at top 16 (bottom 207.7) and the bottom-anchored unit's top lands at 218; the unit's label and the docked tile share the bottom line (388), so the hug is 388 + 16) and is countermanded on phones",
   has(".call-stage.is-primed .call-main { min-height: 342px; }") &&
-  has(".call-stage.is-primed .call-main { min-height: 352px; }") &&
+  has(".call-stage.is-primed .call-main { min-height: 404px; }") &&
+  !has(".call-stage.is-primed .call-main { min-height: 352px; }") &&
   !has(".call-stage.is-primed .call-main { min-height: 260px; }") &&
   has(".call-stage.is-primed .call-main { min-height: 0; }") &&
   /\.call-self \{[^}]*z-index: 3;/.test(clean));

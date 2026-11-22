@@ -103,19 +103,25 @@ check("U5: the waveform is display:none until the tile is speaking (all widths)"
    area: the bezel the camera lives in, overlapping nothing.
    Step 81 re-pin — the owner's eye again: the strip rented
    34.14px of height at every width for one 60px word and read
-   on his Fold as a big empty black band. The marker is now a
-   zero-height notch centred on the call frame's OWN top border
-   (absolute, top: 0, translate(-50%, -50%)), reserving no space
-   and overlapping no content; the straddle it replaces was on
-   the WINDOW's border at top: 74px — a different line entirely. */
-check("U5 (79b): the Step 79 straddle rule is gone (no top: 74px chip)",
-  !/\.call-cam \{ top: 74px; \}/.test(clean));
-check("U5 (81): the marker is a zero-height notch on the frame's top border — absolute at top: 0, centred, no height reserved (the 79b in-flow strip pin is superseded)",
-  /\.call-cam \{[^}]*position: absolute; top: 0; left: 50%; transform: translate\(-50%, -50%\);/.test(clean) &&
-  !/\.call-cam \{[^}]*border: 1px solid/.test(clean));
-check("U5 (79b→81): the marker cannot overlap the app window's border box — it is a direct child of the call frame, before the call area, on the frame's border 52px above the window (rendered boxes asserted in step81-stage-unfolded/work/audit81.py)",
-  demo.indexOf('class="call-cam"') > demo.indexOf('class="call-bar"') &&
-  demo.indexOf('class="call-cam"') < demo.indexOf('class="call-main"'));
+   on his Fold as a big empty black band; the marker became a
+   zero-height notch centred on the call frame's OWN top border.
+   OWNER REMOVAL (2026-11-22) — the notch was rejected too, on
+   the live build. Three forms, three rejections: the owner
+   concluded no placement for this marker works. It is DELETED
+   entirely — no element, no rules, no replacement, no new
+   placement. A real video call carries no such label; the
+   tiles carry the meaning. The pins below now assert absence.
+   (Owner clarification, later the same night: the under-the-
+   webcam FEELING was always wanted — it is now staged with a
+   hardware lens in the frame's bezel and the window hanging
+   beneath it; no label exists in any form, and the absence
+   pins below stand exactly as written.) */
+check("U5 (owner removal 2026-11-22): no webcam-marker markup remains in demo.html",
+  !demo.includes("call-cam"));
+check("U5 (owner removal 2026-11-22): no webcam-marker rules remain in the stylesheet (pill, strip and notch forms all deleted)",
+  !/\.call-cam/.test(clean) && !clean.includes("call-cam"));
+check("U5 (owner removal 2026-11-22): the frame top is clean — the LIVE bar is followed directly by the call area",
+  demo.indexOf('class="call-bar"') < demo.indexOf('class="call-main"'));
 
 /* ---------- Step 79b: the primed window's last void ---------- */
 check("79b: while primed the empty sample tag leaves flow (the hint sits one body padding above the window's bottom border)",

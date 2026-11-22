@@ -8,7 +8,7 @@
 width from 320 to 1280px). Desktop-first CSS with mobile overrides;
 one direction only.
 
-## 1. The breakpoint set — closed, six widths
+## 1. The breakpoint set — closed, seven widths
 
 | Width | Name | Purpose | Blocks |
 |-------|------|---------|--------|
@@ -17,17 +17,21 @@ one direction only.
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
+| 933px | Participant-unit threshold | the demo stage's participant unit keeps its band bottom-left anchor until the centred app window fully clears the desktop top-left unit — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
 | 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 4 |
 
-No other width may appear in a media query. 480px and 900px are
-single-rule, component-specific breakpoints — they stay, because folding
+No other width may appear in a media query. 480px, 900px and 933px are
+single-block, component-specific breakpoints — they stay, because folding
 them into a neighbour would change verified behaviour without a visual
-check to confirm the fit.
+check to confirm the fit. (For 933px the neighbours were measured, not
+assumed: folding down to 900px would leave the window overlapping the
+participant frame by up to ~16px at 901–933px, and folding up to 1024px
+would replace the verified desktop composition at 934–1024px.)
 
 ## 2. Rules
 
 - **B1 — closed set:** every `max-width` is one of 400 / 480 / 640 /
-  860 / 900 / 1024.
+  860 / 900 / 933 / 1024.
 - **B2 — one direction:** `max-width` only. No `min-width` media
   queries anywhere.
 - **B3 — blocks stay with their component:** media queries live next to
@@ -126,3 +130,24 @@ check to confirm the fit.
   margins are verified in live play, not only by setting words.
   Enforced by `tests/test-step29.js` (updated) and
   `tests/test-step15.js` (set updated).
+- **Step 81 follow-up (2026-11-22)** adds the set's seventh width,
+  933px — admitted on the Step 29 rule: a *computed* threshold, not a
+  device guess. The under-the-webcam staging centred the demo stage's
+  app window on the bezel lens's axis at every ≥641px width and
+  bottom-anchored the participant unit in the ≤860px band, but above
+  860px the desktop top-left unit (172px frame, right edge 188)
+  returned while the centred window was still too wide to clear it:
+  measured window∩frame intersection 36.5px at 861px, 17px at 900px,
+  shrinking 1:1 with the viewport until the call-main reaches 808px —
+  last overlap at 933px, first fully-clear width 934px (window left
+  edge 188.0 = the frame's right edge; from 950px the main caps at
+  824px and the standing clearance is 8px). The Step 75 participant
+  block (frame, label, wave, glyph fallback) therefore keeps the
+  band's bottom-left anchor through 933px and the desktop composition
+  resumes at 934px untouched; no other band rule follows it (in the
+  extended range the unit's right edge, 100, already clears the
+  window's left edge, ≥151.5, horizontally, so the base primed hug
+  and the 860px head switches stand). Verified: window∩unit = 0 at
+  861 / 900 / 933 / 934 / 935 / 950 / 1000px in the primed and
+  complete states, and the 403 / 712 / 768 / 1440px geometry is
+  unchanged. Enforced by `tests/test-step15.js` (set updated).

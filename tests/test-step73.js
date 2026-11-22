@@ -51,13 +51,14 @@ check("prep band's output tile: confirmed facts + the 50–150 bank, approved by
 check("call stage with a LIVE bar, a running clock and the simulated label",
   demo.includes('id="call-stage"') && demo.includes('class="live-chip"') &&
   demo.includes('id="scene-clock"') && demo.includes("Video call — simulated"));
-check("webcam marker at the top of the frame",
-  demo.includes('class="call-cam"') && demo.includes("Webcam"));
+check("webcam marker REMOVED entirely (owner decision 2026-11-22: pill, bezel strip and notch all rejected on his phone — no label in any form. Owner clarification the same night: the under-the-webcam FEELING is staged instead — a hardware lens in the frame's bezel (.call-bezel/.call-lens, no text) and the window hanging beneath it; the marker's absence asserted here is unchanged)",
+  !demo.includes('class="call-cam"') && !demo.includes("call-cam-lens") &&
+  !demo.includes("call-cam-text"));
 check("interviewer tile: label, speaking marker, waveform",
   demo.includes('id="call-tile"') && demo.includes("AI interviewer — simulated") /* Step 75 re-pin: the tile label now carries the honest AI-interviewer label */ &&
   demo.includes('id="call-speaking"') && demo.includes('id="call-wave"'));
-check("the app window sits inside the call frame, after the webcam marker",
-  demo.indexOf('class="call-cam"') < demo.indexOf('id="app-window"') &&
+check("the app window sits inside the call frame, below the LIVE bar (Step 73 pinned this against the webcam marker; the marker was removed 2026-11-22, so the bar is the anchor now)",
+  demo.indexOf('class="call-bar"') < demo.indexOf('id="app-window"') &&
   demo.includes('class="app-window" id="app-window"'));
 check("the window's canonical Live header carries the scene state pill",
   // Step 74 re-pin (One Window Everywhere): the demo window's top
@@ -156,8 +157,8 @@ check("call stage + LIVE pulse + speaking waveform CSS present",
   /\.call-tile\.is-speaking \.call-wave i \{[^}]*animation: call-wave/.test(clean));
 check("prep band CSS present",
   /\.prep-band \{/.test(clean) && /\.prep-list \{/.test(clean) && /\.prep-out \{/.test(clean));
-check("the window hangs under the webcam on desktop (absolute, top 52px, 432px)",
-  /\.call-main \.app-window \{[^}]*position: absolute; top: 52px;[^}]*width: 432px;/.test(clean));
+check("the window hangs under the webcam on desktop (absolute, 432px, centred on the lens axis; re-pin 2026-11-22: top 52px -> 16px — the window now hangs from the call area's top under the bezel lens instead of sharing the participant's top line)",
+  /\.call-main \.app-window \{[^}]*position: absolute; top: 16px;[^}]*width: 432px;/.test(clean));
 check("on phones the window is compact in flow inside the frame",
   /@media \(max-width: 640px\) \{[\s\S]*?\.call-main \.app-window \{[^}]*position: relative;/.test(clean));
 check("scene pill state styles present (the canonical app-pill states)",

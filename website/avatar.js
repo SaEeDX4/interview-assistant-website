@@ -93,7 +93,19 @@
   vids.forEach(function (v) {
     v.addEventListener("error", function () {
       var f = v.dataset.file || "";
-      if (f && v.src.indexOf(".webm") !== -1) { v.src = f + ".mp4"; v.load(); }
+      if (f && v.src.indexOf(".webm") !== -1) {
+        /* Step 80: on the VISIBLE element an in-place reload
+           blanks the tile to the poster for the whole reload —
+           the owner's "the photo goes away and comes back"
+           flash. Route the format switch through show()
+           instead: the outgoing motion stays on screen until
+           the MP4's first frame is actually presented.
+           Off-screen elements keep the cheap in-place swap. */
+        if (v === vids[front]) {
+          show(f, { loop: v.loop, rate: v.playbackRate, at: v.currentTime,
+                    speakKey: v.dataset.speakKey || "", ext: ".mp4", resume: true });
+        } else { v.src = f + ".mp4"; v.load(); }
+      }
       else if (v.dataset.speakKey) {
         /* A missing speaking render must not kill the avatar:
            mark the key and hold the presence loop for the beat. */
@@ -164,9 +176,11 @@
     back.loop = !!opts.loop;
     back.playbackRate = opts.rate || 1;
     back.dataset.speakKey = opts.speakKey || "";
-    if (back.dataset.file !== file) {
+    var src = file + (opts.ext || ".webm");
+    if (back.dataset.src !== src) {
+      back.dataset.src = src;
       back.dataset.file = file;
-      back.src = file + ".webm";
+      back.src = src;
     }
     try { back.currentTime = opts.at || 0; } catch (e) {}
     var t0 = performance.now();
@@ -174,12 +188,19 @@
     back._showToken = myToken;
     var p = back.play();
     var swap = function () {
+      /* Step 80: fade the incoming element IN over the still-
+         opaque outgoing one (z-order above it), and retire the
+         outgoing element only once the dissolve has completed
+         underneath. The tile never shows the frame background —
+         or a half-decoded element — through a transparent
+         stack: the flicker the owner reported from his phone. */
+      back.style.zIndex = "2";
+      old.style.zIndex = "1";
       back.classList.add("is-front");
-      old.classList.remove("is-front");
       front = 1 - front;
       currentFile = file;
       probe.transitions.push({ to: opts.label || file, ms: Math.round(performance.now() - t0) });
-      if (opts.speakKey) {
+      if (opts.speakKey && !opts.resume) {
         probe.speakStarts.push({ key: opts.speakKey, ms: Math.round(performance.now() - t0) });
       }
       /* Step 78: the old element is paused only if it is still
@@ -196,13 +217,44 @@
       var oldGen = old._gen || 0;
       setTimeout(function () {
         if ((old._gen || 0) === oldGen && old !== vids[front]) {
+          old.classList.remove("is-front");
           try { old.pause(); } catch (e) {}
         }
       }, 280);
       watchAdvance(back, file, opts);
     };
+    /* Step 80: never swap on the play() promise alone — it
+       resolves before the first frame is presented, and on a
+       phone (cold cache, slow network, busy decoder) the
+       incoming element then fades in showing its POSTER: the
+       still photo visibly replaces the living motion and then
+       "comes back". Hold the outgoing motion until the
+       incoming element has actually presented a frame
+       (requestVideoFrameCallback; readyState/"playing"
+       fallbacks; a 400ms safety cap keeps the worst case at
+       the previous behaviour, never worse). */
+    var gated = false;
+    var gatedSwap = function () {
+      if (gated) { return; }
+      gated = true;
+      if (back._showToken !== myToken) { return; }
+      swap();
+    };
+    var armGate = function () {
+      if (back.requestVideoFrameCallback) {
+        back.requestVideoFrameCallback(function () { gatedSwap(); });
+        setTimeout(gatedSwap, 400);
+      } else if (back.readyState >= 3) {
+        gatedSwap();
+      } else {
+        back.addEventListener("playing", function h() {
+          back.removeEventListener("playing", h); gatedSwap();
+        });
+        setTimeout(gatedSwap, 400);
+      }
+    };
     if (p && p.then) {
-      p.then(swap).catch(function (err) {
+      p.then(armGate).catch(function (err) {
         /* A newer show on this element supersedes this one: its
            play() aborting is not a failure of anything. */
         if (back._showToken !== myToken) { return; }
@@ -215,12 +267,12 @@
             if (back._showToken !== myToken || state !== "speaking" || speakKey !== opts.speakKey) { return; }
             var p2 = back.play();
             if (p2 && p2.then) {
-              p2.then(swap).catch(function () {
+              p2.then(armGate).catch(function () {
                 speakFailed[opts.speakKey] = true;
                 probe.failed[opts.speakKey] = "play-rejected";
                 if (state === "speaking") { setState("listening"); }
               });
-            } else { swap(); }
+            } else { armGate(); }
           }, 60);
           return;
         }
@@ -230,7 +282,7 @@
           if (state === "speaking") { setState("listening"); }
         } else if (back === vids[front]) { fail(); }
       });
-    } else { swap(); }
+    } else { armGate(); }
   }
 
   function setState(name) {

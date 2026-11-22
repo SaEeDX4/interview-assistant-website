@@ -128,22 +128,29 @@
                transcript, detection, points, the candidate answering,
                an ambush follow-up, two more exchanges, the close. -->
           <div class="call-stage" id="call-stage">
+            <!-- Under-the-webcam staging (owner clarification,
+                 2026-11-22): the frame's own top bezel carries a
+                 real camera lens — dark glass, no text, no glow,
+                 no chip — and the app window hangs centred
+                 directly beneath it, the way the app sits under
+                 the user's webcam in a real call. This is
+                 hardware staging, not a label: the three marker
+                 forms (pill, strip, notch) stay removed. -->
+            <div class="call-bezel" aria-hidden="true"><span class="call-lens"></span></div>
             <div class="call-bar">
               <span class="live-chip"><span class="live-dot" aria-hidden="true"></span>Live</span>
               <span class="call-clock" id="scene-clock" aria-hidden="true">00:00</span>
               <span class="call-bar-note">Video call — simulated</span>
             </div>
-            <!-- Step 81: the webcam marker is a zero-height notch
-                 centred on the call frame's own top border — in a
-                 real call the camera sits at the top of the screen
-                 and the app window hangs below it. Step 79 centred
-                 it on the window's rim (a stray pill); Step 79b
-                 made it an in-flow strip that rented 34px of
-                 height for one word (an empty black band on the
-                 owner's Fold). As a notch it reserves no space,
-                 overlaps nothing, and the caption stands down on
-                 phones, where the lens dot alone marks it. -->
-            <div class="call-cam" aria-hidden="true"><span class="call-cam-lens"></span><span class="call-cam-text">Webcam</span></div>
+            <!-- The webcam MARKER stays removed (owner decision,
+                 2026-11-22): three label forms were built and
+                 rejected on the owner's phone — a pill on the
+                 window's rim (Step 79), an in-flow bezel strip
+                 (Step 79b), a zero-height notch on the frame's top
+                 border (Step 81). What replaced them is not a
+                 fourth label but the staging above: a hardware
+                 lens in the frame's bezel and the window hanging
+                 beneath it — the feeling, conveyed, not captioned. -->
             <div class="call-main">
             <div class="call-tile" id="call-tile">
               <!-- Step 75 (Avatar Step A): the live interviewer avatar —

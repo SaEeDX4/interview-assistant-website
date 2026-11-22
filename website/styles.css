@@ -52,6 +52,14 @@
   --danger-soft: rgba(248, 113, 113, .14);
   --surface-mid: #11151d;
   --skeleton: #2a3547;
+  /* Under-the-webcam staging (2026-11-22) — the call frame's
+     hardware lens glass: near-black core, deep blue-grey mid,
+     steel rim, and the bezel well it sits in. Tokens because
+     the Step 12 law keeps every hex inside :root. */
+  --lens-core: #030509;
+  --lens-mid: #0d1626;
+  --lens-rim: #22334f;
+  --lens-well: #05080f;
   /* Step 21 — the real app's tokens (Themes/Theme.xaml), scoped to the
      app-window depictions. The site keeps its violet brand outside the
      window; inside the window the app is blue, as it is on Windows. */
@@ -1399,17 +1407,40 @@ body.cta-visible { padding-bottom: 96px; }
   position: relative; display: flex; flex-direction: column;
   background: var(--bg); border: 1px solid var(--border);
   border-radius: 12px;
-  /* Step 81: the stage no longer clips itself — the webcam notch
-     (below) straddles its top border, half in / half out, which
-     overflow: hidden would amputate. The clipping is handed to
-     the children: the bar caps the top corners, the call area
-     caps the bottom corners. */
+  /* Step 81: the stage does not clip itself — the clipping is
+     handed to the children: the bezel caps the top corners, the
+     call area caps the bottom corners. (This arrangement was
+     introduced for the webcam notch that straddled the top
+     border; the notch was removed entirely on 2026-11-22, and
+     the corner construction is retained as-is.) */
   overflow: visible;
+}
+/* Under-the-webcam staging (owner clarification, 2026-11-22):
+   the frame's top bezel is the frame itself — same surface, no
+   separating line, no text — deepened just enough to carry a
+   real camera lens dead centre: dark glass with an inner ring
+   and one small specular highlight, the way a laptop's webcam
+   reads. Not a marker, not a chip, no glow: hardware. The app
+   window hangs centred directly beneath it (see .call-main
+   .app-window), on the lens's own axis. */
+.call-bezel {
+  display: flex; align-items: center; justify-content: center;
+  height: 26px; flex: none; background: var(--bg);
+  border-radius: 12px 12px 0 0;
+}
+.call-lens {
+  width: 13px; height: 13px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, .9) 0, rgba(255, 255, 255, 0) 3px),
+    radial-gradient(circle at 50% 50%, var(--lens-core) 0 36%, var(--lens-mid) 58%, var(--lens-rim) 80%, var(--lens-well) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .6),
+    inset 0 1px 1px rgba(255, 255, 255, .12),
+    0 0 0 3px rgba(0, 0, 0, .28);
 }
 .call-bar {
   display: flex; align-items: center; gap: 12px; position: relative; z-index: 3;
   padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2);
-  border-radius: 12px 12px 0 0;
 }
 .live-chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1445,32 +1476,17 @@ body.cta-visible { padding-bottom: 96px; }
    parent rejected covered text, so at the band the tile
    docks below the window in its own row; see that block). */
 .call-stage.is-primed .call-main { min-height: 342px; }
-/* Step 81: the webcam marker, third form. Step 79 centred a
-   pill on the window's rim (metrically exact, visually a stray);
-   Step 79b made it an in-flow strip at the frame's top — and the
-   strip rented 34.14px of height at every width for one 60px
-   word, reading on the owner's Fold as a big empty black band.
-   The marker is now a zero-height notch on the frame's own top
-   border: absolutely positioned, centred, half in / half out of
-   the border line itself (the fieldset-legend pattern — its
-   background is the panel behind the frame, so the border reads
-   as passing behind it). It reserves NO vertical space: the LIVE
-   bar's bottom and the call area's top are the same line again.
-   The caption rides along where it costs nothing (≥641px); on
-   phones the lens dot alone marks the camera. It overlaps no
-   content at any width — the window hangs 52px below the border
-   it sits on. */
-.call-cam {
-  position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
-  z-index: 5; display: flex; align-items: center; gap: 8px;
-     padding: 4px 8px; background: var(--surface);
-  font-size: 11px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
-}
-.call-cam-lens {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--accent-2);
-  box-shadow: 0 0 0 3px rgba(45, 212, 191, .18);
-}
+/* The webcam MARKER is gone (owner decision, 2026-11-22). It
+   lived here in three forms — Step 79's pill centred on the
+   window's rim, Step 79b's in-flow bezel strip, Step 81's
+   zero-height notch on the frame's top border — and the owner
+   rejected all three on his phone. His clarification the same
+   night: the FEELING was always wanted — the window sitting
+   under the webcam — the label-like executions were the
+   problem. So no marker rules remain in this sheet; instead
+   the staging carries it: a hardware lens in the frame's own
+   bezel (.call-bezel above) and the window hanging beneath
+   it. Nothing here says "webcam"; the geometry does. */
 .call-tile {
   position: absolute; inset: 0;
   background:
@@ -1506,8 +1522,16 @@ body.cta-visible { padding-bottom: 96px; }
      the phone strip's own pattern. It was anchored to the call
      field's floor (bottom: 52), speaking from 400px below the
      face it belongs to. Frame bottom is 267; the wave's bottom
-     sits 8px above it, its left 8px inside the frame's left. */
-  position: absolute; left: 24px; top: 239px;
+     sits 8px above it, its left 8px inside the frame's left.
+     Under-the-webcam pass (2026-11-22): z-index 2 added — the
+     frame paints at z 1 and the wave, fully inside the frame's
+     box, was painted UNDER the avatar video and invisible at
+     every ≥641 width (found by eye on the band speaking shot;
+     geometry probes cannot see paint order). The phone strip
+     already carried z 2; the base rule now matches it. At band
+     this is also the label's only speaking signal (the "·
+     speaking" span rests there), so it must actually paint. */
+  position: absolute; left: 24px; top: 239px; z-index: 2;
   display: none; align-items: center; gap: 4px; height: 20px;
 }
 .call-tile.is-speaking .call-wave { display: inline-flex; }
@@ -1548,7 +1572,14 @@ body.cta-visible { padding-bottom: 96px; }
 }
 .call-self .call-tile-label { left: 8px; bottom: 8px; top: auto; max-width: none; font-size: 12px; }
 .call-main .app-window {
-  position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+  /* Under-the-webcam staging: the window hangs from the top
+     of the call area, centred on the bezel lens's axis (top
+     52px -> 16px, the frame's standard padding) — suspended
+     beneath the camera, growing downward as its state fills,
+     exactly where the app floats over a real call. The
+     participant unit starts lower (52px), so the hang reads
+     at a glance. */
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
   width: 432px; max-width: calc(100% - 32px); z-index: 2;
 }
 /* Step 74: the demo window's top strip is the canonical Live
@@ -1708,36 +1739,36 @@ body.cta-visible { padding-bottom: 96px; }
      view, and the progress label needs the row (see app.js). */
   .demo-stage .demo-head .mode-toggle { flex: none; }
   .demo-stage .demo-head.is-preparing .pill { display: none; }
-  /* Step 81 (F3): in this band the participant column owns the
-     left 100px of the call area and the centred window collided
-     with it (measured overlap −23px at 712: the window ate the
-     avatar frame's right edge). The window now centres in the
-     canvas that remains: its centre shifts +50px, half the
-     column's width. 712: window left (main-rel) 77 → 127 —
-     avatar gap +27, right space 27, symmetric in the free zone.
-     768: 105 → 155, gap +55, right space 55. */
-  .call-main .app-window { left: calc(50% + 50px); }
-  /* Step 81b: in the band the tallest primed content is the
-     window (bottom 243.7; the participant unit ends at 217.6),
-     so the primed hug here was 260 = 243.7 + the frame's
-     standard 16px bottom padding. The ≤640 block still
-     countermands this rule — phones size the frame by flow.
-     Step 81c: 260 stands at ≥861 only in spirit — the parent
-     inspected the band's primed shot and rejected the PiP
-     floating over the window: at 260 the bottom-anchored tile
-     (top 160) sat ON the window and covered the right-hand
-     tails of both hint lines ("…the interviewer speaks, t—" /
-     "…ready —"). Covered text in the money state is a defect,
-     so at the band the tile now DOCKS below the window in a
-     deliberate row: 352 = window bottom 243.7 + an 8px gap +
-     the tile's 84 + the standard 16px bottom padding. The
-     tile keeps its bottom: 16px anchor — growing the frame
-     by the tile's row (84 + 8) moves the tile wholly below
-     the window (its top lands at 252, window ∩ tile = 0)
-     instead of on top of it. At ≥861 the PiP overlay stands
-     (there it clears the window entirely, ∩ = 0); on phones
-     nothing changes. */
-  .call-stage.is-primed .call-main { min-height: 352px; }
+  /* Under-the-webcam staging (2026-11-22) supersedes Step
+     81's F3 shift: the window now hangs CENTRED on the bezel
+     lens's axis in this band too (the +50px offset that kept
+     it clear of the top-left participant column is deleted —
+     base left: 50% applies). A centred 432px window cannot
+     also clear the participant unit at the top (712: window
+     left edge 77 vs the unit's right edge 116), so the unit
+     leaves the top: it anchors bottom-left in this band (see
+     the Step 75 block below) — interviewer bottom-left, self
+     tile bottom-right, the window hanging above them, the
+     way a real call arranges its tiles under an overlay. In
+     the complete state the centred window bottoms at 448.5
+     and the unit's top lands at 454: clear, nothing covered. */
+  /* At band the label's "· speaking" span rests — the wave on
+     the frame's corner already says it (the phone strip's own
+     law, Step 79). The label is bottom-anchored here with a
+     fixed reserve; letting the span wrap it to a third line
+     would grow it into the frame above it. */
+  .call-speaking { display: none; }
+  /* Primed hug, re-derived for the hanging window and the
+     bottom-anchored unit (supersedes 81b's 260 and 81c's 352,
+     both computed for a top-52 window beside a top-left unit):
+     the window hangs at top 16 and bottoms at 207.7; the unit
+     (frame bottom-offset 76 + its 110 = top at frame − 186)
+     must start below it: 404 − 186 = 218, a 10.3px gap. The
+     unit's label and the self tile share the frame's bottom
+     line (bottom 388), so the hug stays tallest content + the
+     standard 16px: 388 + 16 = 404. Window ∩ unit = 0,
+     window ∩ tile = 0 (the 81c no-covered-text law stands). */
+  .call-stage.is-primed .call-main { min-height: 404px; }
 }
 .scene-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
 .scene-controls[hidden] { display: none; }
@@ -1852,21 +1883,13 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
      the camera button staggered low. (80 − 52) / 2 = 14 puts
      all four centres on the strip's one centre line. */
   .call-self { width: 80px; height: 52px; right: 12px; bottom: auto; top: 14px; }
-  /* Step 79b: no phone rule for the webcam marker — as an
-     in-flow strip at the frame's top (see the base .call-cam
-     rule) it sits above the tile strip by construction. The
-     Step 79 straddle (top: 74px, centred on the window's top
-     border) is gone: metrically exact, visually a stray pill
-     on the window's rim. */
-  /* Step 81: the marker is a zero-height notch on the frame's
-     top border now (see the base .call-cam rule); on phones the
-     caption stands down and the lens dot alone marks the
-     camera — the notch costs no height at any width. */
-  .call-cam-text { display: none; }
+  /* No phone rule for the webcam marker: the marker was removed
+     entirely (owner decision, 2026-11-22 — pill, bezel strip and
+     notch all rejected; see the note at the old base rule). */
   /* Cultivation R2: in the phone strip the caption collided with
-     the webcam marker and the name label — it stands down here;
-     the closing line is carried by the scene's status instead
-     (app.js, the thanks beat, narrow layouts only). */
+     the name label — it stands down here; the closing line is
+     carried by the scene's status instead (app.js, the thanks
+     beat, narrow layouts only). */
   .call-caption { display: none; }
   .call-main .app-window {
     position: relative; top: auto; left: auto; transform: none;
@@ -3033,9 +3056,12 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
    The frame is hidden until the Step 75 driver takes over; the
    glyph avatar returns untouched if the loops fail to load. */
 .avatar-frame {
-  /* Step 81: top 84 → 52 — the participant's top edge now shares
-     the app window's top line (the stage's two main objects start
-     on one line at every ≥641 width). */
+  /* Step 81: top 84 → 52. Under-the-webcam staging (2026-11-22):
+     the window now hangs at top 16, centred on the lens, so the
+     participant no longer shares its top line — the unit starts
+     36px lower, top-left, clear of the centred window at every
+     ≥861 width (window left ≥ 196 vs the unit's right edge 188
+     at the 824px stage column). */
   position: absolute; left: 16px; top: 52px; width: 172px; height: 215px;
   border-radius: 12px; overflow: hidden; z-index: 1;
   border: 1px solid var(--border-strong); background: var(--surface-2);
@@ -3048,17 +3074,50 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .avatar-video.is-front { opacity: 1; }
 .avatar-frame.is-static .avatar-video { display: none; }
 .call-tile.has-avatar .call-avatar { display: none; }
-@media (max-width: 860px) {
-  /* Step 81: top 92 → 52 (the shared top line, see the base
-     rule); the name label sits under the frame here too — the
-     frame is 88 wide, so the label caps at 104px and drops to
-     12px: two lines, left edges shared with the frame, its right
-     edge clear of the shifted window (left ≥ 127 in this band).
-     The wave rides the frame's lower corner (frame bottom 162;
-     wave bottom 8 above it). */
-  .avatar-frame { left: 12px; top: 52px; width: 88px; height: 110px; }
-  .call-tile > .call-tile-label { left: 12px; top: 170px; max-width: 104px; font-size: 12px; }
-  .call-wave { left: 20px; top: 134px; }
+@media (max-width: 933px) {
+  /* Under-the-webcam staging (2026-11-22) supersedes Step 81's
+     top-left unit here: the window hangs centred in this band
+     and a top-left unit cannot clear it (unit right edge 116
+     vs the centred window's left edge 77 at 712 / 105 at 768),
+     so the unit anchors BOTTOM-left — frame bottom-offset 76
+     (16 frame-bottom padding + the label's reserved 52 + the
+     8px gap), label bottom-anchored at the frame's bottom
+     line, sharing that line with the self tile: a call's
+     bottom tile row, under the hanging window. Complete
+     state: unit top = 640 − 186 = 454, below the window's
+     bottom (448.5); primed: the 404 hug puts it at 218, below
+     the primed window's bottom (207.7). The wave rides the
+     frame's lower corner (its bottom 8 above the frame's
+     bottom edge); the glyph fallback centres in the frame's
+     zone (bottom-offset 76..186, centre 131).
+     Follow-up (2026-11-22): this block's reach extends past
+     the 860 band to 933 — above 860 the desktop top-left unit
+     returns, but the centred window does not clear it until
+     the call-main reaches 808px: measured intersection with
+     the 172px frame 36.5px at 861, 17px at 900, last overlap
+     at 933, first fully-clear width 934 (window left edge
+     188.0 = the frame's right edge; from 950 the main caps
+     at 824 and the clearance is the standing 8px). So the
+     bottom-left anchor — the band composition — holds until
+     the top-left unit is genuinely clear, and the desktop
+     layout resumes at 934 untouched. In the extended range
+     the unit's right edge (100) clears the window's left
+     edge (≥151.5) horizontally, so no other band rule needs
+     to follow it: the primed hug stays the base 342 and the
+     head/start-label switches stay at 860. */
+  .avatar-frame { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
+  .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; max-width: 104px; font-size: 12px; }
+  .call-wave { left: 20px; top: auto; bottom: 84px; }
+  .call-avatar { left: 28px; top: auto; bottom: 103px; }
+  /* QC 2026-11-22: the closing caption's base home (left 16,
+     bottom 88) was composed when the participant sat top-left;
+     bottom-anchored here, the frame (x 12..100, bottom 76..186)
+     covered the caption's first 84px — the thanks line rendered
+     as "…ything" behind the tile at 641–933 (measured overlap
+     3,108px²). The caption moves right of the unit: left 124
+     clears the frame's right edge by 24 and the label's by 8,
+     keeping its bottom so it reads beside the speaker. */
+  .call-caption { left: 124px; }
 }
 @media (max-width: 640px) {
   /* The phone tile is an 80px strip: the avatar becomes a square
@@ -3066,6 +3125,10 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      the speaking wave rides on the thumb's lower corner — the way a
      real call tile carries its speaking indicator. */
   .avatar-frame { left: 12px; top: 8px; width: 64px; height: 64px; border-radius: 8px; }
+  /* The band block above bottom-anchors the glyph fallback in
+     the frame's zone; the phone strip's glyph keeps its own
+     top-left anchor (this block follows it in the sheet). */
+  .call-avatar { left: 12px; top: 12px; bottom: auto; }
   /* Step 78: the honesty label wrapped to "AI interviewer — si…" at
      403px (nowrap + ellipsis + a 138px cap). It now wraps cleanly to
      two lines in the space right of the thumbnail, clear of the
