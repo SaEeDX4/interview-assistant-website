@@ -109,6 +109,11 @@
           <span class="demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="pill"><span class="dot" aria-hidden="true"></span> Live demo — simulated</span>
           <span class="demo-title-visually-hidden" id="demo-title">Live demo</span>
+          <!-- Step 78: the labelled Start button lives in the demo head,
+               in the first screenful — it used to sit below the fold in
+               the scene controls while the hint named it. Hidden until
+               JS unhides it at boot, so it is never a dead control. -->
+          <button type="button" class="btn btn-primary btn-small" id="scene-start" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.6 5.4a9 9 0 0 1 0 13.2"/></svg> Start the interview</button>
           <div class="mode-toggle" role="group" aria-label="Answer mode">
             <button type="button" class="mode-btn is-active" id="mode-answer" aria-pressed="true">Answer</button>
             <button type="button" class="mode-btn" id="mode-coach" aria-pressed="false">Coach</button>
@@ -180,7 +185,6 @@
           <p class="cam-note" id="cam-note" role="status" hidden></p>
           <div class="scene-controls" id="scene-controls" hidden>
             <a class="btn btn-primary btn-small" id="scene-download" href="download.html" hidden>Download the app</a>
-            <button type="button" class="btn btn-primary btn-small" id="scene-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.6 5.4a9 9 0 0 1 0 13.2"/></svg> Start the interview</button>
             <button type="button" class="btn btn-secondary btn-small" id="scene-mute" aria-pressed="false" hidden>Sound on</button>
             <button type="button" class="btn btn-secondary btn-small" id="scene-watch">Watch without sound</button>
             <button type="button" class="btn btn-secondary btn-small" id="scene-replay">Replay the scene</button>

@@ -1355,6 +1355,8 @@ var IA_VARIANTS = {
     sceneClipStopAll();
     scene.playing = false;
     callStageEl.classList.remove("is-scene");
+    callStageEl.classList.remove("is-primed");
+    setStartBtn("start");
     setSpeaking(false);
     setSelfSpeaking(false);
     if (callCaptionEl) { callCaptionEl.hidden = true; }
@@ -1372,6 +1374,7 @@ var IA_VARIANTS = {
     scene.playing = false;
     scene.done = true;
     callStageEl.classList.add("is-scene");
+    callStageEl.classList.remove("is-primed");
     setSpeaking(false);
     setSelfSpeaking(false);
     if (callCaptionEl) { callCaptionEl.hidden = true; }
@@ -1405,6 +1408,8 @@ var IA_VARIANTS = {
     scene.playing = false;
     scene.done = false;
     callStageEl.classList.add("is-scene");
+    callStageEl.classList.add("is-primed");
+    setStartBtn("start");
     if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     if (callCaptionEl) { callCaptionEl.hidden = true; }
@@ -1421,7 +1426,7 @@ var IA_VARIANTS = {
   }
 
   function playScene(opts) {
-    if (!sceneOn || isReducedMotion()) { settleScene(); return; }
+    if (!sceneOn || isReducedMotion()) { settleScene(); setStartBtn("replay"); return; }
     sceneVoiced = !!(opts && opts.voice);
     scene.run++;
     clearSceneTimers();
@@ -1432,6 +1437,8 @@ var IA_VARIANTS = {
     scene.playing = true;
     scene.done = false;
     callStageEl.classList.add("is-scene");
+    callStageEl.classList.remove("is-primed");
+    setStartBtn("playing");
     if (sceneSkipBtn) { sceneSkipBtn.hidden = false; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     if (mode !== "answer") {
@@ -1523,6 +1530,7 @@ var IA_VARIANTS = {
       scene.done = true;
       if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
       if (sceneDownloadEl) { sceneDownloadEl.hidden = false; }
+      setStartBtn("replay");
       setScenePill("Interview complete", "ready");
       setStatus("Four questions — every answer from the same preparation: your resume, the job description, your profile. That is the whole interview, in one small window.");
     });
@@ -1557,6 +1565,32 @@ var IA_VARIANTS = {
   }
   var sceneStartBtn = document.getElementById("scene-start");
   var sceneMuteBtn = document.getElementById("scene-mute");
+
+  /* Step 78 — the Start button (in the demo head since this step,
+     in the first screenful) is one labelled control whose state
+     always tells the truth: start → preparing (with real load
+     progress) → playing → replay. */
+  var startBtnMode = "start";
+  var startBtnHome = sceneStartBtn ? sceneStartBtn.innerHTML : "";
+  var audioProgressFn = null;
+  function setStartBtn(mode, loaded) {
+    if (!sceneStartBtn) { return; }
+    startBtnMode = mode;
+    if (mode === "start") {
+      sceneStartBtn.disabled = false;
+      sceneStartBtn.innerHTML = startBtnHome;
+    } else if (mode === "preparing") {
+      sceneStartBtn.disabled = true;
+      sceneStartBtn.textContent = "Preparing your interviewer\u2026" +
+        (loaded ? " " + loaded + "/" + Object.keys(CLIP_FILES).length : "");
+    } else if (mode === "playing") {
+      sceneStartBtn.disabled = true;
+      sceneStartBtn.textContent = "Interview playing\u2026";
+    } else if (mode === "replay") {
+      sceneStartBtn.disabled = false;
+      sceneStartBtn.innerHTML = startBtnHome.replace("Start the interview", "Replay the interview");
+    }
+  }
 
   function sceneClipDuration(key, fallback) {
     if (sceneVoiced && key && voiceBuf[key] && voiceBuf[key].dur > 0) {
@@ -1664,7 +1698,7 @@ var IA_VARIANTS = {
   function audioLoadBuffers() {
     var pid = window.__avatarPersonaId || null;
     var jobs = Object.keys(CLIP_FILES).map(function (key) {
-      if (voiceBuf[key]) { return Promise.resolve(true); }
+      if (voiceBuf[key]) { if (audioProgressFn) { audioProgressFn(); } return Promise.resolve(true); }
       var urls = [];
       if (pid) { urls.push("avatar/" + pid + "-voice-" + CLIP_FILES[key] + ".mp3"); }
       urls.push("audio/scene-" + CLIP_FILES[key] + ".mp3");
@@ -1680,7 +1714,10 @@ var IA_VARIANTS = {
           return true;
         }).catch(function () { return attempt(i + 1); });
       };
-      return attempt(0);
+      return attempt(0).then(function (ok) {
+        if (audioProgressFn) { audioProgressFn(); }
+        return ok;
+      });
     });
     return Promise.all(jobs).then(function (res) {
       return res.some(function (x) { return x; });
@@ -1702,8 +1739,22 @@ var IA_VARIANTS = {
     }
     return { key: "", t: 0, dur: 0, playing: false, via: "none" };
   };
+  var startBusy = false;
   if (sceneStartBtn) {
     sceneStartBtn.addEventListener("click", function () {
+      // Step 78: after a completed run the same button is the
+      // replay — one labelled control whose state tells the truth.
+      if (startBtnMode === "replay") {
+        playScene({ greet: true, voice: sceneVoiced });
+        return;
+      }
+      if (startBusy || startBtnMode !== "start") { return; }
+      startBusy = true;
+      // Step 78: while the voice loads, the button says so — with
+      // the real settled-clip count — so a tap on a slow network
+      // can never read as a dead stage.
+      var loaded = 0;
+      setStartBtn("preparing", 0);
       // Step 77: the gesture creates and resumes the ONE audio
       // context and starts the buffer load; the element unlock
       // stays as fallback insurance. The run starts once the
@@ -1720,10 +1771,20 @@ var IA_VARIANTS = {
         }
       });
       if (sceneMuteBtn) { sceneMuteBtn.hidden = false; }
+      audioProgressFn = function () {
+        loaded++;
+        if (startBtnMode === "preparing") { setStartBtn("preparing", loaded); }
+      };
       var bufReady = haveCtx ? audioLoadBuffers() : Promise.resolve(false);
       var both = Promise.all([bufReady, clipsReady()]);
       var capped = Promise.race([both, new Promise(function (res) { setTimeout(res, 3000); })]);
       capped.then(function () {
+        audioProgressFn = null;
+        startBusy = false;
+        // The visitor moved on while the voice loaded (a chip, a
+        // mode switch): their newer intent wins, the run does not
+        // start over it.
+        if (startBtnMode !== "preparing") { return; }
         var haveBuf = Object.keys(voiceBuf).length > 0;
         var haveEl = Object.keys(sceneClips).some(function (k) {
           return !sceneClips[k].failed && sceneClips[k].dur > 0;
@@ -1733,6 +1794,25 @@ var IA_VARIANTS = {
         soundNote(!(haveBuf || haveEl));
         playScene({ voice: true, greet: true });
       });
+    });
+  }
+  /* Step 78: the window header's glyphs are what a phone visitor
+     actually taps (the owner's own tap landed there and met a dead
+     span). Route them to the real controls: play starts (or
+     replays) through the labelled button — a disabled button
+     swallows the click, so mid-run taps stay harmless — and stop
+     settles through Skip while a run is live. The close glyph has
+     no honest target and stays decorative. */
+  var headPlayGlyph = callStageEl ? callStageEl.querySelector(".app-header-controls .app-start") : null;
+  if (headPlayGlyph && sceneStartBtn) {
+    headPlayGlyph.style.cursor = "pointer";
+    headPlayGlyph.addEventListener("click", function () { sceneStartBtn.click(); });
+  }
+  var headStopGlyph = callStageEl ? callStageEl.querySelector(".app-header-controls .app-stop") : null;
+  if (headStopGlyph && sceneSkipBtn) {
+    headStopGlyph.style.cursor = "pointer";
+    headStopGlyph.addEventListener("click", function () {
+      if (!sceneSkipBtn.hidden) { sceneSkipBtn.click(); }
     });
   }
   if (sceneMuteBtn) {
@@ -1824,7 +1904,7 @@ var IA_VARIANTS = {
     });
   }
   if (sceneSkipBtn) {
-    sceneSkipBtn.addEventListener("click", function () { settleScene(); });
+    sceneSkipBtn.addEventListener("click", function () { settleScene(); setStartBtn("replay"); });
   }
 
   // Initial state: build the layers, then — on the demo page — play
@@ -1833,6 +1913,7 @@ var IA_VARIANTS = {
   buildDemoLayers();
   buildSceneLayers();
   if (sceneOn) {
+    if (sceneStartBtn) { sceneStartBtn.hidden = false; }
     if (isReducedMotion()) {
       settleScene();
     } else {

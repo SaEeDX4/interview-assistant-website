@@ -108,10 +108,62 @@
     }, true);
   });
 
+  /* Step 78 — stall watchdog. The error chain above covers files
+     that fail to LOAD; a file can also load, "play", and never
+     advance on a real device (a wedged decoder shows a frozen
+     first frame with no error and no signal — the owner's phone
+     read exactly that as "nothing works"). After each swap the
+     front element must prove it is advancing: checks every
+     500ms with <50ms of progress while the page is visible mean
+     stalled. A wrongly-paused front gets one resume attempt;
+     then one format switch (WebM → MP4) is tried; a second stall
+     gives up honestly — the presence loop holds the beat
+     (speaking) or the glyph returns (loops), never a frozen frame
+     pretending to be a person. */
+  function watchAdvance(v, file, opts) {
+    var token = v._showToken;
+    var t0 = null, checks = 0, resumed = false;
+    var iv = setInterval(function () {
+      if (v._showToken !== token || dead) { clearInterval(iv); return; }
+      if (document.hidden) { return; }
+      if (!v.classList.contains("is-front") || v.ended) { clearInterval(iv); return; }
+      if (v.readyState < 2 && !v.paused) { return; }
+      if (!v.paused && t0 !== null && v.currentTime - t0 > 0.05) { clearInterval(iv); return; }
+      if (t0 === null) { t0 = v.currentTime; return; }
+      checks++;
+      if (checks < 2) { return; }
+      /* ~1.5s without advance — frozen decoder, or a pause that
+         landed on the wrong element: one resume attempt first,
+         so a stray pause can never freeze the interviewer. */
+      if (v.paused && !resumed) {
+        resumed = true; checks = 0; t0 = null;
+        var rp = v.play();
+        if (rp && rp.catch) { rp.catch(function () {}); }
+        return;
+      }
+      clearInterval(iv);
+      if (v.src.indexOf(".webm") !== -1 && v.dataset.stallFile !== file) {
+        v.dataset.stallFile = file;
+        v.src = file + ".mp4";
+        v.load();
+        var p = v.play();
+        if (p && p.catch) { p.catch(function () {}); }
+        watchAdvance(v, file, opts);
+        return;
+      }
+      probe.failed[opts.speakKey || opts.label || file] = "stalled";
+      if (opts.speakKey) {
+        speakFailed[opts.speakKey] = true;
+        if (state === "speaking" && speakKey === opts.speakKey) { setState("listening"); }
+      } else if (v.classList.contains("is-front")) { fail(); }
+    }, 500);
+  }
+
   /* Crossfade loader: file into the back element, swap on play. */
   function show(file, opts) {
     opts = opts || {};
     var back = vids[1 - front], old = vids[front];
+    back._gen = (back._gen || 0) + 1;
     back.loop = !!opts.loop;
     back.playbackRate = opts.rate || 1;
     back.dataset.speakKey = opts.speakKey || "";
@@ -133,7 +185,24 @@
       if (opts.speakKey) {
         probe.speakStarts.push({ key: opts.speakKey, ms: Math.round(performance.now() - t0) });
       }
-      setTimeout(function () { try { old.pause(); } catch (e) {} }, 280);
+      /* Step 78: the old element is paused only if it is still
+         the same content this swap replaced. The timeout used to
+         capture the bare element: when the greeting ended and
+         the idle swap armed this pause, the element was recycled
+         for the speaking render within the 280ms — and the stale
+         timeout paused the FRONT speaking element mid-line,
+         freezing the interviewer's face for the whole beat while
+         her voice played (caught by the Step 78 freeze probe:
+         pause on the front element at ct 0.12, fh 0 for ~1.8s).
+         The generation guard makes that class of freeze
+         impossible: a retargeted element is never paused. */
+      var oldGen = old._gen || 0;
+      setTimeout(function () {
+        if ((old._gen || 0) === oldGen && old !== vids[front]) {
+          try { old.pause(); } catch (e) {}
+        }
+      }, 280);
+      watchAdvance(back, file, opts);
     };
     if (p && p.then) {
       p.then(swap).catch(function (err) {
@@ -344,6 +413,22 @@
     });
   }
 
+  /* Step 78 — warm the presence loops too. Only the idle loop is
+     requested at takeover; the others loaded on first use, so on
+     a slow network the seam after a spoken line could sit on the
+     render's last frame for ~0.9s while the thinking loop fetched
+     (Slow-4G audit). Detached preloads put all four loops in the
+     cache before the run starts; the driver's own elements then
+     swap from cache. */
+  function warmPresence() {
+    Object.keys(SRC).forEach(function (name) {
+      var w = document.createElement("video");
+      w.preload = "auto";
+      w.muted = true;
+      w.src = SRC[name] + ".webm";
+    });
+  }
+
   /* Take over: the poster carries the first paint; the idle loop
      takes over from it. Reduced motion keeps the still poster. */
   frame.hidden = false;
@@ -357,5 +442,6 @@
     api.active = true;
     swapVoice();
     warmSpeaking();
+    warmPresence();
   }
 })();

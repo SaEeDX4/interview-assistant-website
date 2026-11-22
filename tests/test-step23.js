@@ -148,12 +148,18 @@ check("demo never empties or inserts during a play (no innerHTML, no skeletons)"
   !/answerEl\.innerHTML|intAnswer\.innerHTML/.test(demoJs) &&
   !/className = "skel"|li\.skel/.test(demoJs) &&
   !/\.skel/.test(clean) && !/shimmer/.test(clean));
-check("demo tag + next-step card reserve their space (visibility, not display)",
+check("demo tag reserves its slot (visibility); next-step card zero-height while gated (Step 78 re-pin)",
   /sampleTagEl\.classList\.remove\("is-hidden"\)/.test(demoJs) &&
   /sampleTagEl\.classList\.add\("is-hidden"\)/.test(demoJs) &&
   /nextEl\.classList\.remove\("is-hidden"\)/.test(demoJs) &&
   /nextEl\.classList\.add\("is-hidden"\)/.test(demoJs) &&
-  !/\.demo-next\[hidden\]/.test(clean));
+  !/\.demo-next\[hidden\]/.test(clean) &&
+  /* Step 78: the Step 23 reservation made the gated card hold 552px
+     of invisible page flow on the owner's phone (403x928) — a full
+     dead screen between the help block and the interrupt card. The
+     card is page flow, not a stage layer, so hidden now means zero
+     height; the window's own tag keeps the Step 23 slot rule. */
+  /\.demo-next\.is-hidden \{ display: none; \}/.test(clean));
 check("interruption simulator stacks its 3 lengths (Normal / Concise / Rapid)",
   /intLayers\.push\(intAnswer\);/.test(demoJs) &&
   /\["concise", "rapid"\]\.forEach\(function \(key\) \{/.test(demoJs) &&

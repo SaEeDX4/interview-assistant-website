@@ -42,6 +42,14 @@ jump even when the metric excludes it (web.dev excludes shifts within
   `opacity: 0` alone leaves it focusable and screen-reader-visible.
   `visibility: hidden` keeps the space, removes it from focus order and
   from the accessibility tree. The class is `.is-hidden`.
+  **Step 78 exception — page flow is not a stage.** S2 governs layers
+  inside a stage (the window's stacks, the caption stack). A gated
+  block that lives in ordinary page flow is not a stage layer: the
+  demo's conversion card (`#demo-next`) reserved its full 552px while
+  invisible and left a screen-sized hole in the page on the owner's
+  phone. For page-flow blocks the owner's Step 78 law applies —
+  hidden means zero height (`.demo-next.is-hidden { display: none; }`)
+  — and the block enters flow only when its gate fires.
 - **S3 — pre-render, then reveal.** Streaming content (bullets, the
   transcript, the Prepare stages) is built once, hidden, and revealed
   with opacity/transform only (`is-new` rise, `is-pending` fade). Nothing
