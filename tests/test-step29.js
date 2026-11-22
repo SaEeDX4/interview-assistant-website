@@ -68,8 +68,9 @@ const baseMeter = (clean.match(/\.app-meter\s*\{([^}]*)\}/) || [])[1] || "";
 check("base meter rule still defines the 48px meter, not hidden",
   /width:\s*48px/.test(baseMeter) && !/display:\s*none/.test(baseMeter),
   baseMeter.trim());
-check("the meter is hidden exactly once in the whole stylesheet",
-  (clean.match(/\.app-meter\s*\{\s*display:\s*none;\s*\}/g) || []).length === 1);
+check("the meter is hidden exactly once in the whole stylesheet (bare .app-meter shed — Step 81 re-pin: the count now compares full selector text, because the original substring match also counted scoped sheds whose selector merely ends in .app-meter; Step 81 adds a second, call-window-scoped shed under .call-main for a different window: the demo's 329px call window at a 403px viewport sits 3px above this block's threshold and wrapped its header in the primed state only)",
+  [...clean.matchAll(/([^{}]+)\{\s*display:\s*none;\s*\}/g)].filter(m => m[1].trim() === ".app-meter").length === 1 &&
+  /\.call-main \.app-meter \{ display: none; \}/.test(clean));
 check("the 400px block sits after the base header rules",
   clean.indexOf("@media (max-width: 400px)") > clean.indexOf(".app-badge[hidden]"));
 

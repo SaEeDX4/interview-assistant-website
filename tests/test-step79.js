@@ -98,16 +98,22 @@ check("U5: the waveform is display:none until the tile is speaking (all widths)"
 /* Step 79b re-pin — the owner's eye over the metric: Step 79's
    straddle (chip centred on the window's top border via
    top: 74px) measured exact and read wrong — a stray pill
-   eating the window's rim. The marker is now an in-flow strip
+   eating the window's rim. The marker became an in-flow strip
    at the call frame's top, between the LIVE bar and the call
-   area: the bezel the camera lives in, overlapping nothing. */
+   area: the bezel the camera lives in, overlapping nothing.
+   Step 81 re-pin — the owner's eye again: the strip rented
+   34.14px of height at every width for one 60px word and read
+   on his Fold as a big empty black band. The marker is now a
+   zero-height notch centred on the call frame's OWN top border
+   (absolute, top: 0, translate(-50%, -50%)), reserving no space
+   and overlapping no content; the straddle it replaces was on
+   the WINDOW's border at top: 74px — a different line entirely. */
 check("U5 (79b): the Step 79 straddle rule is gone (no top: 74px chip)",
   !/\.call-cam \{ top: 74px; \}/.test(clean));
-check("U5 (79b): the marker is an in-flow centred strip — no .call-cam rule positions or pills it",
-  /\.call-cam \{[^}]*display: flex;[^}]*justify-content: center;/.test(clean) &&
-  !/\.call-cam[^{]*\{[^}]*position: (absolute|fixed)/.test(clean) &&
+check("U5 (81): the marker is a zero-height notch on the frame's top border — absolute at top: 0, centred, no height reserved (the 79b in-flow strip pin is superseded)",
+  /\.call-cam \{[^}]*position: absolute; top: 0; left: 50%; transform: translate\(-50%, -50%\);/.test(clean) &&
   !/\.call-cam \{[^}]*border: 1px solid/.test(clean));
-check("U5 (79b): the marker cannot overlap the app window's border box — it is a direct child of the call frame, in flow before the call area (rendered boxes asserted in step79-stage-ux/work/probe79b_after.py)",
+check("U5 (79b→81): the marker cannot overlap the app window's border box — it is a direct child of the call frame, before the call area, on the frame's border 52px above the window (rendered boxes asserted in step81-stage-unfolded/work/audit81.py)",
   demo.indexOf('class="call-cam"') > demo.indexOf('class="call-bar"') &&
   demo.indexOf('class="call-cam"') < demo.indexOf('class="call-main"'));
 

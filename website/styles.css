@@ -280,7 +280,7 @@ p { margin: 0 0 16px; }
 }
 .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-2); display: inline-block; }
 .pill-accent { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-light); }
-.mode-toggle { margin-left: auto; display: inline-flex; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; }
+.mode-toggle { margin-left: auto; display: inline-grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; }
 .mode-btn {
   background: transparent; color: var(--muted); border: 0; cursor: pointer;
   font: 600 13px/1 inherit; font-family: inherit; padding: 8px 16px; min-height: 44px;
@@ -1398,11 +1398,18 @@ body.cta-visible { padding-bottom: 96px; }
 .call-stage {
   position: relative; display: flex; flex-direction: column;
   background: var(--bg); border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden;
+  border-radius: 12px;
+  /* Step 81: the stage no longer clips itself — the webcam notch
+     (below) straddles its top border, half in / half out, which
+     overflow: hidden would amputate. The clipping is handed to
+     the children: the bar caps the top corners, the call area
+     caps the bottom corners. */
+  overflow: visible;
 }
 .call-bar {
   display: flex; align-items: center; gap: 12px; position: relative; z-index: 3;
   padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2);
+  border-radius: 12px 12px 0 0;
 }
 .live-chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1416,20 +1423,48 @@ body.cta-visible { padding-bottom: 96px; }
 @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 .call-clock { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .call-bar-note { margin-left: auto; font-size: 12px; color: var(--muted-2); }
-.call-main { position: relative; flex: 1 1 auto; min-height: 640px; }
-/* Step 79b: the webcam marker is a slim in-flow strip at the
-   top of the call frame, between the LIVE bar and the call
-   area — the bezel the camera lives in. It is deliberately
-   NOT a floating pill: Step 79 centred the old chip on the app
-   window's top border (centre within 0.05px of the border —
-   metrically exact and visually wrong: a stray pill eating
-   the window's rim, colliding with its header zone; owner's
-   phone). In flow it overlaps nothing at any width, stays
-   clear of the LIVE row above and the tile row below, and
-   the window hangs under it with its chrome untouched. */
+.call-main { position: relative; flex: 1 1 auto; min-height: 640px; border-radius: 0 0 12px 12px; overflow: hidden; transition: min-height var(--motion-3) var(--motion-ease); }
+/* Step 81: while primed the frame hugs its window — the 640px
+   field is sized for the complete state's 432px window, and a
+   192px primed window rattled in it with 396px of void below
+   (owner's unfolded screenshot). When the run starts the
+   reservation returns and the frame glides open with the
+   window (the Step 78 glide pattern, house motion token); the
+   ≤640 block countermands this — phones size the frame by flow.
+   Step 81b: the first hug (480px) still sized the frame by the
+   self tile's dock — tile bottom 464 + 16 — so the tile kept a
+   row of its own and the frame's lower ~40% stayed empty dark
+   space on the diagonal (the parent's own inspection of the
+   768 primed shot). The frame now hugs its tallest CONTENT
+   plus the frame's standard 16px bottom padding, and the self
+   tile is a true PiP overlay inside it (see .call-self). At
+   ≥861px the tallest content is the participant unit (its
+   label's bottom lands at 325.9), so the hug is 342; the ≤860
+   band block below sets 352 (Step 81c: the band's first hug,
+   260, left the PiP covering the window's hint lines — the
+   parent rejected covered text, so at the band the tile
+   docks below the window in its own row; see that block). */
+.call-stage.is-primed .call-main { min-height: 342px; }
+/* Step 81: the webcam marker, third form. Step 79 centred a
+   pill on the window's rim (metrically exact, visually a stray);
+   Step 79b made it an in-flow strip at the frame's top — and the
+   strip rented 34.14px of height at every width for one 60px
+   word, reading on the owner's Fold as a big empty black band.
+   The marker is now a zero-height notch on the frame's own top
+   border: absolutely positioned, centred, half in / half out of
+   the border line itself (the fieldset-legend pattern — its
+   background is the panel behind the frame, so the border reads
+   as passing behind it). It reserves NO vertical space: the LIVE
+   bar's bottom and the call area's top are the same line again.
+   The caption rides along where it costs nothing (≥641px); on
+   phones the lens dot alone marks the camera. It overlaps no
+   content at any width — the window hangs 52px below the border
+   it sits on. */
 .call-cam {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 8px 12px; font-size: 11px; font-weight: 600;
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+  z-index: 5; display: flex; align-items: center; gap: 8px;
+     padding: 4px 8px; background: var(--surface);
+  font-size: 11px; font-weight: 600;
   letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
 }
 .call-cam-lens {
@@ -1448,7 +1483,15 @@ body.cta-visible { padding-bottom: 96px; }
   border: 1px solid var(--border-strong); color: var(--muted);
 }
 .call-tile-label {
-  position: absolute; left: 16px; bottom: 12px;
+  /* Step 81: the interviewer's name belongs to the interviewer.
+     It sat at the call field's floor (bottom: 12px) — on the
+     owner's unfolded screenshot its top was 396.6px below the
+     avatar's bottom, a label divorced from the face. It now sits
+     directly under the avatar frame (frame bottom + 8), left
+     edges shared, width capped to the frame's width: the two
+     read as one participant unit. The self tile's label keeps
+     its own anchor (its override below adds top: auto). */
+  position: absolute; left: 16px; top: 275px; max-width: 172px;
   font-size: 13px; font-weight: 600; color: var(--text);
   background: rgba(10, 12, 16, .72); padding: 4px 8px; border-radius: 8px;
 }
@@ -1459,7 +1502,12 @@ body.cta-visible { padding-bottom: 96px; }
    primed screenshot (owner's phone). The self wave already
    followed this law; the tile wave now does too. */
 .call-wave {
-  position: absolute; left: 16px; bottom: 52px;
+  /* Step 81: the wave rides the avatar frame's lower corner —
+     the phone strip's own pattern. It was anchored to the call
+     field's floor (bottom: 52), speaking from 400px below the
+     face it belongs to. Frame bottom is 267; the wave's bottom
+     sits 8px above it, its left 8px inside the frame's left. */
+  position: absolute; left: 24px; top: 239px;
   display: none; align-items: center; gap: 4px; height: 20px;
 }
 .call-tile.is-speaking .call-wave { display: inline-flex; }
@@ -1477,12 +1525,28 @@ body.cta-visible { padding-bottom: 96px; }
 .call-tile.is-speaking .call-wave i:nth-child(8) { animation-delay: .08s; animation-duration: .85s; }
 .call-tile.is-speaking .call-wave i:nth-child(9) { animation-delay: .22s; animation-duration: 1.05s; }
 @keyframes call-wave { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+/* Step 81b: the self tile is the call's picture-in-picture —
+   it paints ABOVE the app window (z 3 over the window's z 2;
+   DOM order alone put the window on top, since it follows the
+   tile). In every content-full state the two never intersect,
+   so this changes nothing there; in the hugged primed frame at
+   the band it is what keeps the PiP — and its camera button —
+   on top of the window's bottom-right corner instead of
+   swallowed by it, the way a real call's self-view floats over
+   the shared screen.
+   Step 81c: at the band the primed frame no longer relies on
+   that float — the parent rejected the covered hint text, so
+   the band's primed frame grew by the tile's row and the tile
+   docks below the window (see the ≤860 block; window ∩ tile
+   = 0 there now). The z-order stands for ≥861, where the PiP
+   still floats — clear of the window by a 52px gap — and for
+   the content-full states, where the two never meet. */
 .call-self {
-  position: absolute; right: 16px; bottom: 16px; z-index: 2;
+  position: absolute; right: 16px; bottom: 16px; z-index: 3;
   width: 128px; height: 84px; border-radius: 8px;
   background: var(--surface); border: 1px solid var(--border-strong);
 }
-.call-self .call-tile-label { left: 8px; bottom: 8px; font-size: 12px; }
+.call-self .call-tile-label { left: 8px; bottom: 8px; top: auto; max-width: none; font-size: 12px; }
 .call-main .app-window {
   position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
   width: 432px; max-width: calc(100% - 32px); z-index: 2;
@@ -1617,6 +1681,63 @@ body.cta-visible { padding-bottom: 96px; }
      rule — the start label rests, exactly as it does site-wide
      at 640px — so the pill and controls keep one row. */
   .call-main .app-start-label { display: none; }
+  /* Step 81 (F1): the demo head wraps in this band — measured:
+     dots 46 + pill 215.17 + start 185/199 + toggle 157 + gaps 36
+     = 639/653px against a 588px content box at 712 (644 at 768),
+     so the toggle stranded alone on a second row and the head
+     doubled to 129px — in BOTH states at 712, and in the complete
+     state at 768, where the start button's label grows to
+     "Replay the interview" (the owner's unfolded screenshot).
+     The row is now nowrap, and the band sheds what the phone
+     layout already sheds (the decorative dots) plus honest
+     padding: gap 8, mode-btn padding-inline 12. New worst case
+     (712, complete): 215.17 + 199 + 141 + 16 = 571.17 ≤ 588
+     (16.8px slack). Scoped to .demo-stage so the index.html
+     demo head — no start button, a different panel — is
+     untouched. The ≤640 grid block countermands the gap (its
+     rows keep the 12px rhythm). */
+  .demo-stage .demo-head { flex-wrap: nowrap; gap: 8px; }
+  .demo-stage .demo-head .demo-dots { display: none; }
+  .demo-stage .demo-head .mode-btn { padding-left: 12px; padding-right: 12px; }
+  /* Step 81: the toggle never shrinks below its fit-content —
+     under row pressure its grid tracks fell back to content
+     sizes (73/66) instead of splitting evenly (73/73). And
+     while the start button is preparing (the is-preparing class
+     setStartBtn mirrors), the pill rests: its "Live demo —
+     simulated" label is already carried by the call bar in
+     view, and the progress label needs the row (see app.js). */
+  .demo-stage .demo-head .mode-toggle { flex: none; }
+  .demo-stage .demo-head.is-preparing .pill { display: none; }
+  /* Step 81 (F3): in this band the participant column owns the
+     left 100px of the call area and the centred window collided
+     with it (measured overlap −23px at 712: the window ate the
+     avatar frame's right edge). The window now centres in the
+     canvas that remains: its centre shifts +50px, half the
+     column's width. 712: window left (main-rel) 77 → 127 —
+     avatar gap +27, right space 27, symmetric in the free zone.
+     768: 105 → 155, gap +55, right space 55. */
+  .call-main .app-window { left: calc(50% + 50px); }
+  /* Step 81b: in the band the tallest primed content is the
+     window (bottom 243.7; the participant unit ends at 217.6),
+     so the primed hug here was 260 = 243.7 + the frame's
+     standard 16px bottom padding. The ≤640 block still
+     countermands this rule — phones size the frame by flow.
+     Step 81c: 260 stands at ≥861 only in spirit — the parent
+     inspected the band's primed shot and rejected the PiP
+     floating over the window: at 260 the bottom-anchored tile
+     (top 160) sat ON the window and covered the right-hand
+     tails of both hint lines ("…the interviewer speaks, t—" /
+     "…ready —"). Covered text in the money state is a defect,
+     so at the band the tile now DOCKS below the window in a
+     deliberate row: 352 = window bottom 243.7 + an 8px gap +
+     the tile's 84 + the standard 16px bottom padding. The
+     tile keeps its bottom: 16px anchor — growing the frame
+     by the tile's row (84 + 8) moves the tile wholly below
+     the window (its top lands at 252, window ∩ tile = 0)
+     instead of on top of it. At ≥861 the PiP overlay stands
+     (there it clears the window entirely, ∩ = 0); on phones
+     nothing changes. */
+  .call-stage.is-primed .call-main { min-height: 352px; }
 }
 .scene-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
 .scene-controls[hidden] { display: none; }
@@ -1688,11 +1809,31 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
      below the frame take the same one-column grid, so sibling
      actions can never again render at different widths. */
   .demo-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  /* Step 81: the band head rule above sets gap: 8px at higher
+     specificity — the phone grid's two deliberate rows keep
+     their 12px rhythm. */
+  .demo-stage .demo-head { gap: 12px; }
   .demo-head #scene-start { width: 100%; }
   .demo-head .mode-toggle { width: 100%; margin-left: 0; }
   .demo-head .mode-btn { flex: 1 1 0; }
   .scene-controls { display: grid; grid-template-columns: minmax(0, 1fr); }
   .call-main { min-height: 0; display: flex; flex-direction: column; }
+  /* Step 81: the primed 480px reservation is a ≥641 composition
+     rule — phones size the frame by flow, countermanded here at
+     equal specificity. */
+  .call-stage.is-primed .call-main { min-height: 0; }
+  /* Step 81: in the call window the app header wraps in the
+     primed state only (measured at 403: the primed pill is
+     206.4px — "Ready when you are" + the 48px meter — vs 171.4px
+     settled; 206.4 + 12 gap + 107 controls = 325.4 > the 295px
+     inner width, so the controls dropped to a second row and
+     the window grew 40px taller for one state). The meter rests
+     here, as it already does for narrow windows in the Step 29
+     shed block — whose threshold is a 400px VIEWPORT, 3px below
+     the owner's 403, and whose windows are wider than this
+     329px call window. With the meter gone the widest state
+     needs 269.4 ≤ 295: one header row in every state. */
+  .call-main .app-meter { display: none; }
   .call-tile { position: relative; inset: auto; height: 80px; flex: none; }
   .call-avatar { left: 12px; top: 12px; width: 36px; height: 36px; padding: 8px; }
   .call-wave { bottom: 36px; left: 56px; }
@@ -1702,13 +1843,26 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
   }
   /* The waveform already says it on phones; the label keeps the name. */
   .call-speaking { display: none; }
-  .call-self { width: 80px; height: 52px; right: 12px; bottom: auto; top: 28px; }
+  /* Step 81 (F4): top 28px → 14px. The self tile is 52 tall in
+     an 80px strip; at top: 28px (a leftover from its desktop
+     bottom-anchored geometry) its centre sat at 54 — measured
+     14px below the strip's centre line (40), while the avatar
+     thumb and the name label both centre exactly on it. The
+     owner's folded screenshot: three elements, three heights,
+     the camera button staggered low. (80 − 52) / 2 = 14 puts
+     all four centres on the strip's one centre line. */
+  .call-self { width: 80px; height: 52px; right: 12px; bottom: auto; top: 14px; }
   /* Step 79b: no phone rule for the webcam marker — as an
      in-flow strip at the frame's top (see the base .call-cam
      rule) it sits above the tile strip by construction. The
      Step 79 straddle (top: 74px, centred on the window's top
      border) is gone: metrically exact, visually a stray pill
      on the window's rim. */
+  /* Step 81: the marker is a zero-height notch on the frame's
+     top border now (see the base .call-cam rule); on phones the
+     caption stands down and the lens dot alone marks the
+     camera — the notch costs no height at any width. */
+  .call-cam-text { display: none; }
   /* Cultivation R2: in the phone strip the caption collided with
      the webcam marker and the name label — it stands down here;
      the closing line is carried by the scene's status instead
@@ -2879,7 +3033,10 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
    The frame is hidden until the Step 75 driver takes over; the
    glyph avatar returns untouched if the loops fail to load. */
 .avatar-frame {
-  position: absolute; left: 16px; top: 84px; width: 172px; height: 215px;
+  /* Step 81: top 84 → 52 — the participant's top edge now shares
+     the app window's top line (the stage's two main objects start
+     on one line at every ≥641 width). */
+  position: absolute; left: 16px; top: 52px; width: 172px; height: 215px;
   border-radius: 12px; overflow: hidden; z-index: 1;
   border: 1px solid var(--border-strong); background: var(--surface-2);
 }
@@ -2892,7 +3049,16 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .avatar-frame.is-static .avatar-video { display: none; }
 .call-tile.has-avatar .call-avatar { display: none; }
 @media (max-width: 860px) {
-  .avatar-frame { left: 12px; top: 92px; width: 88px; height: 110px; }
+  /* Step 81: top 92 → 52 (the shared top line, see the base
+     rule); the name label sits under the frame here too — the
+     frame is 88 wide, so the label caps at 104px and drops to
+     12px: two lines, left edges shared with the frame, its right
+     edge clear of the shifted window (left ≥ 127 in this band).
+     The wave rides the frame's lower corner (frame bottom 162;
+     wave bottom 8 above it). */
+  .avatar-frame { left: 12px; top: 52px; width: 88px; height: 110px; }
+  .call-tile > .call-tile-label { left: 12px; top: 170px; max-width: 104px; font-size: 12px; }
+  .call-wave { left: 20px; top: 134px; }
 }
 @media (max-width: 640px) {
   /* The phone tile is an 80px strip: the avatar becomes a square

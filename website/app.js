@@ -1583,6 +1583,18 @@ var IA_VARIANTS = {
   function setStartBtn(mode, loaded) {
     if (!sceneStartBtn) { return; }
     startBtnMode = mode;
+    /* Step 81: the head mirrors the preparing state as a class.
+       The preparing label ("Preparing your interviewer… n/5",
+       ~288px single-line) cannot share the Fold band's one row
+       with the pill, the button and the toggle (665 needed vs
+       588 available at 712) — measured: the row squeezed, the
+       button and the pill both wrapped their text, the head
+       grew to 89px for exactly the seconds a slow network makes
+       longest. The band head sheds the pill while preparing
+       (its label already lives in the call bar below — the same
+       shed the phone layout applies permanently). */
+    var headEl = sceneStartBtn.closest ? sceneStartBtn.closest(".demo-head") : null;
+    if (headEl) { headEl.classList.toggle("is-preparing", mode === "preparing"); }
     if (mode === "start") {
       sceneStartBtn.disabled = false;
       sceneStartBtn.innerHTML = startBtnHome;
