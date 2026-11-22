@@ -1,20 +1,30 @@
-/* Step 76 — Avatar Step B driver. One synthetic persona ("p1")
-   whose pre-rendered presence loops (idle / listening / thinking /
-   greeting, Step 75) and MuseTalk speaking renders (Step 76) are
-   driven by the Step 74 scene's own signals. Speaking is keyed by
-   the stage's data-speak-key / data-speak-dur attributes, which
-   the scene engine publishes for every spoken beat: in a voiced
-   run the render is clock-synced to the scene's audio element
-   (drift-guarded to the spec's 120ms lip-sync target); in a
-   silent run its playback rate is fitted to the staged speech
-   window so the mouth finishes with the line. The persona speaks
-   with her own voice: when the avatar takes over, the scene's
-   clip elements are re-pointed at her per-persona clips (the
-   Step 74 clips stay untouched as the no-avatar fallback). If a
-   speaking render is missing, the avatar holds its presence loop
-   for that beat — no fake mouth motion is ever substituted. If
-   every loop fails to load, the frame hides and the glyph design
-   returns untouched. */
+/* Step 77 — Avatar driver, generalised to the persona pool.
+   Six fully synthetic interviewers (p1–p6), each with her or his
+   own photoreal portrait, presence loops (idle / listening /
+   thinking / greeting, in-house motion-field renderer), MuseTalk
+   speaking renders driven by a living performance take (Step 77:
+   the head breathes, sways and blinks THROUGH the spoken line —
+   the Step 76 still-driven renders froze the head for the whole
+   line, 1,320ms of a 1,360ms line, and the owner rejected them),
+   and her or his own recorded voice for the five fixed lines.
+
+   Selection: one persona per session (sessionStorage), fixed for
+   the session, and never the same persona twice in a row across
+   loads (localStorage last-persona exclusion). Only the chosen
+   persona's assets are ever requested.
+
+   Speaking is keyed by the stage's data-speak-key / data-speak-dur
+   attributes: in a voiced run the render is clock-synced to the
+   scene's sound clock (window.__iaSceneClock — the Step 77 Web
+   Audio buffer clock, element clock as fallback) with the spec's
+   120ms drift guard; in a silent run its playback rate is fitted
+   to the staged speech window. The persona's voice is played by
+   the scene's Web Audio engine (app.js reads the persona id this
+   driver publishes); the element re-pointing below remains as
+   the no-Web-Audio fallback. If a speaking render is missing,
+   the avatar holds its presence loop for that beat — no fake
+   mouth motion is ever substituted. If every loop fails to load,
+   the frame hides and the glyph design returns untouched. */
 (function () {
   "use strict";
   var frame = document.getElementById("avatar-frame");
@@ -27,24 +37,51 @@
   var selfTile = document.getElementById("call-self");
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* --- Persona selection: random per session, never the same
+     persona twice in a row across loads. --- */
+  var POOL = ["p1", "p2", "p3", "p4", "p5", "p6"];
+  function store(k) {
+    try { return window.sessionStorage.getItem(k); } catch (e) { return null; }
+  }
+  function storeSet(k, v) {
+    try { window.sessionStorage.setItem(k, v); } catch (e) {}
+  }
+  function lstore(k) {
+    try { return window.localStorage.getItem(k); } catch (e) { return null; }
+  }
+  function lstoreSet(k, v) {
+    try { window.localStorage.setItem(k, v); } catch (e) {}
+  }
+  var pid = store("ia-avatar-persona");
+  if (!pid || POOL.indexOf(pid) === -1) {
+    var last = lstore("ia-avatar-last");
+    var cands = POOL.filter(function (p) { return p !== last; });
+    pid = cands[Math.floor(Math.random() * cands.length)];
+    storeSet("ia-avatar-persona", pid);
+    lstoreSet("ia-avatar-last", pid);
+  }
+  window.__avatarPersonaId = pid;
+
   var SRC = {
-    idle: "avatar/p1-idle", listening: "avatar/p1-listening",
-    thinking: "avatar/p1-thinking", greeting: "avatar/p1-greeting"
+    idle: "avatar/" + pid + "-idle", listening: "avatar/" + pid + "-listening",
+    thinking: "avatar/" + pid + "-thinking", greeting: "avatar/" + pid + "-greeting"
   };
   /* Per-question speaking renders + the persona's own voice clips.
      clipFile is the Step 74 scene clip this beat uses without the
      avatar; voice is the same line in the persona's own voice. */
   var SPEAK = {
-    tell:   { file: "avatar/p1-speaking-tell",   clipFile: "scene-tell.mp3",     voice: "avatar/p1-voice-tell.mp3" },
-    follow: { file: "avatar/p1-speaking-follow", clipFile: "scene-followup.mp3", voice: "avatar/p1-voice-followup.mp3" },
-    story:  { file: "avatar/p1-speaking-story",  clipFile: "scene-story.mp3",    voice: "avatar/p1-voice-story.mp3" },
-    why:    { file: "avatar/p1-speaking-why",    clipFile: "scene-why.mp3",      voice: "avatar/p1-voice-why.mp3" },
-    thanks: { file: "avatar/p1-speaking-thanks", clipFile: "scene-thanks.mp3",   voice: "avatar/p1-voice-thanks.mp3" }
+    tell:   { file: "avatar/" + pid + "-speaking-tell",   clipFile: "scene-tell.mp3",     voice: "avatar/" + pid + "-voice-tell.mp3" },
+    follow: { file: "avatar/" + pid + "-speaking-follow", clipFile: "scene-followup.mp3", voice: "avatar/" + pid + "-voice-followup.mp3" },
+    story:  { file: "avatar/" + pid + "-speaking-story",  clipFile: "scene-story.mp3",    voice: "avatar/" + pid + "-voice-story.mp3" },
+    why:    { file: "avatar/" + pid + "-speaking-why",    clipFile: "scene-why.mp3",      voice: "avatar/" + pid + "-voice-why.mp3" },
+    thanks: { file: "avatar/" + pid + "-speaking-thanks", clipFile: "scene-thanks.mp3",   voice: "avatar/" + pid + "-voice-thanks.mp3" }
   };
+  vids.forEach(function (v) { v.poster = "avatar/" + pid + "-poster.webp"; });
+
   var state = "", currentFile = "", front = 0, dead = false, greetedClose = false;
   var speakKey = "", speakFailed = {}, renderDur = {}, syncTimer = null;
-  var probe = { transitions: [], sync: [], speakStarts: [], voice: "scene", failed: {} };
-  var api = { probe: probe, setState: setState, active: false,
+  var probe = { transitions: [], sync: [], speakStarts: [], voice: "scene", failed: {}, persona: pid };
+  var api = { probe: probe, setState: setState, active: false, persona: pid,
               state: function () { return state; },
               speakKey: function () { return speakKey; } };
   window.__avatarStepA = api;
@@ -152,22 +189,36 @@
     return null;
   }
 
+  /* The beat's sound clock, whichever engine is sounding: the
+     scene's Web Audio clock when it exists (Step 77), else the
+     clip element's own clock (the Step 76 path). */
+  function beatClock(key) {
+    if (window.__iaSceneClock) {
+      var c = window.__iaSceneClock();
+      if (c && c.key === key) { return c; }
+      return { playing: false, t: 0 };
+    }
+    var a = clipElFor(key);
+    if (a && !a.paused && !a.ended) { return { playing: true, t: a.currentTime || 0 }; }
+    return { playing: false, t: 0 };
+  }
+
   function stopSync() {
     if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
   }
-  /* Voiced runs: keep the render on the audio element's clock.
-     A drift past the 120ms lip-sync target snaps back; every
-     sample is kept on the probe for the parity audit. */
+  /* Voiced runs: keep the render on the sound clock. A drift
+     past the 120ms lip-sync target snaps back; every sample is
+     kept on the probe for the parity audit. */
   function startSync(key) {
     stopSync();
     syncTimer = setInterval(function () {
       if (state !== "speaking" || speakKey !== key) { stopSync(); return; }
-      var a = clipElFor(key), v = vids[front];
-      if (a && !a.paused && !a.ended && !v.paused) {
-        var d = v.currentTime - a.currentTime;
+      var c = beatClock(key), v = vids[front];
+      if (c.playing && !v.paused) {
+        var d = v.currentTime - c.t;
         if (probe.sync.length < 400) { probe.sync.push(Math.round(Math.abs(d) * 1000)); }
-        if (Math.abs(d) > 0.12) { try { v.currentTime = a.currentTime; } catch (e) {} }
-      }
+        if (Math.abs(d) > 0.12) { try { v.currentTime = c.t; } catch (e) {} }
+      } else if (!c.playing) { stopSync(); }
     }, 200);
   }
 
@@ -178,11 +229,11 @@
     state = "speaking";
     speakKey = key;
     if (reduced) { return; }
-    var a = clipElFor(key);
-    var voiced = !!(a && !a.paused && !a.ended);
+    var c = beatClock(key);
+    var voiced = !!c.playing;
     var at = 0, rate = 1;
     if (voiced) {
-      at = a.currentTime || 0;
+      at = c.t || 0;
     } else {
       /* Silent run: fit the render to the staged window — the
          engine's speech length plus its fixed 0.35s of lead-in
@@ -241,7 +292,7 @@
       else if (t === "Not listening" && state !== "speaking") { greetedClose = false; setState("idle"); }
     }).observe(pillText, { childList: true, characterData: true, subtree: true });
   }
-  ["scene-start", "scene-replay"].forEach(function (id) {
+  ["scene-start", "scene-replay", "scene-watch"].forEach(function (id) {
     var b = document.getElementById(id);
     if (b) { b.addEventListener("click", function () { greetedClose = false; setState("greeting"); }); }
   });
@@ -251,11 +302,12 @@
     else if (!reduced && state) { try { cur.play(); } catch (e) {} }
   });
 
-  /* Her voice, not the stand-in's: once her first clip proves
-     reachable, re-point the scene's clip elements at her own
-     recordings. The scene reads durations from the same elements,
-     so a voiced run re-paces itself to her voice automatically.
-     If her clips are unreachable, the Step 74 clips stay. */
+  /* The persona's voice, not the stand-in's: the scene's Web
+     Audio engine reads window.__avatarPersonaId itself; this
+     re-pointing remains for its element fallback — once her
+     first clip proves reachable, the scene's clip elements are
+     pointed at her own recordings. If her clips are unreachable,
+     the Step 74 clips stay. */
   function swapVoice() {
     var probeEl = new Audio();
     probeEl.preload = "auto";
@@ -270,7 +322,7 @@
         var a = clipElFor(key);
         if (a) { a.src = SPEAK[key].voice; a.load(); }
       });
-      probe.voice = "p1";
+      probe.voice = pid;
     });
     probeEl.addEventListener("error", function () { probe.voice = "scene-fallback"; });
     probeEl.src = SPEAK.tell.voice;

@@ -1556,6 +1556,8 @@ body.cta-visible { padding-bottom: 96px; }
 .call-self.cam-on .cam-toggle svg { display: none; }
 .cam-note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
 .cam-note[hidden] { display: none; }
+.scene-sound-note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; flex-basis: 100%; }
+.scene-sound-note[hidden] { display: none; }
 #scene-start svg { width: 16px; height: 16px; }
 #scene-mute[hidden] { display: none; }
 @media (max-width: 860px) {

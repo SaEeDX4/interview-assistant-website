@@ -1389,6 +1389,37 @@ var IA_VARIANTS = {
     setStatus("The scene, settled: the app hears each question as it is asked and answers in three short points — the same small window through the whole interview, follow-ups included. Your turn below — typed questions are answered live.");
   }
 
+  /* Step 77 — the page no longer spends the interview on a
+     silent autoplay the visitor never asked for (on the owner's
+     phone that read as "no sound at all": the whole arc ran
+     muted before he ever found the Start button). The stage now
+     opens READY: the interviewer present, the first question on
+     the window, the app listening — and the arc runs when the
+     visitor starts it, voiced, or watches it silently by an
+     explicit, labelled choice. */
+  function primeScene() {
+    if (!sceneOn) { return; }
+    scene.run++;
+    clearSceneTimers();
+    sceneClipStopAll();
+    scene.playing = false;
+    scene.done = false;
+    callStageEl.classList.add("is-scene");
+    if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
+    if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
+    if (callCaptionEl) { callCaptionEl.hidden = true; }
+    sampleTagEl.classList.add("is-hidden");
+    showLayer(questionLayers, sceneQ.tell.idx);
+    sceneQ.tell.layer.classList.remove("is-provisional");
+    sceneQ.tell.words.forEach(function (w) { w.classList.remove("is-hidden"); });
+    var layer = showLayer(answerLayers, 0);
+    currentAnswerLayer = layer;
+    sceneAnswerShown = null;
+    hideRows(layer);
+    setScenePill("Ready when you are", "");
+    setStatus("Press \u201cStart the interview\u201d — the interviewer speaks, the app hears the question, and three short points land, ready to say.");
+  }
+
   function playScene(opts) {
     if (!sceneOn || isReducedMotion()) { settleScene(); return; }
     sceneVoiced = !!(opts && opts.voice);
@@ -1528,22 +1559,52 @@ var IA_VARIANTS = {
   var sceneMuteBtn = document.getElementById("scene-mute");
 
   function sceneClipDuration(key, fallback) {
+    if (sceneVoiced && key && voiceBuf[key] && voiceBuf[key].dur > 0) {
+      return voiceBuf[key].dur + 0.1;
+    }
     if (sceneVoiced && key && sceneClips[key] && !sceneClips[key].failed && sceneClips[key].dur > 0) {
       return sceneClips[key].dur + 0.1;
     }
     return fallback;
   }
   function sceneClipPlay(key) {
-    if (!sceneVoiced || !key || !sceneClips[key] || sceneClips[key].failed) { return; }
+    if (!sceneVoiced || !key) { return; }
+    /* Step 77 — the primary path is the Web Audio buffer: the
+       context was resumed inside the Start gesture, so a buffer
+       source started from a scene timer is not subject to the
+       per-element autoplay rules that silenced the Step 76 build
+       on the owner's phone. */
+    if (audioCtx && voiceBuf[key]) {
+      try {
+        if (beatNow && beatNow.src) { try { beatNow.src.stop(); } catch (e) {} }
+        var src = audioCtx.createBufferSource();
+        src.buffer = voiceBuf[key].buffer;
+        src.connect(audioAnalyser);
+        beatNow = { key: key, src: src, at: audioCtx.currentTime, dur: voiceBuf[key].dur };
+        src.start(0);
+        return;
+      } catch (e) { /* fall through to the element path */ }
+    }
+    if (!sceneClips[key] || sceneClips[key].failed) { return; }
     var rec = sceneClips[key];
     try {
       rec.el.muted = sceneMuted;
       rec.el.currentTime = 0;
       var p = rec.el.play();
-      if (p && p.catch) { p.catch(function () { rec.failed = true; }); }
+      if (p && p.then) {
+        p.then(function () { rec.playFails = 0; });
+        /* One rejection no longer retires the clip for the whole
+           session (Step 76 behaviour): two in a row do. */
+        p.catch(function () {
+          rec.playFails = (rec.playFails || 0) + 1;
+          if (rec.playFails >= 2) { rec.failed = true; }
+        });
+      }
     } catch (e) { rec.failed = true; }
   }
   function sceneClipStopAll() {
+    if (beatNow && beatNow.src) { try { beatNow.src.stop(); } catch (e) {} }
+    beatNow = null;
     Object.keys(sceneClips).forEach(function (key) {
       var el = sceneClips[key].el;
       try { el.pause(); el.currentTime = 0; } catch (e) {}
@@ -1563,11 +1624,92 @@ var IA_VARIANTS = {
     });
     return Promise.all(waits);
   }
+
+  /* Step 77 — bulletproof sound. One AudioContext, created and
+     resumed inside the Start gesture; every line is fetched and
+     decoded to a buffer BEFORE the run starts, persona voice
+     first, the Step 74 scene clips as the fallback, staged
+     pacing as the last resort. Playback is a buffer source on
+     that context — no per-element play() from a timer, nothing
+     for a mobile autoplay policy to reject mid-interview. An
+     AnalyserNode sits on the graph so the sound is measurable,
+     not assumed. The Step 74 element path remains as the
+     fallback for browsers without Web Audio. */
+  var audioCtx = null, audioGain = null, audioAnalyser = null;
+  var voiceBuf = {}, beatNow = null;
+  var sceneSoundNote = document.getElementById("scene-sound-note");
+  function soundNote(show) {
+    if (sceneSoundNote) { sceneSoundNote.hidden = !show; }
+  }
+  function audioEnsure() {
+    if (audioCtx) {
+      if (audioCtx.state === "suspended") { audioCtx.resume(); }
+      return true;
+    }
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { return false; }
+    try {
+      audioCtx = new AC();
+      audioGain = audioCtx.createGain();
+      audioGain.gain.value = sceneMuted ? 0 : 1;
+      audioAnalyser = audioCtx.createAnalyser();
+      audioAnalyser.fftSize = 256;
+      audioAnalyser.connect(audioGain);
+      audioGain.connect(audioCtx.destination);
+      window.__iaAudio = { ctx: audioCtx, analyser: audioAnalyser };
+      if (audioCtx.state === "suspended") { audioCtx.resume(); }
+      return true;
+    } catch (e) { audioCtx = null; return false; }
+  }
+  function audioLoadBuffers() {
+    var pid = window.__avatarPersonaId || null;
+    var jobs = Object.keys(CLIP_FILES).map(function (key) {
+      if (voiceBuf[key]) { return Promise.resolve(true); }
+      var urls = [];
+      if (pid) { urls.push("avatar/" + pid + "-voice-" + CLIP_FILES[key] + ".mp3"); }
+      urls.push("audio/scene-" + CLIP_FILES[key] + ".mp3");
+      var attempt = function (i) {
+        if (i >= urls.length) { return Promise.resolve(false); }
+        return fetch(urls[i]).then(function (r) {
+          if (!r.ok) { throw new Error("http " + r.status); }
+          return r.arrayBuffer();
+        }).then(function (ab) {
+          return audioCtx.decodeAudioData(ab);
+        }).then(function (buf) {
+          voiceBuf[key] = { buffer: buf, dur: buf.duration, origin: (i === 0 && pid) ? "persona" : "scene" };
+          return true;
+        }).catch(function () { return attempt(i + 1); });
+      };
+      return attempt(0);
+    });
+    return Promise.all(jobs).then(function (res) {
+      return res.some(function (x) { return x; });
+    });
+  }
+  /* The avatar driver's sync clock: which line is sounding, how
+     far into it, from whichever engine is actually playing. */
+  window.__iaSceneClock = function () {
+    if (beatNow && audioCtx) {
+      var t = audioCtx.currentTime - beatNow.at;
+      return { key: beatNow.key, t: t, dur: beatNow.dur, playing: t >= 0 && t < beatNow.dur + 0.05, via: "webaudio" };
+    }
+    var keys = Object.keys(sceneClips);
+    for (var i = 0; i < keys.length; i++) {
+      var rec = sceneClips[keys[i]];
+      if (rec && rec.el && !rec.el.paused && !rec.el.ended) {
+        return { key: keys[i], t: rec.el.currentTime || 0, dur: rec.dur || 0, playing: true, via: "element" };
+      }
+    }
+    return { key: "", t: 0, dur: 0, playing: false, via: "none" };
+  };
   if (sceneStartBtn) {
     sceneStartBtn.addEventListener("click", function () {
-      // The gesture unlocks every clip element (play + pause at
-      // zero volume), then the run starts once durations are
-      // known, so the transcript can pace to the real voice.
+      // Step 77: the gesture creates and resumes the ONE audio
+      // context and starts the buffer load; the element unlock
+      // stays as fallback insurance. The run starts once the
+      // buffers (or, failing them, the element metadata) are
+      // known — capped, so a slow network never eats the click.
+      var haveCtx = audioEnsure();
       Object.keys(sceneClips).forEach(function (key) {
         var el = sceneClips[key].el;
         el.muted = true;
@@ -1578,12 +1720,27 @@ var IA_VARIANTS = {
         }
       });
       if (sceneMuteBtn) { sceneMuteBtn.hidden = false; }
-      clipsReady().then(function () { playScene({ voice: true, greet: true }); });
+      var bufReady = haveCtx ? audioLoadBuffers() : Promise.resolve(false);
+      var both = Promise.all([bufReady, clipsReady()]);
+      var capped = Promise.race([both, new Promise(function (res) { setTimeout(res, 3000); })]);
+      capped.then(function () {
+        var haveBuf = Object.keys(voiceBuf).length > 0;
+        var haveEl = Object.keys(sceneClips).some(function (k) {
+          return !sceneClips[k].failed && sceneClips[k].dur > 0;
+        });
+        // Never silent-without-explanation: if neither engine
+        // can sound, the visitor is told, and captions carry it.
+        soundNote(!(haveBuf || haveEl));
+        playScene({ voice: true, greet: true });
+      });
     });
   }
   if (sceneMuteBtn) {
     sceneMuteBtn.addEventListener("click", function () {
       sceneMuted = !sceneMuted;
+      if (audioGain && audioCtx) {
+        audioGain.gain.setValueAtTime(sceneMuted ? 0 : 1, audioCtx.currentTime);
+      }
       Object.keys(sceneClips).forEach(function (key) { sceneClips[key].el.muted = sceneMuted; });
       sceneMuteBtn.textContent = sceneMuted ? "Sound off" : "Sound on";
       sceneMuteBtn.setAttribute("aria-pressed", String(sceneMuted));
@@ -1655,7 +1812,16 @@ var IA_VARIANTS = {
   }
 
   if (sceneReplayBtn) {
-    sceneReplayBtn.addEventListener("click", function () { playScene({ greet: true }); });
+    sceneReplayBtn.addEventListener("click", function () {
+      playScene({ greet: true, voice: sceneVoiced });
+    });
+  }
+  var sceneWatchBtn = document.getElementById("scene-watch");
+  if (sceneWatchBtn) {
+    sceneWatchBtn.addEventListener("click", function () {
+      soundNote(false);
+      playScene({ voice: false, greet: false });
+    });
   }
   if (sceneSkipBtn) {
     sceneSkipBtn.addEventListener("click", function () { settleScene(); });
@@ -1671,7 +1837,7 @@ var IA_VARIANTS = {
       settleScene();
     } else {
       if (sceneControlsEl) { sceneControlsEl.hidden = false; }
-      playScene();
+      primeScene();
     }
   } else {
     showAnswer("tell", SAMPLES.tell.q, SAMPLES.tell);

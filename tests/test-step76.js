@@ -53,10 +53,14 @@ check("the original scene clips remain for the no-avatar fallback path",
   }));
 
 /* ---------- 2. The driver's speaking contract ---------- */
+/* Step 77 re-pin: the SPEAK paths are no longer p1 literals —
+   the driver builds them from the session's persona id (pool of
+   six); the binding contract (render + scene clip + own voice
+   per key) is unchanged. */
 check("SPEAK map binds every scene key to its render, scene clip and her voice",
   KEYS.every(function (k) {
-    return av.includes('file: "avatar/p1-speaking-' + k + '"') &&
-           av.includes('"avatar/p1-voice-' + (k === "follow" ? "followup" : k) + '.mp3"');
+    return av.includes('file: "avatar/" + pid + "-speaking-' + k + '"') &&
+           av.includes('"avatar/" + pid + "-voice-' + (k === "follow" ? "followup" : k) + '.mp3"');
   }) &&
   av.includes('clipFile: "scene-followup.mp3"') && av.includes('clipFile: "scene-tell.mp3"'));
 check("the stage's data-speak-key is the single speaking signal (MutationObserver)",
@@ -80,10 +84,12 @@ check("the thanks beat is marked as a spoken beat too",
   demoJs.includes('callStageEl.setAttribute("data-speak-key", "thanks");'));
 check("turning speech off clears the beat mark",
   demoJs.includes('if (!on && callStageEl) { callStageEl.removeAttribute("data-speak-key"); }'));
+/* Step 77 re-pin: Replay now replays with the run's own sound
+   choice (voice: sceneVoiced) instead of always silently. */
 check("visitor-started runs hold the first question for the greeting (2.75s)",
   demoJs.includes("window.__avatarStepA.active) ? 2.75 : 0.3") &&
   demoJs.includes("playScene({ voice: true, greet: true })") &&
-  demoJs.includes("playScene({ greet: true })"));
+  demoJs.includes("playScene({ greet: true, voice: sceneVoiced })"));
 
 console.log(`\nStep 76: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
