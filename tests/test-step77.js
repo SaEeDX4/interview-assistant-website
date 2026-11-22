@@ -16,6 +16,8 @@
    1,360ms line. D3 — the full pool of six personas, each with
    portrait, own voice, presence loops and speaking renders;
    random per session, never the same twice in a row.
+   (Step 79 superseded the per-session selection with per-load
+   rotation — the owner's refresh never left the session. See §2.)
    Behaviour is measured by the Playwright probes kept with the
    report (step77-avatar-excellence/work/probe-d1*.py) and the
    offline frame analysis (work/compare_d2.py). */
@@ -68,11 +70,22 @@ check("per-persona media stays within the session budget (only one persona loads
     return total < 3.2 * 1024 * 1024;
   }));
 
-/* ---------- 2. Rotation: per session, never twice in a row ---------- */
+/* ---------- 2. Rotation: per load, never the same as the last load ----------
+   Step 79 re-pin (annotated): Step 77 selected per SESSION
+   (sessionStorage) with the last persona excluded across loads.
+   The owner's phone refresh stays inside the same tab session, so
+   his refreshes never changed the face; he ordered per-load
+   rotation. The sessionStorage layer is gone — the localStorage
+   last-persona exclusion below is now the whole mechanism, and
+   within one load the pick is fixed (the code picks once, at
+   driver init, and publishes it). */
 check("the driver carries the six-persona pool",
   av.includes('var POOL = ["p1", "p2", "p3", "p4", "p5", "p6"];'));
-check("selection persists per session (sessionStorage)",
-  av.includes('store("ia-avatar-persona")') && av.includes('storeSet("ia-avatar-persona", pid)'));
+check("Step 79: selection is per load — no sessionStorage persona pin",
+  !av.includes("window.sessionStorage") && !av.includes("ia-avatar-persona"));
+check("Step 79: every load re-picks, excluding the previous load's persona",
+  av.includes('lstoreSet("ia-avatar-last", pid);') &&
+  av.includes("cands[Math.floor(Math.random() * cands.length)]"));
 check("the last persona is excluded across loads (localStorage)",
   av.includes('lstore("ia-avatar-last")') &&
   av.includes("POOL.filter(function (p) { return p !== last; })"));

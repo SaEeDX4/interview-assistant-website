@@ -107,8 +107,13 @@ check("D5: presence loops are warmed at takeover (no cold seam swaps)",
   /function warmPresence\(\)/.test(av) && /warmPresence\(\);/.test(av));
 
 // D6 — the honesty label wraps whole at phone widths.
+// Step 79 re-pin (annotated): the label's anchor changed from
+// bottom:6px to vertical centring beside the thumbnail (Step 79
+// U5 — it read as a floating chip); the D6 contract itself — full
+// text, wraps, no nowrap/ellipsis cap — is unchanged and is still
+// what this check pins.
 check("D6: tile label wraps cleanly at <=640 (no nowrap/ellipsis cap)",
-  /\.call-tile > \.call-tile-label \{ left: 88px; top: auto; bottom: 6px; max-width: calc\(100% - 184px\); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1\.3; \}/.test(clean) &&
+  /\.call-tile > \.call-tile-label \{ left: 88px; top: 50%; bottom: auto; transform: translateY\(-50%\); max-width: calc\(100% - 184px\); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1\.3; \}/.test(clean) &&
   demo.includes("AI interviewer — simulated"));
 
 // D7 — Step 73/74/77 contracts survive.

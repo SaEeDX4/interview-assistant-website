@@ -1357,6 +1357,7 @@ var IA_VARIANTS = {
     callStageEl.classList.remove("is-scene");
     callStageEl.classList.remove("is-primed");
     setStartBtn("start");
+    setSceneControls("cancelled");
     setSpeaking(false);
     setSelfSpeaking(false);
     if (callCaptionEl) { callCaptionEl.hidden = true; }
@@ -1379,6 +1380,7 @@ var IA_VARIANTS = {
     setSelfSpeaking(false);
     if (callCaptionEl) { callCaptionEl.hidden = true; }
     if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
+    setSceneControls("complete");
     setScenePill("Answer ready", "ready");
     showLayer(questionLayers, sceneQ.tell.idx);
     sceneQ.tell.layer.classList.remove("is-provisional");
@@ -1410,6 +1412,7 @@ var IA_VARIANTS = {
     callStageEl.classList.add("is-scene");
     callStageEl.classList.add("is-primed");
     setStartBtn("start");
+    setSceneControls("primed");
     if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     if (callCaptionEl) { callCaptionEl.hidden = true; }
@@ -1439,6 +1442,9 @@ var IA_VARIANTS = {
     callStageEl.classList.add("is-scene");
     callStageEl.classList.remove("is-primed");
     setStartBtn("playing");
+    sceneRunStarted = true;
+    setSceneControls("playing");
+    if (sceneMuteBtn) { sceneMuteBtn.hidden = !sceneVoiced; }
     if (sceneSkipBtn) { sceneSkipBtn.hidden = false; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     if (mode !== "answer") {
@@ -1531,6 +1537,7 @@ var IA_VARIANTS = {
       if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
       if (sceneDownloadEl) { sceneDownloadEl.hidden = false; }
       setStartBtn("replay");
+      setSceneControls("complete");
       setScenePill("Interview complete", "ready");
       setStatus("Four questions — every answer from the same preparation: your resume, the job description, your profile. That is the whole interview, in one small window.");
     });
@@ -1590,6 +1597,28 @@ var IA_VARIANTS = {
       sceneStartBtn.disabled = false;
       sceneStartBtn.innerHTML = startBtnHome.replace("Start the interview", "Replay the interview");
     }
+  }
+
+  /* Step 79 — one visibility truth for the scene controls, driven
+     from the state functions below. Step 78 unhid the whole bar at
+     boot and nothing ever hid Watch or Replay in the primed state:
+     three actions competed before anything had happened, and
+     Replay — a state-impossible control — sat there before any
+     run existed (owner's phone, Step C round 3). Now: Replay
+     exists only once a run does; Watch is the primed state's
+     quiet secondary and stands down once a run is chosen; Mute
+     belongs to a sounding run only (playScene sets it from
+     sceneVoiced). Skip and Download keep their existing drivers. */
+  var sceneRunStarted = false;
+  function setSceneControls(state) {
+    if (sceneReplayBtn) {
+      sceneReplayBtn.hidden = !(state === "playing" || state === "complete" ||
+        (state === "cancelled" && sceneRunStarted));
+    }
+    if (sceneWatchBtn) {
+      sceneWatchBtn.hidden = !(state === "primed" || state === "cancelled");
+    }
+    if (sceneMuteBtn && state !== "playing") { sceneMuteBtn.hidden = true; }
   }
 
   function sceneClipDuration(key, fallback) {
@@ -1755,6 +1784,7 @@ var IA_VARIANTS = {
       // can never read as a dead stage.
       var loaded = 0;
       setStartBtn("preparing", 0);
+      if (sceneWatchBtn) { sceneWatchBtn.hidden = true; }
       // Step 77: the gesture creates and resumes the ONE audio
       // context and starts the buffer load; the element unlock
       // stays as fallback insurance. The run starts once the

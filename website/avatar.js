@@ -8,10 +8,12 @@
    line, 1,320ms of a 1,360ms line, and the owner rejected them),
    and her or his own recorded voice for the five fixed lines.
 
-   Selection: one persona per session (sessionStorage), fixed for
-   the session, and never the same persona twice in a row across
-   loads (localStorage last-persona exclusion). Only the chosen
-   persona's assets are ever requested.
+   Selection: a fresh persona on every page load, never the same
+   as the previous load's (localStorage last-persona exclusion);
+   fixed within the load. Only the chosen persona's assets are
+   ever requested. (Step 77 selected per session via
+   sessionStorage; Step 79 made it per load — a phone refresh
+   stays in the same tab session, so the face never changed.)
 
    Speaking is keyed by the stage's data-speak-key / data-speak-dur
    attributes: in a voiced run the render is clock-synced to the
@@ -37,29 +39,24 @@
   var selfTile = document.getElementById("call-self");
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* --- Persona selection: random per session, never the same
-     persona twice in a row across loads. --- */
+  /* --- Persona selection (Step 79): a fresh persona on every
+     page load, never the same as the previous load's. The
+     localStorage last-persona exclusion is the whole mechanism;
+     Step 77's sessionStorage layer is gone — a phone refresh
+     keeps the tab session, so the session-pinned face survived
+     every refresh the owner tried. Within one load the persona
+     is fixed: the interview never changes faces mid-run. --- */
   var POOL = ["p1", "p2", "p3", "p4", "p5", "p6"];
-  function store(k) {
-    try { return window.sessionStorage.getItem(k); } catch (e) { return null; }
-  }
-  function storeSet(k, v) {
-    try { window.sessionStorage.setItem(k, v); } catch (e) {}
-  }
   function lstore(k) {
     try { return window.localStorage.getItem(k); } catch (e) { return null; }
   }
   function lstoreSet(k, v) {
     try { window.localStorage.setItem(k, v); } catch (e) {}
   }
-  var pid = store("ia-avatar-persona");
-  if (!pid || POOL.indexOf(pid) === -1) {
-    var last = lstore("ia-avatar-last");
-    var cands = POOL.filter(function (p) { return p !== last; });
-    pid = cands[Math.floor(Math.random() * cands.length)];
-    storeSet("ia-avatar-persona", pid);
-    lstoreSet("ia-avatar-last", pid);
-  }
+  var last = lstore("ia-avatar-last");
+  var cands = POOL.filter(function (p) { return p !== last; });
+  var pid = cands[Math.floor(Math.random() * cands.length)];
+  lstoreSet("ia-avatar-last", pid);
   window.__avatarPersonaId = pid;
 
   var SRC = {

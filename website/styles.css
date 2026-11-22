@@ -1417,11 +1417,19 @@ body.cta-visible { padding-bottom: 96px; }
 .call-clock { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .call-bar-note { margin-left: auto; font-size: 12px; color: var(--muted-2); }
 .call-main { position: relative; flex: 1 1 auto; min-height: 640px; }
+/* Step 79b: the webcam marker is a slim in-flow strip at the
+   top of the call frame, between the LIVE bar and the call
+   area — the bezel the camera lives in. It is deliberately
+   NOT a floating pill: Step 79 centred the old chip on the app
+   window's top border (centre within 0.05px of the border —
+   metrically exact and visually wrong: a stray pill eating
+   the window's rim, colliding with its header zone; owner's
+   phone). In flow it overlaps nothing at any width, stays
+   clear of the LIVE row above and the tile row below, and
+   the window hangs under it with its chrome untouched. */
 .call-cam {
-  position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 3;
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px;
-  padding: 4px 12px; font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 12px; font-size: 11px; font-weight: 600;
   letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
 }
 .call-cam-lens {
@@ -1445,10 +1453,16 @@ body.cta-visible { padding-bottom: 96px; }
   background: rgba(10, 12, 16, .72); padding: 4px 8px; border-radius: 8px;
 }
 .call-speaking { color: var(--accent-2-light); }
+/* Step 79: the wave exists only while the interviewer is actually
+   speaking — until this step only its animation was state-gated,
+   so a static dotted row sat across the persona's chin in every
+   primed screenshot (owner's phone). The self wave already
+   followed this law; the tile wave now does too. */
 .call-wave {
   position: absolute; left: 16px; bottom: 52px;
-  display: inline-flex; align-items: center; gap: 4px; height: 20px;
+  display: none; align-items: center; gap: 4px; height: 20px;
 }
+.call-tile.is-speaking .call-wave { display: inline-flex; }
 .call-wave i {
   width: 3px; height: 16px; border-radius: 2px; background: var(--accent-2);
   transform: scaleY(.3); transform-origin: center;
@@ -1546,6 +1560,13 @@ body.cta-visible { padding-bottom: 96px; }
 .call-stage.is-scene.is-primed .demo-answer-stack { min-height: 0; }
 .call-stage.is-scene.is-primed .demo-answer-stack > * { display: none; }
 .call-stage.is-scene.is-primed .demo-sample-tag { min-height: 0; }
+/* Step 79b: while primed the sample tag is empty, but its 8px
+   top margin still took a band under the hint — the last void
+   in the primed window (measured: 25px below the hint instead
+   of the standard 16px body padding + 1px border). Out of
+   flow while primed; it returns with the run, when its space
+   is reserved and real. */
+.call-stage.is-scene.is-primed .demo-sample-tag { display: none; }
 /* Step 74 Pass 3 — the visitor's own camera in the self tile
    (opt-in only, local-only: no recording, no upload, no frame
    capture — the note under the stage says so in words) and the
@@ -1585,6 +1606,10 @@ body.cta-visible { padding-bottom: 96px; }
 .scene-sound-note[hidden] { display: none; }
 #scene-start svg { width: 16px; height: 16px; }
 #scene-mute[hidden] { display: none; }
+/* Step 79: Replay and Watch gained per-state visibility (see
+   setSceneControls in app.js); like Start/Mute/Download they need
+   the explicit guard, because .btn's display defeats [hidden]. */
+#scene-replay[hidden], #scene-watch[hidden] { display: none; }
 @media (max-width: 860px) {
   /* The demo window is a fixed 432px window at every page width.
      In the band where the shared header wraps (Step 22's rule),
@@ -1646,8 +1671,27 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
   .prep-note { display: block; flex: 0 0 100%; font-size: 12px; color: var(--muted); margin: 0; }
   .prep-arrow { display: none; }
   .prep-out { max-width: none; flex: 0 0 100%; border-top: 1px solid var(--border); padding-top: 8px; }
-  .demo-stage { padding: 16px 8px; }
+  /* Step 79 — framing: on phones the call frame IS the stage.
+     The stage wrapper's border, glow and padding and the demo
+     card's border and shadow stand down (four nested rectangles
+     around the window read as clutter at 353px); the head strip
+     and the call frame — which keeps its own border — read as
+     one panel, and the window keeps its canonical chrome. */
+  .demo-stage { padding: 0; border: 0; background: none; border-radius: 0; }
+  .demo-stage .demo { border: 0; box-shadow: none; }
   .demo-stage .demo-dots { display: none; }
+  /* Step 79 — the stage column grid. The head stops wrapping by
+     accident (Start 185 + gap 12 + toggle 141 = 338 > the 319px
+     content width, which made two improvised rows 129px tall,
+     Start stranded with 134px of dead space beside it) and
+     becomes two deliberate full-width rows; the scene controls
+     below the frame take the same one-column grid, so sibling
+     actions can never again render at different widths. */
+  .demo-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .demo-head #scene-start { width: 100%; }
+  .demo-head .mode-toggle { width: 100%; margin-left: 0; }
+  .demo-head .mode-btn { flex: 1 1 0; }
+  .scene-controls { display: grid; grid-template-columns: minmax(0, 1fr); }
   .call-main { min-height: 0; display: flex; flex-direction: column; }
   .call-tile { position: relative; inset: auto; height: 80px; flex: none; }
   .call-avatar { left: 12px; top: 12px; width: 36px; height: 36px; padding: 8px; }
@@ -1659,6 +1703,12 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
   /* The waveform already says it on phones; the label keeps the name. */
   .call-speaking { display: none; }
   .call-self { width: 80px; height: 52px; right: 12px; bottom: auto; top: 28px; }
+  /* Step 79b: no phone rule for the webcam marker — as an
+     in-flow strip at the frame's top (see the base .call-cam
+     rule) it sits above the tile strip by construction. The
+     Step 79 straddle (top: 74px, centred on the window's top
+     border) is gone: metrically exact, visually a stray pill
+     on the window's rim. */
   /* Cultivation R2: in the phone strip the caption collided with
      the webcam marker and the name label — it stands down here;
      the closing line is carried by the scene's status instead
@@ -2853,8 +2903,10 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   /* Step 78: the honesty label wrapped to "AI interviewer — si…" at
      403px (nowrap + ellipsis + a 138px cap). It now wraps cleanly to
      two lines in the space right of the thumbnail, clear of the
-     "You" tile: full text, no truncation. */
-  .call-tile > .call-tile-label { left: 88px; top: auto; bottom: 6px; max-width: calc(100% - 184px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
+     "You" tile: full text, no truncation. Step 79: the label is
+     vertically centred beside the thumbnail (it was bottom-anchored,
+     reading as a floating chip centred on nothing). */
+  .call-tile > .call-tile-label { left: 88px; top: 50%; bottom: auto; transform: translateY(-50%); max-width: calc(100% - 184px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
   .call-wave { left: 18px; bottom: auto; top: 50px; z-index: 2; }
 }
 

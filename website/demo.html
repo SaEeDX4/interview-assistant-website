@@ -133,8 +133,15 @@
               <span class="call-clock" id="scene-clock" aria-hidden="true">00:00</span>
               <span class="call-bar-note">Video call — simulated</span>
             </div>
-            <div class="call-main">
+            <!-- Step 79b: the webcam marker is the call frame's own
+                 top strip — in a real call the camera sits at the top
+                 of the screen and the app window hangs below it. It
+                 used to float inside the call area (and on phones
+                 straddle the window's rim); as an in-flow strip
+                 between the LIVE bar and the call area it overlaps
+                 nothing at any width. -->
             <div class="call-cam" aria-hidden="true"><span class="call-cam-lens"></span>Webcam</div>
+            <div class="call-main">
             <div class="call-tile" id="call-tile">
               <!-- Step 75 (Avatar Step A): the live interviewer avatar —
                    one synthetic persona, pre-rendered presence loops
