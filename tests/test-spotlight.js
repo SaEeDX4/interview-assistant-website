@@ -13,8 +13,13 @@
    - committed geometry: hero 320x400 / 264x330 (<=933) /
      248x310 (<=640, in flow); window landed 360 / 336 /
      (100% - 32); self PiP 96x63 / 88x58 / 72x48 over her
-     frame's corner on phones; caption bare text (no box, no
-     chip) at 19/17/16px;
+     frame's corner on phones;
+   - Step 84 re-pins: the live caption is REMOVED on the
+     owner's ruling (it duplicated the QUESTION card's
+     sentence word for word) — the window's landed top is now
+     measured from the tile label's bottom + 12, the tile's
+     own closing caption no longer stands down, and
+     spotlight.js mirrors nothing;
    - the --motion-4 amendment: 400ms in :root, consumed ONLY
      by spotlight.js's flight (the scope is written into this
      suite's check names, per the concept); every CSS
@@ -52,8 +57,8 @@ check("the tap target is a real button over the frame, aria-expanded, hidden at 
   /<button type="button" class="avatar-toggle" id="avatar-toggle" aria-expanded="false" aria-label="See the interviewer up close" hidden>/.test(html));
 check("the expand glyph is an inline SVG inside the toggle (icon furniture, not a label)",
   /class="spotlight-glyph"/.test(html) && /<svg class="spotlight-glyph"/.test(html));
-check("the live caption element exists inside the tile, aria-hidden (the canonical text stays in the window)",
-  /<p class="spotlight-caption" id="spotlight-caption" aria-hidden="true"><\/p>/.test(html));
+check("Step 84 re-pin: the live caption element is gone from the tile (it duplicated the QUESTION card — owner's ruling)",
+  !/spotlight-caption/.test(html));
 check("the close control is a labelled button, hidden at rest",
   /<button type="button" class="spotlight-close" id="spotlight-close" aria-label="Close the close-up" hidden>/.test(html));
 check("the backdrop shade exists inside the call field",
@@ -76,24 +81,19 @@ check("hero frame 264x330 in the <=933 band (centred on translateX(-50%) — tes
   /left: 50%; transform: translateX\(-50%\); top: 16px; bottom: auto; width: 264px; height: 330px;/.test(clean));
 check("hero frame 248x310 in flow on phones (fade-through territory)",
   /position: relative; left: auto; top: auto; transform: none; flex: none;\s*width: 248px; height: 310px; border-radius: 12px; order: 1;/.test(clean));
-check("window landed at 360 (desktop) / 336 (band) on the measured --spot-win-top",
-  /\.call-stage\[data-spotlight\] \.call-main \.app-window \{\s*top: var\(--spot-win-top, 499px\); left: calc\(50% - 180px\);\s*transform: none; width: 360px;/.test(clean)
-  && /top: var\(--spot-win-top, 425px\); left: calc\(50% - 168px\); width: 336px;/.test(clean));
+check("window landed at 360 (desktop) / 336 (band) on the measured --spot-win-top (Step 84: fallbacks now sit under the label, 453/383)",
+  /\.call-stage\[data-spotlight\] \.call-main \.app-window \{\s*top: var\(--spot-win-top, 453px\); left: calc\(50% - 180px\);\s*transform: none; width: 360px;/.test(clean)
+  && /top: var\(--spot-win-top, 383px\); left: calc\(50% - 168px\); width: 336px;/.test(clean));
 check("window landed at (100% - 32) in flow on phones (centred as a flex item — no off-scale auto margin)",
   /top: auto; left: auto; width: calc\(100% - 32px\); margin: 12px 0 16px; align-self: center;/.test(clean));
 check("self PiP: 96x63 desktop / 88x58 band / 72x48 over her frame's corner on phones",
   /\.call-stage\[data-spotlight\] \.call-self,\s*\.call-stage\[data-spotlight-prep\] \.call-self \{ width: 96px; height: 63px; \}/.test(clean)
   && /\.call-stage\[data-spotlight\] \.call-self,\s*\.call-stage\[data-spotlight-prep\] \.call-self \{ width: 88px; height: 58px; \}/.test(clean)
   && /width: 72px; height: 48px; top: 270px; bottom: auto; right: calc\(50% - 116px\);/.test(clean));
-check("caption is bare text: no background, no border on .spotlight-caption",
-  /\.spotlight-caption \{[^}]*\}/.test(clean)
-  && !/\.spotlight-caption \{[^}]*(background|border)/.test(clean));
-check("caption sizes 19/17/16px across the three widths",
-  /width: min\(560px, calc\(100% - 32px\)\); font-size: 19px;/.test(clean)
-  && /width: min\(480px, calc\(100% - 32px\)\); font-size: 17px;/.test(clean)
-  && /width: min\(320px, 100%\); margin-top: 12px; font-size: 16px;/.test(clean));
-check("the tile's own closing caption stands down while the Spotlight caption carries her words",
-  /\.call-stage\[data-spotlight\] \.call-caption \{ display: none; \}/.test(clean));
+check("Step 84 re-pin: no .spotlight-caption rules remain anywhere in the sheet",
+  !/\.spotlight-caption/.test(clean));
+check("Step 84 re-pin: the tile's own closing caption no longer stands down in Spotlight (it is the closing line's only carrier)",
+  !/\.call-stage\[data-spotlight\] \.call-caption \{ display: none; \}/.test(clean));
 check("the field's spotlight height is the measured --spot-main-h var",
   /\.call-stage\[data-spotlight\] \.call-main \{ min-height: var\(--spot-main-h, 640px\); \}/.test(clean));
 check("radius law: toggle follows the frame (12px; 8px on the phone strip), close is 8px, no 999px anywhere in the section",
@@ -109,9 +109,9 @@ check("spotlight.js never touches scene state (no scene classes, no speak keys, 
 check("spotlight.js never pauses, seeks or re-sources a video (the living element flies untouched)",
   !/\.pause\(|\.currentTime|requestVideoFrameCallback/.test(spot)
   && !/avatar-video/.test(spot));
-check("spotlight.js mirrors the transcript from the DOM (question stack spans + closing caption)",
-  spot.includes('getElementById("demo-question-stack")') && spot.includes("cloneNode(true)")
-  && spot.includes('callCaption'));
+check("Step 84 re-pin: spotlight.js mirrors nothing (no cloneNode, no question-stack read, no caption element)",
+  !spot.includes("cloneNode") && !spot.includes("demo-question-stack")
+  && !spot.includes("spotlight-caption") && !spot.includes("callCaption"));
 check("flights are WAAPI transforms (FLIP) — element.animate with translate/scale, transform-origin 0 0",
   spot.includes(".animate(") && spot.includes("translate(") && spot.includes("scale(")
   && spot.includes('el.style.transformOrigin = "0 0"'));
@@ -134,8 +134,8 @@ check("reduced motion gates the flights (the driver's own matchMedia law)",
   spot.includes('matchMedia("(prefers-reduced-motion: reduce)")'));
 check("the phone flight is the fade-through (<=640 via matchMedia), not a scale morph",
   spot.includes('matchMedia("(max-width: 640px)")') && spot.includes("fadeFrame"));
-check("heights are measured, not assumed (caption bottom + 12, window height + 16)",
-  spot.includes("capRect.bottom - mainRect.top") && spot.includes("appWindow.offsetHeight + 16"));
+check("heights are measured, not assumed (Step 84: tile-label bottom + 12, window height + 16)",
+  spot.includes("labelRect.bottom - mainRect.top") && spot.includes("appWindow.offsetHeight + 16"));
 check("the avatar driver is untouched by this workstream (Step 80 first-frame gating intact)",
   avatar.includes("requestVideoFrameCallback") && avatar.includes("gatedSwap"));
 

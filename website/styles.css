@@ -1648,8 +1648,25 @@ body.cta-visible { padding-bottom: 96px; }
 .call-main .demo-answer li .app-dot { margin-top: 8px; background: var(--app-accent); }
 .call-main .demo-status { font-size: 13px; min-height: 20px; color: var(--app-dim); }
 .call-main .demo-sample-tag { font-size: 12px; color: var(--app-faint); }
-.scene-q .w { transition: color var(--motion-3) var(--motion-ease); }
+/* Step 84 — voice-tracked transcription: a word materializes
+   over --motion-1 (opacity + a 2px rise) as the NOW word in
+   full colour, relaxes to the dimmer HEARD colour (--app-dim)
+   over --motion-3 when the next word lands, and the commit —
+   the is-provisional lift, marked is-committed — brings the
+   whole line to full colour together over the same --motion-3.
+   Words ahead of the voice keep .is-hidden (visibility), so
+   the layout is reserved and the card never reflows. */
+.scene-q .w {
+  display: inline-block; opacity: 0; transform: translateY(2px);
+  transition: opacity var(--motion-1) var(--motion-ease),
+    transform var(--motion-1) var(--motion-ease),
+    color var(--motion-3) var(--motion-ease);
+}
+.scene-q .w.is-now, .scene-q .w.is-heard { opacity: 1; transform: translateY(0); }
 .scene-q.is-provisional .w { color: var(--app-faint); }
+.scene-q.is-provisional .w.is-now { color: var(--app-text); }
+.scene-q.is-provisional .w.is-heard { color: var(--app-dim); }
+.scene-q.is-committed .w { opacity: 1; transform: translateY(0); }
 /* Step 74 — the arc's furniture: the candidate's speaking state on
    the self tile, the interviewer's closing line captioned in his
    tile, and the scene-end download anchor. The follow-up block is
@@ -3289,22 +3306,14 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   transition: opacity var(--motion-2) var(--motion-ease) 300ms;
 }
 .spotlight-close:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
-/* Her words, live: bare text on the field surface, centred —
-   a subtitle, not a label. Words keep the scene's colour law
-   (provisional muted, settled full) via the mirrored spans. */
-.spotlight-caption {
-  position: absolute; z-index: 2; margin: 0; pointer-events: none;
-  text-align: center; font-weight: 600; color: var(--text); opacity: 0;
-  transition: opacity var(--motion-1) ease;
-}
-.spotlight-caption .w { transition: color var(--motion-3) var(--motion-ease); }
-.spotlight-caption.is-provisional .w { color: var(--muted-2); }
 .call-stage[data-spotlight] .call-main { min-height: var(--spot-main-h, 640px); }
 /* Hero geometry (desktop): frame centred on the lens axis at
-   the field's top; label 8px under it, left edges shared;
-   caption 12px under the label; the window landed under the
-   caption on the JS-measured top (--spot-win-top: caption
-   bottom + 12, set by spotlight.js from the prep state). */
+   the field's top; label 8px under it, left edges shared; the
+   window landed under the label on the JS-measured top
+   (--spot-win-top: label bottom + 12, set by spotlight.js
+   from the prep state). Step 84 removed the live caption that
+   sat between the label and the window — it duplicated the
+   QUESTION card's sentence; the card is the single surface. */
 .call-stage[data-spotlight] .avatar-frame,
 .call-stage[data-spotlight-prep] .avatar-frame {
   left: calc(50% - 160px); top: 16px; width: 320px; height: 400px;
@@ -3321,24 +3330,17 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .call-stage[data-spotlight-prep] .call-wave {
   left: calc(50% - 152px); top: 388px;
 }
-.call-stage[data-spotlight] .spotlight-caption,
-.call-stage[data-spotlight-prep] .spotlight-caption {
-  left: 50%; transform: translateX(-50%); top: 461px;
-  width: min(560px, calc(100% - 32px)); font-size: 19px; line-height: 1.4;
-}
-.call-stage[data-spotlight] .spotlight-caption {
-  opacity: 1; transition: opacity var(--motion-2) var(--motion-ease) 120ms;
-}
 .call-stage[data-spotlight] .call-main .app-window {
-  top: var(--spot-win-top, 499px); left: calc(50% - 180px);
+  top: var(--spot-win-top, 453px); left: calc(50% - 180px);
   transform: none; width: 360px;
 }
 .call-stage[data-spotlight] .call-self,
 .call-stage[data-spotlight-prep] .call-self { width: 96px; height: 63px; }
-/* The tile's own closing caption stands down while the
-   Spotlight caption carries her words at the caption position
-   (the same words, mirrored — never both at once). */
-.call-stage[data-spotlight] .call-caption { display: none; }
+/* Step 84: the tile's own closing caption no longer stands
+   down in Spotlight — with the mirror gone it is the only
+   carrier of the closing line, exactly as outside Spotlight.
+   It was never a duplication (the line enters no QUESTION
+   card) and stays untouched. */
 @media (max-width: 933px) {
   /* Band hero: 264x330, window landed at 336. */
   .call-stage[data-spotlight] .avatar-frame,
@@ -3357,24 +3359,20 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight-prep] .call-wave {
     left: calc(50% - 124px); top: 318px; bottom: auto;
   }
-  .call-stage[data-spotlight] .spotlight-caption,
-  .call-stage[data-spotlight-prep] .spotlight-caption {
-    top: 390px; width: min(480px, calc(100% - 32px)); font-size: 17px;
-  }
   .call-stage[data-spotlight] .call-main .app-window {
-    top: var(--spot-win-top, 425px); left: calc(50% - 168px); width: 336px;
+    top: var(--spot-win-top, 383px); left: calc(50% - 168px); width: 336px;
   }
   .call-stage[data-spotlight] .call-self,
   .call-stage[data-spotlight-prep] .call-self { width: 88px; height: 58px; }
 }
 @media (max-width: 640px) {
   /* Phone: the tile strip becomes the hero column — frame in
-     flow at 248x310, label under it sharing its left edge, the
-     caption under that; the window lands in flow beneath, and
-     the self tile demotes onto her frame's bottom-right corner
-     (over video only, the concept's phone PiP). The flight here
-     is the fade-through (spotlight.js): the strip's square crop
-     and the hero's 4:5 cannot share a scale morph without
+     flow at 248x310, label under it sharing its left edge; the
+     window lands in flow beneath, and the self tile demotes
+     onto her frame's bottom-right corner (over video only,
+     the concept's phone PiP). The flight here is the
+     fade-through (spotlight.js): the strip's square crop and
+     the hero's 4:5 cannot share a scale morph without
      stretching her face. */
   .avatar-toggle { left: 12px; top: 8px; bottom: auto; width: 64px; height: 64px; border-radius: 8px; }
   .call-stage[data-spotlight] .call-tile {
@@ -3394,11 +3392,6 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
     position: static; transform: none; order: 2; flex: none;
     width: 248px; max-width: 248px; margin-top: 8px;
     white-space: nowrap; line-height: 1.3; text-align: left;
-  }
-  .call-stage[data-spotlight] .spotlight-caption,
-  .call-stage[data-spotlight-prep] .spotlight-caption {
-    position: static; transform: none; order: 3; flex: none;
-    width: min(320px, 100%); margin-top: 12px; font-size: 16px;
   }
   .call-stage[data-spotlight] .call-wave,
   .call-stage[data-spotlight-prep] .call-wave {

@@ -4,19 +4,23 @@
    video element — never a copy, never a reload, never a
    snapshot — from her tile rect to a hero rect inside the call
    frame; the canonical app window settles beneath her at a
-   reduced scale; her current question runs as a live caption
-   between them; the self tile demotes to a PiP. Tapping her
+   reduced scale; the self tile demotes to a PiP. Tapping her
    again, the close control, or Escape flies everything back to
    its exact original rect.
 
+   Step 84: the live caption that ran between her and the
+   window is gone — it duplicated the QUESTION card's sentence
+   word for word (owner's ruling), and the card is now the
+   single transcription surface, up close as everywhere else.
+   This module mirrors nothing: it only flies geometry.
+
    The lens, not a scene: this module NEVER touches the scene
    engine — no timers, no pill, no speak keys, no audio, no
-   video element state. It reads the scene's published DOM (the
-   question stack's word spans, the closing caption) and mirrors
-   it; the avatar driver's A/B machinery and its 120ms sync
-   guard run underneath, uninformed. Sound behaviour is
-   therefore a non-event: she keeps speaking through the flight,
-   sample-accurate, and expansion can never start sound.
+   video element state. The avatar driver's A/B machinery and
+   its 120ms sync guard run underneath, uninformed. Sound
+   behaviour is therefore a non-event: she keeps speaking
+   through the flight, sample-accurate, and expansion can
+   never start sound.
 
    Flights are FLIP (Paul Lewis): two batched rect reads, then
    WAAPI transforms only — plus the one precedented exception,
@@ -40,12 +44,10 @@
   var frame = document.getElementById("avatar-frame");
   var toggle = document.getElementById("avatar-toggle");
   var closeBtn = document.getElementById("spotlight-close");
-  var caption = document.getElementById("spotlight-caption");
-  var callCaption = document.getElementById("call-caption");
   var appWindow = document.getElementById("app-window");
   var selfTile = document.getElementById("call-self");
-  var qStack = document.getElementById("demo-question-stack");
-  if (!stage || !tile || !frame || !toggle || !closeBtn || !caption || !appWindow || !selfTile) { return; }
+  var tileLabel = tile.querySelector(".call-tile-label");
+  if (!stage || !tile || !frame || !toggle || !closeBtn || !appWindow || !selfTile || !tileLabel) { return; }
   var callMain = stage.querySelector(".call-main");
   if (!callMain) { return; }
 
@@ -96,55 +98,22 @@
   new MutationObserver(refreshAvailability).observe(tile, { attributes: true, attributeFilter: ["class"] });
   new MutationObserver(refreshAvailability).observe(frame, { attributes: true, attributeFilter: ["hidden"] });
 
-  /* ---------- the caption mirror ----------
-     Her current question, cloned from the scene's own word
-     spans (the visible question layer, or the closing caption
-     on the thanks beat): arrived words visible, unarrived
-     words holding their space, the provisional/settled colour
-     law carried by the layer's own class. One extra write
-     target on an existing publication — no new timing system. */
-  var lastMirrorKey = "";
-  function visibleQuestionLayer() {
-    if (!qStack) { return null; }
-    var kids = qStack.children, found = null;
-    for (var i = 0; i < kids.length; i++) {
-      if (!kids[i].classList.contains("is-hidden")) { found = kids[i]; }
-    }
-    return found || kids[0] || null;
-  }
-  function mirrorCaption() {
-    var src = null;
-    if (callCaption && !callCaption.hidden && callCaption.textContent.trim()) { src = callCaption; }
-    if (!src) { src = visibleQuestionLayer(); }
-    if (!src) { return; }
-    var key = (src === callCaption ? "cap|" : "q|") + src.innerHTML;
-    if (key === lastMirrorKey) { return; }
-    lastMirrorKey = key;
-    caption.textContent = "";
-    for (var i = 0; i < src.childNodes.length; i++) {
-      caption.appendChild(src.childNodes[i].cloneNode(true));
-    }
-    caption.classList.toggle("is-provisional", src.classList.contains("is-provisional"));
-    if (isOpen && !flights.length) { refreshSpotHeights(); }
-  }
-  var mirrorMo = new MutationObserver(mirrorCaption);
-  if (qStack) { mirrorMo.observe(qStack, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] }); }
-  if (callCaption) { mirrorMo.observe(callCaption, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] }); }
-
   /* ---------- measured heights ----------
-     The window's spotlight top is the caption's measured
-     bottom + 12; the field's height is that top + the window's
-     measured height + the standard 16px bottom padding. On
-     phones the composition is in flow, so the field's height
-     is simply its own. */
+     The window's spotlight top is the tile label's measured
+     bottom + 12 (Step 84: the label is the last element of the
+     hero composition now that the caption is gone); the
+     field's height is that top + the window's measured height
+     + the standard 16px bottom padding. On phones the
+     composition is in flow, so the field's height is simply
+     its own. */
   function measureSpot() {
     if (phoneMq.matches) {
       stage.style.setProperty("--spot-main-h", "0px");
       return { winTop: 0, mainH: callMain.offsetHeight };
     }
     var mainRect = callMain.getBoundingClientRect();
-    var capRect = caption.getBoundingClientRect();
-    var winTop = Math.round(capRect.bottom - mainRect.top) + 12;
+    var labelRect = tileLabel.getBoundingClientRect();
+    var winTop = Math.round(labelRect.bottom - mainRect.top) + 12;
     return { winTop: winTop, mainH: winTop + appWindow.offsetHeight + 16 };
   }
   function refreshSpotHeights() {
@@ -231,9 +200,9 @@
   }
 
   /* Apply the open state and measure it: the prep attribute
-     lands the caption's hero geometry for one synchronous
+     lands the label's hero geometry for one synchronous
      turn (no paint), so the window's top is measured from the
-     caption's real box, not from arithmetic. */
+     label's real box, not from arithmetic. */
   function applyOpenState() {
     stage.setAttribute("data-spotlight-prep", "");
     var m = measureSpot();
@@ -268,7 +237,6 @@
     var h0 = callMain.getBoundingClientRect().height;
     cancelFlights();
     appWindow.style.transition = "none";
-    mirrorCaption();
     if (phoneMq.matches && !reduced) {
       /* Fade-through: she fades out at the strip, the state
          swaps while she is invisible, she fades in large. The
@@ -374,11 +342,11 @@
 
   /* ---------- staying true while open ----------
      The window's height moves with the scene (reservations,
-     exchanges, typed answers); the caption's wrap moves with
-     the beat. Re-measure from the real boxes — the resting
-     var changes glide on the field's own transition, the
-     window's top on its spotlight transition. A breakpoint
-     crossing re-derives the whole geometry at once. */
+     exchanges, typed answers). Re-measure from the real
+     boxes — the resting var changes glide on the field's own
+     transition, the window's top on its spotlight transition.
+     A breakpoint crossing re-derives the whole geometry at
+     once. */
   var wasPhone = phoneMq.matches;
   window.addEventListener("resize", function () {
     var nowPhone = phoneMq.matches;
@@ -394,9 +362,7 @@
       if (isOpen && !flights.length) { refreshSpotHeights(); }
     });
     ro.observe(appWindow);
-    ro.observe(caption);
   }
 
-  mirrorCaption();
   refreshAvailability();
 })();

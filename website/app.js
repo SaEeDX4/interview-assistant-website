@@ -1413,13 +1413,168 @@ var IA_VARIANTS = {
     if (callSelfEl) { callSelfEl.classList.toggle("is-speaking", !!on); }
   }
 
+  /* Step 84 — voice-tracked transcription. The real app streams
+     the question: partial transcription grows in the Question
+     card as the interviewer speaks, then settles before the
+     answer pipeline starts (OpenAI Realtime deltas →
+     TurnDetector.OnPartial → the card, throttled at 120ms; the
+     settle is adaptive, measured from when speech stopped). The
+     demo's lines are fixed clips, so each word's onset is
+     MEASURED from the shipped audio itself (RMS-envelope dip
+     anchors + syllable-weighted interpolation — the research
+     tool, wordtimes.py; anchored onsets ±30–60ms, interpolated
+     ±80–150ms, the lip-sync's accepted precision class). One
+     table per voice source (the six personas + the scene
+     fallback) per line: d = the measured clip's duration (ms),
+     s = its voiced span, w = each word's onset as a fraction of
+     that span — so a silent run scales the same table over its
+     staged speech duration. */
+  var SCENE_ONSETS = {
+    p1: { tell: { d: 1040, s: [110, 1040], w: [0.000, 0.167, 0.366, 0.683] }, follow: { d: 1640, s: [150, 1640], w: [0.000, 0.168, 0.222, 0.352, 0.463, 0.574, 0.789] }, story: { d: 2440, s: [115, 2440], w: [0.000, 0.118, 0.143, 0.254, 0.357, 0.428, 0.500, 0.583, 0.634, 0.813] }, why: { d: 1320, s: [145, 1320], w: [0.000, 0.174, 0.286, 0.460, 0.571, 0.728, 0.857] } },
+    p2: { tell: { d: 1872, s: [435, 1870], w: [0.000, 0.247, 0.366, 0.667] }, follow: { d: 1920, s: [175, 1605], w: [0.000, 0.178, 0.269, 0.392, 0.510, 0.608, 0.846] }, story: { d: 3048, s: [185, 2640], w: [0.000, 0.071, 0.149, 0.248, 0.357, 0.429, 0.515, 0.574, 0.629, 0.862] }, why: { d: 1800, s: [175, 1370], w: [0.000, 0.205, 0.285, 0.428, 0.572, 0.732, 0.857] } },
+    p3: { tell: { d: 1488, s: [310, 1065], w: [0.000, 0.167, 0.397, 0.702] }, follow: { d: 1872, s: [220, 1870], w: [0.000, 0.145, 0.227, 0.324, 0.452, 0.609, 0.730] }, story: { d: 2568, s: [110, 2305], w: [0.000, 0.072, 0.132, 0.228, 0.357, 0.429, 0.500, 0.574, 0.633, 0.857] }, why: { d: 1752, s: [200, 1750], w: [0.000, 0.187, 0.319, 0.445, 0.572, 0.668, 0.857] } },
+    p4: { tell: { d: 1608, s: [190, 1350], w: [0.000, 0.056, 0.375, 0.681] }, follow: { d: 1848, s: [185, 1580], w: [0.000, 0.194, 0.297, 0.409, 0.444, 0.548, 0.756] }, story: { d: 2712, s: [200, 2320], w: [0.000, 0.071, 0.163, 0.259, 0.357, 0.429, 0.538, 0.571, 0.634, 0.868] }, why: { d: 1728, s: [195, 1410], w: [0.000, 0.181, 0.286, 0.510, 0.571, 0.745, 0.857] } },
+    p5: { tell: { d: 1320, s: [115, 965], w: [0.000, 0.167, 0.359, 0.747] }, follow: { d: 1800, s: [135, 1370], w: [0.000, 0.178, 0.222, 0.368, 0.526, 0.640, 0.741] }, story: { d: 2688, s: [100, 2305], w: [0.000, 0.072, 0.152, 0.259, 0.357, 0.429, 0.500, 0.580, 0.644, 0.857] }, why: { d: 1632, s: [150, 1230], w: [0.000, 0.143, 0.286, 0.481, 0.571, 0.750, 0.857] } },
+    p6: { tell: { d: 1560, s: [180, 1090], w: [0.000, 0.167, 0.390, 0.566] }, follow: { d: 1968, s: [140, 1740], w: [0.000, 0.144, 0.247, 0.347, 0.463, 0.581, 0.700] }, story: { d: 3048, s: [130, 2760], w: [0.000, 0.071, 0.146, 0.268, 0.357, 0.429, 0.498, 0.555, 0.650, 0.827] }, why: { d: 2040, s: [425, 1680], w: [0.000, 0.143, 0.286, 0.430, 0.571, 0.709, 0.857] } },
+    scene: { tell: { d: 1392, s: [155, 1390], w: [0.000, 0.206, 0.320, 0.666] }, follow: { d: 1680, s: [130, 1425], w: [0.000, 0.181, 0.222, 0.334, 0.445, 0.555, 0.707] }, story: { d: 2688, s: [155, 2290], w: [0.000, 0.117, 0.173, 0.248, 0.407, 0.429, 0.500, 0.564, 0.616, 0.855] }, why: { d: 1440, s: [160, 1440], w: [0.000, 0.109, 0.286, 0.516, 0.571, 0.714, 0.857] } }
+  };
+  /* Her last word, then quiet: the app's own settle beat before
+     the turn finalizes (the research's measured 350ms). */
+  var SCENE_SETTLE_MS = 350;
+
+  /* The final state of a question line: every word present, no
+     per-word tense left, the layer committed — the state the
+     settle, the primed stage and an interruption all land on. A
+     question caught mid-transcription snaps here instantly:
+     never left half-dim. */
+  function snapQuestionFinal(q) {
+    if (!q || !q.layer) { return; }
+    q.layer.classList.remove("is-provisional");
+    q.layer.classList.add("is-committed");
+    q.words.forEach(function (w) {
+      w.classList.remove("is-hidden");
+      w.classList.remove("is-now");
+      w.classList.remove("is-heard");
+    });
+  }
+  function snapAllSceneQuestions() {
+    [sceneQ.tell, sceneQ.follow, sceneQ.story, sceneQ.why].forEach(snapQuestionFinal);
+  }
+  function resetQuestionWords(q) {
+    q.layer.classList.remove("is-committed");
+    q.words.forEach(function (w) {
+      w.classList.add("is-hidden");
+      w.classList.remove("is-now");
+      w.classList.remove("is-heard");
+    });
+  }
+
+  /* Which voice's table a beat paces by, and its beat-local word
+     onsets + speech end (ms). A voiced run paces by the voice
+     that actually sounds: the Web Audio buffer's origin (the
+     persona's own table, or the scene table), or — on the
+     element path, whose src the avatar driver may have
+     re-pointed at the persona — the table whose measured
+     duration matches the element's. A silent run scales the
+     scene table's span fractions over the staged speech. */
+  function scenePaceFrom(table, durMs, staged) {
+    if (!table) { return null; }
+    var s0 = table.s[0], s1 = table.s[1], k = durMs / table.d;
+    if (staged) {
+      return {
+        onsets: table.w.map(function (f) { return Math.round(f * durMs); }),
+        endMs: Math.round(durMs)
+      };
+    }
+    return {
+      onsets: table.w.map(function (f) { return Math.round((s0 + f * (s1 - s0)) * k); }),
+      endMs: Math.round(s1 * k)
+    };
+  }
+  function scenePacing(clip, fallbackSpeech) {
+    if (sceneVoiced) {
+      if (typeof voiceBuf !== "undefined" && voiceBuf[clip]) {
+        var src = voiceBuf[clip].origin === "persona"
+          ? (window.__avatarPersonaId || "scene") : "scene";
+        return scenePaceFrom(SCENE_ONSETS[src] && SCENE_ONSETS[src][clip],
+          voiceBuf[clip].dur * 1000, false);
+      }
+      var rec = sceneClips[clip];
+      if (rec && !rec.failed && rec.dur > 0) {
+        var best = SCENE_ONSETS.scene[clip], bd = Infinity;
+        Object.keys(SCENE_ONSETS).forEach(function (s) {
+          var tb = SCENE_ONSETS[s][clip];
+          if (tb && Math.abs(tb.d - rec.dur * 1000) < bd) {
+            bd = Math.abs(tb.d - rec.dur * 1000); best = tb;
+          }
+        });
+        return scenePaceFrom(best, rec.dur * 1000, false);
+      }
+    }
+    return scenePaceFrom(SCENE_ONSETS.scene[clip], fallbackSpeech * 1000, true);
+  }
+
+  /* The transcription driver: an rAF loop whose clock IS the
+     audio clock — the scene's published sound clock
+     (window.__iaSceneClock: the Web Audio buffer clock, the
+     element clock behind it) while this beat is the sounding
+     one; a local stamp is the staged fallback, the prototype's
+     construction. The displayed time never runs backwards if
+     the clock source changes mid-beat. Each word materializes
+     as the NOW word (is-now) at its measured onset and relaxes
+     to HEARD (is-heard) when the next word lands; her pauses
+     need no code — the last word simply stays lit. The loop
+     dies with the run token, like every scene timer. */
+  function startTranscription(q, clip, pacing) {
+    var myRun = scene.run;
+    var spans = q.words, onsets = pacing.onsets, endMs = pacing.endMs;
+    var t0 = null, lastT = 0;
+    function clockMs() {
+      if (window.__iaSceneClock) {
+        var c = window.__iaSceneClock();
+        if (c && c.key === clip && c.via !== "none") { return c.t * 1000; }
+      }
+      if (t0 === null) { t0 = performance.now(); }
+      return performance.now() - t0;
+    }
+    function frame() {
+      if (myRun !== scene.run) { return; }
+      // The commit is terminal: once the layer has committed
+      // (the settle timer can land a frame before this loop's
+      // last tick), the transcription never touches it again —
+      // a late tick must not re-tense a settled line.
+      if (q.layer.classList.contains("is-committed")) { return; }
+      var t = Math.max(lastT, clockMs());
+      lastT = t;
+      for (var i = 0; i < spans.length; i++) {
+        if (t < onsets[i]) { break; }
+        var s = spans[i];
+        if (i === spans.length - 1 || t < onsets[i + 1]) {
+          if (!s.classList.contains("is-now")) {
+            s.classList.remove("is-hidden");
+            s.classList.remove("is-heard");
+            s.classList.add("is-now");
+          }
+        } else if (!s.classList.contains("is-heard")) {
+          s.classList.remove("is-hidden");
+          s.classList.remove("is-now");
+          s.classList.add("is-heard");
+        }
+      }
+      if (t < endMs + SCENE_SETTLE_MS) { requestAnimationFrame(frame); }
+    }
+    requestAnimationFrame(frame);
+  }
+
   /* One exchange, scheduled from cursor t (seconds). The words
-     pace over the speech duration — the clip's real duration in a
-     voiced run, the staged pacing otherwise — detection lands
-     just after the voice ends, and the points land while the
-     moment is still live. Returns the cursor for the next beat. */
+     land at their measured spoken onsets (Step 84) — the clip's
+     own rhythm in a voiced run, the staged pacing otherwise —
+     the settle beat follows her last word, detection commits
+     the line, and the points land while the moment is still
+     live. Returns the cursor for the next beat. */
   function sceneAsk(t, q, aLayer, opts) {
     var speech = sceneClipDuration(opts.clip, opts.speech);
+    var pacing = scenePacing(opts.clip, opts.speech);
     var rows = aLayer.querySelectorAll("li").length;
     var step = opts.pointStep || 400;
     sceneLater(t * 1000, function () {
@@ -1431,20 +1586,25 @@ var IA_VARIANTS = {
       setScenePill("Listening", "listening");
       showLayer(questionLayers, q.idx);
       q.layer.classList.add("is-provisional");
-      q.words.forEach(function (w) { w.classList.add("is-hidden"); });
+      resetQuestionWords(q);
       sceneShowAnswer(aLayer);
       hideRows(aLayer);
       sceneClipPlay(opts.clip);
-      var wstep = (speech * 1000) / Math.max(1, q.words.length);
-      q.words.forEach(function (w, i) {
-        sceneLater(150 + i * wstep, function () { w.classList.remove("is-hidden"); });
-      });
+      if (pacing && !isReducedMotion()) {
+        startTranscription(q, opts.clip, pacing);
+      } else {
+        // No table, or reduced motion: the line stands whole in
+        // its provisional colour until the commit, as before.
+        q.words.forEach(function (w) { w.classList.remove("is-hidden"); });
+      }
     });
-    var detectedAt = t + 0.15 + speech + 0.2;
+    var detectedAt = t + (pacing
+      ? (pacing.endMs + SCENE_SETTLE_MS) / 1000
+      : 0.15 + speech + 0.2);
     sceneLater(detectedAt * 1000, function () {
       setSpeaking(false);
       setScenePill("Question detected", "detected");
-      q.layer.classList.remove("is-provisional");
+      snapQuestionFinal(q);
     });
     var pointsAt = detectedAt + 0.4;
     sceneLater(pointsAt * 1000, function () {
@@ -1477,6 +1637,7 @@ var IA_VARIANTS = {
     scene.run++;
     clearSceneTimers();
     sceneClipStopAll();
+    snapAllSceneQuestions();
     hideSceneAnswers();
     flipOk = false;
     sceneStatusRestore = null;
@@ -1503,6 +1664,9 @@ var IA_VARIANTS = {
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     scene.playing = false;
     scene.done = true;
+    // Step 84: a question caught mid-transcription snaps to its
+    // final state before the settled stage replaces it.
+    snapAllSceneQuestions();
     hideSceneAnswers();
     flipOk = true; // The settled tell answer carries a Coach form.
     statusOverride = null;
@@ -1515,8 +1679,6 @@ var IA_VARIANTS = {
     setSceneControls("complete");
     setScenePill("Answer ready", "ready");
     showLayer(questionLayers, sceneQ.tell.idx);
-    sceneQ.tell.layer.classList.remove("is-provisional");
-    sceneQ.tell.words.forEach(function (w) { w.classList.remove("is-hidden"); });
     var layer = showLayer(answerLayers, 0);
     currentAnswerLayer = layer;
     sceneAnswerShown = null;
@@ -1556,8 +1718,7 @@ var IA_VARIANTS = {
     if (callCaptionEl) { callCaptionEl.hidden = true; }
     sampleTagEl.classList.add("is-hidden");
     showLayer(questionLayers, sceneQ.tell.idx);
-    sceneQ.tell.layer.classList.remove("is-provisional");
-    sceneQ.tell.words.forEach(function (w) { w.classList.remove("is-hidden"); });
+    snapQuestionFinal(sceneQ.tell);
     var layer = showLayer(answerLayers, 0);
     currentAnswerLayer = layer;
     sceneAnswerShown = null;
