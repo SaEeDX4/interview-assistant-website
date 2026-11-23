@@ -114,10 +114,10 @@
                the scene controls while the hint named it. Hidden until
                JS unhides it at boot, so it is never a dead control. -->
           <button type="button" class="btn btn-primary btn-small" id="scene-start" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.6 5.4a9 9 0 0 1 0 13.2"/></svg> Start the interview</button>
-          <div class="mode-toggle" role="group" aria-label="Answer mode">
-            <button type="button" class="mode-btn is-active" id="mode-answer" aria-pressed="true">Answer</button>
-            <button type="button" class="mode-btn" id="mode-coach" aria-pressed="false">Coach</button>
-          </div>
+          <!-- Step 82: the Answer | Coach tabs are gone from the head.
+               Coach is taught inside the window instead — when an
+               answer settles, a flip under it shows the same answer
+               as Coach cues (see #coach-flip in the window body). -->
         </div>
         <div class="demo-body">
           <!-- Step 73: the scene — a video call in progress, staged.
@@ -216,6 +216,7 @@
                 </div>
                 <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
                 <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
+                <p class="coach-flip-row" id="coach-flip" hidden><button class="coach-flip-btn" id="coach-flip-btn" type="button"><span class="coach-flip-label">See this answer as Coach cues</span> <span aria-hidden="true">→</span></button></p>
               </div>
             </div>
             <!-- Spotlight (Phase 1): the close control — fades in
@@ -325,7 +326,7 @@
         </article>
         <article class="card">
           <h3>Coach Mode</h3>
-          <p>Three keywords and a one-line structure, so the words stay yours. Toggle it above, or switch live with the <kbd>Ctrl+Alt+C</kbd> shortcut.</p>
+          <p>Three keywords and a one-line structure, so the words stay yours. When an answer lands in the window above, flip it to Coach cues to see the same answer in this form — in the app, <kbd>Ctrl+Alt+C</kbd> switches live, mid-interview.</p>
         </article>
         <article class="card">
           <h3>What this demo is not</h3>

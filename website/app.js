@@ -514,8 +514,10 @@ var IA_VARIANTS = {
   var modeCoachBtn = document.getElementById("mode-coach");
 
   // Guard against missing nodes: a missing demo must not throw on load.
-  if (!questionStack || !answerStack || !statusEl || !inputEl || !formEl ||
-      !modeAnswerBtn || !modeCoachBtn) {
+  // Step 82: the mode buttons are OPTIONAL — the demo page no longer
+  // carries them (Coach is reached through the per-answer flip inside
+  // the window, see renderView below); the home page keeps its toggle.
+  if (!questionStack || !answerStack || !statusEl || !inputEl || !formEl) {
     return;
   }
   // The static "tell" question + answer stay in the HTML as layer 0
@@ -533,7 +535,16 @@ var IA_VARIANTS = {
     sampleTagEl.classList.add("is-hidden");
   }
 
-  var mode = "answer"; // "answer" | "coach" — persists across questions.
+  var mode = "answer"; // "answer" | "coach" — the current answer's view.
+  // Step 82: on the demo page (the flip exists) the view is per-answer —
+  // every new question lands in Answer view; on the home page, where the
+  // toggle lives, the mode still persists across questions as before.
+  var flipEl = document.getElementById("coach-flip");
+  var flipBtn = flipEl ? flipEl.querySelector(".coach-flip-btn") : null;
+  var flipLabel = flipBtn ? flipBtn.querySelector(".coach-flip-label") : null;
+  var flipOk = false; // A settled answer with a Coach form is on show.
+  var sceneStatusRestore = null; // Status to restore after a scene-state flip.
+  var statusOverride = null; // One-shot status for the flip's own render.
   var currentKey = "tell";
   var currentQuestion = "Tell me about yourself.";
   var timers = [];
@@ -629,16 +640,22 @@ var IA_VARIANTS = {
       li.classList.remove("is-new");
     });
   }
-  function makeRow(text, isKeys) {
+  /* Step 82: a Coach line in the product's own form — a small
+     KEYWORDS / STRUCTURE label over the value, exactly as the app
+     renders it (MainWindow.xaml) and as Features and Home already
+     show it (.app-coach-*). The labels stay in English in every
+     language — the product's Coach prompt keeps them so. */
+  function buildCoachLine(labelText, valueText, valueClass) {
     var li = document.createElement("li");
-    var dot = document.createElement("span");
-    dot.className = "app-dot";
-    dot.setAttribute("aria-hidden", "true");
-    li.appendChild(dot);
-    var span = document.createElement("span");
-    if (isKeys) { span.className = "coach-keys"; }
-    span.textContent = text;
-    li.appendChild(span);
+    li.className = "coach-line";
+    var label = document.createElement("span");
+    label.className = "app-coach-label";
+    label.textContent = labelText;
+    var value = document.createElement("span");
+    value.className = valueClass;
+    value.textContent = valueText;
+    li.appendChild(label);
+    li.appendChild(value);
     li.classList.add("is-hidden");
     return li;
   }
@@ -662,8 +679,8 @@ var IA_VARIANTS = {
     ul.setAttribute("aria-busy", "false");
     ul.dir = rtl ? "rtl" : "ltr";
     ul.lang = lang || (rtl ? "fa" : "en");
-    ul.appendChild(makeRow(coach.keys.join(" · "), true));
-    ul.appendChild(makeRow(coach.structure, false));
+    ul.appendChild(buildCoachLine("Keywords", coach.keys.join(" · "), "app-coach-keys"));
+    ul.appendChild(buildCoachLine("Structure", coach.structure, "app-coach-structure"));
     ul.classList.add("is-hidden");
     return ul;
   }
@@ -748,8 +765,13 @@ var IA_VARIANTS = {
     if (currentAnswerLayer) {
       currentAnswerLayer.setAttribute("aria-busy", "false");
     }
-    setStatus(statusText);
+    // A flip in a scene state carries its own status (the comparison
+    // line, or the scene status it restores) — it must land with the
+    // render, not be overwritten by the generic ready line.
+    setStatus(statusOverride || statusText);
+    statusOverride = null;
     if (visitorActed) { showDemoNext(); }
+    refreshFlip();
   }
 
   // Step 23: renderBullets / renderCoach are retired — the layers are
@@ -762,6 +784,8 @@ var IA_VARIANTS = {
   // the window is at its final height before the first point lands.
   function showAnswer(key, questionText, sample) {
     clearTimers();
+    hideSceneAnswers();
+    flipOk = true; // Every classic pair carries a Coach form.
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     var myRun = ++runId;
     currentKey = key;
@@ -853,6 +877,8 @@ var IA_VARIANTS = {
 
   function showTypedMatch(key, text) {
     clearTimers();
+    hideSceneAnswers();
+    flipOk = true;
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     var myRun = ++runId;
     currentKey = key;
@@ -902,6 +928,10 @@ var IA_VARIANTS = {
 
   function showTypedAI(text) {
     clearTimers();
+    hideSceneAnswers();
+    // A live answer has no Coach form in the data — the flip is
+    // never offered for it (no invented keywords).
+    flipOk = false;
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     var myRun = ++runId;
     currentKey = "typed";
@@ -942,26 +972,86 @@ var IA_VARIANTS = {
       });
   }
 
-  function setMode(next) {
+  /* Step 82 — the view flip. `mode` is the current answer's view.
+     renderView re-renders the settled answer in the other view;
+     setMode is the home page's persistent toggle (buttons optional);
+     the demo page's flip is per-answer: refreshFlip offers it only
+     while a settled answer with a Coach form is on show, and
+     resetView lands every new question in Answer view again. */
+  function renderView(next) {
     if (next === mode) { return; }
     mode = next;
-    var coach = next === "coach";
-    modeAnswerBtn.classList.toggle("is-active", !coach);
-    modeCoachBtn.classList.toggle("is-active", coach);
-    modeCoachBtn.classList.toggle("is-coach-active", coach);
-    modeAnswerBtn.setAttribute("aria-pressed", String(!coach));
-    modeCoachBtn.setAttribute("aria-pressed", String(coach));
-    // Focus stays on the toggle; only the answer re-renders, in the new mode.
     var sample = SAMPLES[currentKey] || null;
     showAnswer(currentKey, currentQuestion, sample);
   }
 
-  modeAnswerBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("answer"); });
-  modeCoachBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("coach"); });
+  function setMode(next) {
+    if (modeAnswerBtn && modeCoachBtn) {
+      var coach = next === "coach";
+      modeAnswerBtn.classList.toggle("is-active", !coach);
+      modeCoachBtn.classList.toggle("is-active", coach);
+      modeCoachBtn.classList.toggle("is-coach-active", coach);
+      modeAnswerBtn.setAttribute("aria-pressed", String(!coach));
+      modeCoachBtn.setAttribute("aria-pressed", String(coach));
+    }
+    // Focus stays on the toggle; only the answer re-renders, in the new view.
+    renderView(next);
+  }
+
+  function refreshFlip() {
+    if (!flipEl || !flipBtn) { return; }
+    var show = flipOk && !(sceneOn && scene.playing);
+    flipEl.hidden = !show;
+    if (show && flipLabel) {
+      flipLabel.textContent = mode === "coach"
+        ? "Back to the 3 points"
+        : "See this answer as Coach cues";
+    }
+  }
+
+  function resetView() {
+    // Demo page only: a new question always lands in Answer view, so
+    // no view the visitor picked for one answer can silently change
+    // what the next question does.
+    if (flipEl && mode !== "answer") { mode = "answer"; }
+  }
+
+  if (modeAnswerBtn) {
+    modeAnswerBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("answer"); });
+  }
+  if (modeCoachBtn) {
+    modeCoachBtn.addEventListener("click", function () { cancelScene(); visitorActed = true; setMode("coach"); });
+  }
+
+  if (flipBtn) {
+    flipBtn.addEventListener("click", function () {
+      if (sceneOn && scene.playing) { return; }
+      // The flip re-renders the window the Spotlight is framing —
+      // close the Spotlight first so its geometry never goes stale.
+      if (callStageEl && callStageEl.hasAttribute("data-spotlight")) {
+        var spotClose = document.getElementById("spotlight-close");
+        if (spotClose) { spotClose.click(); }
+      }
+      visitorActed = true;
+      var inScene = sceneOn && scene.done;
+      if (inScene) {
+        if (!sceneStatusRestore) {
+          sceneStatusRestore = statusEl.textContent;
+        }
+        // The override is consumed by this render's finishRender.
+        statusOverride = mode === "coach"
+          ? (sceneStatusRestore || SETTLED_STATUS)
+          : COACH_FLIP_STATUS;
+        if (mode === "coach") { sceneStatusRestore = null; }
+      }
+      renderView(mode === "coach" ? "answer" : "coach");
+    });
+  }
 
   document.querySelectorAll(".chip").forEach(function (chip) {
     chip.addEventListener("click", function () {
       cancelScene();
+      resetView();
       visitorActed = true;
       var key = chip.getAttribute("data-q");
       var sample = SAMPLES[key];
@@ -974,6 +1064,7 @@ var IA_VARIANTS = {
   formEl.addEventListener("submit", function (e) {
     e.preventDefault();
     cancelScene();
+    resetView();
     var text = inputEl.value.trim();
     if (!text) {
       setStatus("Type a question, or pick a sample below.");
@@ -1102,8 +1193,25 @@ var IA_VARIANTS = {
      driven by its pre-generated clip's real duration. */
   var FOLLOW_Q = "Can you give me the shorter version?";
   var THANKS_LINE = "That’s everything I need. Thank you.";
+  /* Step 82: the settled-scene status and the Coach comparison line,
+     shared by settleScene and the flip so the two never drift. */
+  var SETTLED_STATUS = "The scene, settled: the app hears each question as it is asked and answers in three short points — the same small window through the whole interview, follow-ups included. Your turn below — typed questions are answered live.";
+  var COACH_FLIP_STATUS = "The same answer as Coach cues — three keywords and a one-line structure, so the words stay yours. In the app, Ctrl+Alt+C flips between the two live, mid-interview.";
   var sceneQ = {};        // key -> { layer, words, idx }
   var sceneA = {};        // key -> answer layer (story/why/concise/rapid)
+  /* Step 82 — the garble fix. The scene's answer layers live in the
+     classic answer stack but were never registered with the classic
+     layer manager, so no classic render could hide them: after a run,
+     tapping Coach (or a chip, or typing) unhid a classic layer over
+     the still-shown scene layer and both painted in the same grid
+     cell. Every scene layer is now registered here, and every
+     scene→classic handoff hides them all first. */
+  var sceneAnswerLayers = [];
+  function hideSceneAnswers() {
+    sceneAnswerLayers.forEach(function (layer) {
+      if (layer) { layer.classList.add("is-hidden"); }
+    });
+  }
   var sceneAnswerShown = null;
   var thanksWords = [];
   var sceneVoiced = false;
@@ -1217,6 +1325,7 @@ var IA_VARIANTS = {
       sceneA.rapid = buildAnswerLayer(INT.rapid, false, "en");
       answerStack.appendChild(sceneA.rapid);
     }
+    sceneAnswerLayers = [sceneA.story, sceneA.why, sceneA.concise, sceneA.rapid];
     thanksWords = buildWordSpans(callCaptionEl, THANKS_LINE);
     thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
     sceneReserveHeights();
@@ -1353,6 +1462,11 @@ var IA_VARIANTS = {
     scene.run++;
     clearSceneTimers();
     sceneClipStopAll();
+    hideSceneAnswers();
+    flipOk = false;
+    sceneStatusRestore = null;
+    statusOverride = null;
+    refreshFlip();
     scene.playing = false;
     callStageEl.classList.remove("is-scene");
     callStageEl.classList.remove("is-primed");
@@ -1374,6 +1488,9 @@ var IA_VARIANTS = {
     if (demoFetchCtl) { demoFetchCtl.abort(); demoFetchCtl = null; }
     scene.playing = false;
     scene.done = true;
+    hideSceneAnswers();
+    flipOk = true; // The settled tell answer carries a Coach form.
+    statusOverride = null;
     callStageEl.classList.add("is-scene");
     callStageEl.classList.remove("is-primed");
     setSpeaking(false);
@@ -1391,7 +1508,8 @@ var IA_VARIANTS = {
     layer.querySelectorAll("li").forEach(function (row) { row.classList.remove("is-hidden"); });
     sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
     sampleTagEl.classList.remove("is-hidden");
-    setStatus("The scene, settled: the app hears each question as it is asked and answers in three short points — the same small window through the whole interview, follow-ups included. Your turn below — typed questions are answered live.");
+    setStatus(SETTLED_STATUS);
+    refreshFlip();
   }
 
   /* Step 77 — the page no longer spends the interview on a
@@ -1407,6 +1525,11 @@ var IA_VARIANTS = {
     scene.run++;
     clearSceneTimers();
     sceneClipStopAll();
+    hideSceneAnswers();
+    flipOk = false;
+    sceneStatusRestore = null;
+    statusOverride = null;
+    refreshFlip();
     scene.playing = false;
     scene.done = false;
     callStageEl.classList.add("is-scene");
@@ -1449,12 +1572,18 @@ var IA_VARIANTS = {
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     if (mode !== "answer") {
       mode = "answer";
-      modeAnswerBtn.classList.add("is-active");
-      modeCoachBtn.classList.remove("is-active");
-      modeCoachBtn.classList.remove("is-coach-active");
-      modeAnswerBtn.setAttribute("aria-pressed", "true");
-      modeCoachBtn.setAttribute("aria-pressed", "false");
+      if (modeAnswerBtn && modeCoachBtn) {
+        modeAnswerBtn.classList.add("is-active");
+        modeCoachBtn.classList.remove("is-active");
+        modeCoachBtn.classList.remove("is-coach-active");
+        modeAnswerBtn.setAttribute("aria-pressed", "true");
+        modeCoachBtn.setAttribute("aria-pressed", "false");
+      }
     }
+    flipOk = false;
+    sceneStatusRestore = null;
+    statusOverride = null;
+    refreshFlip();
     currentKey = "tell";
     currentQuestion = SAMPLES.tell.q;
     // Reset the stage.
@@ -1540,6 +1669,13 @@ var IA_VARIANTS = {
       setSceneControls("complete");
       setScenePill("Interview complete", "ready");
       setStatus("Four questions — every answer from the same preparation: your resume, the job description, your profile. That is the whole interview, in one small window.");
+      /* Step 82: the run settles on the why answer (its classic layer
+         carries identical content) — the Coach flip is offered for
+         the answer the visitor just watched land. */
+      currentKey = "why";
+      currentQuestion = SAMPLES.why.q;
+      flipOk = true;
+      refreshFlip();
     });
   }
 

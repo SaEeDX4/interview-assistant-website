@@ -327,7 +327,22 @@ p { margin: 0 0 16px; }
    no height ever moves; reduced motion kills both (blanket rule). */
 @keyframes land { from { opacity: 0; transform: translateY(6px) scale(.92); } to { opacity: 1; transform: none; } }
 @keyframes dot-land { from { transform: scale(.6); } to { transform: scale(1); } }
-.demo-answer .coach-keys { font-weight: 600; letter-spacing: .04em; color: var(--app-accent); }
+/* Step 82: the demo's Coach view takes the product's canonical form —
+   a label over each value (the shared .app-coach-* styles), stacked in
+   a column instead of the old bullet rows. The keys line carries no
+   letter-spacing here: the canonical .app-coach-keys rule governs. */
+.demo-answer.coach { gap: 0; }
+.demo-answer li.coach-line { flex-direction: column; align-items: stretch; gap: 0; }
+/* Step 82: the per-answer Coach flip, a quiet text control inside the
+   window under the sample tag — shown only while a settled answer
+   with a Coach form is on show (JS owns the hidden attribute). */
+.coach-flip-row { margin: 12px 0 0; }
+.coach-flip-btn {
+  background: none; border: 0; border-radius: 8px; padding: 4px 0;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--app-accent); cursor: pointer; text-align: left;
+}
+.coach-flip-btn:hover .coach-flip-label { text-decoration: underline; }
 .demo-status { color: var(--muted); font-size: 14px; min-height: 22px; margin: 12px 0 0; }
 .demo-sample-tag { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .demo-foot { padding: 16px 20px 20px; border-top: 1px solid var(--border); }

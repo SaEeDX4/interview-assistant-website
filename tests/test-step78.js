@@ -72,9 +72,14 @@ check("D3: prime adds is-primed; play/settle/cancel remove it",
   (js.match(/callStageEl\.classList\.remove\("is-primed"\)/g) || []).length >= 3);
 
 // D4 — a real, labelled Start affordance in the first screenful.
+/* Step 82 re-pin (annotated, Step 29 precedent): the demo head no
+   longer carries the Answer | Coach mode toggle at all — Coach moved
+   inside the window as a per-answer flip. The D4 contract is now:
+   the Start button lives in the demo head, hidden until JS, and no
+   mode toggle follows it there. */
 check("D4: the labelled Start button lives in the demo head, hidden until JS",
   demo.indexOf('id="scene-start"') > demo.indexOf('class="demo-head"') &&
-  demo.indexOf('id="scene-start"') < demo.indexOf('class="mode-toggle"') &&
+  demo.indexOf('class="mode-toggle"') === -1 &&
   /id="scene-start" hidden/.test(demo) &&
   /#scene-start\[hidden\] \{ display: none; \}/.test(clean) &&
   /if \(sceneStartBtn\) \{ sceneStartBtn\.hidden = false; \}/.test(js));

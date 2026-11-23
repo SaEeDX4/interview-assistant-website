@@ -113,9 +113,18 @@ check("demo bullets are blue dots, not numbered cards",
   /dot\.className = "app-dot";/.test(js) &&
   /\.demo-answer li \{[^}]*font-size: 22px;/.test(clean) &&
   /\.demo-question \{[^}]*font-size: 17px;/.test(clean));
+/* Step 82 re-pin (annotated, Step 29 precedent): the demo's Coach
+   layers no longer carry a demo-only .coach-keys span — they are
+   built in the product's canonical labelled form, so the keys line
+   is the shared .app-coach-keys (accent, semibold) and the old
+   .demo-answer .coach-keys rule is deleted. The intent of the
+   original check — Coach keywords read accent-blue and semibold,
+   never amber, and never as a bullet row beside the points — is
+   preserved against the canonical classes. */
 check("demo Coach keywords are blue semibold, not amber",
-  /\.demo-answer \.coach-keys \{[^}]*font-weight: 600;[^}]*color: var\(--app-accent\);/.test(clean) &&
-  !/\.demo-answer\.coach li/.test(clean));
+  /\.app-coach-keys \{[^}]*font-weight: 600;[^}]*color: var\(--app-accent\);/.test(clean) &&
+  !/\.demo-answer \.coach-keys/.test(clean) &&
+  /buildCoachLine\("Keywords", coach\.keys\.join\(" · "\), "app-coach-keys"\)/.test(js));
 
 // 10. Must-not-invent checklist: no waveform, no typed question, no
 // "3 points ready", no numbers in the hero/story, coach never beside bullets.
