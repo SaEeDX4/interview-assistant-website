@@ -223,7 +223,12 @@ function check(name, ok, detail) {
      ".hw-faded.is-armed .hw-reveal"].every((s) => block.includes(s)));
   check("css63: no 999px, no capsule in the block; reveal button honours [hidden]",
     !block.includes("999px") && block.includes("#hw-reveal-btn[hidden] { display: none; }"));
-  const SCALE = new Set(["0", "4px", "8px", "12px", "16px", "20px", "24px", "28px",
+  // Step 83 re-pin (annotated): "10px" joins the local scale for one
+  // value — the app inter-card gap (.hw-hw-scene .app-card + .app-card
+  // margin-top), from MainWindow.xaml (QuestionCard margin 0,0,0,10).
+  // Inside the window the app's form wins over the site scale
+  // (standards/SPACING.md, Step 83 exemption).
+  const SCALE = new Set(["0", "4px", "8px", "10px", "12px", "16px", "20px", "24px", "28px",
     "32px", "40px", "48px", "56px", "64px", "72px", "96px", "auto"]);
   let spacingOk = block.length > 0;
   for (const m of block.matchAll(/(?:margin|padding)(?:-[a-z]+)?\s*:\s*([^;]+);/g)) {

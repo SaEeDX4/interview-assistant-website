@@ -4,7 +4,9 @@
    11/12/13/14/15/16/17/18/19/20/22/24/28/30/32/40/44/48/56/64/72, every
    weight is a used weight (400/500/600/700/800) inside the self-hosted
    variable range (100-900, Step 18), every line-height is one
-   of 1/1.04/1.12/1.3/1.4/1.5/1.6/1.65, every letter-spacing is one of
+   of 1/1.04/1.12/1.3/1.4/1.42/1.5/1.6/1.65 (1.42 added by Step 83: the
+   app's answer leading, AnswerFontSize x 1.42 in MainViewModel), every
+   letter-spacing is one of
    -0.03/-0.02/0/+0.04/+0.06/+0.08, and no reading-text block is wider than
    68ch. */
 const fs = require("fs");
@@ -20,7 +22,7 @@ function check(name, ok, extra = "") {
 
 const SIZE_SCALE = new Set([11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 28, 30, 32, 40, 44, 48, 56, 64, 72]);
 const WEIGHTS = new Set([400, 500, 600, 700, 800]);
-const LINE_HEIGHTS = new Set([1, 1.04, 1.12, 1.3, 1.4, 1.5, 1.6, 1.65]);
+const LINE_HEIGHTS = new Set([1, 1.04, 1.12, 1.3, 1.4, 1.42, 1.5, 1.6, 1.65]);
 const TRACKING = new Set([-0.03, -0.02, 0, 0.04, 0.06, 0.08]);
 
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");

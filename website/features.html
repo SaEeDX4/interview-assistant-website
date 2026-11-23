@@ -180,10 +180,16 @@
               <span class="app-pill is-listening" id="feat-tile-pill"><span class="app-pill-dot"></span><span>Listening</span><span class="app-meter"><i></i></span></span>
             </span>
             <span class="feat-mini-body">
-              <span class="feat-mini-q">“Tell me about yourself.”</span>
-              <span class="feat-mini-row"><span class="app-dot"></span><span>Five years building web products…</span></span>
-              <span class="feat-mini-row"><span class="app-dot"></span><span>I start from the outcome…</span></span>
-              <span class="feat-mini-row"><span class="app-dot"></span><span>What draws me here is this team…</span></span>
+              <span class="feat-mini-card">
+                <span class="app-card-label feat-mini-label">Question</span>
+                <span class="feat-mini-q">“Tell me about yourself.”</span>
+              </span>
+              <span class="feat-mini-card">
+                <span class="app-card-label feat-mini-label">Answer</span>
+                <span class="feat-mini-row"><span class="app-dot"></span><span>Five years building web products…</span></span>
+                <span class="feat-mini-row"><span class="app-dot"></span><span>I start from the outcome…</span></span>
+                <span class="feat-mini-row"><span class="app-dot"></span><span>What draws me here is this team…</span></span>
+              </span>
             </span>
           </span>
           <span class="feat-tile-cap">Three speakable points, the moment the question ends.</span>
@@ -349,7 +355,7 @@
                 <p class="app-question">“Tell me about yourself.”</p>
               </section>
               <section class="app-card app-card--answer">
-                <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">prepared</span></div>
+                <div class="app-card-head"><span class="app-card-label" id="feat-live-label">Answer</span><span class="app-card-meta">prepared</span></div>
                 <div class="app-answer-stack" aria-hidden="true">
                   <ul class="app-answer" id="feat-live-normal">
                     <li><span class="app-dot"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
@@ -559,14 +565,17 @@
               <span class="app-controls"><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8 H12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></i><i><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></i><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></i></span>
             </div>
             <div class="app-window-body">
-              <p class="app-report-line feat-report-line"><span>“Tell me about yourself.”</span><span>3 points shown</span></p>
-              <p class="app-report-line feat-report-line"><span>“What is your biggest weakness?”</span><span>Coach keywords shown</span></p>
-              <p class="app-report-line feat-report-line"><span>“Tell me about a time you led a difficult project.”</span><span>3 points shown</span></p>
-              <p class="app-report-line feat-report-line"><span>Prepare next time</span><span>Follow-ups on the staged-rollout story</span></p>
-              <p class="app-report-line feat-report-line"><span>Stored</span><span>On your PC, by default</span></p>
-              <p class="app-report-line feat-report-line"><span>Trial keeps reports</span><span>14 days</span></p>
-              <p class="app-report-line feat-report-line"><span>Pro keeps reports</span><span>365 days</span></p>
-              <p class="app-report-note">Sample report — simulated data.</p>
+              <section class="app-card">
+                <div class="app-card-head"><span class="app-card-label">Report</span><span class="app-card-meta">sample</span></div>
+                <p class="app-report-line feat-report-line"><span>“Tell me about yourself.”</span><span>3 points shown</span></p>
+                <p class="app-report-line feat-report-line"><span>“What is your biggest weakness?”</span><span>Coach keywords shown</span></p>
+                <p class="app-report-line feat-report-line"><span>“Tell me about a time you led a difficult project.”</span><span>3 points shown</span></p>
+                <p class="app-report-line feat-report-line"><span>Prepare next time</span><span>Follow-ups on the staged-rollout story</span></p>
+                <p class="app-report-line feat-report-line"><span>Stored</span><span>On your PC, by default</span></p>
+                <p class="app-report-line feat-report-line"><span>Trial keeps reports</span><span>14 days</span></p>
+                <p class="app-report-line feat-report-line"><span>Pro keeps reports</span><span>365 days</span></p>
+                <p class="app-report-note">Sample report — simulated data.</p>
+              </section>
             </div>
           </div>
         </div>

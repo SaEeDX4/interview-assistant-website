@@ -99,7 +99,9 @@ check("story header shows the full control set (? + … + min/max/close)",
   (storyHtml.match(/class="app-win-btn"/g) || []).length >= 3);
 
 // 9. Demo alignment: dot bullets (no numbers), blue Coach keywords,
-// real 17/22 sizes.
+// real 16/22 sizes (Step 83 re-pin: the demo question was 17px, a
+// panel-only size; every window's question is now the app's
+// QuestionFontSize 16 — one window, one question size).
 const demoLists = [...html.matchAll(/<ul class="demo-answer"[^>]*>[\s\S]*?<\/ul>/g)].map((m) => m[0])
   .concat([...demoHtml.matchAll(/<ul class="demo-answer"[^>]*>[\s\S]*?<\/ul>/g)].map((m) => m[0]));
 check("demo bullets are blue dots, not numbered cards",
@@ -112,7 +114,7 @@ check("demo bullets are blue dots, not numbered cards",
   demoLists.every((ul) => !ul.includes('class="num"') && ul.includes('class="app-dot"')) &&
   /dot\.className = "app-dot";/.test(js) &&
   /\.demo-answer li \{[^}]*font-size: 22px;/.test(clean) &&
-  /\.demo-question \{[^}]*font-size: 17px;/.test(clean));
+  /\.demo-question \{[^}]*font-size: 16px;/.test(clean));
 /* Step 82 re-pin (annotated, Step 29 precedent): the demo's Coach
    layers no longer carry a demo-only .coach-keys span — they are
    built in the product's canonical labelled form, so the keys line

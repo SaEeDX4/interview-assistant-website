@@ -305,9 +305,8 @@ p { margin: 0 0 16px; }
 }
 .mode-btn.is-active { background: var(--accent); color: var(--bg); }
 .mode-btn.is-coach-active { background: var(--coach); color: var(--bg); }
-.demo-body { padding: 20px; min-height: 230px; }
-.demo-label { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 8px; }
-.demo-question { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; overflow-wrap: break-word; }
+.demo-body { padding: 14px; min-height: 230px; }
+.demo-question { font-size: 16px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; overflow-wrap: break-word; }
 /* Step 21 — the demo depicts the app, so its bullets are the app's:
    7px blue dots, no card chrome, no numbers (G3); the answer is bigger
    than the question (G4) at the real 22:17 sizes — the panel is ~720px,
@@ -315,7 +314,7 @@ p { margin: 0 0 16px; }
 .demo-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .demo-answer li {
   display: flex; gap: 8px; align-items: flex-start;
-  font-size: 22px; line-height: 1.4; color: var(--text);
+  font-size: 22px; line-height: 1.42; color: var(--text);
 }
 .demo-answer li .app-dot { margin-top: 12px; }
 .demo-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
@@ -681,7 +680,7 @@ table.compare tbody tr:hover td { background: var(--surface); }
 .app-window-title { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
 .app-controls { margin-left: auto; display: inline-flex; gap: 16px; color: var(--muted-2); font-size: 13px; line-height: 1; }
 .app-controls i { font-style: normal; }
-.app-window-body { padding: 16px; }
+.app-window-body { padding: 14px; }
 /* ---------- Step 23: fixed stage — nothing below a window ever moves ----------
    The window is a stage, not a content-sized card (Apple's pinned stage,
    web.dev's fixed-size container, Material's large-item carousel): every
@@ -845,27 +844,39 @@ html.story-player .story-window {
 }
 /* Step 21 — two labelled cards (G12): QUESTION and ANSWER, each Surface
    bg, 1px border, radius 12, 12px apart. The answer is bigger than the
-   question (G4): 19px vs 15px, the real 22:17 ratio at mockup scale. */
+   question (G4): 19px vs 15px, the real 22:17 ratio at mockup scale.
+   Step 83 — the cards take the app's exact geometry (owner order,
+   2026-11-23: the website's boxes look exactly like the app's):
+   MainWindow.xaml's LiveBody is inset 14px; the Question card carries
+   Margin 0,0,0,10 (the 10px inter-card gap); the Card style's padding
+   is S.CardPadding 18,14 and the Answer card overrides Padding 20,16;
+   the label is T.Label (11px semibold, TextFaint, no tracking — the
+   caps are the string itself); the question is QuestionFontSize 16
+   (Normal preset) and answer text leads at AnswerFontSize x 1.42.
+   The 10/14/18px values are off the site spacing scale on purpose —
+   the app's form wins inside the window (documented exemption in
+   standards/SPACING.md, enforced by test-step9/test-step83). */
 .app-card {
   background: var(--app-surface); border: 1px solid var(--app-border);
-  border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
 }
+.app-card:last-child { margin-bottom: 0; }
 .app-card-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
 .app-card-label {
-  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: uppercase;
   color: var(--app-faint); line-height: 1.4;
 }
 .app-card-detail, .app-card-meta {
   margin-left: auto; font-size: 11px; line-height: 1.4; color: var(--app-faint); text-align: right;
 }
-.app-question { font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin: 0; }
+.app-question { font-size: 16px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin: 0; }
 .app-question.is-landing { animation: land .25s cubic-bezier(.2,.7,.3,1) both; }
 .app-question.is-empty { color: var(--app-faint); font-weight: 400; }
 .app-transcript { font-size: 13px; font-style: italic; line-height: 1.5; color: var(--app-dim); margin: 0; min-height: 1.5em; /* Step 23: one line reserved — the transcript grows word by word and must never grow the question card. */ }
 .app-context { font-size: 12px; line-height: 1.5; color: var(--app-dim); margin: 8px 0 0; }
-.app-card--answer { min-height: 240px; }
+.app-card--answer { min-height: 240px; padding: 16px 20px; }
 .app-answer { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.4; color: var(--app-text); }
+.app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.42; color: var(--app-text); }
 .app-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--app-accent); margin-top: 8px; }
 .app-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
 .app-answer li.is-new .app-dot,
@@ -881,7 +892,7 @@ html.story-player .story-window {
    with overflow clipped only while the glide runs. */
 .app-answer-zone { transition: height .3s cubic-bezier(.2,.7,.3,1); }
 .app-answer-zone.is-gliding { overflow: hidden; }
-.app-full-answer { font-size: 19px; line-height: 1.4; color: var(--app-text); margin: 0; }
+.app-full-answer { font-size: 19px; line-height: 1.42; color: var(--app-text); margin: 0; }
 /* Step 21 — Coach Mode swaps the answer area (G9): labelled KEYWORDS
    (blue, semibold, uppercase) + STRUCTURE. Never beside the bullets. */
 .app-coach-label {
@@ -889,7 +900,7 @@ html.story-player .story-window {
   color: var(--app-faint); line-height: 1.4; margin: 0 0 8px;
 }
 .app-coach-keys { font-size: 22px; font-weight: 600; letter-spacing: .04em; color: var(--app-accent); line-height: 1.4; text-transform: uppercase; margin: 0 0 16px; }
-.app-coach-structure { font-size: 19px; line-height: 1.4; color: var(--app-text); margin: 0; }
+.app-coach-structure { font-size: 19px; line-height: 1.42; color: var(--app-text); margin: 0; }
 /* Step 21 — action bar + manual question box (G10), as in the app. */
 /* Step 25 — one-line action row: the five chips (Shorter … Regenerate)
    plus the pinned control at the right end never wrap. The chips live in
@@ -1485,9 +1496,16 @@ body.cta-visible { padding-bottom: 96px; }
 @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 .call-clock { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .call-bar-note { margin-left: auto; font-size: 12px; color: var(--muted-2); }
-.call-main { position: relative; flex: 1 1 auto; min-height: 640px; border-radius: 0 0 12px 12px; overflow: hidden; transition: min-height var(--motion-3) var(--motion-ease); }
-/* Step 81: while primed the frame hugs its window — the 640px
-   field is sized for the complete state's 432px window, and a
+/* Step 83: the field is re-sized for the two-box window — the
+   complete state's window grew by its cards' chrome (~130px: two
+   labels, two paddings, the 10px gap), and at 640px its bottom sat
+   ~6px from the field's edge, one wrapped line from being clipped
+   by the field's overflow. 720px restores the headroom the 640px
+   field gave the old one-panel window (~136px -> ~100px). */
+.call-main { position: relative; flex: 1 1 auto; min-height: 720px; border-radius: 0 0 12px 12px; overflow: hidden; transition: min-height var(--motion-3) var(--motion-ease); }
+/* Step 81: while primed the frame hugs its window — the field is
+   sized for the complete state's 432px window (Step 83: 720px for
+   the two-box window), and a
    192px primed window rattled in it with 396px of void below
    (owner's unfolded screenshot). When the run starts the
    reservation returns and the frame glides open with the
@@ -1624,10 +1642,9 @@ body.cta-visible { padding-bottom: 96px; }
 .call-stage.is-scene .demo-answer-stack > .is-hidden,
 .call-stage.is-scene .demo-question-stack > .is-hidden { display: none; }
 
-.call-main .demo-label { color: var(--app-faint); margin-bottom: 4px; }
-.call-main .demo-question { font-size: 15px; margin-bottom: 12px; color: var(--app-text); }
+.call-main .demo-question { font-size: 16px; margin-bottom: 12px; color: var(--app-text); }
 .call-main .demo-answer { gap: 8px; }
-.call-main .demo-answer li { font-size: 16px; line-height: 1.4; color: var(--app-text); }
+.call-main .demo-answer li { font-size: 16px; line-height: 1.42; color: var(--app-text); }
 .call-main .demo-answer li .app-dot { margin-top: 8px; background: var(--app-accent); }
 .call-main .demo-status { font-size: 13px; min-height: 20px; color: var(--app-dim); }
 .call-main .demo-sample-tag { font-size: 12px; color: var(--app-faint); }
@@ -1693,6 +1710,20 @@ body.cta-visible { padding-bottom: 96px; }
    flow while primed; it returns with the run, when its space
    is reserved and real. */
 .call-stage.is-scene.is-primed .demo-sample-tag { display: none; }
+/* Step 83 — the two boxes inside the demo bodies (demo.html's call
+   window and the home page's demo panel): the question stack lives
+   in the QUESTION card; the answer stack — with the status line, the
+   sample tag and the Coach flip, all of which describe the answer —
+   in the ANSWER card, as MainWindow.xaml composes them. The card's
+   padding replaces the question's old bottom margin. The 240px
+   answer floor (a hero/story staging device) stands down in the
+   demo bodies and the How-It-Works faded frames: the demo's stacks
+   reserve their own heights and the faded frames are cropped
+   moments, so a floor would only add void. */
+.app-card .demo-question { margin-bottom: 0; }
+.call-main .app-card--answer { min-height: 0; }
+.demo-body .app-card--answer { min-height: 0; }
+.hw-faded-frames .app-card--answer { min-height: 0; }
 /* Step 74 Pass 3 — the visitor's own camera in the self tile
    (opt-in only, local-only: no recording, no upload, no frame
    capture — the note under the stage says so in words) and the
@@ -1926,7 +1957,7 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
     position: relative; top: auto; left: auto; transform: none;
     width: auto; max-width: none; margin: 8px;
   }
-  .call-main .app-window-body { padding: 12px 12px 16px; }
+  .call-main .app-window-body { padding: 14px; }
   .scene-note { margin-left: 0; }
 }
 
@@ -2264,7 +2295,7 @@ body:has(.hw-trace) .page-hero h1 { font-size: clamp(32px, 4.4vw, 48px); }
 .hw-hw-disc.is-thread { color: var(--accent-light); border-color: var(--accent); }
 .hw-hw-name { font-size: 12px; font-weight: 600; line-height: 1.4; color: var(--text); }
 .hw-hw-scene .app-card { margin-bottom: 0; flex: 1 1 auto; }
-.hw-hw-scene .app-card + .app-card { margin-top: 12px; }
+.hw-hw-scene .app-card + .app-card { margin-top: 10px; }
 .hw-hw-scene .app-context { margin-top: 12px; padding: 0 4px; }
 .hw-hw-points { display: grid; gap: 12px; }
 .hw-hw-point { display: flex; gap: 8px; align-items: flex-start; }
@@ -3070,8 +3101,15 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .feat-frag-dots { gap: 4px; align-items: center; }
 .feat-frag-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--accent); display: block; }
 .feat-mini { display: block; flex: 1 1 auto; }
-.feat-mini-body { display: block; padding: 12px 16px; }
-.feat-mini-q { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin-bottom: 8px; }
+.feat-mini-body { display: block; padding: 12px; }
+/* Step 83 — the mini window carries the same two boxes at tile scale:
+   the app's card form (Surface fill, 1px border, radius 12, label
+   inside top-left) with mini padding, so the bento depiction is the
+   same window, smaller — not a different, flatter window. */
+.feat-mini-card { display: block; background: var(--app-surface); border: 1px solid var(--app-border); border-radius: 12px; padding: 8px 12px; }
+.feat-mini-card + .feat-mini-card { margin-top: 8px; }
+.feat-mini-label { display: block; margin-bottom: 4px; }
+.feat-mini-q { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--app-text); margin-bottom: 0; }
 .feat-mini-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--app-dim); margin-top: 4px; }
 .feat-mini-row .app-dot { margin-top: 4px; }
 /* Datasheet close. Step 60: the two small reference tables sit

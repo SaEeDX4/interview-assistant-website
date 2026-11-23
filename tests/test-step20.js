@@ -86,11 +86,14 @@ check("real status words (Not listening / Listening / Hearing audio / Transcribi
   /function setPill\(text, state, live\)/.test(js));
 
 // 9. Two labelled cards; dot bullets (no numbers); answer bigger than question.
-check("two labelled cards QUESTION/ANSWER, dot bullets, answer 19px > question 15px",
+// Step 83 re-pin (annotated): the question takes the app's own size —
+// QuestionFontSize 16 at the Normal preset (AppSettings.cs) — in every
+// window, so the pin moves 15px -> 16px. The 19px answer is unchanged.
+check("two labelled cards QUESTION/ANSWER, dot bullets, answer 19px > question 16px",
   /<span class="app-card-label">Question<\/span>/.test(html) &&
   /<span class="app-card-label">Answer<\/span>/.test(html) &&
   /\.app-answer li \{[^}]*font-size: 19px;/.test(clean) &&
-  /\.app-question \{[^}]*font-size: 15px;/.test(clean) &&
+  /\.app-question \{[^}]*font-size: 16px;/.test(clean) &&
   /\.app-dot \{[^}]*width: 7px; height: 7px;[^}]*background: var\(--app-accent\);/.test(clean) &&
   !/id="mock-answer-stack"[\s\S]*?class="num"/.test(html));
 

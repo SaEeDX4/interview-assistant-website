@@ -542,6 +542,19 @@ var IA_VARIANTS = {
   var flipEl = document.getElementById("coach-flip");
   var flipBtn = flipEl ? flipEl.querySelector(".coach-flip-btn") : null;
   var flipLabel = flipBtn ? flipBtn.querySelector(".coach-flip-label") : null;
+  /* Step 83 — the ANSWER card's label follows the view, exactly as
+     the app's does (MainViewModel.LAnswer: the card header reads
+     "answer" in Answer view and "coach" in Coach view; the strings
+     themselves are the caps in en.json). Synced wherever the view
+     changes: the flip / home toggle (renderView), a new question
+     landing back in Answer view (resetView), and a scene (re)start
+     resetting the mode (playScene). */
+  var answerLabelEl = document.getElementById("demo-answer-label");
+  function syncAnswerLabel() {
+    if (answerLabelEl) {
+      answerLabelEl.textContent = mode === "coach" ? "Coach" : "Answer";
+    }
+  }
   var flipOk = false; // A settled answer with a Coach form is on show.
   var sceneStatusRestore = null; // Status to restore after a scene-state flip.
   var statusOverride = null; // One-shot status for the flip's own render.
@@ -981,6 +994,7 @@ var IA_VARIANTS = {
   function renderView(next) {
     if (next === mode) { return; }
     mode = next;
+    syncAnswerLabel();
     var sample = SAMPLES[currentKey] || null;
     showAnswer(currentKey, currentQuestion, sample);
   }
@@ -1014,6 +1028,7 @@ var IA_VARIANTS = {
     // no view the visitor picked for one answer can silently change
     // what the next question does.
     if (flipEl && mode !== "answer") { mode = "answer"; }
+    syncAnswerLabel();
   }
 
   if (modeAnswerBtn) {
@@ -1579,6 +1594,7 @@ var IA_VARIANTS = {
         modeAnswerBtn.setAttribute("aria-pressed", "true");
         modeCoachBtn.setAttribute("aria-pressed", "false");
       }
+      syncAnswerLabel();
     }
     flipOk = false;
     sceneStatusRestore = null;
@@ -2950,6 +2966,7 @@ var IA_VARIANTS = {
   var thinkingEl = document.getElementById("story-thinking");
   var answerStack = document.getElementById("story-answer-stack");
   var metaEl = document.getElementById("story-meta");
+  var answerLabelEl = document.getElementById("story-answer-label");
   var coachEl = document.getElementById("story-coach");
   var historyEl = document.getElementById("story-history");
   var historyText = document.getElementById("story-history-text");
@@ -3134,7 +3151,13 @@ var IA_VARIANTS = {
       layer.classList.add("is-landing");
     }
   }
-  function setAnswerLayer(i) { showLayer(answerLayers, i); }
+  function setAnswerLayer(i) {
+    showLayer(answerLayers, i);
+    // Step 83: the answer card's label follows the view, as the app's
+    // does (MainViewModel.LAnswer): layer 3 is the Coach view, whose
+    // card reads "Coach"; every other live layer reads "Answer".
+    if (answerLabelEl) { answerLabelEl.textContent = i === 3 ? "Coach" : "Answer"; }
+  }
 
   // One bullet's state: "hidden" (reserved, not yet shown), "pending" (the
   // bullet being written — visible, faded), "new" (just landed, rises in),
@@ -3221,7 +3244,7 @@ var IA_VARIANTS = {
       setPill("Answer ready", "listening", false);
       setQuestionLayer(1);
       setAnswerLayer(3);
-      metaEl.textContent = "Coach";
+      metaEl.textContent = "";
       historyEl.hidden = false;
       historyText.textContent = "1 / 1";
     },
@@ -6016,6 +6039,7 @@ var IA_VARIANTS = {
   };
   var intState = document.getElementById("feat-int-state");
   var liveStatus = document.getElementById("feat-live-status");
+  var liveLabel = document.getElementById("feat-live-label");
   if (modeAnswer && modeCoach && liveLayers.normal && liveLayers.concise
       && liveLayers.rapid && liveLayers.coach && intBtns.normal && liveStatus) {
     var mode = "answer";
@@ -6048,6 +6072,9 @@ var IA_VARIANTS = {
       modeAnswer.setAttribute("aria-pressed", String(mode === "answer"));
       modeCoach.classList.toggle("is-coach-active", mode === "coach");
       modeCoach.setAttribute("aria-pressed", String(mode === "coach"));
+      // Step 83: the answer card's label follows the view, as the
+      // app's does (MainViewModel.LAnswer -> "coach" in Coach view).
+      if (liveLabel) { liveLabel.textContent = mode === "coach" ? "Coach" : "Answer"; }
       Object.keys(intBtns).forEach(function (k) {
         intBtns[k].setAttribute("aria-pressed", String(k === len));
       });

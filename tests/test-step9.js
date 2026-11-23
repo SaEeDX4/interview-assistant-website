@@ -5,6 +5,13 @@
    the documented exemptions (1px optical alignment on .num/.mk markers,
    3px waveform-bar gap in .app-wave, -10px slider-thumb centring offset,
    -1px visually-hidden offset).
+   Step 83 exemption: inside the app-window depiction family
+   (.app-card, .app-window-body, .demo-body, .feat-mini-card selectors),
+   the app's own geometry — 10px inter-card gap, 14px body inset,
+   18px card padding (MainWindow.xaml: LiveBody margin 14, QuestionCard
+   margin-bottom 10, S.CardPadding 18,14) — is exempt from the scale:
+   the owner's order is that the website's window matches the app's
+   window exactly, so the app's values win inside the window only.
    This test parses the stylesheet and
    fails on any other value — the standard is enforced, not aspirational.
    Step 9 also fixed the one visible violation the audit found: the gap
@@ -52,7 +59,9 @@ while ((m = blockRe.exec(clean)) !== null) {
       const v = Number(num);
       const exempt = (v === 1 && /\.num|\.mk|\.visually-hidden/.test(selector))
         || (v === 3 && selector.includes(".app-wave"))
-        || (v === 10 && selector.includes("::-webkit-slider-thumb"));
+        || (v === 10 && selector.includes("::-webkit-slider-thumb"))
+        || ((v === 10 || v === 14 || v === 18)
+            && /\.app-card|\.app-window-body|\.demo-body|\.feat-mini-card/.test(selector));
       if (!SCALE.has(v) && !exempt) {
         violations.push(`${selector} :: ${prop}: ${value} (off-scale ${v}px)`);
       }

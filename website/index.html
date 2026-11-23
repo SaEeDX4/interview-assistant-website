@@ -236,7 +236,7 @@
                   <p class="app-context is-hidden" id="story-context">Context: the interviewer asked about leadership after the intro.</p>
                 </section>
                 <section class="app-card app-card--answer">
-                  <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta" id="story-meta"></span></div>
+                  <div class="app-card-head"><span class="app-card-label" id="story-answer-label">Answer</span><span class="app-card-meta" id="story-meta"></span></div>
                   <p class="app-thinking is-hidden" id="story-thinking">● ● ●</p>
                   <div class="app-answer-stack" id="story-answer-stack">
                     <div class="app-coach-view app-answer-layer is-hidden" id="story-coach">
@@ -414,7 +414,7 @@
                     <p class="app-question">“Tell me about yourself.”</p>
                   </section>
                   <section class="app-card app-card--answer">
-                    <div class="app-card-head"><span class="app-card-label">Answer</span><span class="app-card-meta">Coach</span></div>
+                    <div class="app-card-head"><span class="app-card-label">Coach</span></div>
                     <div class="app-coach-view">
                       <p class="app-coach-label">Keywords</p>
                       <p class="app-coach-keys">Experience · Outcome · Fit</p>
@@ -512,22 +512,29 @@
           </div>
         </div>
         <div class="demo-body">
-          <p class="demo-label">Interviewer</p>
-          <!-- Step 23: the question + answer are stacks of pre-rendered
-               layers (one per sample + mode). The static "tell" content
-               stays as layer 0, so no-JS still shows the demo. -->
-          <div class="demo-question-stack" id="demo-question-stack">
-            <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
-          </div>
-          <div class="demo-answer-stack" id="demo-answer-stack">
-            <ul class="demo-answer" id="demo-answer" aria-busy="false">
-              <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
-              <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
-              <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
-            </ul>
-          </div>
-          <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
-          <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
+          <!-- Step 83: the same two boxes as every other window —
+               QUESTION card over ANSWER card (MainWindow.xaml). -->
+          <section class="app-card">
+            <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">Listening to system audio · microphone off</span></div>
+            <!-- Step 23: the question + answer are stacks of pre-rendered
+                 layers (one per sample + mode). The static "tell" content
+                 stays as layer 0, so no-JS still shows the demo. -->
+            <div class="demo-question-stack" id="demo-question-stack">
+              <p class="demo-question" id="demo-question">“Tell me about yourself.”</p>
+            </div>
+          </section>
+          <section class="app-card app-card--answer">
+            <div class="app-card-head"><span class="app-card-label" id="demo-answer-label">Answer</span></div>
+            <div class="demo-answer-stack" id="demo-answer-stack">
+              <ul class="demo-answer" id="demo-answer" aria-busy="false">
+                <li><span class="app-dot" aria-hidden="true"></span><span>Five years building web products — most recently leading a small team on a customer-facing tool.</span></li>
+                <li><span class="app-dot" aria-hidden="true"></span><span>I start from the outcome, then the trade-off I made to get there.</span></li>
+                <li><span class="app-dot" aria-hidden="true"></span><span>What draws me here is this team’s focus on honest, useful software.</span></li>
+              </ul>
+            </div>
+            <p class="demo-status" id="demo-status" role="status">3 points ready — sample.</p>
+            <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
+          </section>
         </div>
         <div class="demo-foot">
           <form id="demo-form">

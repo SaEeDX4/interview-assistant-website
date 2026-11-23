@@ -80,6 +80,17 @@ Rule: an icon never touches the text next to it — at least 8px beside it,
 - Border widths (1px, 2px) and border-radius values.
 - `body.cta-visible { padding-bottom: 96px }` — functional clearance for
   the fixed bar (bar ≈ 70px + 26px).
+- **App-window depiction geometry (Step 83)** — inside the app-window
+  depiction family (`.app-card`, `.app-window-body`, `.demo-body`,
+  `.feat-mini-card` selectors), the real app's own values are exempt
+  from the scale: 14px window-body inset, 10px gap between the
+  QUESTION and ANSWER cards, and card padding 18px/14px (answer card
+  20px/16px). Source: MainWindow.xaml (LiveBody margin 14,4,14,8;
+  QuestionCard margin 0,0,0,10) and Theme.xaml (S.CardPadding 18,14).
+  The owner's order (2026-11-23) is that the website's window matches
+  the app's window exactly, so inside the window the app's form wins
+  over the site scale. Enforced as a selector-scoped exemption in
+  test-step9; pinned by test-step83.
 
 ## 5. Audit log
 

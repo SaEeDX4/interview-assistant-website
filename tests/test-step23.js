@@ -62,7 +62,11 @@ check("question + answer stacks exist (containers + layer builders)",
   /function buildLayers\(\) \{/.test(js) &&
   /function showLayer\(layers, i\) \{/.test(js) &&
   /function setQuestionLayer\(i\) \{[\s\S]*?showLayer\(questionLayers, i\);[\s\S]*?classList\.add\("is-landing"\);/.test(js) &&
-  /function setAnswerLayer\(i\) \{ showLayer\(answerLayers, i\); \}/.test(js));
+  // Step 83 re-pin (annotated): setAnswerLayer also syncs the answer
+  // card's label (layer 3 is Coach -> "Coach", as the app's LAnswer
+  // does); the layer-switch itself is unchanged.
+  /function setAnswerLayer\(i\) \{\s*showLayer\(answerLayers, i\);/.test(js) &&
+  /answerLabelEl\.textContent = i === 3 \? "Coach" : "Answer";/.test(js));
 check("coach is answer layer 3 (its markup sits in the stack)",
   /id="story-answer-stack">[\s\S]*?id="story-coach"/.test(html) &&
   /setAnswerLayer\(3\)/.test(js));

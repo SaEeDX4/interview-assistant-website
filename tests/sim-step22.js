@@ -98,7 +98,7 @@ storyAnswerStackEl._closestWindow = storyWindowEl;
   ["div", "story-home"], ["div", "story-live"], ["div", "story-report"],
   ["i", "story-prepare-bar"], ["p", "story-prepare-stage"], ["a", "story-open-live"],
   ["div", "story-question-stack"], ["p", "story-transcript"], ["p", "story-context"],
-  ["p", "story-thinking"], ["span", "story-meta"], ["div", "story-coach"],
+  ["p", "story-thinking"], ["span", "story-meta"], ["span", "story-answer-label"], ["div", "story-coach"],
   ["span", "story-history"], ["span", "story-history-text"],
   ["div", "story-caption-stack"], ["p", "story-caption-live"], ["span", "story-count"],
 ].forEach(([tag, id]) => mk(tag, id));
@@ -298,8 +298,12 @@ function swipe(x0, x1) {
       && questionText().includes("Why should we hire you?")
       && els["story-meta"].textContent === "Concise");
     ioDrive(4);
-    check("desktop beat 4: coach view shown, meta Coach",
-      !els["story-coach"].classList.contains("is-hidden") && els["story-meta"].textContent === "Coach");
+    // Step 83 re-pin (annotated): the Coach signal moved from the meta
+    // slot to the answer card's own label — the app's behaviour
+    // (MainViewModel.LAnswer reads "coach" in Coach view). The meta
+    // slot is empty on this beat now; the label carries the mode.
+    check("desktop beat 4: coach view shown, card label Coach",
+      !els["story-coach"].classList.contains("is-hidden") && els["story-answer-label"].textContent === "Coach");
     ioDrive(6);
     check("desktop beat 6: report view shown, pill Stopped",
       !els["story-report"].classList.contains("is-hidden") && pillText() === "Stopped");
@@ -345,7 +349,7 @@ function swipe(x0, x1) {
       && !segBtns[4].classList.contains("is-done"));
     swipe(200, 100);
     check("mobile swipe left: beat 3 -> 4 coach view",
-      segActive() === 4 && !els["story-coach"].classList.contains("is-hidden") && els["story-meta"].textContent === "Coach");
+      segActive() === 4 && !els["story-coach"].classList.contains("is-hidden") && els["story-answer-label"].textContent === "Coach");
     swipe(100, 200);
     check("mobile swipe right: beat 4 -> 3 concise again",
       segActive() === 3 && els["story-badge"].textContent === "Concise");
