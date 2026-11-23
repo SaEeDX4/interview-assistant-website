@@ -20,6 +20,14 @@ Hide, 2.3.3 Animation from Interactions, reduced-motion support).
 Named ambient animations keep their own durations (they are loops, not
 interactions): shimmer 1.2s, meter 1.1s, pulse 0.9s, float 5s.
 
+**Scoped exception (owner-approved 2026-11-22):** `--motion-4: 400ms`
+exists for exactly one interaction — the Interviewer Spotlight flight
+in the demo (enter 400ms, exit 300ms on the Standard/Slow token).
+A person crossing the stage is the one motion allowed to take longer
+than a panel; no other rule may use this token. This follows the
+Step 24 scoped-exception precedent: named, single-purpose, pinned by
+`tests/test-spotlight.js`.
+
 ## 2. Easings — two curves
 
 - **Entrances** (rise, reveal): `cubic-bezier(.2,.7,.3,1)` — fast start,

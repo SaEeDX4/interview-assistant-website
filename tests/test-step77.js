@@ -60,6 +60,18 @@ POOL.forEach(function (pid) {
              fs.existsSync(v) && fs.statSync(v).size > 3000;
     }));
 });
+/* Budget annotation (one-take round): the cap is an ON-DISK
+   total across both formats, though a browser only ever
+   downloads one format. p2–p6 keep the 3.2 MiB cap. p1's cap
+   is 4.8 MiB because p1 ships TWO speaking paths during the
+   owner's evaluation: the one-take performance (primary —
+   p1-take.webm/mp4, ~1.93 MB for both formats) AND the full
+   per-line render set it falls back to per beat. In the take
+   path the take replaces the speaking clips in the load set,
+   so the session download does not grow by the take's size;
+   the on-disk total (4,602,445 B ≈ 4.39 MiB) is the honest
+   number this cap bounds. If the per-line fallback is ever
+   retired, p1 returns to the 3.2 MiB cap. */
 check("per-persona media stays within the session budget (only one persona loads)",
   POOL.every(function (pid) {
     let total = 0;
@@ -67,7 +79,7 @@ check("per-persona media stays within the session budget (only one persona loads
     fs.readdirSync(dir).forEach(function (f) {
       if (f.indexOf(pid + "-") === 0) { total += fs.statSync(path.join(dir, f)).size; }
     });
-    return total < 3.2 * 1024 * 1024;
+    return total < (pid === "p1" ? 4.8 : 3.2) * 1024 * 1024;
   }));
 
 /* ---------- 2. Rotation: per load, never the same as the last load ----------
@@ -140,6 +152,37 @@ check("the driver reads the scene clock when it exists (element clock as fallbac
   av.includes("clipElFor(key)"));
 check("the 120ms drift guard still governs the render sync",
   av.includes("Math.abs(d) > 0.12") && av.includes("probe.sync"));
+
+/* ---------- 6. One-take path (p1): no per-line face jumps ----------
+   The owner's verdict on the D-ID per-line integration: within
+   a sentence the performance is good, but at every transition
+   to the next sentence her face form and head position change
+   suddenly — the five renders are five separate generations.
+   p1 now speaks from ONE continuous take; the per-line renders
+   remain only as the fallback. Measured by the seam probe kept
+   in ~/workspace/avatar-compare (seam_probe.py): head-region
+   frame diff at the four line boundaries fell from ≈66
+   (per-line) to 2.2 / 4.8 / 6.6 / 3.8 (take). */
+check("the one-take performance ships for p1 (WebM+MP4)",
+  ["webm", "mp4"].every(function (e) {
+    const f = path.join(ROOT, "website", "avatar", "p1-take." + e);
+    return fs.existsSync(f) && fs.statSync(f).size > 5000;
+  }));
+check("the driver carries the take segment map for p1 only",
+  av.includes('file: "avatar/p1-take"') && av.includes('pid === "p1"') &&
+  av.includes("start: 4.54") && av.includes("start: 21.44"));
+check("speaking on the take aligns the segment to the voice clock (sync base)",
+  av.includes("syncBase = seg.start") && av.includes("syncBase + c.t"));
+check("a natural line end holds on the take through the answer beat",
+  av.includes("function enterTakeHold(key)") && av.includes("takeHold = key") &&
+  av.includes("if (!enterTakeHold(holdKey)) { postSpeech(); }"));
+check("the hold stretches the segment tail instead of cutting to another render",
+  av.includes("v.playbackRate = 0.3") && av.includes("v.playbackRate = 0.45"));
+check("scene state changes cannot cut the hold mid-beat",
+  av.includes('state === "listening" && !takeHold') && av.includes('!takeHold) { setState("thinking"); }'));
+check("any take failure flips the beat back to the per-line renders",
+  av.includes("takeFailed = true") && av.includes('"take-media-error"') &&
+  av.includes('"take-stalled"'));
 
 console.log(`\nStep 77: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

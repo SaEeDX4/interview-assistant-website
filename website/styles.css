@@ -88,6 +88,16 @@
   --motion-2: 250ms;
   --motion-3: 300ms;
   --motion-ease: cubic-bezier(.2,.7,.3,1);
+  /* Spotlight (Phase 1) — the ONE scoped amendment the concept
+     proposes to MOTION.md, following the Step 24 precedent (a
+     named, scoped, single-surface exception): the shared-element
+     flight travels ~340px and grows ~3x; at the 300ms cap that
+     reads rushed, and rushed reads cheap. --motion-4 is consumed
+     ONLY by spotlight.js's flight (read via getComputedStyle)
+     and by no other element or rule; the return flight keeps
+     --motion-3 (exits are faster than entrances). Owner
+     confirmation pending; pinned by tests/test-spotlight.js. */
+  --motion-4: 400ms;
   --container: 1120px;
   --shadow-card: 0 12px 32px rgba(0, 0, 0, .28);
   --shadow-lift: 0 20px 48px rgba(0, 0, 0, .38);
@@ -935,6 +945,12 @@ html.story-player .story-window {
   .text-link:hover .text-link-arrow { transform: translateX(4px); }
   /* Step 59: the features bento tiles lift on hover (fine pointers only). */
   .feat-tile:hover { border-color: var(--accent); transform: translateY(-2px); }
+  /* Spotlight (Phase 1): at rest, her frame answers a hovering
+     pointer — the Respond primitive at tile scale (the concept's
+     hover life; touch gets the glyph + the press response). The
+     life belongs to the RESTING tile only: while the Spotlight
+     is open her hero geometry is exact, never scaled. */
+  .call-stage:not([data-spotlight]) .call-tile:has(> .avatar-toggle:hover) > .avatar-frame { border-color: var(--accent); transform: scale(1.02); }
 }
 /* Step 27 — Replay, icon-only, pinned at the right end of the hero's action
    row (Step 25; was a standalone "↻ Replay" button below the window, Step 20,
@@ -3151,6 +3167,199 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .feat-chapter-flip .feat-rail { order: 0; }
   .feat-sheet-grid { grid-template-columns: minmax(0, 1fr); }
 }
+/* ---------- Spotlight — Phase 1: the interviewer, up close ----------
+   The cooked concept (~/workspace/avatar-expand-ideation/concept.md):
+   the avatar tile is a shared element. Tapping it flies the SAME
+   living video element — never a copy, never a reload — to a hero
+   frame at the top of the call field, the canonical app window
+   settles beneath her at a reduced scale, her current question
+   runs as a live caption between them, and the self tile demotes
+   to a PiP. The scene engine is never paused or informed: the
+   Spotlight is a lens (a view state on .call-stage), not a scene.
+
+   State hook: spotlight.js toggles [data-spotlight] (and the
+   one-frame [data-spotlight-prep] measuring state) on .call-stage
+   — attribute hooks, the stage's own convention (the avatar
+   driver reads data-speak-key the same way), chosen because the
+   Step 17 class census reads app.js only and app.js belongs to
+   another workstream. Geometry below is the concept's committed
+   table: hero 320x400 / 264x330 / 248x310, window landed at
+   360 / 336 / (100% - 32), caption bare text on the field — no
+   box, no chip, no words added to the stage. Flights are WAAPI
+   transforms driven by spotlight.js (FLIP at >=641, fade-through
+   at <=640); CSS here carries only the resting geometries and
+   the opacity fades, on the house tokens — the flight's 400ms
+   lives in --motion-4, consumed by spotlight.js alone. */
+.spotlight-shade {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--bg); border-radius: 0 0 12px 12px; opacity: 0;
+  transition: opacity var(--motion-1) ease;
+}
+.call-stage[data-spotlight] .spotlight-shade {
+  opacity: 1; transition: opacity var(--motion-2) var(--motion-ease);
+}
+/* The toggle shares the frame's geometry at every width (its
+   rules ride with the frame's below and in the band/phone
+   blocks): a transparent button over the living frame, radius
+   following the frame (12px panel family; 8px on the phone
+   strip, where the frame itself is 8px). */
+.avatar-toggle {
+  position: absolute; z-index: 3; padding: 0; margin: 0;
+  background: none; border: 0; border-radius: 12px; cursor: pointer;
+  color: var(--text);
+  left: 16px; top: 52px; width: 172px; height: 215px;
+}
+.avatar-toggle[hidden] { display: none; }
+.avatar-toggle:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.spotlight-glyph {
+  position: absolute; right: 8px; bottom: 8px; width: 16px; height: 16px;
+  opacity: .45; pointer-events: none;
+  transition: opacity var(--motion-1) ease;
+}
+.avatar-toggle:hover .spotlight-glyph,
+.avatar-toggle:focus-visible .spotlight-glyph { opacity: 1; }
+/* The frame's own transitions: the hover/press life (Respond).
+   WAAPI owns the transform during a flight and overrides this. */
+.avatar-frame { transition: border-color var(--motion-1) ease, transform var(--motion-1) ease; }
+.spotlight-close {
+  position: absolute; top: 12px; right: 12px; z-index: 4;
+  width: 36px; height: 36px; padding: 0; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: 8px; color: var(--text); cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--motion-1) ease;
+}
+.spotlight-close svg { width: 16px; height: 16px; display: block; }
+.spotlight-close[hidden] { display: none; }
+.call-stage[data-spotlight] .spotlight-close {
+  opacity: 1; pointer-events: auto;
+  transition: opacity var(--motion-2) var(--motion-ease) 300ms;
+}
+.spotlight-close:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+/* Her words, live: bare text on the field surface, centred —
+   a subtitle, not a label. Words keep the scene's colour law
+   (provisional muted, settled full) via the mirrored spans. */
+.spotlight-caption {
+  position: absolute; z-index: 2; margin: 0; pointer-events: none;
+  text-align: center; font-weight: 600; color: var(--text); opacity: 0;
+  transition: opacity var(--motion-1) ease;
+}
+.spotlight-caption .w { transition: color var(--motion-3) var(--motion-ease); }
+.spotlight-caption.is-provisional .w { color: var(--muted-2); }
+.call-stage[data-spotlight] .call-main { min-height: var(--spot-main-h, 640px); }
+/* Hero geometry (desktop): frame centred on the lens axis at
+   the field's top; label 8px under it, left edges shared;
+   caption 12px under the label; the window landed under the
+   caption on the JS-measured top (--spot-win-top: caption
+   bottom + 12, set by spotlight.js from the prep state). */
+.call-stage[data-spotlight] .avatar-frame,
+.call-stage[data-spotlight-prep] .avatar-frame {
+  left: calc(50% - 160px); top: 16px; width: 320px; height: 400px;
+}
+.call-stage[data-spotlight] .avatar-toggle {
+  left: calc(50% - 160px); top: 16px; width: 320px; height: 400px;
+}
+.call-stage[data-spotlight] .call-tile > .call-tile-label,
+.call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
+  left: calc(50% - 160px); top: 424px; max-width: 320px;
+  white-space: nowrap; line-height: 1.3; z-index: 2;
+}
+.call-stage[data-spotlight] .call-wave,
+.call-stage[data-spotlight-prep] .call-wave {
+  left: calc(50% - 152px); top: 388px;
+}
+.call-stage[data-spotlight] .spotlight-caption,
+.call-stage[data-spotlight-prep] .spotlight-caption {
+  left: 50%; transform: translateX(-50%); top: 461px;
+  width: min(560px, calc(100% - 32px)); font-size: 19px; line-height: 1.4;
+}
+.call-stage[data-spotlight] .spotlight-caption {
+  opacity: 1; transition: opacity var(--motion-2) var(--motion-ease) 120ms;
+}
+.call-stage[data-spotlight] .call-main .app-window {
+  top: var(--spot-win-top, 499px); left: calc(50% - 180px);
+  transform: none; width: 360px;
+}
+.call-stage[data-spotlight] .call-self,
+.call-stage[data-spotlight-prep] .call-self { width: 96px; height: 63px; }
+/* The tile's own closing caption stands down while the
+   Spotlight caption carries her words at the caption position
+   (the same words, mirrored — never both at once). */
+.call-stage[data-spotlight] .call-caption { display: none; }
+@media (max-width: 933px) {
+  /* Band hero: 264x330, window landed at 336. */
+  .call-stage[data-spotlight] .avatar-frame,
+  .call-stage[data-spotlight-prep] .avatar-frame {
+    left: 50%; transform: translateX(-50%); top: 16px; bottom: auto; width: 264px; height: 330px;
+  }
+  .call-stage[data-spotlight] .avatar-toggle {
+    left: 50%; transform: translateX(-50%); top: 16px; bottom: auto; width: 264px; height: 330px;
+  }
+  .avatar-toggle { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
+  .call-stage[data-spotlight] .call-tile > .call-tile-label,
+  .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
+    left: 50%; transform: translateX(-50%); top: 354px; bottom: auto; width: 264px; max-width: 264px; font-size: 13px;
+  }
+  .call-stage[data-spotlight] .call-wave,
+  .call-stage[data-spotlight-prep] .call-wave {
+    left: calc(50% - 124px); top: 318px; bottom: auto;
+  }
+  .call-stage[data-spotlight] .spotlight-caption,
+  .call-stage[data-spotlight-prep] .spotlight-caption {
+    top: 390px; width: min(480px, calc(100% - 32px)); font-size: 17px;
+  }
+  .call-stage[data-spotlight] .call-main .app-window {
+    top: var(--spot-win-top, 425px); left: calc(50% - 168px); width: 336px;
+  }
+  .call-stage[data-spotlight] .call-self,
+  .call-stage[data-spotlight-prep] .call-self { width: 88px; height: 58px; }
+}
+@media (max-width: 640px) {
+  /* Phone: the tile strip becomes the hero column — frame in
+     flow at 248x310, label under it sharing its left edge, the
+     caption under that; the window lands in flow beneath, and
+     the self tile demotes onto her frame's bottom-right corner
+     (over video only, the concept's phone PiP). The flight here
+     is the fade-through (spotlight.js): the strip's square crop
+     and the hero's 4:5 cannot share a scale morph without
+     stretching her face. */
+  .avatar-toggle { left: 12px; top: 8px; bottom: auto; width: 64px; height: 64px; border-radius: 8px; }
+  .call-stage[data-spotlight] .call-tile {
+    height: auto; display: flex; flex-direction: column;
+    align-items: center; padding: 16px 16px 0;
+  }
+  .call-stage[data-spotlight] .avatar-frame,
+  .call-stage[data-spotlight-prep] .avatar-frame {
+    position: relative; left: auto; top: auto; transform: none; flex: none;
+    width: 248px; height: 310px; border-radius: 12px; order: 1;
+  }
+  .call-stage[data-spotlight] .avatar-toggle {
+    left: calc(50% - 124px); top: 16px; transform: none; width: 248px; height: 310px; border-radius: 12px;
+  }
+  .call-stage[data-spotlight] .call-tile > .call-tile-label,
+  .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
+    position: static; transform: none; order: 2; flex: none;
+    width: 248px; max-width: 248px; margin-top: 8px;
+    white-space: nowrap; line-height: 1.3; text-align: left;
+  }
+  .call-stage[data-spotlight] .spotlight-caption,
+  .call-stage[data-spotlight-prep] .spotlight-caption {
+    position: static; transform: none; order: 3; flex: none;
+    width: min(320px, 100%); margin-top: 12px; font-size: 16px;
+  }
+  .call-stage[data-spotlight] .call-wave,
+  .call-stage[data-spotlight-prep] .call-wave {
+    left: calc(50% - 116px); top: 298px; bottom: auto;
+  }
+  .call-stage[data-spotlight] .call-main .app-window {
+    top: auto; left: auto; width: calc(100% - 32px); margin: 12px 0 16px; align-self: center;
+  }
+  .call-stage[data-spotlight] .call-self,
+  .call-stage[data-spotlight-prep] .call-self {
+    width: 72px; height: 48px; top: 270px; bottom: auto; right: calc(50% - 116px);
+  }
+}
+
 @media (max-width: 640px) {
   /* Step 60: the chapter nav sticks on phones too — on a page of
      ~19 viewports it is the only wayfinding there is (Step 59
@@ -3196,3 +3405,4 @@ body:has(.feat-nav) { overflow-anchor: none; }
    at every width. The home story player's report view keeps the
    flex rows — its values are 1–2 words inside a fixed stage. */
 .feat-report-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+

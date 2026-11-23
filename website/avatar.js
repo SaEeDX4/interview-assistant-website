@@ -8,6 +8,23 @@
    line, 1,320ms of a 1,360ms line, and the owner rejected them),
    and her or his own recorded voice for the five fixed lines.
 
+   One-take path (p1 only, this round): the owner rejected the
+   per-line build because every new question arrived as a
+   different face — each D-ID per-line render re-poses the head,
+   so at every line boundary her face form and head position
+   jumped (measured: head-region frame diff ≈ 66 at all four
+   boundaries, vs ≈ 1.4 p90 for ordinary in-line motion). p1 now
+   performs from ONE continuous D-ID take (p1-take): all five
+   lines and the silences between them are a single performance,
+   so a line boundary is just the next frame of the same footage.
+   Speaking beats seek the take to the line's segment and play
+   through the line AND its trailing silence — while the scene's
+   answer beat runs she is seen listening in the take's own
+   footage (the hold), its tail gently slowed so the segment
+   cannot run out mid-beat. The per-line renders stay shipped as
+   the fallback: any take failure flips back to them per beat,
+   and the presence loops remain the final fallback.
+
    Selection: a fresh persona on every page load, never the same
    as the previous load's (localStorage last-persona exclusion);
    fixed within the load. Only the chosen persona's assets are
@@ -75,8 +92,29 @@
   };
   vids.forEach(function (v) { v.poster = "avatar/" + pid + "-poster.webp"; });
 
+  /* The one-take performance (p1 only): segment map in seconds.
+     line = the spoken line's length inside the segment; end =
+     where the next segment begins (the trailing silence belongs
+     to this beat's hold). The line lengths equal the per-line
+     renders' durations — the take was driven by the same five
+     voice clips, concatenated with silences. */
+  var TAKE = null;
+  if (pid === "p1") {
+    TAKE = {
+      file: "avatar/p1-take",
+      seg: {
+        tell:   { start: 0.00,  line: 1.04, end: 4.54 },
+        follow: { start: 4.54,  line: 1.64, end: 9.68 },
+        story:  { start: 9.68,  line: 2.44, end: 16.62 },
+        why:    { start: 16.62, line: 1.32, end: 21.44 },
+        thanks: { start: 21.44, line: 1.76, end: 23.20 }
+      }
+    };
+  }
+
   var state = "", currentFile = "", front = 0, dead = false, greetedClose = false;
   var speakKey = "", speakFailed = {}, renderDur = {}, syncTimer = null;
+  var takeFailed = false, takeSeg = null, takeHold = null, segTimer = null, syncBase = 0;
   var probe = { transitions: [], sync: [], speakStarts: [], voice: "scene", failed: {}, persona: pid };
   var api = { probe: probe, setState: setState, active: false, persona: pid,
               state: function () { return state; },
@@ -107,6 +145,16 @@
         } else { v.src = f + ".mp4"; v.load(); }
       }
       else if (v.dataset.speakKey) {
+        /* The take failed in both formats: flip p1 back to the
+           per-line renders and replay this beat on them — the
+           take is an optimisation of the joins, never a single
+           point of failure. */
+        if (TAKE && f === TAKE.file && !takeFailed) {
+          takeFailed = true;
+          probe.failed[v.dataset.speakKey] = "take-media-error";
+          if (state === "speaking" && speakKey === v.dataset.speakKey) { startSpeaking(speakKey); }
+          return;
+        }
         /* A missing speaking render must not kill the avatar:
            mark the key and hold the presence loop for the beat. */
         speakFailed[v.dataset.speakKey] = true;
@@ -161,7 +209,13 @@
         return;
       }
       probe.failed[opts.speakKey || opts.label || file] = "stalled";
-      if (opts.speakKey) {
+      if (opts.speakKey && TAKE && file === TAKE.file && !takeFailed) {
+        /* A wedged take falls back to the per-line render for
+           this beat, like a take media error. */
+        takeFailed = true;
+        probe.failed[opts.speakKey] = "take-stalled";
+        if (state === "speaking" && speakKey === opts.speakKey) { startSpeaking(opts.speakKey); }
+      } else if (opts.speakKey) {
         speakFailed[opts.speakKey] = true;
         if (state === "speaking" && speakKey === opts.speakKey) { setState("listening"); }
       } else if (v.classList.contains("is-front")) { fail(); }
@@ -290,6 +344,13 @@
     state = name;
     speakKey = "";
     stopSync();
+    /* A presence state taking over ends any take segment/hold:
+       the take is no longer the front content. (The hold itself
+       sets state directly, never through here, so it survives.) */
+    takeHold = null;
+    takeSeg = null;
+    stopSegWatch();
+    syncBase = 0;
     if (reduced) { return; }
     var file = SRC[name];
     if (file === currentFile) { return; }
@@ -326,18 +387,86 @@
   }
   /* Voiced runs: keep the render on the sound clock. A drift
      past the 120ms lip-sync target snaps back; every sample is
-     kept on the probe for the parity audit. */
+     kept on the probe for the parity audit. On the take path
+     the render's position is the segment base (syncBase) plus
+     the voice position; per-line renders keep base 0. */
   function startSync(key) {
     stopSync();
     syncTimer = setInterval(function () {
       if (state !== "speaking" || speakKey !== key) { stopSync(); return; }
       var c = beatClock(key), v = vids[front];
       if (c.playing && !v.paused) {
-        var d = v.currentTime - c.t;
+        var d = v.currentTime - (syncBase + c.t);
         if (probe.sync.length < 400) { probe.sync.push(Math.round(Math.abs(d) * 1000)); }
-        if (Math.abs(d) > 0.12) { try { v.currentTime = c.t; } catch (e) {} }
+        if (Math.abs(d) > 0.12) { try { v.currentTime = syncBase + c.t; } catch (e) {} }
       } else if (!c.playing) { stopSync(); }
     }, 200);
+  }
+
+  /* --- One-take segment machinery (p1) ---
+     While a take segment is front, a watcher tracks its end.
+     During the hold (the line is over, the scene's answer beat
+     is running) the segment's remaining silence is stretched —
+     playback eases to 0.45x, then 0.3x as the end approaches —
+     so the take cannot run out mid-beat and cut to a different
+     render: near-still listening footage slowed by half is not
+     perceptible, and the next line then starts from the frame
+     the take itself reaches, continuous with this one. If a
+     beat ever does outlast the stretched segment, the watcher
+     hands over to the ordinary post-speech states. */
+  function stopSegWatch() {
+    if (segTimer) { clearInterval(segTimer); segTimer = null; }
+  }
+  function startSegWatch(key) {
+    stopSegWatch();
+    segTimer = setInterval(function () {
+      if (dead || takeSeg !== key) { stopSegWatch(); return; }
+      if (takeFailed) { endTakeSegment(key); return; }
+      var v = vids[front];
+      if (!v || (v.dataset.file || "") !== TAKE.file) { return; }
+      var rem = TAKE.seg[key].end - v.currentTime;
+      if (takeHold === key) {
+        if (rem < 0.06) { endTakeSegment(key); return; }
+        if (rem < 0.5) { v.playbackRate = 0.3; }
+        else if (rem < 1.2) { v.playbackRate = 0.45; }
+      } else if (state === "speaking" && speakKey === key && rem <= 0.03) {
+        endTakeSegment(key);
+      }
+    }, 200);
+  }
+  function endTakeSegment(key) {
+    stopSegWatch();
+    takeSeg = null;
+    if (takeHold === key) {
+      /* The stretched silence is exhausted: settle exactly as
+         the per-line build settles after a line. */
+      takeHold = null;
+      state = "";
+      postSpeech();
+    } else if (state === "speaking" && speakKey === key) {
+      stopSync();
+      speakKey = "";
+      state = "";
+      setState("listening");
+    }
+  }
+  /* The spoken line ended naturally (the speak key cleared at
+     or after the line's end inside the segment): stay on the
+     take — she keeps listening in her own footage while the
+     scene's answer beat runs. An EARLY clear is a barge-in or
+     a cancel and returns false, so the caller cuts at once,
+     exactly as the per-line build does. */
+  function enterTakeHold(key) {
+    if (!TAKE || takeFailed || takeSeg !== key || takeHold) { return false; }
+    var seg = TAKE.seg[key], v = vids[front];
+    if (!v || (v.dataset.file || "") !== TAKE.file) { return false; }
+    if (v.currentTime < seg.start + seg.line - 0.15) { return false; }
+    if (v.currentTime >= seg.end - 0.03) { return false; }
+    takeHold = key;
+    state = "listening";
+    v.playbackRate = 1;
+    probe.transitions.push({ to: "take-hold:" + key, ms: 0 });
+    return true;
   }
 
   function startSpeaking(key) {
@@ -346,9 +475,35 @@
     if (speakFailed[key]) { probe.failed[key] = probe.failed[key] || "pre-failed"; setState("listening"); return; }
     state = "speaking";
     speakKey = key;
+    takeHold = null;
     if (reduced) { return; }
     var c = beatClock(key);
     var voiced = !!c.playing;
+    var seg = (TAKE && !takeFailed) ? TAKE.seg[key] : null;
+    if (seg) {
+      /* One-take path: seek the take to this line's segment.
+         Voiced runs align the segment start to the voice clock;
+         silent runs rate-fit the segment's line to the staged
+         speech window, as the per-line path fits its render.
+         The segment then plays through its trailing silence —
+         the hold (enterTakeHold) keeps it front while the
+         scene's answer beat runs. */
+      var atT = seg.start + (voiced ? (c.t || 0) : 0);
+      var rateT = 1;
+      if (!voiced) {
+        var durS = parseFloat(stage.getAttribute("data-speak-dur") || "0");
+        if (durS > 0) { rateT = Math.min(1.3, Math.max(0.8, seg.line / (durS + 0.35))); }
+      }
+      syncBase = seg.start;
+      takeSeg = key;
+      show(TAKE.file, { loop: false, rate: rateT, at: atT, speakKey: key, label: "speaking:" + key });
+      startSegWatch(key);
+      if (voiced) { startSync(key); }
+      return;
+    }
+    takeSeg = null;
+    stopSegWatch();
+    syncBase = 0;
     var at = 0, rate = 1;
     if (voiced) {
       at = c.t || 0;
@@ -391,21 +546,36 @@
   new MutationObserver(function () {
     var key = stage.getAttribute("data-speak-key");
     if (key) { if (key !== speakKey || state !== "speaking") { startSpeaking(key); } }
-    else if (state === "speaking") { stopSync(); speakKey = ""; postSpeech(); }
+    else if (state === "speaking") {
+      stopSync();
+      var holdKey = speakKey;
+      speakKey = "";
+      /* On the take path a natural line end holds on the take
+         (she listens in her own footage through the answer
+         beat); enterTakeHold refuses an early clear, so a
+         barge-in or cancel still cuts via postSpeech at once. */
+      if (!enterTakeHold(holdKey)) { postSpeech(); }
+    }
   }).observe(stage, { attributes: true, attributeFilter: ["data-speak-key"] });
 
   if (selfTile) {
     new MutationObserver(function () {
       if (state === "speaking") { return; }
       if (selfTile.classList.contains("is-speaking")) { setState("listening"); }
-      else if (state === "listening") { setState("idle"); }
+      /* During a take hold the listening is already on screen
+         (her own footage); settling to the idle loop here would
+         cut it mid-beat for no scene reason. */
+      else if (state === "listening" && !takeHold) { setState("idle"); }
     }).observe(selfTile, { attributes: true, attributeFilter: ["class"] });
   }
   if (pillText) {
     new MutationObserver(function () {
       var t = pillText.textContent;
-      if (t === "Question detected" && state !== "speaking") { setState("thinking"); }
-      else if (t === "Answer ready" && state !== "speaking") { postSpeech(); }
+      /* The pill's thinking/ready transitions narrate the same
+         answer beat the take hold is already showing; they must
+         not swap the take away mid-silence. */
+      if (t === "Question detected" && state !== "speaking" && !takeHold) { setState("thinking"); }
+      else if (t === "Answer ready" && state !== "speaking" && !takeHold) { postSpeech(); }
       else if (t === "Interview complete" && !greetedClose) { greetedClose = true; setState("greeting"); }
       else if (t === "Not listening" && state !== "speaking") { greetedClose = false; setState("idle"); }
     }).observe(pillText, { childList: true, characterData: true, subtree: true });
@@ -448,8 +618,16 @@
 
   /* Warm the speaking renders: metadata first (durations feed
      the silent rate-fit), then the full files, so a spoken beat
-     starts at the pre-render floor instead of on a cold fetch. */
+     starts at the pre-render floor instead of on a cold fetch.
+     On the take path the take itself is warmed the same way;
+     the per-line files stay warmed as its fallback. */
   function warmSpeaking() {
+    if (TAKE) {
+      var tw = document.createElement("video");
+      tw.preload = "auto";
+      tw.muted = true;
+      tw.src = TAKE.file + ".webm";
+    }
     Object.keys(SPEAK).forEach(function (key) {
       var w = document.createElement("video");
       w.preload = "metadata";

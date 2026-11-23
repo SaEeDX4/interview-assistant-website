@@ -152,6 +152,11 @@
                  lens in the frame's bezel and the window hanging
                  beneath it — the feeling, conveyed, not captioned. -->
             <div class="call-main">
+            <!-- Spotlight (Phase 1): the field's backdrop shade —
+                 the tile's gradient quiets to flat while the
+                 interviewer is up close; geometry and behaviour
+                 live in styles.css + spotlight.js. -->
+            <div class="spotlight-shade" aria-hidden="true"></div>
             <div class="call-tile" id="call-tile">
               <!-- Step 75 (Avatar Step A): the live interviewer avatar —
                    one synthetic persona, pre-rendered presence loops
@@ -163,9 +168,25 @@
                 <video class="avatar-video is-front" id="avatar-video-a" muted loop playsinline preload="auto" poster="avatar/p1-poster.webp"></video>
                 <video class="avatar-video" id="avatar-video-b" muted loop playsinline preload="none"></video>
               </div>
+              <!-- Spotlight (Phase 1): the whole avatar frame is
+                   the tap target — a real button overlaying the
+                   frame (spotlight.js unhides it only while a
+                   living persona is present; the glyph fallback
+                   gets no toggle). The corners-out glyph is the
+                   video-player furniture for "expand", at rest
+                   opacity in the frame's corner — an icon, not a
+                   label. -->
+              <button type="button" class="avatar-toggle" id="avatar-toggle" aria-expanded="false" aria-label="See the interviewer up close" hidden><svg class="spotlight-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v5"/><path d="M15 4h5v5"/><path d="M9 20H4v-5"/><path d="M15 20h5v-5"/></svg></button>
               <svg class="call-avatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>
               <span class="call-wave" id="call-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
               <p class="call-caption" id="call-caption" hidden></p>
+              <!-- Spotlight (Phase 1): her current question as a
+                   live caption between her hero frame and the app
+                   window — a mirror of the scene's own transcript
+                   state (spotlight.js clones the word spans; the
+                   canonical text stays in the window, so this is
+                   aria-hidden decoration of the same event). -->
+              <p class="spotlight-caption" id="spotlight-caption" aria-hidden="true"></p>
               <span class="call-tile-label">AI interviewer — simulated<span class="call-speaking" id="call-speaking" hidden> · speaking</span></span>
             </div>
             <div class="call-self" id="call-self"><video id="cam-video" autoplay playsinline muted hidden></video><span class="call-self-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="call-tile-label">You</span><button type="button" class="cam-toggle" id="cam-toggle" aria-pressed="false" aria-label="Use your camera — your video tile" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="cam-toggle-text">Use your camera</span></button></div>
@@ -197,6 +218,10 @@
                 <p class="demo-sample-tag" id="demo-sample-tag" hidden></p>
               </div>
             </div>
+            <!-- Spotlight (Phase 1): the close control — fades in
+                 at the field's top-right while she is up close;
+                 tapping her again or Escape does the same job. -->
+            <button type="button" class="spotlight-close" id="spotlight-close" aria-label="Close the close-up" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
             </div>
           </div>
           <p class="cam-note" id="cam-note" role="status" hidden></p>
@@ -358,5 +383,6 @@
 </div>
 <script src="app.js"></script>
 <script src="avatar.js"></script>
+<script src="spotlight.js"></script>
 </body>
 </html>
