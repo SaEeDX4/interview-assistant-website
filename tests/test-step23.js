@@ -146,7 +146,10 @@ check("demo layers built once (10 samples x 2 modes + 2 fallback = 22 answer lay
   /showLayer\(answerLayers, idx \* 2 \+ \(mode === "coach" \? 1 : 0\)\);/.test(demoJs) &&
   /function buildAnswerLayer\(items, rtl, lang\) \{/.test(demoJs) &&
   /function buildCoachLayer\(coach, rtl, lang\) \{/.test(demoJs) &&
-  /function revealRows\(layer, list, isStale, done\) \{/.test(demoJs));
+  /* Step 85 re-pin: revealRows (the uniform 400ms metronome) is
+     retired — the layers are composed by composeRows, in the
+     product's two tenses (dots in point 1's row, pending, landed). */
+  /function composeRows\(layer, tempo, schedule, done, dotsAlready\) \{/.test(demoJs));
 check("demo never empties or inserts during a play (no innerHTML, no skeletons)",
   !/function renderBullets\(|function renderCoach\(/.test(demoJs) &&
   !/answerEl\.innerHTML|intAnswer\.innerHTML/.test(demoJs) &&

@@ -18,8 +18,9 @@
      (is-committed) restores the whole line; entrances ride
      --motion-1, colour rides --motion-3, no literal durations;
    - the settle is 350ms after the speech end, the commit
-     (snapQuestionFinal at detection) precedes the points,
-     which keep their +0.4 cadence;
+     (snapQuestionFinal at detection) precedes the points
+     (Step 85: the composition starts AT the commit — the
+     fixed +0.4 gap is retired; see test-step85);
    - an interrupted question snaps to its final state:
      snapAllSceneQuestions runs in both cancelScene and
      settleScene, snapQuestionFinal in primeScene;
@@ -104,9 +105,14 @@ check("sceneAsk paces its question by the table, not the uniform wstep",
   ask.length > 0 && !/wstep/.test(ask) && ask.includes("startTranscription(q, opts.clip, pacing)"));
 check("detection lands at speech end + the settle beat (pacing.endMs + SCENE_SETTLE_MS)",
   ask.includes("pacing.endMs + SCENE_SETTLE_MS"));
-check("the commit snaps the question final at detection, before the points (points keep +0.4)",
-  ask.includes("snapQuestionFinal(q)") && ask.includes("var pointsAt = detectedAt + 0.4")
-  && ask.indexOf("snapQuestionFinal(q)") < ask.indexOf("var pointsAt"));
+check("the commit snaps the question final at detection, before the composition starts",
+  /* Step 85 re-pin: the fixed +0.4s points gap is gone — at the
+     commit the answer layer swaps in and composeRows starts (its
+     thinking beat absorbs the breath); the cursor returns from
+     composeDurationMs, not from a pointsAt constant. */
+  ask.includes("snapQuestionFinal(q)") && ask.includes("composeRows(aLayer, tempo, sceneSchedule")
+  && ask.includes("composeDurationMs(aLayer, tempo, false)")
+  && ask.indexOf("snapQuestionFinal(q)") < ask.indexOf("composeRows(aLayer"));
 
 /* 4. The interruption snap. */
 check("cancelScene snaps every scene question final (never left half-dim)",

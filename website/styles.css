@@ -318,6 +318,26 @@ p { margin: 0 0 16px; }
 }
 .demo-answer li .app-dot { margin-top: 12px; }
 .demo-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
+/* Step 85 — the demo's answers compose in the product's two tenses
+   (the hero's grammar, Step 21/25, brought to the demo): a point that
+   is still being written rests at the pending opacity, and the
+   thinking dots live INSIDE point 1's own row — absolutely placed on
+   its first line, over the layout-present text — so the dots' seat
+   is the point's own slot: when they crossfade out and the pending
+   point fades in, nothing is left behind and nothing moves. There is
+   deliberately no standalone dots row in the demo (the prototype's
+   reserved band above point 1 was the owner's caught defect). */
+.demo-answer li.is-pending { opacity: .45; }
+.demo-answer li.is-thinking { position: relative; }
+.demo-answer li .app-thinking-dots {
+  position: absolute; inset-inline-start: 15px; top: 6px;
+  color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em;
+  animation: pulse .9s ease-in-out infinite alternate;
+  transition: opacity .15s cubic-bezier(.2,.7,.3,1);
+  pointer-events: none;
+}
+.call-main .demo-answer li .app-thinking-dots { top: 3px; }
+.demo-answer li .app-thinking-dots.is-out { opacity: 0; }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 /* Step 25 — entrance (E1 + E3): the question lands with Material's
    fade-through (92% → 100% scale, 6px rise, 250ms, the one entrance
