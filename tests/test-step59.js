@@ -303,7 +303,13 @@ check("privacy: the never list (5 items) + never pills in the bento tile only",
     "32px", "40px", "48px", "56px", "64px", "72px", "96px"]);
   let spacingOk = block.length > 0;
   for (const m of block.matchAll(/(?:margin|padding)(?:-[a-z]+)?\s*:\s*([^;]+);/g)) {
-    for (const v of m[1].trim().split(/\s+/)) if (!SCALE.has(v)) spacingOk = false;
+    /* Step 90 annotation: the scan runs from the Step 59 marker
+       to the end of the sheet, which now also holds Step 90's
+       demo-head toolbar rule (margin-left: auto). "auto" is an
+       alignment keyword, not a spacing length — the base sheet's
+       own auto margins (.scene-note and others) were never
+       lengths either — so it is exempt from the length scale. */
+    for (const v of m[1].trim().split(/\s+/)) if (v !== "auto" && !SCALE.has(v)) spacingOk = false;
   }
   check("css59: every margin/padding value is on the Step 9 scale", spacingOk);
   let transOk = true;

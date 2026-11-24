@@ -11,14 +11,17 @@
      stage's attribute convention — the Step 17 census reads
      app.js only, and app.js is outside this workstream);
    - committed geometry: hero 320x400 / 264x330 (<=933) /
-     248x310 (<=640, in flow); window landed 360 / 336 /
-     (100% - 32); self PiP 96x63 / 88x58 / 72x48 over her
-     frame's corner on phones;
+     232x290 (<=640, in flow; Step 89: narrowed from 248x310
+     so the close corner clears the portrait); window landed
+     360 / 336 / (100% - 32); self PiP 96x63 / 88x58 / 72x48 —
+     on phones in the label row beside the name plate
+     (Step 89: no longer over her frame's corner);
    - Step 84 re-pins: the live caption is REMOVED on the
      owner's ruling (it duplicated the QUESTION card's
      sentence word for word) — the window's landed top is now
-     measured from the tile label's bottom + 12, the tile's
-     own closing caption no longer stands down, and
+     measured from the tile label's bottom + 16 (Step 89:
+     was + 12; 16 balances the 16 above the portrait), the
+     tile's own closing caption no longer stands down, and
      spotlight.js mirrors nothing;
    - the --motion-4 amendment: 400ms in :root, consumed ONLY
      by spotlight.js's flight (the scope is written into this
@@ -87,21 +90,22 @@ check("hero frame 320x400 centred on the lens axis (desktop)",
   /\.call-stage\[data-spotlight\] \.avatar-frame,\s*\.call-stage\[data-spotlight-prep\] \.avatar-frame \{\s*left: calc\(50% - 160px\); top: 16px; width: 320px; height: 400px;/.test(clean));
 check("hero frame 264x330 in the <=933 band (centred on translateX(-50%) — test-step6 bans the 132px literal the calc would need)",
   /left: 50%; transform: translateX\(-50%\); top: 16px; bottom: auto; width: 264px; height: 330px;/.test(clean));
-check("hero frame 248x310 in flow on phones (fade-through territory)",
-  /position: relative; left: auto; top: auto; transform: none; flex: none;\s*width: 248px; height: 310px; border-radius: 12px; order: 1;/.test(clean));
-check("window landed at 360 (desktop) / 336 (band) on the measured --spot-win-top (Step 84: fallbacks now sit under the label, 453/383)",
-  /\.call-stage\[data-spotlight\] \.call-main \.app-window \{\s*top: var\(--spot-win-top, 453px\); left: calc\(50% - 180px\);\s*transform: none; width: 360px;/.test(clean)
-  && /top: var\(--spot-win-top, 383px\); left: calc\(50% - 168px\); width: 336px;/.test(clean));
-check("window landed at (100% - 32) in flow on phones (centred as a flex item — no off-scale auto margin)",
-  /top: auto; left: auto; width: calc\(100% - 32px\); margin: 12px 0 16px; align-self: center;/.test(clean));
-check("self PiP: 96x63 desktop / 88x58 band / 72x48 over her frame's corner on phones",
+check("hero frame 232x290 in flow on phones (fade-through territory. Step 89 re-pin: 248x310 → 232x290 so the close button's corner clears the portrait's right edge — at 248 the clearance measured 0.5px and the button straddled the corner in the owner's screenshot)",
+  /position: relative; left: auto; top: auto; transform: none; flex: none;\s*width: 232px; height: 290px; border-radius: 12px; order: 1;/.test(clean));
+check("window landed at 360 (desktop) / 336 (band) on the measured --spot-win-top (Step 84: fallbacks now sit under the label, 453/383. Step 89 re-pin: 457/387 — the measured gap under the label is now 16, matching the 16 above the portrait, so the hero column is balanced in its area)",
+  /\.call-stage\[data-spotlight\] \.call-main \.app-window \{\s*top: var\(--spot-win-top, 457px\); left: calc\(50% - 180px\);\s*transform: none; width: 360px;/.test(clean)
+  && /top: var\(--spot-win-top, 387px\); left: calc\(50% - 168px\); width: 336px;/.test(clean));
+check("window landed at (100% - 32) in flow on phones (centred as a flex item — no off-scale auto margin. Step 89 re-pin: margin-top 12 → 16, the same balance as above)",
+  /top: auto; left: auto; width: calc\(100% - 32px\); margin: 16px 0 16px; align-self: center;/.test(clean));
+check("self PiP: 96x63 desktop / 88x58 band / 72x48 in the label row on phones (Step 89 re-pin: the phone PiP leaves the portrait — it sat over her frame's corner as a three-line text sticker in the owner's screenshot; it now sits right of the name plate on the window's grid, right: 16, centred on the label at top: 312)",
   /\.call-stage\[data-spotlight\] \.call-self,\s*\.call-stage\[data-spotlight-prep\] \.call-self \{ width: 96px; height: 63px; \}/.test(clean)
   && /\.call-stage\[data-spotlight\] \.call-self,\s*\.call-stage\[data-spotlight-prep\] \.call-self \{ width: 88px; height: 58px; \}/.test(clean)
-  && /width: 72px; height: 48px; top: 270px; bottom: auto; right: calc\(50% - 116px\);/.test(clean));
+  && /width: 72px; height: 48px; top: 312px; bottom: auto; right: 16px;/.test(clean));
 check("Step 84 re-pin: no .spotlight-caption rules remain anywhere in the sheet",
   !/\.spotlight-caption/.test(clean));
-check("Step 84 re-pin: the tile's own closing caption no longer stands down in Spotlight (it is the closing line's only carrier)",
-  !/\.call-stage\[data-spotlight\] \.call-caption \{ display: none; \}/.test(clean));
+check("Step 84 re-pin (Step 90 annotation: the caption element itself is now deleted entirely — owner's addendum C — so no stand-down rule exists or is needed)",
+  !/\.call-stage\[data-spotlight\] \.call-caption \{ display: none; \}/.test(clean) &&
+  !/\.call-caption/.test(clean));
 check("the field's spotlight height is the measured --spot-main-h var",
   /\.call-stage\[data-spotlight\] \.call-main \{ min-height: var\(--spot-main-h, 640px\); \}/.test(clean));
 check("radius law: toggle follows the frame (12px; 8px on the phone strip), close is 8px, no 999px anywhere in the section",
@@ -144,7 +148,7 @@ check("keyboard open hands focus to the close control (click detail 0, consumed 
   spot.includes("e.detail === 0") && spot.includes("pendingFocusClose") && spot.includes("closeBtn.focus()"));
 check("the phone hero sheds the band's centring transform (frame and toggle both reset it)",
   /\.call-stage\[data-spotlight\] \.avatar-frame,\s*\.call-stage\[data-spotlight-prep\] \.avatar-frame \{\s*position: relative; left: auto; top: auto; transform: none;/.test(clean)
-  && /\.call-stage\[data-spotlight\] \.avatar-toggle \{\s*left: calc\(50% - 124px\); top: 16px; transform: none;/.test(clean));
+  && /\.call-stage\[data-spotlight\] \.avatar-toggle \{\s*left: calc\(50% - 116px\); top: 16px; transform: none;/.test(clean));
 check("aria-expanded and the toggle's label follow the state",
   spot.includes('setAttribute("aria-expanded", "true")') && spot.includes('setAttribute("aria-expanded", "false")')
   && spot.includes('"Back to the call view"'));

@@ -31,7 +31,8 @@
      + role (avatar.js PERSONAS, matched to the posters),
      written into #call-name / #call-role; the glyph fallback
      restores the generic plate. The honesty wording STAYS in
-     the call header ("Video call — simulated") and page copy.
+     the eyebrow above the stage ("Live demo — simulated") and page copy
+     (Step 90: the call header itself carries real-call furniture now).
    - N2: the 3-dot meter is DELETED everywhere — markup, sheet,
      scripts. The speaking signal is the tiles' halo alone.
    - N3: the camera flow is hardened — an in-flight guard
@@ -72,8 +73,9 @@ function check(name, ok, extra = "") {
 const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 /* ---------- N1: participant identity ---------- */
-check("N1: the AI-interviewer plate is deleted from the demo; the honesty wording stays in the call header",
-  !html.includes("AI interviewer") && html.includes("Video call — simulated"));
+check("N1: the AI-interviewer plate is deleted from the demo (Step 90 re-pin, annotated: the call header's 'simulated' wording was itself retired by the owner's addendum E1 — the disclosure now stands in the eyebrow above the stage, 'Live demo — simulated', and in the page's honesty copy)",
+  !html.includes("AI interviewer") && html.includes("Live demo — simulated") &&
+  !html.includes("Video call — simulated"));
 check("N1: the label is a name plate — #call-name over #call-role, with the speaking word after the name",
   html.includes('<span class="call-name" id="call-name">Interviewer</span>') &&
   html.includes('id="call-speaking"') && html.includes('<span class="call-role" id="call-role"></span>'));
@@ -96,14 +98,14 @@ check("N2: the speaking signal is the halo alone — her frame rule and the self
   /\.call-self\.is-speaking \{[^}]*border-color: var\(--accent-2\);/.test(clean));
 
 /* ---------- F1/F2/F3: one unit, one floor ---------- */
-check("F2: in the band the label's width IS the frame's width (88px) — one unit, left edges shared",
-  /\.avatar-frame \{ left: 12px; top: auto; bottom: 74px; width: 88px; height: 110px; \}/.test(clean) &&
-  /\.call-tile > \.call-tile-label \{ left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; \}/.test(clean));
+check("F2: in the band the label's width IS the frame's width (88px) — one unit, left edges shared (Step 90 re-pin, annotated: the refined name plate is 51.9px tall, so the frame's bottom offset is re-derived — 16 floor + 51.9 plate + 8 gap = 76 — and the band plate carries the plate's 8px padding)",
+  /\.avatar-frame \{ left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; \}/.test(clean) &&
+  /\.call-tile > \.call-tile-label \{ left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; padding: 8px; \}/.test(clean));
 check("F2: the desktop plate is the desktop frame's width too (172px)",
   /\.call-tile-label \{[^}]*width: 172px; max-width: 172px;/.test(clean) &&
   /\.avatar-frame \{[^}]*width: 172px; height: 215px;/.test(clean));
-check("F1: the band window cap is unchanged, so the unit's right edge keeps the Step 87 clearance on both frame and label",
-  /\.call-main \.app-window \{ width: min\(432px, calc\(100% - 264px\)\); \}/.test(clean));
+check("F1: the band window cap reserves 124px per side (Step 90 re-pin, annotated: was 132/side — the cap's collision job is superseded by the field's reserved bottom lane in app.js; the cap now guarantees the standing side clearances, measured 24px participant / 20px self at cap-bound widths, and room for the never-wrapping header row)",
+  /\.call-main \.app-window \{ width: min\(432px, calc\(100% - 248px\)\); \}/.test(clean));
 check("F3: the bottom row shares one floor — band label and self tile both anchor at bottom: 16px",
   /\.call-tile > \.call-tile-label \{[^}]*bottom: 16px;/.test(clean) &&
   /\.call-self \{[^}]*bottom: 16px;/.test(clean));
@@ -155,11 +157,10 @@ check("S3: the hero column is balanced — spotlight.js lands the window at labe
   spot.includes('getBoundingClientRect();') && spot.includes("+ 16;") &&
   !spot.includes("labelRect.bottom - mainRect.top) + 12") &&
   /margin: 16px 0 16px; align-self: center;/.test(clean));
-check("S4b: in Spotlight the closing caption sits on the hero at the hero's own width (320 desktop / 264 band), clear of the plate",
-  /\.call-stage\[data-spotlight\] \.call-caption,\s*\.call-stage\[data-spotlight-prep\] \.call-caption \{\s*display: block;\s*left: calc\(50% - 160px\); right: auto; top: 408px; bottom: auto;\s*width: 320px; max-width: 320px; transform: translateY\(-100%\);/.test(clean) &&
-  /left: 50%; top: 338px; width: 264px; max-width: 264px;\s*transform: translate\(-50%, -100%\);/.test(clean));
-check("D5: in the band (outside Spotlight) the closing caption stands down — the two-box window covered 97% of its old seat; the status line carries the line (phone + band stand-down rules)",
-  (clean.match(/\.call-caption \{ display: none; \}/g) || []).length >= 2);
+check("S4b (Step 90 re-pin, annotated): the closing caption is DELETED entirely — element, sheet rules, and JS (owner's addendum C: in Spotlight its empty box painted across the portrait's lower fifth); the window's status line carries the closing line at every width",
+  !html.includes('id="call-caption"') && !/\.call-caption/.test(clean) && !js.includes("callCaptionEl"));
+check("D5 (Step 90 re-pin, annotated): no caption stand-down or re-show rules remain either — there is no caption in any layout or state",
+  !/\.call-caption/.test(clean) && !js.includes("thanksWords"));
 check("D6: the field fits its window — fitFieldToWindow grows the field past the sheet floor in the absolute band, wired into every syncAnswerCard exit",
   js.includes("function fitFieldToWindow()") &&
   (js.match(/fitFieldToWindow\(\);/g) || []).length >= 3 &&
@@ -169,10 +170,10 @@ check("D6: the field fits its window — fitFieldToWindow grows the field past t
 check("D6: Spotlight's exit re-fits the field (its glide clears the inline min-height on the way out) — the fit alone, never a full card re-sync",
   js.includes("new MutationObserver(function () { fitFieldToWindow(); })") &&
   js.includes('attributeFilter: ["data-spotlight", "data-spotlight-prep"]'));
-check("S4b: on phones the closing caption stands down in Spotlight too — the band re-show does not leak into the phone hero",
-  /\.call-stage\[data-spotlight\] \.call-caption,\s*\.call-stage\[data-spotlight-prep\] \.call-caption \{ display: none; \}/.test(clean));
-check("S4c: the Spotlight caption paints above the hero portrait (z-index 2, like the name plate — the frame carries z-index 1)",
-  /width: 320px; max-width: 320px; transform: translateY\(-100%\); z-index: 2;/.test(clean));
+check("S4b (Step 90 re-pin, annotated): phones have no Spotlight caption either — the element is gone, so no band rule can leak a caption into the phone hero",
+  !/\.call-caption/.test(clean));
+check("S4c (Step 90 re-pin, annotated): nothing overlays the Spotlight portrait's lower fifth — the caption's old z-index seat is deleted with it; the name plate is the portrait's only overlay at its foot",
+  !/\.call-caption/.test(clean) && /\.call-stage\[data-spotlight\] \.call-tile > \.call-tile-label/.test(clean));
 
 console.log(`\nStep 89: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

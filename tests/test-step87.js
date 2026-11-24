@@ -193,8 +193,8 @@ check("the sample tag is measured un-hidden (its margin-box), never from a hidde
   && sliceFn(demoJs, "function measureTagHeight(", "function sceneReserveHeights(").includes('sampleTagEl.classList.remove("is-hidden")'));
 
 /* 7. Tile/window clearance in the unfolded band. */
-check("in the <=933 band the window narrows symmetrically, clear of frame and label",
-  /@media \(max-width: 933px\) \{[\s\S]*?\.call-main \.app-window \{ width: min\(432px, calc\(100% - 264px\)\); \}/.test(clean));
+check("in the <=933 band the window narrows symmetrically, clear of frame and label (Step 90 re-pin, annotated: the cap is 248px now — 124px per side; its collision job is superseded by the field's reserved bottom lane, and the measured side clearances are 24px participant / 20px self at cap-bound widths)",
+  /@media \(max-width: 933px\) \{[\s\S]*?\.call-main \.app-window \{ width: min\(432px, calc\(100% - 248px\)\); \}/.test(clean));
 check("the phone strip restates width:auto so the band cap never reaches 403",
   css.includes("Step 87: the phone window is in-flow at its natural width")
   && /\.call-main \.app-window \{ width: auto; \}/.test(clean));
@@ -208,27 +208,44 @@ check("the phone chip is fit-content, centred, balanced — no dead half, no orp
    owner's approved redesign (avatar-expand-affordance report,
    Part 2): the bars are DELETED; the frame carries a halo on a
    smoothed real envelope (--lvl) and the chip carries a 3-dot
-   meter on the same scalar. */
+   meter on the same scalar.
+   Step 89: the meter half of that design is itself superseded
+   by the owner's direct order (see the deletion check below);
+   the halo half stands, and gains the self tile's turn signal. */
 check("the waveform bars are deleted from markup and sheet, keyframes included",
   !/call-wave|call-self-wave/.test(html) && !/call-wave|call-self-wave/.test(clean)
   && !/@keyframes call-wave/.test(clean));
 check("the halo: her frame warms and glows on the --lvl envelope scalar",
   /\.call-tile\.is-speaking \.avatar-frame \{[^}]*border-color: rgba\(45, 212, 191, \.85\);[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.16 \+ \.38 \* var\(--lvl, 0\)\)\),\s*0 0 22px rgba\(45, 212, 191, calc\(\.35 \* var\(--lvl, 0\)\)\);/.test(clean));
-check("the chip meter: 3 dots in each name chip, stepping in thirds off the same scalar",
-  html.includes('id="call-dots"') && html.includes('id="call-self-dots"')
-  && /\.call-dots i:nth-child\(2\) \{ opacity: clamp\(\.15, calc\(var\(--lvl, 0\) \* 3 - 1\), 1\); \}/.test(clean)
-  && /\.call-dots i:nth-child\(3\) \{ opacity: clamp\(\.15, calc\(var\(--lvl, 0\) \* 3 - 2\), 1\); \}/.test(clean));
+check("the chip meter is DELETED (Step 89, the owner's direct order): no dots in markup or sheet — the halo is the only speaking signal",
+  /* The owner stared at the 3-dot meter and could not tell
+     what it was ("is it for the user speaking??") — a signal
+     that fails comprehension is worse than none. The frame's
+     halo, which every call app trains its users to read,
+     carries speaking alone now. */
+  !html.includes('call-dots') && !/\.call-dots/.test(clean));
 check("the envelope engine: real AnalyserNode RMS for her voice, staged otherwise, 80/250ms smoothing",
   js.includes("function haloRawHer()") && js.includes("audioAnalyser.getByteTimeDomainData(haloBuf)")
   && js.includes("var tau = raw > state.lvl ? 80 : 250;")
   && js.includes("function haloStaged(t, seed)"));
-check("camera-off truth: while the camera button is the self tile's content, no indicator renders",
-  /\.call-self\.cam-ready:not\(\.cam-on\)\.is-speaking \{ border-color: var\(--border-strong\); box-shadow: none; \}/.test(clean)
+check("the self tile's turn halo is NOT gated by the camera (Step 89 supersedes Step 87's camera-off truth gate on the owner's direct order)",
+  /* Step 87's law was: while the camera button is the tile's
+     content, no speaking indicator may render on it. Step 89's
+     owner order replaces it: during the scene's "You answer"
+     beats the self tile MUST carry the same halo the
+     interviewer has when speaking — camera live or not — as
+     the turn signal. The gate rule is deleted; what survives
+     of the old law is the "You" label standing down while the
+     toggle shows (identity is carried by the tile's place and
+     the button's label), and the halo class itself is set
+     only by the scene's candidate beats. */
+  !/\.call-self\.cam-ready:not\(\.cam-on\)\.is-speaking/.test(clean)
+  && /\.call-self\.is-speaking \{[^}]*border-color: var\(--accent-2\);/.test(clean)
   && /\.call-self\.cam-ready:not\(\.cam-on\) \.call-tile-label \{ display: none; \}/.test(clean));
 check("the Spotlight PiP gets the border only (no glow bleed across her hero frame)",
   /\.call-stage\[data-spotlight\] \.call-self\.is-speaking \{ box-shadow: none; \}/.test(clean));
-check("reduced motion: static halo, single solid dot, the speaking word restored at every band",
-  /\.call-dots i:nth-child\(2\), \.call-dots i:nth-child\(3\) \{ display: none; \}/.test(clean)
+check("reduced motion: static halo, the speaking word restored at every band (Step 89: the single-dot clause is moot — the meter is deleted)",
+  !/\.call-dots/.test(clean)
   && /\.call-tile \.call-speaking:not\(\[hidden\]\) \{ display: inline; \}/.test(clean));
 
 /* 10. The Lean-In (expand affordance, Part 1 of the research). */

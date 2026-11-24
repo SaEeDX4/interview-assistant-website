@@ -1509,15 +1509,29 @@ body.cta-visible { padding-bottom: 96px; }
   height: 26px; flex: none; background: var(--bg);
   border-radius: 12px 12px 0 0;
 }
+/* Step 90 (addendum E2): the same 13px lens, crafted finer —
+   the punch-hole language of a flagship camera: a two-tone
+   concentric bezel ring (dark seat + hairline edge) inside the
+   same 3px footprint, glass with real depth (light falls from
+   the top: rim-lit crown fading to a black well), a tight
+   specular glint, and a faint blue coating tint low on the
+   glass. The element's box and outer footprint are unchanged
+   (13×13, 3px ring) — measured before/after. (The tint uses
+   the brand hue — the sheet's rgba law admits token hues
+   only.) */
 .call-lens {
   width: 13px; height: 13px; border-radius: 50%;
   background:
-    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, .9) 0, rgba(255, 255, 255, 0) 3px),
-    radial-gradient(circle at 50% 50%, var(--lens-core) 0 36%, var(--lens-mid) 58%, var(--lens-rim) 80%, var(--lens-well) 100%);
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, .95) 0, rgba(255, 255, 255, 0) 2.5px),
+    radial-gradient(circle at 72% 80%, rgba(124, 108, 255, .22) 0, rgba(124, 108, 255, 0) 5px),
+    radial-gradient(circle at 50% 42%, var(--lens-rim) 0, var(--lens-mid) 42%, var(--lens-core) 68%, var(--lens-well) 100%);
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, .6),
-    inset 0 1px 1px rgba(255, 255, 255, .12),
-    0 0 0 3px rgba(0, 0, 0, .28);
+    inset 0 0 0 1px rgba(0, 0, 0, .85),
+    inset 0 0 0 2px rgba(255, 255, 255, .10),
+    inset 0 1px 1px rgba(255, 255, 255, .16),
+    inset 0 -2px 3px rgba(0, 0, 0, .65),
+    0 0 0 2px rgba(0, 0, 0, .34),
+    0 0 0 3px rgba(255, 255, 255, .05);
 }
 .call-bar {
   display: flex; align-items: center; gap: 12px; position: relative; z-index: 3;
@@ -1534,7 +1548,17 @@ body.cta-visible { padding-bottom: 96px; }
 }
 @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 .call-clock { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
-.call-bar-note { margin-left: auto; font-size: 12px; color: var(--muted-2); }
+/* Step 90 (addendum E1): the bar's right side is real-call
+   furniture — the meeting's title and a participants mark
+   (two tiles are on this call) — at the same quiet weight the
+   old note carried. The "simulated" disclosure stays where
+   the owner kept it: the eyebrow above the stage and the
+   honesty copy under it (both verified rendered at 403 and
+   across the band). No functional claims are made here. */
+.call-bar-meta { margin-left: auto; display: inline-flex; align-items: center; gap: 12px; min-width: 0; font-size: 12px; color: var(--muted-2); }
+.call-bar-title { color: var(--muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.call-bar-people { display: inline-flex; align-items: center; gap: 4px; flex: none; font-variant-numeric: tabular-nums; }
+.call-bar-people svg { width: 14px; height: 14px; }
 /* Step 83: the field is re-sized for the two-box window — the
    complete state's window grew by its cards' chrome (~130px: two
    labels, two paddings, the 10px gap), and at 640px its bottom sat
@@ -1594,18 +1618,32 @@ body.cta-visible { padding-bottom: 96px; }
      directly under the avatar frame (frame bottom + 8), left
      edges shared, width capped to the frame's width: the two
      read as one participant unit. The self tile's label keeps
-     its own anchor (its override below adds top: auto). */
+     its own anchor (its override below adds top: auto).
+     Step 90 (addendum B): the plate is finished as a plate —
+     the name and role are CENTRED in the box (the owner's crop
+     showed left-set text with dead space at the right), on a
+     deeper scrim with a hairline edge and a soft lift, with
+     broadcast lower-third hierarchy: the name strong in the
+     label's own size/weight, the role smaller and quieter
+     under it (the .call-role rule below). The treatment is the
+     base rule, so all three seats — desktop plate, band plate,
+     Spotlight plate, phone chip — share it; seats override
+     only geometry and padding room. */
   position: absolute; left: 16px; top: 275px; width: 172px; max-width: 172px;
-  font-size: 13px; font-weight: 600; color: var(--text);
-  background: rgba(10, 12, 16, .72); padding: 4px 8px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3;
+  text-align: center;
+  background: rgba(10, 12, 16, .78); padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .28);
 }
 .call-speaking { color: var(--accent-2-light); }
 /* Step 89 — participant identity: the label carries a believable
    NAME (avatar.js writes the chosen persona's name into
    #call-name) over a muted ROLE line — a real call participant's
-   name plate, not a disclaimer. The honesty wording lives where
-   it belongs: the call header ("Video call — simulated") and the
-   page copy. The role line is a block under the name at every
+   name plate, not a disclaimer. (Step 90: the "simulated"
+   disclosure now lives in the eyebrow above the stage and the
+   page's honesty copy — the call header carries real-call
+   furniture instead.) The role line is a block under the name at every
    width; an empty role (no-JS) reserves nothing. */
 .call-role {
   display: block; margin-top: 4px;
@@ -1658,7 +1696,7 @@ body.cta-visible { padding-bottom: 96px; }
   width: 128px; height: 84px; border-radius: 8px;
   background: var(--surface); border: 1px solid var(--border-strong);
 }
-.call-self .call-tile-label { left: 8px; bottom: 8px; top: auto; max-width: none; font-size: 12px; }
+.call-self .call-tile-label { left: 8px; bottom: 8px; top: auto; max-width: none; font-size: 12px; padding: 4px 8px; border: 0; box-shadow: none; text-align: left; }
 .call-main .app-window {
   /* Under-the-webcam staging: the window hangs from the top
      of the call area, centred on the bezel lens's axis (top
@@ -1750,12 +1788,11 @@ body.cta-visible { padding-bottom: 96px; }
    the sheet's third reduced-motion block (below, with the
    other per-feature resets): static halo, single solid dot,
    and the "· speaking" word restored at every band. */
-.call-caption {
-  position: absolute; left: 16px; bottom: 88px; margin: 0; max-width: 300px;
-  font-size: 14px; line-height: 1.5; color: var(--text);
-  background: rgba(10, 12, 16, .78); padding: 8px 12px; border-radius: 8px;
-}
-.call-caption .w { transition: color var(--motion-3) var(--motion-ease); }
+/* Step 90 (addendum C): the .call-caption element and all its
+   rules are deleted — in Spotlight its empty box still painted
+   across the portrait's lower fifth. The QUESTION card is the
+   only transcription surface; the closing thanks line rides
+   the window's status line at every width. */
 #scene-download[hidden] { display: none; }
 /* Step 78: the labelled Start button lives in the demo head (JS unhides
    it at boot); .btn sets display, which would beat the hidden
@@ -1876,6 +1913,31 @@ body.cta-visible { padding-bottom: 96px; }
      rule — the start label rests, exactly as it does site-wide
      at 640px — so the pill and controls keep one row. */
   .call-main .app-start-label { display: none; }
+  /* Step 90 (addendum D): the shed completes in this band.
+     Measured on the pre-fix tree, the call window's header
+     row needed ~328px (longest pill with its meter + gap +
+     controls) against an inner width that falls to ~233px
+     at 641 — the row wrapped at every width 641–745, and by
+     the house margin rule (Step 30: under ~15px of slack is
+     a defect, because device font metrics differ from the
+     lab's) it was already unsafe from 745 down. The real app
+     sheds chrome as its window narrows (Steps 29/38): here
+     the decorative stop glyph and the level meter rest for
+     the whole ≤860 band — extending the meter shed the phone
+     layout already has at ≤640 — and the row tightens on
+     scale (gap 8, controls gap 4, pill and start padding 8).
+     The play and close controls never shed. Worst case after
+     the shed (641, longest pill): ~222px needed against
+     ~233px — and the meter's flex in the ≤933 block absorbs
+     font-metric variance above 860, where the unshed row
+     keeps ~70px of slack. One line, every width, every
+     status string; pinned by tests/test-step90.js. */
+  .call-main .app-meter { display: none; }
+  .call-main .app-stop { display: none; }
+  .call-main .app-header { gap: 8px; }
+  .call-main .app-header-controls { gap: 4px; }
+  .call-main .app-pill { padding-left: 8px; padding-right: 8px; }
+  .call-main .app-start { padding-left: 8px; padding-right: 8px; }
   /* Step 81 (F1): the demo head wraps in this band — measured:
      dots 46 + pill 215.17 + start 185/199 + toggle 157 + gaps 36
      = 639/653px against a 588px content box at 712 (644 at 768),
@@ -2049,11 +2111,6 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
   /* No phone rule for the webcam marker: the marker was removed
      entirely (owner decision, 2026-11-22 — pill, bezel strip and
      notch all rejected; see the note at the old base rule). */
-  /* Cultivation R2: in the phone strip the caption collided with
-     the name label — it stands down here; the closing line is
-     carried by the scene's status instead (app.js, the thanks
-     beat, narrow layouts only). */
-  .call-caption { display: none; }
   .call-main .app-window {
     position: relative; top: auto; left: auto; transform: none;
     width: auto; max-width: none; margin: 8px;
@@ -3297,8 +3354,8 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      edge (≥151.5) horizontally, so no other band rule needs
      to follow it: the primed hug stays the base 342 and the
      head/start-label switches stay at 860. */
-  .avatar-frame { left: 12px; top: auto; bottom: 74px; width: 88px; height: 110px; }
-  .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; }
+  .avatar-frame { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
+  .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; padding: 8px; }
   /* Step 89: the camera note's left offset follows the unit's
      right edge in this band (12 + 88 + 16). */
   .cam-note { left: 116px; }
@@ -3321,28 +3378,67 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      is untouched. The phone block below restores width:auto
      at ≤640 — without that restoration this rule, later in
      the sheet at equal specificity, once collapsed the phone
-     window to the cap's remainder (Step 87 probes caught it). */
-  .call-main .app-window { width: min(432px, calc(100% - 264px)); }
-  .call-avatar { left: 28px; top: auto; bottom: 101px; }
-  /* QC 2026-11-22: the closing caption's base home (left 16,
-     bottom 88) was composed when the participant sat top-left;
-     bottom-anchored here, the frame (x 12..100, bottom 76..186)
-     covered the caption's first 84px — the thanks line rendered
-     as "…ything" behind the tile at 641–933 (measured overlap
-     3,108px²). The caption moves right of the unit: left 124
-     clears the frame's right edge by 24 and the label's by 8,
-     keeping its bottom so it reads beside the speaker.
-     Step 89 (review pass 2): that seat is retired in the band.
-     Step 83's two-box window hangs far past it in scene states
-     — measured 97% of the chip covered by the window at 712
-     and 768 (complete), the line unreadable. In the band the
-     chip stands down and the status line carries the closing
-     line verbatim instead, the same routing the phones use
-     (app.js reads the computed display at the thanks beat).
-     In Spotlight the caption is re-shown on the hero itself
-     (the Spotlight blocks below), where Step 84's contract
-     keeps it the line's only carrier. */
-  .call-caption { display: none; }
+     window to the cap's remainder (Step 87 probes caught it).
+     Step 90: the reservation is 124 per side now. Its collision
+     job is superseded by the field's reserved bottom lane
+     (app.js fitFieldToWindow reserves the row's whole height
+     under the window in every state), so the cap's remaining
+     work is the standing side clearance — at cap-bound widths
+     the participant unit keeps a 24px side gap and the self
+     tile 20px, both past the 16px invariant — and room for the
+     window's own header row, which must never wrap (addendum
+     D, same step). */
+  .call-main .app-window { width: min(432px, calc(100% - 248px)); }
+  .call-avatar { left: 28px; top: auto; bottom: 90px; }
+  /* Step 90 (addendum C): the closing caption is gone entirely
+     — element, rules and all (its history: QC 2026-11-22 moved
+     it right of the unit; Step 89 stood it down in the band and
+     re-showed it on the Spotlight hero). In Spotlight its box
+     painted across the portrait even while EMPTY — the owner's
+     screenshot that ordered this step. The status line carries
+     the closing line at every width now; the QUESTION card is
+     the only transcription surface. */
+  /* Step 90 (addendum D): the demo window's header row NEVER
+     wraps in the band. The sheet's ≤860 story rule wraps every
+     app header; on the call window that dropped the controls
+     to a second line at every width 641–745 for the longest
+     status strings (the owner's crop: "Interview complete"
+     alone on line one). The call window's row is one line:
+     no wrap, the pill may narrow, and the level meter is the
+     flexible element — it gives up its width before the row
+     may break. */
+  .call-main .app-header { flex-wrap: nowrap; }
+  .call-main .app-pill { flex: 0 1 auto; min-width: 0; }
+  .call-main .app-meter { flex: 1 1 auto; width: auto; min-width: 12px; }
+  .call-main .app-header-controls { flex: none; }
+  /* Step 90 (addendum H): the demo head is a toolbar in the
+     band — the disclosure chip anchored left, the interview
+     action anchored right, the width between them composed
+     rather than dead. The preparing state is carved out: its
+     progress button keeps the whole row (Step 81). Phones are
+     untouched (their grid makes the button full-width, so the
+     auto margin computes to zero). */
+  .demo-stage .demo-head:not(.is-preparing) #scene-start { margin-left: auto; }
+  /* Step 90 (addendum F): the under-stage controls compose in
+     the band. The action buttons share one baseline and
+     stretch evenly across their row; the honesty note takes
+     its own full row under them, left-aligned to the buttons'
+     edge in a tidy 560px measure (with addendum G's shortened
+     text it sets in two even lines) instead of floating in a
+     ragged right column. The sound button keeps its natural
+     size — during play it is the row's only button, and a
+     full-width sound toggle would read as a banner. The ≤640
+     block below restores the folded composition exactly. */
+  .scene-controls .btn:not(#scene-mute) { flex: 1 1 0; }
+  .scene-note { flex: 1 1 100%; margin-left: 0; max-width: 560px; }
+}
+@media (max-width: 640px) {
+  /* Step 90: folded restoration for addendum F — the phone
+     controls keep their pre-Step-90 composition (the sheet's
+     own phone rule below already zeroes the note's auto
+     margin; this block restores the rest). */
+  .scene-controls .btn:not(#scene-mute) { flex: 0 1 auto; }
+  .scene-note { flex: 0 1 auto; margin-left: 0; max-width: 420px; }
 }
 @media (max-width: 640px) {
   /* The phone tile is an 80px strip: the avatar becomes a square
@@ -3502,24 +3598,11 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   left: calc(50% - 160px); top: 424px; width: 320px; max-width: 320px;
   white-space: normal; line-height: 1.3; z-index: 2;
 }
-/* Step 89 (review pass 2): in Spotlight the closing caption's
-   base seat (left 16 / bottom 88 of the tile) was composed for
-   the small participant unit; the Spotlight tile spans the
-   whole field, so the chip landed at the field's bottom and
-   the landed window covered it (measured overlap 8,695px² at
-   768, 5,643px² at 933 — only a sliver of the thanks line
-   showed). The caption now sits on the hero itself, the way
-   real calls caption a speaker: across the portrait's own
-   width (320 here, 264 in the band block below), its bottom
-   edge 8px above the portrait's lower edge, 16px clear of
-   the name plate beneath. It stays the closing line's only
-   carrier in Spotlight (Step 84's contract stands). */
-.call-stage[data-spotlight] .call-caption,
-.call-stage[data-spotlight-prep] .call-caption {
-  display: block;
-  left: calc(50% - 160px); right: auto; top: 408px; bottom: auto;
-  width: 320px; max-width: 320px; transform: translateY(-100%); z-index: 2;
-}
+/* Step 90 (addendum C): no caption sits on the Spotlight hero
+   any more — the element is deleted (Step 89's seat here put
+   its box across the portrait's lower fifth, painted even
+   while empty). The closing line rides the window's status
+   line in Spotlight too. */
 /* Step 89: in Spotlight the camera note stands down at >=641 —
    the landed window owns the field's bottom strip and the note
    would paint across it. The phone Spotlight keeps the note in
@@ -3536,11 +3619,8 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 }
 .call-stage[data-spotlight] .call-self,
 .call-stage[data-spotlight-prep] .call-self { width: 96px; height: 63px; }
-/* Step 84: the tile's own closing caption no longer stands
-   down in Spotlight — with the mirror gone it is the only
-   carrier of the closing line, exactly as outside Spotlight.
-   It was never a duplication (the line enters no QUESTION
-   card) and stays untouched. */
+/* Step 84's caption mirror stayed deleted; Step 90 deleted
+   the caption element itself (addendum C). */
 @media (max-width: 933px) {
   /* Band hero: 264x330, window landed at 336. */
   .call-stage[data-spotlight] .avatar-frame,
@@ -3550,19 +3630,10 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight] .avatar-toggle {
     left: 50%; transform: translateX(-50%); top: 16px; bottom: auto; width: 264px; height: 330px;
   }
-  .avatar-toggle { left: 12px; top: auto; bottom: 74px; width: 88px; height: 110px; }
+  .avatar-toggle { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
   .call-stage[data-spotlight] .call-tile > .call-tile-label,
   .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
     left: 50%; transform: translateX(-50%); top: 354px; bottom: auto; width: 264px; max-width: 264px; font-size: 13px;
-  }
-  /* Step 89 (review pass 2): the band hero is 264 wide — the
-     closing caption takes the hero's width and seat (see the
-     base Spotlight caption rule above). */
-  .call-stage[data-spotlight] .call-caption,
-  .call-stage[data-spotlight-prep] .call-caption {
-    display: block;
-    left: 50%; top: 338px; width: 264px; max-width: 264px;
-    transform: translate(-50%, -100%);
   }
   .call-stage[data-spotlight] .call-main .app-window {
     top: var(--spot-win-top, 387px); left: calc(50% - 168px); width: 336px;
@@ -3599,7 +3670,7 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
     position: static; transform: none; order: 2; flex: none;
     width: 232px; max-width: 232px; margin-top: 8px;
-    white-space: nowrap; line-height: 1.3; text-align: left;
+    white-space: nowrap; line-height: 1.3; text-align: center;
   }
   .call-stage[data-spotlight] .call-main .app-window {
     top: auto; left: auto; width: calc(100% - 32px); margin: 16px 0 16px; align-self: center;
@@ -3618,13 +3689,6 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
     width: 72px; height: 48px; top: 312px; bottom: auto; right: 16px;
   }
   .call-stage[data-spotlight] .cam-note:not([hidden]) { display: block; }
-  /* Step 89 (review pass 4): on phones the closing caption
-     stands down in Spotlight too (the status line carries
-     the line, as everywhere on phones) — the band block's
-     re-show must not leak into the phone hero, whose seat
-     geometry it does not fit. */
-  .call-stage[data-spotlight] .call-caption,
-  .call-stage[data-spotlight-prep] .call-caption { display: none; }
 }
 
 @media (max-width: 640px) {

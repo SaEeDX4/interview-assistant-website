@@ -1481,12 +1481,11 @@ var IA_VARIANTS = {
   var callTileEl = document.getElementById("call-tile");
   var callSpeakingEl = document.getElementById("call-speaking");
   var callSelfEl = document.getElementById("call-self");
-  var callCaptionEl = document.getElementById("call-caption");
   var sceneControlsEl = document.getElementById("scene-controls");
   var sceneReplayBtn = document.getElementById("scene-replay");
   var sceneSkipBtn = document.getElementById("scene-skip");
   var sceneDownloadEl = document.getElementById("scene-download");
-  var sceneOn = !!(callStageEl && scenePillEl && scenePillTextEl && callCaptionEl);
+  var sceneOn = !!(callStageEl && scenePillEl && scenePillTextEl);
   var scene = { run: 0, timers: [], clockTimer: null, clockStart: 0, done: false, playing: false };
   /* Step 74 — the scene is now a full interview arc, not one
      question: a warm-up, an ambush follow-up (the answer shortens
@@ -1519,7 +1518,6 @@ var IA_VARIANTS = {
     });
   }
   var sceneAnswerShown = null;
-  var thanksWords = [];
   var sceneVoiced = false;
 
   function sceneLater(ms, fn) {
@@ -1629,8 +1627,6 @@ var IA_VARIANTS = {
       answerStack.appendChild(sceneA.rapid);
     }
     sceneAnswerLayers = [sceneA.story, sceneA.why, sceneA.rapid];
-    thanksWords = buildWordSpans(callCaptionEl, THANKS_LINE);
-    thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
     sceneReserveHeights();
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () { sceneReserveHeights(); });
@@ -1967,22 +1963,121 @@ var IA_VARIANTS = {
      phones the window is in flow and the field already hugs
      it by construction. The seat test reads the window's
      computed position, so the breakpoint stays the sheet's
-     own and is never duplicated as a JS media query. */
+     own and is never duplicated as a JS media query.
+     Step 90 extends the fit to the primed state and adds the
+     bottom lane's own height to the reservation — see the
+     note inside the function. */
   function fitFieldToWindow() {
     if (!callMainEl || !demoWindowEl || !callStageEl) { return; }
     if (window.getComputedStyle(demoWindowEl).position !== "absolute" ||
-        callStageEl.classList.contains("is-primed") ||
         callStageEl.hasAttribute("data-spotlight") ||
         callStageEl.hasAttribute("data-spotlight-prep")) {
       callMainEl.style.minHeight = "";
       return;
     }
+    /* Step 90: measure at rest. The field's own min-height
+       transition (and the window's height glide) otherwise
+       poison every reading: offsetHeight returns the ANIMATED
+       height mid-glide, so at the scene's first question beat
+       the fit read its own previous reservation (870px) as
+       the "floor", concluded the field was already tall
+       enough, cleared the reservation and never re-set it —
+       the field fell back to 720px while the window grew
+       past it (and at prime time the same poisoning read the
+       pre-hug 720px, so the primed reservation never landed
+       at all). Transitions are frozen only for the measuring
+       task and restored before paint, so nothing on screen
+       ever sees the frozen state. */
+    var frozen = [callMainEl, demoWindowEl, answerCardEl, questionStack];
+    var prevTransitions = frozen.map(function (el) {
+      return el ? el.style.transition : null;
+    });
+    frozen.forEach(function (el) { if (el) { el.style.transition = "none"; } });
     callMainEl.style.minHeight = "";
     var floor = callMainEl.offsetHeight;
     var need = demoWindowEl.offsetTop + demoWindowEl.offsetHeight + 16;
+    /* Step 90: the +16 floor alone was not enough — the bottom
+       row is anchored to the field's BOTTOM while the window
+       hangs from its top, so a field grown to "window + 16"
+       still parks the row's top edge inside the window's
+       bottom corners (measured overlap up to 1,008px² at
+       641–737px, side gap −12px across the band: the window's
+       side reservation was sized for the participant label,
+       not the wider self tile). The fit now reserves the
+       row's whole lane under the window — window + 16 + the
+       lane's own height — in EVERY state including primed
+       (Step 89 fitted only non-primed states and left primed
+       to static field hugs written for a much shorter
+       window). The lane is measured live from the participant
+       unit, and only where that unit is bottom-anchored (the
+       band composition); on desktop the unit sits at the
+       field's top, the lane reads 0 and the fit is exactly
+       the old formula. */
+    var lane = bottomLaneHeight();
+    if (lane) {
+      /* The lane is the reservation of last resort: where both
+         bottom units already clear the window horizontally by
+         16px (the wide end of the band, where the centred
+         window's edges pass the units with room), the row and
+         the window never share a horizontal band and the field
+         keeps its composed height. Where either side is closer
+         than 16px, the lane guarantees the vertical separation
+         instead — one axis always clears by 16. */
+      var winRect = demoWindowEl.getBoundingClientRect();
+      var partRight = 0;
+      [document.getElementById("avatar-frame"),
+       callTileEl ? callTileEl.querySelector(".call-tile-label") : null]
+        .forEach(function (el) {
+          if (!el) { return; }
+          var r = el.getBoundingClientRect();
+          if (r.width) { partRight = Math.max(partRight, r.right); }
+        });
+      var selfGap = callSelfEl
+        ? callSelfEl.getBoundingClientRect().left - winRect.right : 99;
+      var partGap = winRect.left - partRight;
+      if (selfGap >= 16 && partGap >= 16) { lane = 0; }
+    }
+    if (lane) { need += lane; }
+    frozen.forEach(function (el, i) {
+      if (el) { el.style.transition = prevTransitions[i] || ""; }
+    });
     if (need > floor) {
       callMainEl.style.minHeight = need + "px";
     }
+  }
+
+  /* Step 90: the height of the field's bottom lane — from the
+     participant unit's top edge down to the field's bottom
+     edge — when the unit is bottom-anchored there (its label
+     resting on the field's bottom margin and its top well
+     below the field's top — a top-anchored desktop unit sits
+     52px from the top and never qualifies, even in the short
+     primed field where its label also ends near the bottom).
+     Returns 0 anywhere else (the desktop top-left unit,
+     phones where the window is in flow), so the reservation
+     exists only where the row can actually rise into the
+     window. Measured with the field's inline min-height
+     cleared: a bottom-anchored unit's lane is constant
+     however tall the field grows. */
+  function bottomLaneHeight() {
+    if (!callMainEl || !callTileEl) { return 0; }
+    var frame = document.getElementById("avatar-frame");
+    var glyph = callTileEl.querySelector(".call-avatar");
+    var label = callTileEl.querySelector(".call-tile-label");
+    if (!label) { return 0; }
+    var mr = callMainEl.getBoundingClientRect();
+    var lr = label.getBoundingClientRect();
+    if (!mr.height || !lr.height) { return 0; }
+    var unitTop = lr.top;
+    [frame, glyph].forEach(function (el) {
+      if (!el) { return; }
+      var r = el.getBoundingClientRect();
+      if (r.height) { unitTop = Math.min(unitTop, r.top); }
+    });
+    var bottomAnchored = (unitTop - mr.top) > 100 &&
+      (mr.bottom - lr.bottom) <= 20;
+    if (!bottomAnchored) { return 0; }
+    return Math.round((mr.bottom - unitTop) * 10) / 10;
   }
 
   function syncAnswerCard() {
@@ -2388,7 +2483,6 @@ var IA_VARIANTS = {
     setSceneControls("cancelled");
     setSpeaking(false);
     setSelfSpeaking(false);
-    if (callCaptionEl) { callCaptionEl.hidden = true; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
     setScenePill("Not listening", "");
   }
@@ -2412,7 +2506,6 @@ var IA_VARIANTS = {
     callStageEl.classList.remove("is-primed");
     setSpeaking(false);
     setSelfSpeaking(false);
-    if (callCaptionEl) { callCaptionEl.hidden = true; }
     if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
     setSceneControls("complete");
     setScenePill("Answer ready", "ready");
@@ -2457,7 +2550,6 @@ var IA_VARIANTS = {
     setSceneControls("primed");
     if (sceneSkipBtn) { sceneSkipBtn.hidden = true; }
     if (sceneDownloadEl) { sceneDownloadEl.hidden = true; }
-    if (callCaptionEl) { callCaptionEl.hidden = true; }
     sampleTagEl.classList.add("is-hidden");
     showLayer(questionLayers, sceneQ.tell.idx);
     snapQuestionFinal(sceneQ.tell);
@@ -2518,8 +2610,6 @@ var IA_VARIANTS = {
     currentQuestion = SAMPLES.tell.q;
     // Reset the stage.
     sampleTagEl.classList.add("is-hidden");
-    if (callCaptionEl) { callCaptionEl.hidden = true; }
-    thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
     setSelfSpeaking(false);
     setStatus("The interview is live — the app is listening.");
     startSceneClock();
@@ -2567,9 +2657,13 @@ var IA_VARIANTS = {
       statusText: "The closing question — the same preparation answers it."
     });
     t = sceneYou(t + 0.4, 1.8, "You answer — calm, because it was ready.");
-    // The close: the interviewer thanks you — captioned in his
-    // tile, paced by the thanks clip in a voiced run — and the
-    // pill rests at Interview complete over the download anchor.
+    // The close: the interviewer thanks you — a spoken beat like
+    // every other — and the pill rests at Interview complete over
+    // the download anchor. Step 90 (addendum C): there is no
+    // caption element any more (its empty box painted across the
+    // Spotlight portrait), so the window's status line carries the
+    // closing line at every width, as narrow layouts already did;
+    // the QUESTION card remains the only transcription surface.
     var thanksSpeech = sceneClipDuration("thanks", 1.5);
     sceneLater((t + 0.4) * 1000, function () {
       setSpeaking(true);
@@ -2578,19 +2672,7 @@ var IA_VARIANTS = {
       callStageEl.setAttribute("data-speak-dur", String(Math.round(thanksSpeech * 100) / 100));
       setScenePill("Listening", "listening");
       sceneClipPlay("thanks");
-      if (callCaptionEl) {
-        callCaptionEl.hidden = false;
-        if (window.getComputedStyle(callCaptionEl).display === "none") {
-          // Narrow layouts: the caption chip stands down (the CSS
-          // decides), so the status line carries the closing line
-          // verbatim instead.
-          setStatus("The interviewer closes: “That’s everything I need. Thank you.”");
-        }
-      }
-      var wstep = (thanksSpeech * 1000) / Math.max(1, thanksWords.length);
-      thanksWords.forEach(function (w, i) {
-        sceneLater(150 + i * wstep, function () { w.classList.remove("is-hidden"); });
-      });
+      setStatus("The interviewer closes: “" + THANKS_LINE + "”");
     });
     sceneLater((t + 0.4 + thanksSpeech + 0.4) * 1000, function () {
       setSpeaking(false);

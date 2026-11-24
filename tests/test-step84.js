@@ -149,8 +149,8 @@ check("spotlight.js carries no mirror (no caption id, no cloneNode, no mirrorCap
   !spot.includes("spotlight-caption") && !spot.includes("cloneNode") && !spot.includes("mirrorCaption"));
 check("the window's spotlight top is measured from the tile label now (labelRect.bottom + 12)",
   spot.includes("labelRect.bottom - mainRect.top"));
-check("the tile's closing caption element survives untouched (id=call-caption, the thanks line's home)",
-  /<p class="call-caption" id="call-caption" hidden><\/p>/.test(html));
+check("the tile's closing caption element is DELETED (Step 90 re-pin, annotated: the owner's addendum C — its empty box painted across the Spotlight portrait; the closing line's home is the window's status line now, at every width)",
+  !html.includes('id="call-caption"'));
 check("the closing caption no longer stands down in Spotlight",
   !/\.call-stage\[data-spotlight\] \.call-caption \{ display: none; \}/.test(clean));
 

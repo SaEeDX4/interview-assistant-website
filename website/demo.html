@@ -140,7 +140,7 @@
             <div class="call-bar">
               <span class="live-chip"><span class="live-dot" aria-hidden="true"></span>Live</span>
               <span class="call-clock" id="scene-clock" aria-hidden="true">00:00</span>
-              <span class="call-bar-note">Video call — simulated</span>
+              <span class="call-bar-meta"><span class="call-bar-title">Final-round interview</span><span class="call-bar-people"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>2</span></span>
             </div>
             <!-- The webcam MARKER stays removed (owner decision,
                  2026-11-22): three label forms were built and
@@ -183,12 +183,18 @@
                    forever on first use or after two showings. -->
               <button type="button" class="avatar-toggle" id="avatar-toggle" aria-expanded="false" aria-label="See the interviewer up close" hidden></button>
               <svg class="call-avatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>
-              <p class="call-caption" id="call-caption" hidden></p>
               <!-- Step 84: there is no second caption between the
                    hero frame and the window. The Spotlight mirror
                    that lived here duplicated the QUESTION card's
                    sentence word for word (owner's ruling); the
-                   card is the single transcription surface. -->
+                   card is the single transcription surface.
+                   Step 90 (addendum C): the caption ELEMENT itself
+                   is deleted — in Spotlight its empty box still
+                   painted across the portrait's lower fifth (the
+                   owner's screenshot). The closing thanks line is
+                   carried by the window's status line at every
+                   width now (app.js), as narrow layouts already
+                   did. No caption element exists anywhere. -->
               <!-- Step 87: the speaking signal lives in the frame
                    (a halo breathing with her real voice envelope)
                    and in this chip (a 3-dot meter stepping with
@@ -272,7 +278,7 @@
             <button type="button" class="btn btn-secondary btn-small" id="scene-watch">Watch without sound</button>
             <button type="button" class="btn btn-secondary btn-small" id="scene-replay">Replay the scene</button>
             <button type="button" class="scene-skip" id="scene-skip">Skip scene</button>
-            <p class="scene-note">A staged interview — simulated. Start the interview plays it with the interviewer’s voice — recorded sample lines, spoken as the transcript arrives. The answers are the sample profile’s own.</p>
+            <p class="scene-note">A staged interview, played with the interviewer’s recorded sample lines. The answers are the sample profile’s own.</p>
             <p class="scene-sound-note" id="scene-sound-note" role="status" hidden>Sound isn’t available in this browser right now — the interview plays with captions instead.</p>
           </div>
         </div>
@@ -301,18 +307,14 @@
             <button type="button" class="chip" data-q="fa" lang="fa" dir="rtl">درباره خودتان بگویید</button>
             <button type="button" class="chip" data-q="ar" lang="ar" dir="rtl">حدّثني عن نفسك</button>
           </div>
-          <p class="demo-note">Simulated demo — the call above is staged with sample data.
-            The interviewer’s voice is a pre-recorded sample; your microphone is never
-            used, and if you turn your camera on it stays on this device — nothing is
-            recorded, uploaded or sent anywhere. Sample answers are illustrative.
-            In the real app, points are built from your confirmed facts and your
-            prepared question bank. If you type a question of your own, it is sent
-            to our answer service and answered live; if that does not come back,
-            you get the honest answer <em>shape</em> — outcome, example, connection
-            to the role — not a fake specific answer.</p>
+          <p class="demo-note">A staged demo with sample data.
+            The interviewer’s voice is a pre-recorded sample; your camera and microphone
+            stay on this device — nothing is recorded, uploaded or sent anywhere.
+            In the real app, answers come from your confirmed facts and question bank,
+            and questions you type are sent to our answer service and answered live.</p>
         </div>
       </div>
-      <p class="demo-stage-caption">A simulated video call. In the real one, the app’s small window sits under your webcam — glance down, read three short points, speak. No typing: it is already listening.</p>
+      <p class="demo-stage-caption">In the real call, the app’s small window sits under your webcam — glance down, read three short points, speak. It is already listening.</p>
       </div>
 
       <div class="help-block" id="demo-help">

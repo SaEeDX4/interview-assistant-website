@@ -72,14 +72,21 @@ check("the arc is a beat runner, not one question",
 check("the arc ends on Interview complete with a download anchor",
   demoJs.includes('setScenePill("Interview complete", "ready")') &&
   demo.includes('id="scene-download"') && demo.includes('href="download.html"'));
-check("the candidate's tile carries a speaking state and the closing caption",
+check("the candidate's tile carries a speaking state and no caption element (Step 90 re-pin, annotated: the closing caption is deleted entirely on the owner's order — addendum C; the closing line rides the window's status line)",
   /* Step 87 re-pin (annotated): the self wave is deleted with
      the bars — the candidate's speaking state is the self
      tile's halo (border + glow on --lvl) and the "You" chip's
-     dot meter. */
-  demo.includes('id="call-self"') && demo.includes('id="call-self-dots"') &&
-  demo.includes('id="call-caption"') &&
-  clean.includes(".call-self.is-speaking {"));
+     dot meter.
+     Step 89 re-pin (annotated): the chip's dot meter is
+     deleted on the owner's order (he could not tell what it
+     meant) — the candidate's speaking state is the self
+     tile's halo alone, and Step 89's turn-signal law removes
+     the camera-off gate: the halo shows during the scene's
+     "You answer" beats whether or not the camera is live. */
+  demo.includes('id="call-self"') && !demo.includes('id="call-self-dots"') &&
+  !demo.includes('id="call-caption"') &&
+  clean.includes(".call-self.is-speaking {") &&
+  !clean.includes(".call-self.cam-ready:not(.cam-on).is-speaking"));
 check("scene-mode height reservations keep one window height",
   /* Step 87 re-pin (annotated): the reservation moved from the
      stacks to the ANSWER card itself (the hollow-card fix) — the

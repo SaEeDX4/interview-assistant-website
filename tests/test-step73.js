@@ -48,19 +48,24 @@ check("prep band's output tile: confirmed facts + the 50–150 bank, approved by
   demo.includes("every fact approved by you"));
 
 /* ---------- the call stage ---------- */
-check("call stage with a LIVE bar, a running clock and the simulated label",
+check("call stage with a LIVE bar, a running clock and the call-bar furniture (Step 90 re-pin, annotated: the bar's right side no longer reads 'Video call — simulated' — on the owner's order (addendum E1) it carries real-call furniture, the meeting title + a participants mark; the simulated disclosure stands in the eyebrow directly above the stage and in the honesty copy under it)",
   demo.includes('id="call-stage"') && demo.includes('class="live-chip"') &&
-  demo.includes('id="scene-clock"') && demo.includes("Video call — simulated"));
+  demo.includes('id="scene-clock"') && demo.includes("Final-round interview") &&
+  demo.includes("Live demo — simulated") && !demo.includes("Video call — simulated"));
 check("webcam marker REMOVED entirely (owner decision 2026-11-22: pill, bezel strip and notch all rejected on his phone — no label in any form. Owner clarification the same night: the under-the-webcam FEELING is staged instead — a hardware lens in the frame's bezel (.call-bezel/.call-lens, no text) and the window hanging beneath it; the marker's absence asserted here is unchanged)",
   !demo.includes('class="call-cam"') && !demo.includes("call-cam-lens") &&
   !demo.includes("call-cam-text"));
-check("interviewer tile: label, speaking marker, chip meter",
-  /* Step 87 re-pin (annotated): the waveform is deleted — the
-     speaking signal is the frame's halo + the chip's 3-dot
-     meter (id="call-dots"); the label and the speaking marker
-     are unchanged. */
-  demo.includes('id="call-tile"') && demo.includes("AI interviewer — simulated") /* Step 75 re-pin: the tile label now carries the honest AI-interviewer label */ &&
-  demo.includes('id="call-speaking"') && demo.includes('id="call-dots"') && !demo.includes('id="call-wave"'));
+check("interviewer tile: name plate (name + role), speaking marker, no meter",
+  /* Step 89 re-pin (annotated): the owner ordered the
+     "AI interviewer — simulated" plate deleted — the tile now
+     carries a believable participant name + role (avatar.js
+     writes the chosen persona's identity into #call-name /
+     #call-role; the honesty wording stays in the call header
+     and the page copy). The chip's 3-dot meter is deleted with
+     it — the owner stared at it and could not tell what it
+     meant; the speaking signal is the frame's halo alone. */
+  demo.includes('id="call-tile"') && demo.includes('id="call-name"') && demo.includes('id="call-role"') &&
+  demo.includes('id="call-speaking"') && !demo.includes('id="call-dots"') && !demo.includes("AI interviewer") && !demo.includes('id="call-wave"'));
 check("the app window sits inside the call frame, below the LIVE bar (Step 73 pinned this against the webcam marker; the marker was removed 2026-11-22, so the bar is the anchor now)",
   demo.indexOf('class="call-bar"') < demo.indexOf('id="app-window"') &&
   demo.includes('class="app-window" id="app-window"'));
@@ -97,8 +102,8 @@ check("hero lead names the preparation chain and the live moment",
   demo.includes("while the interview is actually happening"));
 check("the false no-network claim is gone (hero + note)",
   !demo.includes("sends anything anywhere") && !demo.includes("no network"));
-check("the note tells the truth about typed questions (sent to the answer service, answered live)",
-  demo.includes("it is sent") && demo.includes("to our answer service and answered live"));
+check("the note tells the truth about typed questions (sent to the answer service, answered live) (Step 90 re-pin, annotated: the panel was shortened on the owner's order (addendum G) — the disclosure survives in the new sentence's own words)",
+  demo.includes("sent to our answer service and answered live"));
 check("the 2-minute claim is retired everywhere (demo, index, app.js)",
   !demo.includes("took about 2 minutes") && !index.includes("took about 2 minutes") &&
   !js.includes("took about 2 minutes") &&
