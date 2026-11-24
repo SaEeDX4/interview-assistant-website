@@ -570,17 +570,24 @@ var IA_VARIANTS = {
 
 
   /* Step 85 — answer composition timings. A generated answer
-     composes at the full rhythm: a 500 ms thinking beat (the hero's
-     documented THINK_MS, the product's time-to-first-token), then
-     each point pending for a duration proportional to its length
+     composes at the full rhythm: a thinking beat, then each point
+     pending for a duration proportional to its length
      (260 + 3.2 ms/char, floored 300, capped 750 — the shape is the
      contract, the constant is staging). Prepared answers and
      variant recompositions run compressed (x0.6, floored 180,
      capped 450, no thinking beat — the product's prepared bullets
      are near-instant and a rework is not a fresh composition). A
      Coach flip is a re-form: its two lines land back-to-back,
-     150 ms apart, with no dots and no pending tense. */
-  var THINK_MS = 500;
+     150 ms apart, with no dots and no pending tense.
+     Step 86 — the thinking beat is 400 ms, tightened from the
+     hero's 500 on the owner's explicit order (2026-11-23): the
+     dots must leave quickly so the answer comes up — measured
+     dots presence (beat + the 150 ms crossfade out) was 645-655 ms
+     per cell in the per-persona audit, over his ~600 ms ceiling;
+     at 400 the presence measures ~550 ms and point 1 starts
+     composing 100 ms sooner, while the pending tense still
+     carries the composing read. */
+  var THINK_MS = 400;
   var PENDING_BASE = 260, PENDING_PER_CHAR = 3.2;
   var PENDING_MIN = 300, PENDING_MAX = 750;
   var COMPRESSED_FACTOR = 0.6, COMPRESSED_MIN = 180, COMPRESSED_MAX = 450;

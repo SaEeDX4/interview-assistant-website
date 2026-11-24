@@ -87,8 +87,11 @@ const consts = {};
     const mm = demoJs.match(new RegExp("(?:var |, )" + name + " = ([0-9.]+)[;,]"));
     consts[name] = mm ? parseFloat(mm[1]) : NaN;
   });
-check("the composition constants are the spec's (500 / 260+3.2 / 300-750 / x0.6 180-450 / 150)",
-  consts.THINK_MS === 500 && consts.PENDING_BASE === 260 && consts.PENDING_PER_CHAR === 3.2
+/* Step 86 re-pin: THINK_MS 500 -> 400 on the owner's explicit order
+   (dots must leave quickly; measured presence 645-655ms beat his
+   ~600ms ceiling). The other constants are unchanged. */
+check("the composition constants are the spec's (400 / 260+3.2 / 300-750 / x0.6 180-450 / 150)",
+  consts.THINK_MS === 400 && consts.PENDING_BASE === 260 && consts.PENDING_PER_CHAR === 3.2
   && consts.PENDING_MIN === 300 && consts.PENDING_MAX === 750
   && consts.COMPRESSED_FACTOR === 0.6 && consts.COMPRESSED_MIN === 180 && consts.COMPRESSED_MAX === 450
   && consts.REFORM_GAP_MS === 150);
