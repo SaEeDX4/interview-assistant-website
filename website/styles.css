@@ -1595,11 +1595,24 @@ body.cta-visible { padding-bottom: 96px; }
      edges shared, width capped to the frame's width: the two
      read as one participant unit. The self tile's label keeps
      its own anchor (its override below adds top: auto). */
-  position: absolute; left: 16px; top: 275px; max-width: 172px;
+  position: absolute; left: 16px; top: 275px; width: 172px; max-width: 172px;
   font-size: 13px; font-weight: 600; color: var(--text);
   background: rgba(10, 12, 16, .72); padding: 4px 8px; border-radius: 8px;
 }
 .call-speaking { color: var(--accent-2-light); }
+/* Step 89 — participant identity: the label carries a believable
+   NAME (avatar.js writes the chosen persona's name into
+   #call-name) over a muted ROLE line — a real call participant's
+   name plate, not a disclaimer. The honesty wording lives where
+   it belongs: the call header ("Video call — simulated") and the
+   page copy. The role line is a block under the name at every
+   width; an empty role (no-JS) reserves nothing. */
+.call-role {
+  display: block; margin-top: 4px;
+  font-size: 11px; font-weight: 500; color: var(--muted);
+}
+.call-role:empty { display: none; }
+.call-name { font-weight: 600; }
 /* Step 87 — the speaking signal, redesigned (the halo and the
    chip meter; research: ~/workspace/avatar-expand-affordance/
    report.md Part 2). The teal waveform bars are DELETED: they
@@ -1615,23 +1628,15 @@ body.cta-visible { padding-bottom: 96px; }
    analyser exists). The glow paints OUTSIDE the border, on
    the field's air; her face is never touched. The box-shadow
    rides --motion-1 so the light switches, never cuts.
-   (b) THE CHIP METER: three dots inside the name chip step
-   with the same --lvl (coarse thirds, pure CSS from the one
-   scalar). The chip is bottom-anchored in the band, so the
-   meter rides its last line — its own box can never reach
-   the frame above it, at any width. */
+   Step 89: the chip meter (b) is DELETED on the owner's
+   order — he stared at the dots and could not tell what they
+   were ("is it for the user speaking??"). The speaking signal
+   now lives ONLY in this halo, as (a) describes. */
 .call-tile.is-speaking .avatar-frame {
   border-color: rgba(45, 212, 191, .85);
   box-shadow: 0 0 0 2px rgba(45, 212, 191, calc(.16 + .38 * var(--lvl, 0))),
               0 0 22px rgba(45, 212, 191, calc(.35 * var(--lvl, 0)));
 }
-.call-dots { display: none; gap: 4px; margin-left: 8px; vertical-align: 1px; }
-.call-tile.is-speaking .call-dots,
-.call-self.is-speaking .call-dots { display: inline-flex; }
-.call-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-2); opacity: .15; }
-.call-dots i:nth-child(1) { opacity: clamp(.15, calc(var(--lvl, 0) * 3), 1); }
-.call-dots i:nth-child(2) { opacity: clamp(.15, calc(var(--lvl, 0) * 3 - 1), 1); }
-.call-dots i:nth-child(3) { opacity: clamp(.15, calc(var(--lvl, 0) * 3 - 2), 1); }
 /* Step 81b: the self tile is the call's picture-in-picture —
    it paints ABOVE the app window (z 3 over the window's z 2;
    DOM order alone put the window on top, since it follows the
@@ -1722,15 +1727,7 @@ body.cta-visible { padding-bottom: 96px; }
    the window never grows mid-scene. */
 /* Step 87: the self tile carries the same halo as hers —
    border warmed + the breathing glow on the same --lvl scalar
-   (its own envelope instance in app.js). Two truth gates:
-   - CAMERA OFF (cam-ready, not cam-on): the tile's content is
-     the "Use your camera" BUTTON — no speaking indicator of
-     any kind may render on it (the deleted bars struck through
-     its label, and the old ungated border rule outlined the
-     button teal; the owner's screenshot showed both). The
-     "You" label — and with it the chip meter — is already
-     display:none in this state (below), so the dots obey the
-     same law structurally; the border and glow are gated here.
+   (its own envelope instance in app.js). One gate remains:
    - SPOTLIGHT PiP: the demoted self tile keeps the border
      only — its glow would bleed across her hero frame's
      corner, which it can overlap. */
@@ -1740,7 +1737,14 @@ body.cta-visible { padding-bottom: 96px; }
   box-shadow: 0 0 0 2px rgba(45, 212, 191, calc(.16 + .38 * var(--lvl, 0))),
               0 0 18px rgba(45, 212, 191, calc(.35 * var(--lvl, 0)));
 }
-.call-self.cam-ready:not(.cam-on).is-speaking { border-color: var(--border-strong); box-shadow: none; }
+/* Step 89 (owner's direct order, superseding Step 87's
+   camera-off gate): during the scene's "You answer" beats the
+   self tile carries this halo WHETHER OR NOT the camera is
+   live — it is the turn signal, the same motion the interviewer
+   has when she speaks. The class is set only by the scene's
+   candidate beats (setSelfSpeaking), so the halo on this tile
+   can only ever mean "your turn"; it is at rest at every other
+   moment, and hers is at rest during those beats. */
 .call-stage[data-spotlight] .call-self.is-speaking { box-shadow: none; }
 /* Step 87 — the halo system's reduced-motion form lives in
    the sheet's third reduced-motion block (below, with the
@@ -1841,7 +1845,21 @@ body.cta-visible { padding-bottom: 96px; }
   background: rgba(10, 12, 16, .72); color: var(--text); padding: 4px 8px;
 }
 .call-self.cam-on .cam-toggle svg { display: none; }
-.cam-note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+/* Step 89: the camera note is the bottom row's middle element —
+   inside the field, between the participant unit and the self
+   tile, bottom-aligned with both (the row's shared 16px floor).
+   It was a full-width page paragraph under the stage: the
+   owner's screenshot showed it clipped at the right edge and
+   running under the sticky download bar. In the ≤933 band the
+   left offset follows the unit's right edge (116 = 12 + 88 +
+   16); on phones it simply flows inside the field under the
+   window (see the ≤640 block). In Spotlight at ≥641 it stands
+   down — the landed window owns the field's bottom strip
+   (the phone Spotlight keeps it in flow, under the window). */
+.cam-note {
+  position: absolute; left: 204px; right: 160px; bottom: 16px; z-index: 2;
+  color: var(--muted); font-size: 12px; line-height: 1.5; margin: 0;
+}
 .cam-note[hidden] { display: none; }
 .scene-sound-note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; flex-basis: 100%; }
 .scene-sound-note[hidden] { display: none; }
@@ -2301,11 +2319,11 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   html:has(.feat-nav) { scroll-behavior: auto; }
   /* Step 87: the halo system's reduced form — text and steady
      light carry the signal, nothing breathes. The halo is
-     STATIC (one fixed soft glow), the chip meter collapses to
-     a single solid dot, and the "· speaking" word — hidden at
-     the band and phone widths for space — returns at every
-     band, because with motion off the text is a primary
-     carrier. */
+     STATIC (one fixed soft glow), and the "· speaking" word
+     — hidden at the band and phone widths for space — returns
+     at every band, because with motion off the text is a
+     primary carrier. (Step 89: the chip meter this block once
+     collapsed to a single dot is deleted entirely.) */
   .call-tile.is-speaking .avatar-frame {
     box-shadow: 0 0 0 2px rgba(45, 212, 191, .35), 0 0 22px rgba(45, 212, 191, .18);
   }
@@ -2313,8 +2331,6 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
     box-shadow: 0 0 0 2px rgba(45, 212, 191, .35), 0 0 18px rgba(45, 212, 191, .18);
   }
   .call-stage[data-spotlight] .call-self.is-speaking { box-shadow: none; }
-  .call-dots i:nth-child(1) { opacity: 1; }
-  .call-dots i:nth-child(2), .call-dots i:nth-child(3) { display: none; }
   .call-tile .call-speaking:not([hidden]) { display: inline; }
 }
 
@@ -3253,15 +3269,19 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      8px gap), label bottom-anchored at the frame's bottom
      line, sharing that line with the self tile: a call's
      bottom tile row, under the hanging window. Complete
-     state: unit top = 640 − 186 = 454, below the window's
-     bottom (448.5); primed: the 404 hug puts it at 218, below
+     state: unit top = 640 − 184 = 456, below the window's
+     bottom (448.5); primed: the 404 hug puts it at 220, below
      the primed window's bottom (207.7). The glyph fallback
-     centres in the frame's zone (bottom-offset 76..186,
-     centre 131). (Step 87: the field/window figures in this
+     centres in the frame's zone (bottom-offset 74..184,
+     centre 129). (Step 87: the field/window figures in this
      comment predate Step 83 — see the window-cap rule below
      for the current geometry and the measured overlaps that
      forced it; the speaking signal lives in the frame's halo
-     and the name chip's dot meter now, never on her face.)
+     alone now (Step 89 deleted the chip's dot meter), never
+     on her face. Step 89: the frame's bottom offset is 74 —
+     the label is now the persona's name over her role, a
+     uniform 48.9px at this width for all six personas, so
+     the unit is 16 + 48.9 + ~9 gap + 110 = 184.)
      Follow-up (2026-11-22): this block's reach extends past
      the 860 band to 933 — above 860 the desktop top-left unit
      returns, but the centred window does not clear it until
@@ -3277,8 +3297,11 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      edge (≥151.5) horizontally, so no other band rule needs
      to follow it: the primed hug stays the base 342 and the
      head/start-label switches stay at 860. */
-  .avatar-frame { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
-  .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; max-width: 104px; font-size: 12px; }
+  .avatar-frame { left: 12px; top: auto; bottom: 74px; width: 88px; height: 110px; }
+  .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; }
+  /* Step 89: the camera note's left offset follows the unit's
+     right edge in this band (12 + 88 + 16). */
+  .cam-note { left: 116px; }
   /* Step 87: the window narrows in this band so its left edge
      clears the participant unit by an on-scale gap in EVERY
      state. The staging comment above was composed for a 640px
@@ -3300,7 +3323,7 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      the sheet at equal specificity, once collapsed the phone
      window to the cap's remainder (Step 87 probes caught it). */
   .call-main .app-window { width: min(432px, calc(100% - 264px)); }
-  .call-avatar { left: 28px; top: auto; bottom: 103px; }
+  .call-avatar { left: 28px; top: auto; bottom: 101px; }
   /* QC 2026-11-22: the closing caption's base home (left 16,
      bottom 88) was composed when the participant sat top-left;
      bottom-anchored here, the frame (x 12..100, bottom 76..186)
@@ -3308,15 +3331,26 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      as "…ything" behind the tile at 641–933 (measured overlap
      3,108px²). The caption moves right of the unit: left 124
      clears the frame's right edge by 24 and the label's by 8,
-     keeping its bottom so it reads beside the speaker. */
-  .call-caption { left: 124px; }
+     keeping its bottom so it reads beside the speaker.
+     Step 89 (review pass 2): that seat is retired in the band.
+     Step 83's two-box window hangs far past it in scene states
+     — measured 97% of the chip covered by the window at 712
+     and 768 (complete), the line unreadable. In the band the
+     chip stands down and the status line carries the closing
+     line verbatim instead, the same routing the phones use
+     (app.js reads the computed display at the thanks beat).
+     In Spotlight the caption is re-shown on the hero itself
+     (the Spotlight blocks below), where Step 84's contract
+     keeps it the line's only carrier. */
+  .call-caption { display: none; }
 }
 @media (max-width: 640px) {
   /* The phone tile is an 80px strip: the avatar becomes a square
      thumb at its left and the name chip sits right of the thumb.
      (Step 87: no speaking furniture rides on the thumb — the
-     signal is the frame's halo + the chip's dot meter; see the
-     Step 87 halo rules at the base .call-tile-label block.) */
+     signal is the frame's halo alone; see the halo rules at the
+     base .call-tile-label block. Step 89: the chip's content is
+     the persona's name over her role.) */
   .avatar-frame { left: 12px; top: 8px; width: 64px; height: 64px; border-radius: 8px; }
   /* Step 87: the phone window is in-flow at its natural width —
      this restates the earlier phone rule because the band cap
@@ -3324,6 +3358,10 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      specificity and would otherwise shrink the phone window
      to the cap's remainder. */
   .call-main .app-window { width: auto; }
+  /* Step 89: on phones the camera note flows inside the field
+     under the window and the scene furniture — contained by the
+     field at the field's own width, never a page paragraph. */
+  .cam-note { position: static; margin: 12px 0 0; }
   /* The band block above bottom-anchors the glyph fallback in
      the frame's zone; the phone strip's glyph keeps its own
      top-left anchor (this block follows it in the sheet). */
@@ -3461,11 +3499,39 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 }
 .call-stage[data-spotlight] .call-tile > .call-tile-label,
 .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
-  left: calc(50% - 160px); top: 424px; max-width: 320px;
-  white-space: nowrap; line-height: 1.3; z-index: 2;
+  left: calc(50% - 160px); top: 424px; width: 320px; max-width: 320px;
+  white-space: normal; line-height: 1.3; z-index: 2;
 }
+/* Step 89 (review pass 2): in Spotlight the closing caption's
+   base seat (left 16 / bottom 88 of the tile) was composed for
+   the small participant unit; the Spotlight tile spans the
+   whole field, so the chip landed at the field's bottom and
+   the landed window covered it (measured overlap 8,695px² at
+   768, 5,643px² at 933 — only a sliver of the thanks line
+   showed). The caption now sits on the hero itself, the way
+   real calls caption a speaker: across the portrait's own
+   width (320 here, 264 in the band block below), its bottom
+   edge 8px above the portrait's lower edge, 16px clear of
+   the name plate beneath. It stays the closing line's only
+   carrier in Spotlight (Step 84's contract stands). */
+.call-stage[data-spotlight] .call-caption,
+.call-stage[data-spotlight-prep] .call-caption {
+  display: block;
+  left: calc(50% - 160px); right: auto; top: 408px; bottom: auto;
+  width: 320px; max-width: 320px; transform: translateY(-100%); z-index: 2;
+}
+/* Step 89: in Spotlight the camera note stands down at >=641 —
+   the landed window owns the field's bottom strip and the note
+   would paint across it. The phone Spotlight keeps the note in
+   flow (its block below re-shows it). And with the camera off,
+   the self tile in Spotlight shows the camera GLYPH alone — a
+   camera-off self tile, as in a real call — never the toggle's
+   text wrapped across the tile (on phones it sat on the
+   portrait's chest as a three-line sticker). */
+.call-stage[data-spotlight] .cam-note { display: none; }
+.call-stage[data-spotlight] .call-self:not(.cam-on) #cam-toggle-text { display: none; }
 .call-stage[data-spotlight] .call-main .app-window {
-  top: var(--spot-win-top, 453px); left: calc(50% - 180px);
+  top: var(--spot-win-top, 457px); left: calc(50% - 180px);
   transform: none; width: 360px;
 }
 .call-stage[data-spotlight] .call-self,
@@ -3484,26 +3550,38 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight] .avatar-toggle {
     left: 50%; transform: translateX(-50%); top: 16px; bottom: auto; width: 264px; height: 330px;
   }
-  .avatar-toggle { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
+  .avatar-toggle { left: 12px; top: auto; bottom: 74px; width: 88px; height: 110px; }
   .call-stage[data-spotlight] .call-tile > .call-tile-label,
   .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
     left: 50%; transform: translateX(-50%); top: 354px; bottom: auto; width: 264px; max-width: 264px; font-size: 13px;
   }
+  /* Step 89 (review pass 2): the band hero is 264 wide — the
+     closing caption takes the hero's width and seat (see the
+     base Spotlight caption rule above). */
+  .call-stage[data-spotlight] .call-caption,
+  .call-stage[data-spotlight-prep] .call-caption {
+    display: block;
+    left: 50%; top: 338px; width: 264px; max-width: 264px;
+    transform: translate(-50%, -100%);
+  }
   .call-stage[data-spotlight] .call-main .app-window {
-    top: var(--spot-win-top, 383px); left: calc(50% - 168px); width: 336px;
+    top: var(--spot-win-top, 387px); left: calc(50% - 168px); width: 336px;
   }
   .call-stage[data-spotlight] .call-self,
   .call-stage[data-spotlight-prep] .call-self { width: 88px; height: 58px; }
 }
 @media (max-width: 640px) {
   /* Phone: the tile strip becomes the hero column — frame in
-     flow at 248x310, label under it sharing its left edge; the
-     window lands in flow beneath, and the self tile demotes
-     onto her frame's bottom-right corner (over video only,
-     the concept's phone PiP). The flight here is the
-     fade-through (spotlight.js): the strip's square crop and
-     the hero's 4:5 cannot share a scale morph without
-     stretching her face. */
+     flow at 232x290 (Step 89: narrowed from 248x310 so the
+     close button's corner clears the portrait's right edge),
+     label under it sharing its left edge and width; the
+     window lands in flow beneath, and the self tile sits in
+     the label row as a proper small tile (Step 89 — it used
+     to demote onto her frame's bottom-right corner, where its
+     camera text read as a sticker on the portrait). The
+     flight here is the fade-through (spotlight.js): the
+     strip's square crop and the hero's 4:5 cannot share a
+     scale morph without stretching her face. */
   .avatar-toggle { left: 12px; top: 8px; bottom: auto; width: 64px; height: 64px; border-radius: 8px; }
   .call-stage[data-spotlight] .call-tile {
     height: auto; display: flex; flex-direction: column;
@@ -3512,24 +3590,41 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight] .avatar-frame,
   .call-stage[data-spotlight-prep] .avatar-frame {
     position: relative; left: auto; top: auto; transform: none; flex: none;
-    width: 248px; height: 310px; border-radius: 12px; order: 1;
+    width: 232px; height: 290px; border-radius: 12px; order: 1;
   }
   .call-stage[data-spotlight] .avatar-toggle {
-    left: calc(50% - 124px); top: 16px; transform: none; width: 248px; height: 310px; border-radius: 12px;
+    left: calc(50% - 116px); top: 16px; transform: none; width: 232px; height: 290px; border-radius: 12px;
   }
   .call-stage[data-spotlight] .call-tile > .call-tile-label,
   .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
     position: static; transform: none; order: 2; flex: none;
-    width: 248px; max-width: 248px; margin-top: 8px;
+    width: 232px; max-width: 232px; margin-top: 8px;
     white-space: nowrap; line-height: 1.3; text-align: left;
   }
   .call-stage[data-spotlight] .call-main .app-window {
-    top: auto; left: auto; width: calc(100% - 32px); margin: 12px 0 16px; align-self: center;
+    top: auto; left: auto; width: calc(100% - 32px); margin: 16px 0 16px; align-self: center;
   }
+  /* Step 89: the phone Spotlight self tile leaves the portrait.
+     It sits in the label row, right of the name plate, on the
+     window's own grid (right edge shared with the window's):
+     a proper small self tile in the field — video when the
+     camera is live, the camera glyph when it is not. Its top
+     centres it on the label (label top 314 = 16 + 290 + 8;
+     label ~43 tall, tile 48 -> top 312). The close button's
+     corner clears too: the 232 hero leaves its left edge 8px+
+     from the portrait's right edge at 403. */
   .call-stage[data-spotlight] .call-self,
   .call-stage[data-spotlight-prep] .call-self {
-    width: 72px; height: 48px; top: 270px; bottom: auto; right: calc(50% - 116px);
+    width: 72px; height: 48px; top: 312px; bottom: auto; right: 16px;
   }
+  .call-stage[data-spotlight] .cam-note:not([hidden]) { display: block; }
+  /* Step 89 (review pass 4): on phones the closing caption
+     stands down in Spotlight too (the status line carries
+     the line, as everywhere on phones) — the band block's
+     re-show must not leak into the phone hero, whose seat
+     geometry it does not fit. */
+  .call-stage[data-spotlight] .call-caption,
+  .call-stage[data-spotlight-prep] .call-caption { display: none; }
 }
 
 @media (max-width: 640px) {

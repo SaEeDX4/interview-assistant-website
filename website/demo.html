@@ -198,7 +198,7 @@
                    last line: the chip is bottom-anchored in the
                    band, so the meter's own box can never reach
                    the frame above it. -->
-              <span class="call-tile-label">AI interviewer — simulated<span class="call-speaking" id="call-speaking" hidden> · speaking</span><span class="call-dots" id="call-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>
+              <span class="call-tile-label"><span class="call-name" id="call-name">Interviewer</span><span class="call-speaking" id="call-speaking" hidden> · speaking</span><span class="call-role" id="call-role"></span></span>
               <!-- Step 87 — the Lean-In's two transient elements:
                    the sonar ring (geometry set from the frame's
                    own box by spotlight.js at performance time, so
@@ -210,7 +210,7 @@
               <span class="lean-ring" id="lean-ring" aria-hidden="true"></span>
               <p class="spotlight-whisper" id="spotlight-whisper" aria-hidden="true">Tap the interviewer to see her up close.</p>
             </div>
-            <div class="call-self" id="call-self"><video id="cam-video" autoplay playsinline muted hidden></video><span class="call-tile-label">You<span class="call-dots" id="call-self-dots" aria-hidden="true"><i></i><i></i><i></i></span></span><button type="button" class="cam-toggle" id="cam-toggle" aria-pressed="false" aria-label="Use your camera — your video tile" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="cam-toggle-text">Use your camera</span></button></div>
+            <div class="call-self" id="call-self"><video id="cam-video" autoplay playsinline muted hidden></video><span class="call-tile-label">You</span><button type="button" class="cam-toggle" id="cam-toggle" aria-pressed="false" aria-label="Use your camera — your video tile" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span id="cam-toggle-text">Use your camera</span></button></div>
             <div class="app-window" id="app-window">
               <div class="app-header">
                 <p class="app-pill" id="scene-pill"><span class="app-pill-dot" aria-hidden="true"></span><span id="scene-pill-text">Answer ready</span><span class="app-meter" aria-hidden="true"><i></i></span></p>
@@ -257,9 +257,15 @@
                  at the field's top-right while she is up close;
                  tapping her again or Escape does the same job. -->
             <button type="button" class="spotlight-close" id="spotlight-close" aria-label="Close the close-up" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+            <!-- Step 89: the camera note lives INSIDE the field
+                 (.call-main), as the bottom row's middle element —
+                 it was a full-width page paragraph under the stage,
+                 clipped at the right edge and running under the
+                 sticky bar (owner's screenshot). Placement rules
+                 are with .cam-note in the sheet. -->
+            <p class="cam-note" id="cam-note" role="status" hidden></p>
             </div>
           </div>
-          <p class="cam-note" id="cam-note" role="status" hidden></p>
           <div class="scene-controls" id="scene-controls" hidden>
             <a class="btn btn-primary btn-small" id="scene-download" href="download.html" hidden>Download the app</a>
             <button type="button" class="btn btn-secondary btn-small" id="scene-mute" aria-pressed="false" hidden>Sound on</button>

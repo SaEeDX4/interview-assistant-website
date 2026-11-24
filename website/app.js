@@ -1299,6 +1299,11 @@ var IA_VARIANTS = {
         ? "Back to the 3 points"
         : "See this answer as Coach cues";
     }
+    /* Step 89 (review pass 3): the flip row's arrival is the
+       window's last growth (the complete state stands taller
+       than the scene reservation by design) — re-fit the
+       field to the settled window. */
+    fitFieldToWindow();
   }
 
   function resetView() {
@@ -1468,6 +1473,8 @@ var IA_VARIANTS = {
      this IIFE), every scene function is a no-op and the classic
      autoplay runs exactly as before. */
   var callStageEl = document.getElementById("call-stage");
+  var callMainEl = document.querySelector(".call-main");
+  var demoWindowEl = document.getElementById("app-window");
   var scenePillEl = document.getElementById("scene-pill");
   var scenePillTextEl = document.getElementById("scene-pill-text");
   var sceneClockEl = document.getElementById("scene-clock");
@@ -1944,6 +1951,40 @@ var IA_VARIANTS = {
     if (h > 0) { classicCardMin = h; }
   }
 
+  /* Step 89 (review pass 2): the field must fit its window.
+     The reservation makes the window exactly as tall as its
+     tallest layer needs; at the narrow end of the band the
+     window narrows, wraps taller and outgrows the sheet's
+     720px field (measured at 712: window 745.5px, its bottom
+     41.5px past the field's edge, the Coach flip row clipped
+     by the field's overflow). In the window's absolute band
+     (>=641, not primed, not Spotlight — Spotlight's glide
+     sizes the field itself) the field now grows to the
+     window: its top offset + its height + the bottom row's
+     16px floor. The participant unit and the self tile are
+     bottom-anchored, so the row's shared floor simply moves
+     with the field; nothing else in the field moves. On
+     phones the window is in flow and the field already hugs
+     it by construction. The seat test reads the window's
+     computed position, so the breakpoint stays the sheet's
+     own and is never duplicated as a JS media query. */
+  function fitFieldToWindow() {
+    if (!callMainEl || !demoWindowEl || !callStageEl) { return; }
+    if (window.getComputedStyle(demoWindowEl).position !== "absolute" ||
+        callStageEl.classList.contains("is-primed") ||
+        callStageEl.hasAttribute("data-spotlight") ||
+        callStageEl.hasAttribute("data-spotlight-prep")) {
+      callMainEl.style.minHeight = "";
+      return;
+    }
+    callMainEl.style.minHeight = "";
+    var floor = callMainEl.offsetHeight;
+    var need = demoWindowEl.offsetTop + demoWindowEl.offsetHeight + 16;
+    if (need > floor) {
+      callMainEl.style.minHeight = need + "px";
+    }
+  }
+
   function syncAnswerCard() {
     if (!answerCardEl) { return; }
     var q = activeQuestionLayer();
@@ -1952,6 +1993,7 @@ var IA_VARIANTS = {
       if (callStageEl.classList.contains("is-primed")) {
         answerCardEl.style.minHeight = "";
         if (questionStack) { questionStack.style.height = ""; }
+        fitFieldToWindow();
         return;
       }
       var qMax = parseFloat(callStageEl.style.getPropertyValue("--scene-question-min")) || qNow;
@@ -1969,6 +2011,7 @@ var IA_VARIANTS = {
           "calc(var(--scene-answer-min, 0px) + var(--scene-tag-min, 0px) + " +
           (109.4 + comp).toFixed(1) + "px)";
       }
+      fitFieldToWindow();
       return;
     }
     if (!classicMeasured) { measureClassicCards(); }
@@ -1980,6 +2023,21 @@ var IA_VARIANTS = {
     } else if (classicAnswerBase) {
       answerCardEl.style.minHeight = (classicAnswerBase + 91.0 + ccomp).toFixed(1) + "px";
     }
+    fitFieldToWindow();
+  }
+
+  /* Step 89 (review pass 2): Spotlight's exit clears the
+     field's inline min-height (its glide owned it); re-fit on
+     the way out so a tall scene state at a narrow band width
+     never re-clips its window once the close-up closes. The
+     fit alone is re-run — a full syncAnswerCard here would
+     recompute the card reservation against the mid-flight
+     layer state and grow the window (measured +23px on the
+     phone hero, pass 4). */
+  if (callStageEl && typeof MutationObserver === "function") {
+    new MutationObserver(function () { fitFieldToWindow(); }).observe(callStageEl, {
+      attributes: true, attributeFilter: ["data-spotlight", "data-spotlight-prep"]
+    });
   }
 
   function sceneShowAnswer(layer) {
@@ -2885,16 +2943,22 @@ var IA_VARIANTS = {
      Opt-in only (a real button, unhidden by JS — never a dead
      control without JS), gesture-only getUserMedia, video only.
      The stream never leaves the device: no recording, no upload,
-     no frame capture; the note under the stage says so. Tracks
+     no frame capture; the note inside the field says so. Tracks
      stop on toggle-off, on page hide, and on unload; denial,
      no-camera and insecure-context failures fall back to the
-     labelled tile with the choreography untouched. */
+     labelled tile with the choreography untouched.
+     Step 89: an in-flight guard (a double-tap while the browser
+     is still asking used to start a second request whose stream
+     leaked, un-stoppable) and failure notes that name the actual
+     rejection — permission, no device, or other — instead of one
+     conflated sentence. */
   var camToggleBtn = document.getElementById("cam-toggle");
   var camToggleText = document.getElementById("cam-toggle-text");
   var camVideo = document.getElementById("cam-video");
   var camNoteEl = document.getElementById("cam-note");
   var camStream = null;
   var camOn = false;
+  var camBusy = false;
   function camNote(text) {
     if (!camNoteEl) { return; }
     if (text) { camNoteEl.textContent = text; camNoteEl.hidden = false; }
@@ -2920,11 +2984,14 @@ var IA_VARIANTS = {
     callSelfEl.classList.add("cam-ready");
     camToggleBtn.addEventListener("click", function () {
       if (camOn) { camStop(); camNote(null); return; }
+      if (camBusy) { return; }
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         camFail("Camera is not available in this browser or on this connection — the labelled tile stays. Nothing was recorded or sent.");
         return;
       }
+      camBusy = true;
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false }).then(function (stream) {
+        camBusy = false;
         camStream = stream;
         camVideo.srcObject = stream;
         camVideo.hidden = false;
@@ -2935,8 +3002,15 @@ var IA_VARIANTS = {
         camToggleBtn.setAttribute("aria-pressed", "true");
         camToggleText.textContent = "Stop camera";
         camNote("Your camera is live in the tile — on this device only. Nothing is recorded, uploaded or sent anywhere; stopping the camera or leaving the page ends it.");
-      }).catch(function () {
-        camFail("The camera did not start — permission was not given, or no camera is available. The labelled tile stays; nothing was recorded or sent.");
+      }).catch(function (err) {
+        camBusy = false;
+        if (err && err.name === "NotAllowedError") {
+          camFail("The camera did not start — permission was not given. The labelled tile stays; nothing was recorded or sent.");
+        } else if (err && (err.name === "NotFoundError" || err.name === "OverconstrainedError")) {
+          camFail("No camera is available on this device. The labelled tile stays; nothing was recorded or sent.");
+        } else {
+          camFail("The camera did not start. The labelled tile stays; nothing was recorded or sent.");
+        }
       });
     });
     document.addEventListener("visibilitychange", function () {

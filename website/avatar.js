@@ -76,6 +76,32 @@
   lstoreSet("ia-avatar-last", pid);
   window.__avatarPersonaId = pid;
 
+  /* Step 89 — each persona is a believable call participant:
+     a name and a role, matched to the face (the posters are the
+     reference), written into the tile label's name plate. The
+     label's static default ("Interviewer", no role) is what
+     no-JS and the glyph fallback honestly show; fail() below
+     restores it if this persona's assets never arrive. */
+  var PERSONAS = {
+    p1: { name: "Maya Rahal", role: "Talent Lead" },
+    p2: { name: "Priya Nair", role: "HR Director" },
+    p3: { name: "Jamal Reed", role: "Tech Lead" },
+    p4: { name: "Daniel Kim", role: "Hiring Lead" },
+    p5: { name: "Robert Hale", role: "VP Product" },
+    p6: { name: "Elena Ruiz", role: "VP of Talent" }
+  };
+  window.__avatarPersonas = PERSONAS;
+  function applyIdentity() {
+    var who = PERSONAS[pid];
+    var nameEl = document.getElementById("call-name");
+    var roleEl = document.getElementById("call-role");
+    if (who && nameEl && roleEl) {
+      nameEl.textContent = who.name;
+      roleEl.textContent = who.role;
+    }
+  }
+  applyIdentity();
+
   var SRC = {
     idle: "avatar/" + pid + "-idle", listening: "avatar/" + pid + "-listening",
     thinking: "avatar/" + pid + "-thinking", greeting: "avatar/" + pid + "-greeting"
@@ -127,6 +153,13 @@
     api.active = false;
     frame.hidden = true;
     tile.classList.remove("has-avatar");
+    /* Step 89: no face, no name — the label falls back to the
+       generic plate rather than naming a person who is not
+       on screen. */
+    var nameEl = document.getElementById("call-name");
+    var roleEl = document.getElementById("call-role");
+    if (nameEl) { nameEl.textContent = "Interviewer"; }
+    if (roleEl) { roleEl.textContent = ""; }
   }
   vids.forEach(function (v) {
     v.addEventListener("error", function () {

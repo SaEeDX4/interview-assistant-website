@@ -100,10 +100,12 @@
 
   /* ---------- measured heights ----------
      The window's spotlight top is the tile label's measured
-     bottom + 12 (Step 84: the label is the last element of the
-     hero composition now that the caption is gone); the
-     field's height is that top + the window's measured height
-     + the standard 16px bottom padding. On phones the
+     bottom + 16 (Step 84: the label is the last element of the
+     hero composition now that the caption is gone; Step 89:
+     the gap under the label now equals the 16px above the
+     portrait, so the hero column is balanced in its area);
+     the field's height is that top + the window's measured
+     height + the standard 16px bottom padding. On phones the
      composition is in flow, so the field's height is simply
      its own. */
   function measureSpot() {
@@ -113,7 +115,7 @@
     }
     var mainRect = callMain.getBoundingClientRect();
     var labelRect = tileLabel.getBoundingClientRect();
-    var winTop = Math.round(labelRect.bottom - mainRect.top) + 12;
+    var winTop = Math.round(labelRect.bottom - mainRect.top) + 16;
     return { winTop: winTop, mainH: winTop + appWindow.offsetHeight + 16 };
   }
   function refreshSpotHeights() {
