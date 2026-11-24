@@ -2038,6 +2038,17 @@ var IA_VARIANTS = {
       if (selfGap >= 16 && partGap >= 16) { lane = 0; }
     }
     if (lane) { need += lane; }
+    /* Step 92: where the window hangs BELOW the top row (the
+       band composition — read off the window's own offset, the
+       seat test's standing pattern, never a width query), the
+       camera note sits under the window, so a visible note
+       reserves its own height + the 12px gap in the field.
+       On the desktop composition (window top 16) the note
+       keeps its bottom-row seat and reserves nothing. */
+    var camNoteEl = document.getElementById("cam-note");
+    if (camNoteEl && !camNoteEl.hidden && demoWindowEl.offsetTop > 100) {
+      need += 12 + camNoteEl.offsetHeight;
+    }
     frozen.forEach(function (el, i) {
       if (el) { el.style.transition = prevTransitions[i] || ""; }
     });
@@ -2167,6 +2178,11 @@ var IA_VARIANTS = {
      settles like breath and can never jitter per-sample. If it
      ever read nervous in review, the researched fallback (a
      clean static outline) replaces it, per the Part 2 report.
+     Step 92 (owner's order — more visible, more coordinated):
+     the constants are re-staged to attack 45ms / release
+     170ms and the raw mapping is re-gained against the clips'
+     measured envelope (see haloRawHer); the architecture —
+     one smoothed scalar off the real analyser — is unchanged.
      Reduced motion: no loop — a fixed level while speaking,
      and the CSS reduced block renders the halo static. */
   var haloHer = { lvl: 0, on: false }, haloSelf = { lvl: 0, on: false };
@@ -2180,7 +2196,16 @@ var IA_VARIANTS = {
       var sum = 0, i, v;
       for (i = 0; i < haloBuf.length; i++) { v = (haloBuf[i] - 128) / 128; sum += v * v; }
       var rms = Math.sqrt(sum / haloBuf.length);
-      return Math.max(0, Math.min(1, (rms - 0.015) * 3.4));
+      /* Step 92: re-staged against the shipped clips' measured
+         envelope (all 35 voice clips, 256-sample windows like
+         the analyser's): silence p99 is .0096, voiced p50 is
+         .048, p90 is .107, p99 is .164. The old floor/gain
+         (.015 / 3.4) spent the whole performance between lvl
+         .0 and .31 — the halo breathed in a whisper range and
+         read as decoration. Floor .010 keeps true silence at
+         zero; gain 9 puts the median syllable at ~.34, the
+         loud ones at ~.88 and only the peaks at the clamp. */
+      return Math.max(0, Math.min(1, (rms - 0.010) * 9.0));
     }
     return -1;
   }
@@ -2188,7 +2213,14 @@ var IA_VARIANTS = {
     return .38 + .34 * Math.abs(Math.sin(t * .0042 + seed)) * (.6 + .4 * Math.sin(t * .00137 + seed * 2.7));
   }
   function haloStep(state, raw, dt) {
-    var tau = raw > state.lvl ? 80 : 250;
+    /* Step 92: attack 80 -> 45ms, release 250 -> 170ms (the
+       owner's order: the motion must sit ON her syllables,
+       visibly). The exponential shape is unchanged — at 60fps
+       the attack still integrates ~3 frames, so the light
+       swells per syllable instead of jittering per sample,
+       and the 170ms release dips into real between-word gaps
+       without snapping off inside them. */
+    var tau = raw > state.lvl ? 45 : 170;
     state.lvl += (raw - state.lvl) * (1 - Math.exp(-dt / tau));
     if (state.lvl < 0.005 && raw === 0) { state.lvl = 0; }
     return state.lvl;
@@ -3045,6 +3077,10 @@ var IA_VARIANTS = {
     if (!camNoteEl) { return; }
     if (text) { camNoteEl.textContent = text; camNoteEl.hidden = false; }
     else { camNoteEl.hidden = true; }
+    /* Step 92: in the band the note's seat under the window is
+       reserved by the field's fit — re-fit on every show/hide
+       so the reservation lands and releases with the note. */
+    fitFieldToWindow();
   }
   function camStop() {
     if (camStream) {

@@ -92,9 +92,9 @@ check("B: the plate's text is centred in its box, on a deeper scrim with a hairl
 check("B: hierarchy — the name rides the label's strong type; the role stays a smaller, quieter block under it",
   /\.call-role \{[^}]*display: block;[^}]*font-size: 11px;[^}]*color: var\(--muted\);/.test(clean) &&
   /\.call-tile-label \{[^}]*font-size: 13px; font-weight: 600;/.test(clean));
-check("B: the band plate keeps width == frame width (88px) with the plate's 8px padding; the frame's offset is re-derived from the 51.9px plate (16 + 51.9 + 8 = 76)",
-  /\.call-tile > \.call-tile-label \{ left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; padding: 8px; \}/.test(clean) &&
-  /\.avatar-frame \{ left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; \}/.test(clean));
+check("B: the band plate keeps width == frame width (88px) with the plate's 8px padding (Step 92 re-pin, annotated: the seat moves from the bottom row to under the TOP-row frame — plate top 134 = frame top 16 + frame 110 + gap 8, its 51.9px measured height now a fixed 52px token so the unit box is exactly 170, the self tile's box)",
+  /\.call-tile > \.call-tile-label \{ left: 12px; top: 134px; bottom: auto; width: 88px; max-width: 88px; height: 52px; font-size: 12px; padding: 8px; \}/.test(clean) &&
+  /\.avatar-frame \{ left: 12px; top: 16px; bottom: auto; width: 88px; height: 110px; \}/.test(clean));
 check("B: the phone Spotlight plate is centred too, and the self tile's 'You' tag keeps its compact pre-Step-90 form",
   /\.call-stage\[data-spotlight\] \.call-tile > \.call-tile-label,\s*\.call-stage\[data-spotlight-prep\] \.call-tile > \.call-tile-label \{\s*position: static;[^}]*text-align: center;/.test(clean) &&
   /\.call-self \.call-tile-label \{[^}]*padding: 4px 8px; border: 0; box-shadow: none; text-align: left; \}/.test(clean));

@@ -449,10 +449,30 @@
     saveHint();
     stopHint();
   }
+  /* Step 92: the lean's base must be the frame's RESTING
+     transform. frameBase() answers for the Spotlight hero
+     (translateX(-50%) in the band), but at rest the band
+     frame carries no transform at all — copying the hero's
+     base into the lean's keyframes slid the resting frame
+     -44px sideways for the whole 900ms performance (Step 92
+     sweep, playing capture at 768: the unit's box measured
+     x -32.1 mid-lean). The resting base is read off the
+     computed style, and only a pure translation counts (a
+     mid-lean scale matrix is not a base). At rest this
+     returns "" at every width — the lean is a pure scale,
+     as designed. */
+  function leanBase() {
+    var t = window.getComputedStyle(frame).transform;
+    if (!t || t === "none") { return ""; }
+    var m = t.match(/^matrix\(([^)]+)\)$/);
+    if (!m) { return ""; }
+    var p = m[1].split(",").map(function (n) { return Number(n); });
+    return (p[0] === 1 && p[3] === 1 && p[1] === 0 && p[2] === 0) ? t : "";
+  }
   function hintBeat() {
     if (reduced || hint.done || isOpen) { return; }
     placeHint();
-    var base = frameBase();
+    var base = leanBase();
     var pre = base ? base + " " : "";
     leanAnim = frame.animate(
       [{ transform: pre + "scale(1)" },

@@ -17,7 +17,7 @@ one direction only.
 | 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
-| 933px | Participant-unit threshold | the demo stage's participant unit keeps its band bottom-left anchor until the centred app window fully clears the desktop top-left unit — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
+| 933px | Participant-unit threshold | the demo stage's band composition (Step 92: the folded strip's top row — participant unit and self tile as one shared box, the window hung below) holds until the desktop composition takes over — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
 | 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 4 |
 
 No other width may appear in a media query. 480px, 900px and 933px are

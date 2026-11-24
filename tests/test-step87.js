@@ -215,8 +215,8 @@ check("the phone chip is fit-content, centred, balanced — no dead half, no orp
 check("the waveform bars are deleted from markup and sheet, keyframes included",
   !/call-wave|call-self-wave/.test(html) && !/call-wave|call-self-wave/.test(clean)
   && !/@keyframes call-wave/.test(clean));
-check("the halo: her frame warms and glows on the --lvl envelope scalar",
-  /\.call-tile\.is-speaking \.avatar-frame \{[^}]*border-color: rgba\(45, 212, 191, \.85\);[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.16 \+ \.38 \* var\(--lvl, 0\)\)\),\s*0 0 22px rgba\(45, 212, 191, calc\(\.35 \* var\(--lvl, 0\)\)\);/.test(clean));
+check("the halo: her frame warms and glows on the --lvl envelope scalar (Step 92 re-pin, annotated: the ring/glow amplitudes rise — ring .20 + .50·lvl, glow .48·lvl at 26px — to spend the envelope's re-gained range; see the envelope check below)",
+  /\.call-tile\.is-speaking \.avatar-frame \{[^}]*border-color: rgba\(45, 212, 191, \.85\);[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.20 \+ \.50 \* var\(--lvl, 0\)\)\),\s*0 0 26px rgba\(45, 212, 191, calc\(\.48 \* var\(--lvl, 0\)\)\);/.test(clean));
 check("the chip meter is DELETED (Step 89, the owner's direct order): no dots in markup or sheet — the halo is the only speaking signal",
   /* The owner stared at the 3-dot meter and could not tell
      what it was ("is it for the user speaking??") — a signal
@@ -224,9 +224,10 @@ check("the chip meter is DELETED (Step 89, the owner's direct order): no dots in
      halo, which every call app trains its users to read,
      carries speaking alone now. */
   !html.includes('call-dots') && !/\.call-dots/.test(clean));
-check("the envelope engine: real AnalyserNode RMS for her voice, staged otherwise, 80/250ms smoothing",
+check("the envelope engine: real AnalyserNode RMS for her voice, staged otherwise, 45/170ms smoothing (Step 92 re-pin, annotated: attack 80 → 45ms and release 250 → 170ms on the owner's order — the motion must sit on her syllables and read clearly; the raw mapping is re-gained at the same time, floor .010 / gain 9, staged against the shipped clips' measured envelope — silence p99 .0096, voiced p50 .048, p90 .107)",
   js.includes("function haloRawHer()") && js.includes("audioAnalyser.getByteTimeDomainData(haloBuf)")
-  && js.includes("var tau = raw > state.lvl ? 80 : 250;")
+  && js.includes("var tau = raw > state.lvl ? 45 : 170;")
+  && js.includes("(rms - 0.010) * 9.0")
   && js.includes("function haloStaged(t, seed)"));
 check("the self tile's turn halo is NOT gated by the camera (Step 89 supersedes Step 87's camera-off truth gate on the owner's direct order)",
   /* Step 87's law was: while the camera button is the tile's

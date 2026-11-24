@@ -164,9 +164,12 @@ check("the sample tag names the preparation chain",
 check("call stage + LIVE pulse + speaking halo CSS present",
   /* Step 87 re-pin (annotated): the call-wave keyframes are
      deleted with the bars; the speaking CSS is the halo — the
-     frame's box-shadow driven by the --lvl envelope scalar. */
+     frame's box-shadow driven by the --lvl envelope scalar.
+     Step 92 re-pin (annotated): the ring's amplitude rises to
+     .20 + .50·lvl with the envelope's re-gaining (owner's
+     order: the speaking motion must read clearly). */
   /\.call-stage \{/.test(clean) && /@keyframes live-pulse/.test(clean) &&
-  /\.call-tile\.is-speaking \.avatar-frame \{[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.16 \+ \.38 \* var\(--lvl, 0\)\)\)/.test(clean)
+  /\.call-tile\.is-speaking \.avatar-frame \{[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.20 \+ \.50 \* var\(--lvl, 0\)\)\)/.test(clean)
   && !/@keyframes call-wave/.test(clean));
 check("prep band CSS present",
   /\.prep-band \{/.test(clean) && /\.prep-list \{/.test(clean) && /\.prep-out \{/.test(clean));

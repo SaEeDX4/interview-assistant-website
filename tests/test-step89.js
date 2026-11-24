@@ -97,17 +97,18 @@ check("N2: the speaking signal is the halo alone — her frame rule and the self
   /\.call-tile\.is-speaking \.avatar-frame \{[^}]*border-color: rgba\(45, 212, 191, \.85\);/.test(clean) &&
   /\.call-self\.is-speaking \{[^}]*border-color: var\(--accent-2\);/.test(clean));
 
-/* ---------- F1/F2/F3: one unit, one floor ---------- */
-check("F2: in the band the label's width IS the frame's width (88px) — one unit, left edges shared (Step 90 re-pin, annotated: the refined name plate is 51.9px tall, so the frame's bottom offset is re-derived — 16 floor + 51.9 plate + 8 gap = 76 — and the band plate carries the plate's 8px padding)",
-  /\.avatar-frame \{ left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; \}/.test(clean) &&
-  /\.call-tile > \.call-tile-label \{ left: 12px; top: auto; bottom: 16px; width: 88px; max-width: 88px; font-size: 12px; padding: 8px; \}/.test(clean));
+/* ---------- F1/F2/F3: one unit, one line ---------- */
+check("F2: in the band the label's width IS the frame's width (88px) — one unit, left edges shared (Step 90 re-pin, annotated: the refined name plate is 51.9px tall, so the frame's bottom offset is re-derived — 16 floor + 51.9 plate + 8 gap = 76 — and the band plate carries the plate's 8px padding. Step 92 re-pin, annotated: the unit moves to the TOP row on the owner's order — frame at top 16, the plate under it at top 134 (16 + 110 + 8) with a fixed 52px height, so the unit is one 88 x 170 box, exactly the self tile's box)",
+  /\.avatar-frame \{ left: 12px; top: 16px; bottom: auto; width: 88px; height: 110px; \}/.test(clean) &&
+  /\.call-tile > \.call-tile-label \{ left: 12px; top: 134px; bottom: auto; width: 88px; max-width: 88px; height: 52px; font-size: 12px; padding: 8px; \}/.test(clean));
 check("F2: the desktop plate is the desktop frame's width too (172px)",
   /\.call-tile-label \{[^}]*width: 172px; max-width: 172px;/.test(clean) &&
   /\.avatar-frame \{[^}]*width: 172px; height: 215px;/.test(clean));
 check("F1: the band window cap reserves 124px per side (Step 90 re-pin, annotated: was 132/side — the cap's collision job is superseded by the field's reserved bottom lane in app.js; the cap now guarantees the standing side clearances, measured 24px participant / 20px self at cap-bound widths, and room for the never-wrapping header row)",
   /\.call-main \.app-window \{ width: min\(432px, calc\(100% - 248px\)\); \}/.test(clean));
-check("F3: the bottom row shares one floor — band label and self tile both anchor at bottom: 16px",
-  /\.call-tile > \.call-tile-label \{[^}]*bottom: 16px;/.test(clean) &&
+check("F3: the row shares one line — in the band the frame and the self tile both anchor at top: 16px (Step 92 re-pin, annotated: Steps 89–90 pinned a shared bottom FLOOR for the bottom row; the owner's top-row order replaces the floor with a shared top line — frame top 16, plate under it, self tile top 16 in the same 170px box; the desktop self tile keeps its bottom: 16px PiP seat)",
+  /\.avatar-frame \{ left: 12px; top: 16px;/.test(clean) &&
+  /\.call-stage:not\(\[data-spotlight\]\):not\(\[data-spotlight-prep\]\) \.call-self \{ top: 16px;/.test(clean) &&
   /\.call-self \{[^}]*bottom: 16px;/.test(clean));
 
 /* ---------- F4: the camera note inside the field ---------- */
@@ -116,9 +117,9 @@ check("F4: #cam-note lives inside .call-main in the markup (after the window and
   html.indexOf('id="app-window"') < html.indexOf('id="spotlight-close"') &&
   html.indexOf('id="spotlight-close"') < html.indexOf('id="cam-note"') &&
   html.indexOf('id="cam-note"') < html.indexOf('id="scene-controls"'));
-check("F4: at >=641 the note is the row's middle element — absolute, bottom-aligned with the row, clear of both tiles",
+check("F4: at >=641 the note is inside the field, clear of the tiles — on desktop the bottom row's middle element; in the band it sits under the window, centred at the window's own width, its seat reserved by the field's fit (Step 92 re-pin, annotated: the band seat moves from the bottom row's left: 116px to under the window — the row it used to sit between no longer exists at the field's bottom)",
   /\.cam-note \{[^}]*position: absolute; left: 204px; right: 160px; bottom: 16px;/.test(clean) &&
-  /\.cam-note \{ left: 116px; \}/.test(clean));
+  /\.cam-note \{ left: 50%; right: auto; transform: translateX\(-50%\); width: min\(432px, calc\(100% - 248px\)\); text-align: center; \}/.test(clean));
 check("F4: on phones the note flows inside the field; in Spotlight it stands down at >=641 and stays in flow on phones",
   /\.cam-note \{ position: static; margin: 12px 0 0; \}/.test(clean) &&
   /\.call-stage\[data-spotlight\] \.cam-note \{ display: none; \}/.test(clean) &&
