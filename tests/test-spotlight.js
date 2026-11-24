@@ -55,8 +55,16 @@ check("demo.html loads spotlight.js after avatar.js",
   && html.indexOf('src="spotlight.js"') > html.indexOf('src="avatar.js"'));
 check("the tap target is a real button over the frame, aria-expanded, hidden at rest",
   /<button type="button" class="avatar-toggle" id="avatar-toggle" aria-expanded="false" aria-label="See the interviewer up close" hidden>/.test(html));
-check("the expand glyph is an inline SVG inside the toggle (icon furniture, not a label)",
-  /class="spotlight-glyph"/.test(html) && /<svg class="spotlight-glyph"/.test(html));
+check("the expand glyph is DELETED (Step 87): the toggle is a bare overlay button, the tile rests clean",
+  /* Step 87 re-pin (annotated): the owner ruled the corners-out
+     glyph made the small tile uglier, and the research showed
+     no call app ships a persistent badge. The glyph and its
+     rules are deleted everywhere; discoverability is the
+     Lean-In performance (pinned in test-step87.js). The
+     toggle itself — a real button with its aria-label — is
+     unchanged. */
+  !/spotlight-glyph/.test(html) && !/spotlight-glyph/.test(clean)
+  && html.includes('id="avatar-toggle"'));
 check("Step 84 re-pin: the live caption element is gone from the tile (it duplicated the QUESTION card — owner's ruling)",
   !/spotlight-caption/.test(html));
 check("the close control is a labelled button, hidden at rest",
@@ -104,8 +112,18 @@ check("radius law: toggle follows the frame (12px; 8px on the phone strip), clos
 /* 4. The driver: a lens, never a scene. */
 check("spotlight.js gates the toggle on the driver's has-avatar state (glyph fallback gets no toggle)",
   spot.includes('tile.classList.contains("has-avatar")') && spot.includes("toggle.hidden = !ok"));
-check("spotlight.js never touches scene state (no scene classes, no speak keys, no pill)",
-  !/is-primed|is-scene|data-speak|scene-pill/.test(spot));
+check("spotlight.js never WRITES scene state (no scene-class writes, no speak keys, no pill)",
+  /* Step 87 re-pin (annotated): the Lean-In hint — commissioned
+     after this contract was written — must know a play is live
+     before it performs, so the module makes exactly ONE
+     read-only eligibility check, classList.contains("is-scene"),
+     and receives the first-question beat through a document
+     event the demo module dispatches. It still never writes a
+     scene class, never reads or sets a speak key, and never
+     touches the pill: the lens does not drive the scene. */
+  !/classList\.(add|remove|toggle)\("(is-primed|is-scene)"\)/.test(spot)
+  && !/data-speak|scene-pill/.test(spot)
+  && spot.includes('classList.contains("is-scene")'));
 check("spotlight.js never pauses, seeks or re-sources a video (the living element flies untouched)",
   !/\.pause\(|\.currentTime|requestVideoFrameCallback/.test(spot)
   && !/avatar-video/.test(spot));

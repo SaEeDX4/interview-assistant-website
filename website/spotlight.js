@@ -230,6 +230,7 @@
 
   function open() {
     if (isOpen || toggle.hidden) { return; }
+    retireHint();
     isOpen = true;
     seq++;
     var mySeq = seq;
@@ -363,6 +364,137 @@
     });
     ro.observe(appWindow);
   }
+
+  /* ---------- Step 87: the Lean-In (the Spotlight hint) ----------
+     The expand glyph is deleted; the tile rests clean, like
+     every call app's. Discoverability is a one-time PERFORMANCE
+     of the tile itself, TipKit-shaped (research:
+     ~/workspace/avatar-expand-affordance/report.md Part 1):
+     eligible only after Start/Watch (the demo module dispatches
+     "ia-scene-first-question" as the first question starts
+     arriving — never on page load, never primed); 900ms later
+     her frame leans 1 -> 1.05 -> 1 over --motion-pulse (900ms,
+     the scoped MOTION.md exception this performance owns) with
+     one sonar ring around her rect, and the bare whisper line
+     fades in under the participant row. A second beat lands at
+     +2.2s if untouched; the whisper leaves at +5s. Retirement
+     is PERMANENT (localStorage "ia-spotlight-hint"): the
+     Spotlight opens by any input (open() calls retireHint), or
+     the performance has run in 2 separate scene plays.
+     Keyboard focus is its own discovery moment: while the
+     toggle holds :focus-visible and the hint is unretired, the
+     whisper shows and one beat fires; focus alone never
+     retires and never counts as a showing. Reduced motion: no
+     lean, no ring — the whisper appears statically at the same
+     mark and is removed at +6s; that counts as a showing. */
+  var HINT_KEY = "ia-spotlight-hint";
+  var hint = { shown: 0, done: false };
+  try {
+    var hintJson = JSON.parse(localStorage.getItem(HINT_KEY));
+    if (hintJson && typeof hintJson.shown === "number") {
+      hint = { shown: hintJson.shown, done: !!hintJson.done };
+    }
+  } catch (e) {}
+  if (hint.shown >= 2) { hint.done = true; }
+  var whisperEl = document.getElementById("spotlight-whisper");
+  var ringEl = document.getElementById("lean-ring");
+  var hintTimers = [], hintActive = false, focusWhisper = false, leanAnim = null;
+  var PULSE_MS = parseInt(rootCs.getPropertyValue("--motion-pulse"), 10) || 900;
+
+  function saveHint() {
+    try { localStorage.setItem(HINT_KEY, JSON.stringify(hint)); } catch (e) {}
+  }
+  /* Step 87 fix: placement is computed from bounding rects,
+     relative to each element's OWN offsetParent. The first
+     version copied the label's offsetTop into the whisper's
+     style — the two elements have different offsetParents, so
+     at phone width the whisper landed ~19px too low, under
+     the app window's top edge, and was painted over: present
+     in the DOM, invisible on the phone. */
+  function placeIn(el, rect) {
+    var parent = el.offsetParent;
+    if (!parent) { return; }
+    var pr = parent.getBoundingClientRect();
+    el.style.left = (rect.left - pr.left) + "px";
+    el.style.top = (rect.top - pr.top) + "px";
+  }
+  function placeHint() {
+    if (ringEl && frame) {
+      var fr = frame.getBoundingClientRect();
+      placeIn(ringEl, fr);
+      ringEl.style.width = fr.width + "px";
+      ringEl.style.height = fr.height + "px";
+      ringEl.style.borderRadius = window.getComputedStyle(frame).borderRadius;
+    }
+    if (whisperEl && tileLabel) {
+      var lr = tileLabel.getBoundingClientRect();
+      placeIn(whisperEl, { left: lr.left, top: lr.bottom + 4 });
+    }
+  }
+  function hideWhisper() {
+    if (whisperEl && !focusWhisper) { whisperEl.classList.remove("is-shown"); }
+  }
+  function stopHint() {
+    hintTimers.forEach(clearTimeout);
+    hintTimers = [];
+    hintActive = false;
+    if (leanAnim) { try { leanAnim.cancel(); } catch (e) {} leanAnim = null; }
+    hideWhisper();
+  }
+  function retireHint() {
+    if (hint.done) { return; }
+    hint.done = true;
+    saveHint();
+    stopHint();
+  }
+  function hintBeat() {
+    if (reduced || hint.done || isOpen) { return; }
+    placeHint();
+    var base = frameBase();
+    var pre = base ? base + " " : "";
+    leanAnim = frame.animate(
+      [{ transform: pre + "scale(1)" },
+       { transform: pre + "scale(1.05)", offset: .35 },
+       { transform: pre + "scale(1)" }],
+      { duration: PULSE_MS, easing: "ease" });
+    if (ringEl) {
+      ringEl.animate(
+        [{ opacity: .5, transform: "scale(1)" },
+         { opacity: 0, transform: "scale(1.5)" }],
+        { duration: PULSE_MS, easing: "ease-out" });
+    }
+  }
+  function performHint() {
+    if (hint.done || isOpen || hintActive || toggle.hidden) { return; }
+    if (!stage.classList.contains("is-scene")) { return; }
+    hintActive = true;
+    hint.shown++;
+    saveHint();
+    placeHint();
+    if (whisperEl) { whisperEl.classList.add("is-shown"); }
+    hintBeat();
+    if (!reduced) { hintTimers.push(setTimeout(hintBeat, 2200)); }
+    hintTimers.push(setTimeout(function () {
+      hintActive = false;
+      hideWhisper();
+      if (hint.shown >= 2) { retireHint(); }
+    }, reduced ? 6000 : 5000));
+  }
+  document.addEventListener("ia-scene-first-question", function () {
+    if (hint.done) { return; }
+    hintTimers.push(setTimeout(performHint, 900));
+  });
+  toggle.addEventListener("focus", function () {
+    if (hint.done || isOpen || !toggle.matches(":focus-visible")) { return; }
+    focusWhisper = true;
+    placeHint();
+    if (whisperEl) { whisperEl.classList.add("is-shown"); }
+    hintBeat();
+  });
+  toggle.addEventListener("blur", function () {
+    focusWhisper = false;
+    if (!hintActive) { hideWhisper(); }
+  });
 
   refreshAvailability();
 })();

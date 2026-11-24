@@ -60,13 +60,21 @@ check("D2: demo sample chips go two-up with tighter padding on phones",
   /\.demo-foot \.chips-big \.chip \{ padding: 8px 12px; \}/.test(clean));
 
 // D3 — the primed window is compact; the run glides it open.
+// Step 87 re-pin (annotated): the reservations no longer live on
+// the stacks at all — they moved to the ANSWER card (hollow-card
+// fix), so the primed state drops them by syncAnswerCard clearing
+// the card's inline min-height (its primed branch), while the
+// primed display:none on the answer layers is unchanged. The
+// glide quantities are now the card's min-height and the
+// question stack's height, on the same house token.
 check("D3: primed scene drops the reservations (is-primed overrides)",
-  /\.call-stage\.is-scene\.is-primed \.demo-question-stack \{ min-height: 0; \}/.test(clean) &&
-  /\.call-stage\.is-scene\.is-primed \.demo-answer-stack \{ min-height: 0; \}/.test(clean) &&
   /\.call-stage\.is-scene\.is-primed \.demo-answer-stack > \* \{ display: none; \}/.test(clean) &&
-  /\.call-stage\.is-scene\.is-primed \.demo-sample-tag \{ min-height: 0; \}/.test(clean));
-check("D3: stacks glide on the house motion token when the run starts",
-  /\.call-stage\.is-scene \.demo-sample-tag \{ transition: min-height var\(--motion-3\) var\(--motion-ease\); \}/.test(clean));
+  /\.call-stage\.is-scene\.is-primed \.demo-sample-tag \{ display: none; \}/.test(clean) &&
+  js.includes('if (callStageEl.classList.contains("is-primed"))')
+  && js.includes('answerCardEl.style.minHeight = "";'));
+check("D3: the cards glide on the house motion token when the run starts",
+  /\.call-main \.app-card--answer,\s*\.demo-body \.app-card--answer \{ transition: min-height var\(--motion-3\) var\(--motion-ease\); \}/.test(clean) &&
+  /\.demo-question-stack \{ transition: height var\(--motion-3\) var\(--motion-ease\); \}/.test(clean));
 check("D3: prime adds is-primed; play/settle/cancel remove it",
   /callStageEl\.classList\.add\("is-primed"\)/.test(js) &&
   (js.match(/callStageEl\.classList\.remove\("is-primed"\)/g) || []).length >= 3);
@@ -118,7 +126,13 @@ check("D5: presence loops are warmed at takeover (no cold seam swaps)",
 // text, wraps, no nowrap/ellipsis cap — is unchanged and is still
 // what this check pins.
 check("D6: tile label wraps cleanly at <=640 (no nowrap/ellipsis cap)",
-  /\.call-tile > \.call-tile-label \{ left: 88px; top: 50%; bottom: auto; transform: translateY\(-50%\); max-width: calc\(100% - 184px\); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1\.3; \}/.test(clean) &&
+  /* Step 87 re-pin (annotated): the chip now hugs its content
+     (width: fit-content) and any wrap is balanced and centred —
+     the owner's crop showed a wide box with the text hugging
+     the left and an orphaned second line. The D6 contract —
+     full text, wraps, no nowrap/ellipsis cap — is unchanged
+     and strengthened. */
+  /\.call-tile > \.call-tile-label \{ left: 88px; top: 50%; bottom: auto; transform: translateY\(-50%\); width: fit-content; max-width: calc\(100% - 184px\); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1\.3; text-align: center; text-wrap: balance; \}/.test(clean) &&
   demo.includes("AI interviewer — simulated"));
 
 // D7 — Step 73/74/77 contracts survive.

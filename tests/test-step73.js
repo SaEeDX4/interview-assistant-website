@@ -54,9 +54,13 @@ check("call stage with a LIVE bar, a running clock and the simulated label",
 check("webcam marker REMOVED entirely (owner decision 2026-11-22: pill, bezel strip and notch all rejected on his phone — no label in any form. Owner clarification the same night: the under-the-webcam FEELING is staged instead — a hardware lens in the frame's bezel (.call-bezel/.call-lens, no text) and the window hanging beneath it; the marker's absence asserted here is unchanged)",
   !demo.includes('class="call-cam"') && !demo.includes("call-cam-lens") &&
   !demo.includes("call-cam-text"));
-check("interviewer tile: label, speaking marker, waveform",
+check("interviewer tile: label, speaking marker, chip meter",
+  /* Step 87 re-pin (annotated): the waveform is deleted — the
+     speaking signal is the frame's halo + the chip's 3-dot
+     meter (id="call-dots"); the label and the speaking marker
+     are unchanged. */
   demo.includes('id="call-tile"') && demo.includes("AI interviewer — simulated") /* Step 75 re-pin: the tile label now carries the honest AI-interviewer label */ &&
-  demo.includes('id="call-speaking"') && demo.includes('id="call-wave"'));
+  demo.includes('id="call-speaking"') && demo.includes('id="call-dots"') && !demo.includes('id="call-wave"'));
 check("the app window sits inside the call frame, below the LIVE bar (Step 73 pinned this against the webcam marker; the marker was removed 2026-11-22, so the bar is the anchor now)",
   demo.indexOf('class="call-bar"') < demo.indexOf('id="app-window"') &&
   demo.includes('class="app-window" id="app-window"'));
@@ -152,9 +156,13 @@ check("the sample tag names the preparation chain",
   demoJs.includes("points are built from your confirmed facts: your resume, the job description, your profile."));
 
 /* ---------- scene CSS ---------- */
-check("call stage + LIVE pulse + speaking waveform CSS present",
+check("call stage + LIVE pulse + speaking halo CSS present",
+  /* Step 87 re-pin (annotated): the call-wave keyframes are
+     deleted with the bars; the speaking CSS is the halo — the
+     frame's box-shadow driven by the --lvl envelope scalar. */
   /\.call-stage \{/.test(clean) && /@keyframes live-pulse/.test(clean) &&
-  /\.call-tile\.is-speaking \.call-wave i \{[^}]*animation: call-wave/.test(clean));
+  /\.call-tile\.is-speaking \.avatar-frame \{[^}]*box-shadow: 0 0 0 2px rgba\(45, 212, 191, calc\(\.16 \+ \.38 \* var\(--lvl, 0\)\)\)/.test(clean)
+  && !/@keyframes call-wave/.test(clean));
 check("prep band CSS present",
   /\.prep-band \{/.test(clean) && /\.prep-list \{/.test(clean) && /\.prep-out \{/.test(clean));
 check("the window hangs under the webcam on desktop (absolute, 432px, centred on the lens axis; re-pin 2026-11-22: top 52px -> 16px — the window now hangs from the call area's top under the bezel lens instead of sharing the participant's top line)",

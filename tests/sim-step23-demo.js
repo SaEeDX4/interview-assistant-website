@@ -56,8 +56,16 @@ class El {
   }
   get className() { return [...this._class].join(" "); }
   set className(v) { this._class = new Set(String(v).split(/\s+/).filter(Boolean)); }
-  get textContent() { return this._text; }
-  set textContent(v) { this._text = String(v); }
+  /* Step 87 harness re-pin (annotated): textContent is now
+     DOM-faithful — the getter aggregates descendants and the
+     setter clears children. Step 87's generation stream splits
+     a row's text into word spans (.sw) while it streams; the old
+     own-text-only stub read a streaming row as empty, which is a
+     stub infidelity, not product behaviour (a real browser's
+     textContent always aggregated). The checks below are
+     unchanged. */
+  get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); }
+  set textContent(v) { this._text = String(v); this.children = []; }
   get innerHTML() { return ""; }
   set innerHTML(v) { if (v === "") { this.children = []; } }
   appendChild(child) { child.parent = this; this.children.push(child); return child; }

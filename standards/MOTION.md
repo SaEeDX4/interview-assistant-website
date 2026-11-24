@@ -28,6 +28,19 @@ than a panel; no other rule may use this token. This follows the
 Step 24 scoped-exception precedent: named, single-purpose, pinned by
 `tests/test-spotlight.js`.
 
+**Scoped exception (owner-approved 2026-11-23):** `--motion-pulse:
+900ms` exists for exactly one performance — the Lean-In, the
+Spotlight discovery hint in the demo (her frame's lean 1 → 1.05 → 1
+and the sonar ring around her tile, consumed only by
+`website/spotlight.js`). It is a *discovery performance*, not an
+interaction response: Material's tap-target prompt breathes at the
+same ~1s tempo. It fires at most twice in a visitor's lifetime
+(after Start/Watch, never on page load), retires permanently on
+first Spotlight use or after two showings, and under reduced motion
+it does not run at all (a static whisper line carries the hint).
+No other rule or script may use this token. Named, single-purpose,
+pinned by `tests/test-step87.js`.
+
 ## 2. Easings — two curves
 
 - **Entrances** (rise, reveal): `cubic-bezier(.2,.7,.3,1)` — fast start,

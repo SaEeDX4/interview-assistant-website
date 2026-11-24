@@ -73,14 +73,26 @@ check("the arc ends on Interview complete with a download anchor",
   demoJs.includes('setScenePill("Interview complete", "ready")') &&
   demo.includes('id="scene-download"') && demo.includes('href="download.html"'));
 check("the candidate's tile carries a speaking state and the closing caption",
-  demo.includes('id="call-self"') && demo.includes('class="call-self-wave"') &&
+  /* Step 87 re-pin (annotated): the self wave is deleted with
+     the bars — the candidate's speaking state is the self
+     tile's halo (border + glow on --lvl) and the "You" chip's
+     dot meter. */
+  demo.includes('id="call-self"') && demo.includes('id="call-self-dots"') &&
   demo.includes('id="call-caption"') &&
-  clean.includes(".call-self.is-speaking .call-self-wave { display: inline-flex; }"));
+  clean.includes(".call-self.is-speaking {"));
 check("scene-mode height reservations keep one window height",
-  clean.includes(".call-stage.is-scene .demo-answer-stack { min-height: var(--scene-answer-min, 0px); }") &&
-  clean.includes(".call-stage.is-scene .demo-question-stack { min-height: var(--scene-question-min, 0px); }") &&
+  /* Step 87 re-pin (annotated): the reservation moved from the
+     stacks to the ANSWER card itself (the hollow-card fix) — the
+     stacks hug their content, syncAnswerCard sets the card's
+     min-height from the same measured vars plus the question
+     compensation, so the one-window-height contract this check
+     has always pinned is preserved by the new mechanism. */
+  !clean.includes(".call-stage.is-scene .demo-answer-stack { min-height: var(--scene-answer-min, 0px); }") &&
+  !clean.includes(".call-stage.is-scene .demo-question-stack { min-height: var(--scene-question-min, 0px); }") &&
   /function sceneReserveHeights\(\)/.test(demoJs) &&
-  /function measureLayer\(el\)/.test(demoJs));
+  /function measureLayer\(el\)/.test(demoJs) &&
+  /function syncAnswerCard\(\)/.test(demoJs) &&
+  demoJs.includes("calc(var(--scene-answer-min, 0px) + var(--scene-tag-min, 0px)"));
 check("the follow-up block is gone — every exchange swaps the main stacks",
   !demo.includes('id="scene-followup"') && !demo.includes('id="scene-rapid"') &&
   !/\.scene-followup \{/.test(clean) && !/\.scene-fq/.test(clean));

@@ -113,8 +113,13 @@ check("story lands the question layer on every beat (setQuestionLayer + buildLay
 // 8. Entrance E3: the bullet's dot lands first (0.6 → 1 in 150ms).
 check("dot-land keyframe exists (scale .6 → 1)",
   /@keyframes dot-land \{ from \{ transform: scale\(\.6\); \} to \{ transform: scale\(1\); \} \}/.test(clean));
-check("the dot lands on new bullets (hero/story + demo)",
-  /\.app-answer li\.is-new \.app-dot,[\s\S]*?\.demo-answer li\.is-new \.app-dot \{ animation: dot-land \.15s cubic-bezier\(\.2,\.7,\.3,1\) both; \}/.test(clean));
+check("the dot lands on new bullets (hero/story; the demo's dots no longer land — Step 87 re-pin)",
+  /* Step 87 re-pin (annotated): the demo's points stopped landing
+     with is-new entirely — answers stream word by word — so the
+     dot-land rule is the hero's alone now. The E3 contract for
+     the hero/story grammar is unchanged. */
+  /\.app-answer li\.is-new \.app-dot \{ animation: dot-land \.15s cubic-bezier\(\.2,\.7,\.3,1\) both; \}/.test(clean)
+  && !/\.demo-answer li\.is-new/.test(clean));
 
 // 9. Entrance E2: the thinking dots crossfade out (150ms) as the first
 // bullet lands, instead of vanishing instantly.

@@ -569,29 +569,43 @@ var IA_VARIANTS = {
   var dynAnswerLayer = null; // The dynamic layer a live AI answer lands in.
 
 
-  /* Step 85 — answer composition timings. A generated answer
-     composes at the full rhythm: a thinking beat, then each point
-     pending for a duration proportional to its length
-     (260 + 3.2 ms/char, floored 300, capped 750 — the shape is the
-     contract, the constant is staging). Prepared answers and
-     variant recompositions run compressed (x0.6, floored 180,
-     capped 450, no thinking beat — the product's prepared bullets
-     are near-instant and a rework is not a fresh composition). A
-     Coach flip is a re-form: its two lines land back-to-back,
-     150 ms apart, with no dots and no pending tense.
+  /* Step 85 — answer composition timings. (Step 87: the two
+     tenses this comment described are gone — see the stream
+     constants below. What survives from Step 85 is the shape:
+     a generated answer runs the full rhythm with a thinking
+     beat; prepared answers and variant recompositions run
+     compressed (x0.6, floored 180, capped 450, no thinking
+     beat — the product's prepared bullets are near-instant and
+     a rework is not a fresh composition); a Coach flip is a
+     re-form of an answer that already exists.)
      Step 86 — the thinking beat is 400 ms, tightened from the
      hero's 500 on the owner's explicit order (2026-11-23): the
      dots must leave quickly so the answer comes up — measured
      dots presence (beat + the 150 ms crossfade out) was 645-655 ms
      per cell in the per-persona audit, over his ~600 ms ceiling;
      at 400 the presence measures ~550 ms and point 1 starts
-     composing 100 ms sooner, while the pending tense still
-     carries the composing read. */
+     generating 100 ms sooner, while the stream that follows
+     carries the generating read. */
   var THINK_MS = 400;
-  var PENDING_BASE = 260, PENDING_PER_CHAR = 3.2;
-  var PENDING_MIN = 300, PENDING_MAX = 750;
+  /* Step 87 — the generation stream's pacing (replaces the
+     pending tense, removed below). Each point streams word by
+     word; a point's stream lasts STREAM_BASE + STREAM_PER_CHAR
+     per character, clamped to [STREAM_MIN, STREAM_MAX] — the
+     shape the old pending beat used, so a full 3-point answer
+     generates in about the time the old plan took, usually
+     less. The per-word interval is that duration divided by the
+     word count, clamped to a brisk [WORD_MS_MIN, WORD_MS_MAX] —
+     the floor keeps even the longest point's total at or under
+     its old pending beat, so no caller waits longer than before.
+     The compressed tempo (prepared answers, the ambush) scales
+     the target by COMPRESSED_FACTOR inside its own clamps. A
+     Coach re-form streams its values faster still, line after
+     line with REFORM_GAP_MS between the two lines. */
+  var STREAM_BASE = 240, STREAM_PER_CHAR = 3.0;
+  var STREAM_MIN = 300, STREAM_MAX = 720;
   var COMPRESSED_FACTOR = 0.6, COMPRESSED_MIN = 180, COMPRESSED_MAX = 450;
-  var REFORM_GAP_MS = 150;
+  var WORD_MS_MIN = 18, WORD_MS_MAX = 55;
+  var REFORM_WORD_MS = 26, REFORM_GAP_MS = 90;
 
   function isReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -672,29 +686,30 @@ var IA_VARIANTS = {
     layers[i].classList.remove("is-hidden");
     return layers[i];
   }
-  /* Step 85 — one reset contract for every row: hidden, at rest, no
-     tense left (no is-new, no is-pending, no thinking dots, the text
-     span's layout restored). Every render path resets through here,
-     so a composition interrupted mid-flight can never leave a
-     half-faint point or a stray dots span on the next use of a
-     layer. */
+  /* Step 85 — one reset contract for every row: hidden, at rest,
+     no residue (no is-new, no thinking dots, the text span's
+     layout restored). Step 87 adds the stream's half: any word
+     spans are flattened back to plain text. Every render path
+     resets through here, so a generation interrupted mid-stream
+     can never leave a half-streamed point or a stray dots span
+     on the next use of a layer. */
   function hideRows(layer) {
     Array.prototype.forEach.call(layer.querySelectorAll("li"), function (li) {
       clearThinkingDots(li);
+      flattenWords(li);
       li.classList.add("is-hidden");
       li.classList.remove("is-new");
-      li.classList.remove("is-pending");
     });
   }
   /* The interruption snap for a layer that STAYS on screen (the
-     settled stage): every row lands instantly — visible, full
-     colour, no animation, no tense residue. */
+     settled stage): every row completes instantly — visible, full
+     final text, no animation, no stream residue. */
   function snapLayerLanded(layer) {
     if (!layer) { return; }
     Array.prototype.forEach.call(layer.querySelectorAll("li"), function (li) {
       clearThinkingDots(li);
+      flattenWords(li);
       li.classList.remove("is-hidden");
-      li.classList.remove("is-pending");
       li.classList.remove("is-new");
     });
   }
@@ -795,58 +810,115 @@ var IA_VARIANTS = {
     answerLayers.push(dynAnswerLayer);
   }
 
-  /* Step 85 — the compose scheduler replaces the uniform 400 ms
-     metronome (the old revealRows): an answer is composed in the
-     product's two tenses, never ticked out. The plan is a pure
-     function of the rows' texts and the tempo, so a caller that
-     chains beats off the composition (the scene) computes the same
-     total via composeDurationMs — the schedule and the cursor can
-     never drift apart.
-       full       — thinking dots inside point 1's own row for the
-                    THINK_MS beat, then each point pending
-                    (whole text, .45) for its proportional beat,
-                    landing with the existing rise, back-to-back.
-       compressed — no dots, no thinking beat; pending beats x0.6.
-                    Prepared answers, variant recompositions, the
-                    interruption simulator.
-       reform     — no dots, no pending: the rows land back-to-back
-                    REFORM_GAP_MS apart. The Coach flip — a re-form
-                    of an answer that already exists, not a new
-                    composition.
+  /* Step 87 — the generation stream replaces Step 85's two-tense
+     composition outright (owner's verdict, 2026-11-23: "first it's
+     faint, then it becomes full… first it shows faint, then a
+     little shake, then full" — deleted). An answer now GENERATES
+     the way Claude's and ChatGPT's do: point 1's words stream in
+     one by one, then point 2's, then point 3's. Every word is
+     FINAL the moment it appears — full colour, no dim resting
+     state, no second transition, no rise. A word may materialize
+     with a soft fade of 120 ms (the .sw.is-in rule) but never
+     sits visibly dim waiting to become the answer. The plan is a
+     pure function of the rows' texts and the tempo, so a caller
+     that chains beats off the generation (the scene) computes
+     the same total via streamDurationMs — the schedule and the
+     cursor can never drift apart, and a follow-up can never
+     arrive before the previous answer finishes generating.
+       full       — thinking dots inside point 1's own row for
+                    the THINK_MS beat (Step 85's seat, Step 86's
+                    budget), then the points stream back-to-back.
+       compressed — no dots, no thinking beat; stream targets
+                    x0.6. Prepared answers, the ambush follow-up,
+                    the interruption simulator.
+       reform     — no dots: the Coach flip's two lines stream
+                    back-to-back, REFORM_GAP_MS apart — a re-form
+                    of an answer that already exists.
      Reduced motion: every row at rest at once, done() immediately —
-     the Step 23 contract, unchanged. The rows are pre-rendered, so
-     the layer — and the window — never change height at any phase:
-     a pending or thinking row occupies its final box throughout. */
+     the Step 23 contract, unchanged. The rows are pre-rendered and
+     keep their final boxes throughout (hidden rows are visibility,
+     never display), so the layer never changes height mid-stream;
+     only the words inside each row arrive progressively. */
   function rowText(li) {
     var span = li.children[1];
     return span ? span.textContent : "";
   }
-  function pendingMs(text, tempo) {
-    var ms = PENDING_BASE + PENDING_PER_CHAR * (text ? text.length : 0);
-    if (tempo === "compressed") {
-      return Math.max(COMPRESSED_MIN, Math.min(COMPRESSED_MAX, Math.round(ms * COMPRESSED_FACTOR)));
-    }
-    return Math.max(PENDING_MIN, Math.min(PENDING_MAX, Math.round(ms)));
+  function wordCount(text) {
+    return text ? text.split(/\s+/).filter(Boolean).length : 0;
   }
-  function composePlan(layer, tempo, dotsAlready) {
+  /* One point's stream: its target duration (the old pending
+     shape) divided across its words, clamped brisk. Returns
+     { ms: per-word interval, total: the row's stream duration }. */
+  function streamRowTiming(text, tempo) {
+    var words = Math.max(1, wordCount(text));
+    var target = STREAM_BASE + STREAM_PER_CHAR * (text ? text.length : 0);
+    if (tempo === "compressed") {
+      target = Math.max(COMPRESSED_MIN, Math.min(COMPRESSED_MAX, Math.round(target * COMPRESSED_FACTOR)));
+    } else {
+      target = Math.max(STREAM_MIN, Math.min(STREAM_MAX, target));
+    }
+    var ms = Math.max(WORD_MS_MIN, Math.min(WORD_MS_MAX, Math.round(target / words)));
+    return { ms: ms, total: ms * words };
+  }
+  function streamPlan(layer, tempo, dotsAlready) {
     var rows = Array.prototype.slice.call(layer.querySelectorAll("li"));
-    var plan = { rows: rows, landAt: [], total: 0 };
+    var plan = { rows: rows, startAt: [], total: 0 };
     if (!rows.length) { return plan; }
     if (tempo === "reform") {
-      rows.forEach(function (li, i) { plan.landAt.push(i * REFORM_GAP_MS); });
-      plan.total = plan.landAt[rows.length - 1];
+      var rt = 0;
+      rows.forEach(function (li) {
+        plan.startAt.push(rt);
+        rt += wordCount(rowText(li)) * REFORM_WORD_MS + REFORM_GAP_MS;
+      });
+      plan.total = rt - REFORM_GAP_MS;
       return plan;
     }
     var t = (tempo === "full" && !dotsAlready) ? THINK_MS : 0;
     rows.forEach(function (li) {
-      t += pendingMs(rowText(li), tempo);
-      plan.landAt.push(t);
+      plan.startAt.push(t);
+      t += streamRowTiming(rowText(li), tempo).total;
     });
     plan.total = t;
     return plan;
   }
-  function composeDurationMs(layer, tempo, dotsAlready) {
-    return composePlan(layer, tempo, dotsAlready).total;
+  function streamDurationMs(layer, tempo, dotsAlready) {
+    return streamPlan(layer, tempo, dotsAlready).total;
+  }
+  /* Split a row's text span into word spans for the stream.
+     Unrevealed words are display:none — true append semantics:
+     inline layout of a revealed prefix never depends on what
+     follows it, so a placed word never moves, and the card grows
+     downward only as lines wrap. Returns the word spans in
+     order. */
+  function splitWords(li) {
+    var span = li.children[1];
+    if (!span) { return []; }
+    if (span.querySelector(".sw")) {
+      return Array.prototype.slice.call(span.querySelectorAll(".sw"));
+    }
+    var words = span.textContent.split(" ");
+    span.textContent = "";
+    var spans = [];
+    words.forEach(function (w, i) {
+      var s = document.createElement("span");
+      s.className = "sw is-hidden";
+      /* The separator space rides inside the word's own span
+         (a trailing space collapses at a line break exactly as
+         a separate text node would, and the joined textContent
+         is unchanged) — no text nodes are created, which the
+         DOM-stub sims require. */
+      s.textContent = i < words.length - 1 ? w + " " : w;
+      span.appendChild(s);
+      spans.push(s);
+    });
+    return spans;
+  }
+  /* Flatten a row's text span back to plain text — the reset
+     contract's other half: after this, no .sw spans, no stream
+     residue; the row reads exactly as it was built. */
+  function flattenWords(li) {
+    var span = li.children[1];
+    if (span && span.querySelector(".sw")) { span.textContent = span.textContent; }
   }
   function detachEl(el) {
     if (!el) { return; }
@@ -889,10 +961,11 @@ var IA_VARIANTS = {
     var text = li.children[1];
     if (text) { text.style.visibility = ""; }
   }
-  /* The handoff: as point 1 goes pending, its text returns (at the
-     pending opacity) while the dots crossfade out over 150 ms —
-     the hero's E2 typing-to-message handoff, inside the slot. The
-     row is never empty and never double-occupied at rest. */
+  /* The handoff: as point 1 starts streaming, its text span
+     returns (its words still display:none until each one's turn)
+     while the dots crossfade out over 150 ms — the hero's E2
+     typing-to-message handoff, inside the slot. The row is never
+     empty and never double-occupied at rest. */
   function fadeThinkingDots(li, schedule) {
     var dots = dotsSpanOf(li);
     var text = li.children[1];
@@ -909,42 +982,53 @@ var IA_VARIANTS = {
       list.push(setTimeout(function () { if (!isStale()) { fn(); } }, ms));
     };
   }
-  function composeRows(layer, tempo, schedule, done, dotsAlready) {
-    var plan = composePlan(layer, tempo, dotsAlready);
+  /* Step 87 — the generation stream. Each row, at its plan start:
+     unhide, split its text into word spans, then reveal the words
+     one by one at the row's interval — every word final at full
+     colour the moment it appears (the .sw.is-in fade is 120 ms
+     and starts FROM full-colour arrival, never a dim rest). The
+     thinking dots (Step 85's seat: inside point 1's own row) hand
+     off exactly as before — they fade as the first words stream.
+     A stale schedule (interruption, a new question) simply never
+     fires, and the caller's reset (hideRows / snapLayerLanded)
+     flattens whatever partial stream remains. */
+  function streamRows(layer, tempo, schedule, done, dotsAlready) {
+    var plan = streamPlan(layer, tempo, dotsAlready);
     var rows = plan.rows;
     if (isReducedMotion() || !rows.length) {
       rows.forEach(function (li) {
         clearThinkingDots(li);
+        flattenWords(li);
         li.classList.remove("is-hidden");
-        li.classList.remove("is-pending");
         li.classList.remove("is-new");
       });
       if (done) { done(); }
       return;
     }
-    if (tempo === "reform") {
-      rows.forEach(function (li, i) {
-        schedule(function () {
-          li.classList.remove("is-hidden");
-          li.classList.add("is-new");
-          if (i === rows.length - 1 && done) { done(); }
-        }, plan.landAt[i]);
-      });
-      return;
-    }
     if (tempo === "full" && !dotsAlready) { showThinkingDots(rows[0]); }
     rows.forEach(function (li, i) {
-      var startAt = i === 0 ? plan.landAt[0] - pendingMs(rowText(li), tempo) : plan.landAt[i - 1];
+      var last = i === rows.length - 1;
       schedule(function () {
-        if (tempo === "full" && i === 0) { fadeThinkingDots(li, schedule); }
         li.classList.remove("is-hidden");
-        li.classList.add("is-pending");
-      }, startAt);
-      schedule(function () {
-        li.classList.remove("is-pending");
-        li.classList.add("is-new");
-        if (i === rows.length - 1 && done) { done(); }
-      }, plan.landAt[i]);
+        if (i === 0 && dotsSpanOf(li)) { fadeThinkingDots(li, schedule); }
+        var words = splitWords(li);
+        if (!words.length) { if (last && done) { done(); } return; }
+        var iv = tempo === "reform" ? REFORM_WORD_MS
+          : streamRowTiming(rowText(li), tempo).ms;
+        words.forEach(function (w, k) {
+          schedule(function () {
+            w.classList.remove("is-hidden");
+            w.classList.add("is-in");
+            if (k === words.length - 1 && last && done) { done(); }
+          }, k * iv);
+        });
+        /* The row completes: once its last word's materialize
+           fade has run (150ms), flatten the word spans back to
+           plain text — a settled answer is byte-clean, with no
+           stream residue in the resting DOM. (An interruption
+           inside that window flattens via the snap instead.) */
+        schedule(function () { flattenWords(li); }, (words.length - 1) * iv + 160);
+      }, plan.startAt[i]);
     });
   }
 
@@ -963,10 +1047,10 @@ var IA_VARIANTS = {
   }
 
   // Step 23: renderBullets / renderCoach are retired — the layers are
-  // built once by buildDemoLayers and composed by composeRows
-  // (Step 85), so no bullet is ever inserted during a play (the old
-  // DOM-insertion + skeleton placeholders are what grew the window
-  // by 170px).
+  // built once by buildDemoLayers and generated by streamRows
+  // (Step 87; composeRows in Step 85), so no bullet is ever inserted
+  // during a play (the old DOM-insertion + skeleton placeholders are
+  // what grew the window by 170px).
 
   // Step 23: switch layers, then reveal the active layer's rows one at
   // a time. Nothing is emptied, inserted or replaced during a play —
@@ -986,6 +1070,7 @@ var IA_VARIANTS = {
       questionLayer.textContent = "“" + questionText + "”";
     }
     showLayer(questionLayers, idx);
+    syncAnswerCard();
     var layer = showLayer(answerLayers, idx * 2 + (mode === "coach" ? 1 : 0));
     currentAnswerLayer = layer;
     hideRows(layer);
@@ -997,17 +1082,17 @@ var IA_VARIANTS = {
       sampleTagEl.classList.add("is-hidden");
     }
     setStatus("Preparing your points…");
-    /* Step 85: the status now accompanies the whole composition
-       (it used to be announced by the same timer that landed point
-       1), and the composition replaces the old fixed delay +
-       metronome. The tempo follows the view: a Coach view is the
-       product's back-to-back emission (reform); an Answer view is a
-       prepared answer (compressed). The generic structure's honest
-       label lands once, with the finished render. */
+    /* Step 85: the status accompanies the whole generation (it
+       used to be announced by the same timer that landed point
+       1). Step 87: the generation is a word stream. The tempo
+       follows the view: a Coach view is the product's back-to-back
+       re-form (reform); an Answer view is a prepared answer
+       (compressed). The generic structure's honest label lands
+       once, with the finished render. */
     var finalStatus = !sample
       ? "Sample structure — in the real app, points come from your confirmed facts."
       : (mode === "coach" ? "Coach points ready." : "3 points ready.");
-    composeRows(layer, mode === "coach" ? "reform" : "compressed",
+    streamRows(layer, mode === "coach" ? "reform" : "compressed",
       listSchedule(timers, function () { return myRun !== runId; }),
       function () { finishRender(myRun, finalStatus); });
   }
@@ -1076,6 +1161,7 @@ var IA_VARIANTS = {
     qLayer.dir = /[\u0600-\u06FF]/.test(text) ? "rtl" : "ltr";
     qLayer.lang = typedLang(text) || "en";
     showLayer(questionLayers, SAMPLE_KEYS.length);
+    syncAnswerCard();
     var idx = SAMPLE_KEYS.indexOf(key);
     var layer = showLayer(answerLayers, idx * 2 + (mode === "coach" ? 1 : 0));
     currentAnswerLayer = layer;
@@ -1085,9 +1171,9 @@ var IA_VARIANTS = {
     sampleTagEl.classList.remove("is-hidden");
     setStatus("Preparing your points…");
     /* Step 85: a matched sample is a prepared answer — compressed
-       composition in Answer view, the back-to-back re-form in
-       Coach view, exactly as showAnswer. */
-    composeRows(layer, mode === "coach" ? "reform" : "compressed",
+       generation in Answer view, the back-to-back re-form in
+       Coach view, exactly as showAnswer. Step 87: it streams. */
+    streamRows(layer, mode === "coach" ? "reform" : "compressed",
       listSchedule(timers, function () { return myRun !== runId; }),
       function () {
         finishRender(myRun, mode === "coach" ? "Coach points ready." : "3 points ready.");
@@ -1129,6 +1215,7 @@ var IA_VARIANTS = {
     var questionLayer = questionLayers[idx];
     questionLayer.textContent = "“" + text + "”";
     showLayer(questionLayers, idx);
+    syncAnswerCard();
     dynAnswerLayer.textContent = "";
     dynAnswerLayer.dir = /[\u0600-\u06FF]/.test(text) ? "rtl" : "ltr";
     dynAnswerLayer.lang = typedLang(text) || "en";
@@ -1141,8 +1228,8 @@ var IA_VARIANTS = {
        dots sit in point 1's own slot (a placeholder first row that
        the first returned bullet takes over) for exactly as long as
        the proxy actually takes. The fetch IS this answer's thinking
-       beat; when the bullets land, the composition continues at the
-       full rhythm from that same slot. */
+       beat; when the bullets land, the generation streams at the
+       full rhythm from that same slot (Step 87). */
     var waitRow = makeBullet("");
     dynAnswerLayer.appendChild(waitRow);
     showThinkingDots(waitRow);
@@ -1163,7 +1250,7 @@ var IA_VARIANTS = {
           dynAnswerLayer.appendChild(li);
         }
       });
-      composeRows(layer, "full",
+      streamRows(layer, "full",
         listSchedule(timers, function () { return myRun !== runId; }),
         function () {
           finishRender(myRun, "Live answer — generated for this question.");
@@ -1350,10 +1437,10 @@ var IA_VARIANTS = {
       });
       if (intState) { intState.textContent = label.replace(" (", " — ").replace(")", ""); }
       /* Step 85: a length switch is a recomposition, not a fresh
-         answer — compressed rhythm, no thinking beat, same two
-         tenses; the status line finally describes a visibly
-         shorter composition. */
-      composeRows(layer, "compressed",
+         answer — compressed rhythm, no thinking beat; the status
+         line finally describes a visibly shorter composition.
+         Step 87: the recomposition streams, like every answer. */
+      streamRows(layer, "compressed",
         listSchedule(intTimers, function () { return myRun !== intRun; }),
         function () {
           intStatus.textContent = label + " ready — simulated.";
@@ -1457,6 +1544,7 @@ var IA_VARIANTS = {
 
   function setSpeaking(on) {
     if (callTileEl) { callTileEl.classList.toggle("is-speaking", !!on); }
+    haloSet(haloHer, callTileEl, !!on);
     if (callSpeakingEl) { callSpeakingEl.hidden = !on; }
     // Step 76: when the interviewer stops speaking, the speak
     // key the avatar driver reads from the stage clears with it.
@@ -1493,9 +1581,15 @@ var IA_VARIANTS = {
     return spans;
   }
 
-  /* Step 85: sceneReveal is retired — the scene's answers compose
-     through composeRows (Step 85's two tenses), and the one instant
-     swap it still served (the Rapid ambush beat) is snapLayerLanded. */
+  /* Step 85: sceneReveal is retired — the scene's answers generate
+     through streamRows (Step 87's word stream; Step 85's two
+     tenses before it). Step 87: the ambush beat's second stage is
+     retired with it — the follow-up's shortened answer is ONE
+     layer (Rapid), generated once, directly in its final form;
+     the old two-stage landing (a Concise answer shown, then wiped
+     and replaced by the Rapid line — the owner's phone evidence,
+     2026-11-23) can never happen again because the intermediate
+     layer no longer exists in the scene. */
 
   function buildSceneQuestion(key, text) {
     var layer = document.createElement("p");
@@ -1523,13 +1617,11 @@ var IA_VARIANTS = {
     answerStack.appendChild(sceneA.story);
     sceneA.why = buildAnswerLayer(SAMPLES.why.answer, false, "en");
     answerStack.appendChild(sceneA.why);
-    if (typeof INT !== "undefined" && INT && INT.concise && INT.rapid) {
-      sceneA.concise = buildAnswerLayer(INT.concise, false, "en");
-      answerStack.appendChild(sceneA.concise);
+    if (typeof INT !== "undefined" && INT && INT.rapid) {
       sceneA.rapid = buildAnswerLayer(INT.rapid, false, "en");
       answerStack.appendChild(sceneA.rapid);
     }
-    sceneAnswerLayers = [sceneA.story, sceneA.why, sceneA.concise, sceneA.rapid];
+    sceneAnswerLayers = [sceneA.story, sceneA.why, sceneA.rapid];
     thanksWords = buildWordSpans(callCaptionEl, THANKS_LINE);
     thanksWords.forEach(function (w) { w.classList.add("is-hidden"); });
     sceneReserveHeights();
@@ -1543,6 +1635,11 @@ var IA_VARIANTS = {
 
   function measureLayer(el) {
     if (!el) { return 0; }
+    /* Step 87: the DOM-stub sims have no computed-style engine —
+       measurements there are meaningless anyway (their contract
+       is state, not geometry), so a stub reads 0 instead of
+       throwing. Real browsers always take the true path. */
+    if (typeof window.getComputedStyle !== "function") { return 0; }
     var wasHidden = el.classList.contains("is-hidden");
     var rows = el.querySelectorAll("li.is-hidden");
     el.classList.remove("is-hidden");
@@ -1569,7 +1666,7 @@ var IA_VARIANTS = {
   function sceneReserveHeights() {
     if (!sceneOn) { return; }
     var maxA = 0, maxQ = 0;
-    [answerLayers[0], sceneA.story, sceneA.why, sceneA.concise, sceneA.rapid].forEach(function (l) {
+    [answerLayers[0], sceneA.story, sceneA.why, sceneA.rapid].forEach(function (l) {
       maxA = Math.max(maxA, measureLayer(l));
     });
     [sceneQ.tell, sceneQ.follow, sceneQ.story, sceneQ.why].forEach(function (q) {
@@ -1577,12 +1674,311 @@ var IA_VARIANTS = {
     });
     if (maxA) { callStageEl.style.setProperty("--scene-answer-min", maxA + "px"); }
     if (maxQ) { callStageEl.style.setProperty("--scene-question-min", maxQ + "px"); }
+    var tagH = measureTagHeight();
+    if (tagH > 0) { callStageEl.style.setProperty("--scene-tag-min", tagH + "px"); }
+    /* The stack-based formula below is a fallback: the exact
+       reservation is the card's own measured height (see
+       measureSceneCard), invalidated here whenever the layer
+       measurements are refreshed. */
+    /* A blind re-measure (every layer reads 0) must not wipe a
+       good max layer — the classic side's rule, applied here. */
+    if (maxA > 0) {
+      sceneCardMin = 0;
+      sceneCardMaxLayer = null;
+      [answerLayers[0], sceneA.story, sceneA.why, sceneA.rapid].forEach(function (l) {
+        if (l && measureLayer(l) === maxA) { sceneCardMaxLayer = l; }
+      });
+    }
+    syncAnswerCard();
+  }
+
+  var sceneCardMin = 0, sceneCardMaxLayer = null;
+
+  /* The scene statuses whose wrap height the card reservation
+     must cover — every status the scene script can show while
+     an answer is up (the closing "Four questions…" status is
+     excluded on purpose: the complete state has always had its
+     own taller geometry). test-step87 pins this list against
+     the literals in the scene script, so the two cannot drift. */
+  var SCENE_MEASURE_STATUSES = [
+    "Preparing your points…",
+    "3 points ready — sample.",
+    "The follow-up came fast — the answer shortened itself.",
+    "A harder question — its answer was already in the question bank.",
+    "The closing question — the same preparation answers it.",
+    "You answer — the three points, in your own words.",
+    "You answer — one line, said in seconds.",
+    "You answer — the difficult-project story, already prepared.",
+    "You answer — calm, because it was ready."
+  ];
+
+  /* Step 87 (audit fix): the scene ANSWER card's reservation,
+     measured on the card itself. The stack + chrome-constant
+     formula under-read the tallest layer's real card content by
+     ~3px (the story cell's window settled 3px taller than the
+     others at 768): label zone, gaps, status and tag compose in
+     the card in ways a constant cannot reproduce at every
+     width. So, once per measurement cycle, show the tallest
+     layer with the tag in place, clear the min-height, and read
+     the card's own height — exact by construction, the same
+     trick the classic side's base approximates. The whole dance
+     is synchronous (no paint can intervene), and it only runs
+     when the stage is in scene mode and unprimed; otherwise the
+     formula fallback stands until the next eligible sync. */
+  function measureSceneCard() {
+    if (!answerCardEl || !callStageEl) { return; }
+    if (!callStageEl.classList.contains("is-scene")
+        || callStageEl.classList.contains("is-primed")) { return; }
+    if (!sceneCardMaxLayer) { return; }
+    if (typeof window.getComputedStyle !== "function") { return; }
+    var shown = null;
+    answerLayers.concat(sceneAnswerLayers).forEach(function (l) {
+      if (l && !l.classList.contains("is-hidden")) { shown = l; }
+    });
+    var prevMin = answerCardEl.style.minHeight;
+    var prevTransition = answerCardEl.style.transition;
+    /* The card's min-height rides a transition (the D3 glide) —
+       a read taken in the same frame as the clear would return
+       the transition's starting value, not the content height.
+       Suppress the transition for the dance's duration. */
+    answerCardEl.style.transition = "none";
+    answerCardEl.style.minHeight = "";
+    answerLayers.concat(sceneAnswerLayers).forEach(function (l) {
+      if (l) { l.classList.add("is-hidden"); }
+    });
+    sceneCardMaxLayer.classList.remove("is-hidden");
+    var canAttr = sampleTagEl && typeof sampleTagEl.hasAttribute === "function";
+    var wasHiddenAttr = canAttr ? sampleTagEl.hasAttribute("hidden") : false;
+    var wasHiddenCls = sampleTagEl ? sampleTagEl.classList.contains("is-hidden") : false;
+    var prevTagText = sampleTagEl ? sampleTagEl.textContent : "";
     if (sampleTagEl) {
-      var prev = sampleTagEl.textContent;
+      if (canAttr) { sampleTagEl.removeAttribute("hidden"); }
+      sampleTagEl.classList.remove("is-hidden");
       sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
-      var tagH = measureLayer(sampleTagEl);
-      sampleTagEl.textContent = prev;
-      if (tagH) { callStageEl.style.setProperty("--scene-tag-min", tagH + "px"); }
+    }
+    /* The status's height depends on how its text wraps at this
+       width (measured: 40px for one line, 42.9 for two at 768) —
+       a dance done under a short status under-reserves every
+       longer one. Read the card under the tallest scene status. */
+    var prevStatus = statusEl ? statusEl.textContent : "";
+    if (statusEl) {
+      var bestStatus = prevStatus, bestStatusH = -1;
+      SCENE_MEASURE_STATUSES.forEach(function (s) {
+        statusEl.textContent = s;
+        var sh = statusEl.offsetHeight || 0;
+        if (sh > bestStatusH) { bestStatusH = sh; bestStatus = s; }
+      });
+      statusEl.textContent = bestStatus;
+    }
+    var h = answerCardEl.offsetHeight || 0;
+    if (statusEl) { statusEl.textContent = prevStatus; }
+    if (sampleTagEl) {
+      sampleTagEl.textContent = prevTagText;
+      if (wasHiddenAttr && canAttr) { sampleTagEl.setAttribute("hidden", ""); }
+      if (wasHiddenCls) { sampleTagEl.classList.add("is-hidden"); }
+    }
+    answerLayers.concat(sceneAnswerLayers).forEach(function (l) {
+      if (l) { l.classList.add("is-hidden"); }
+    });
+    if (shown) { shown.classList.remove("is-hidden"); }
+    answerCardEl.style.minHeight = prevMin;
+    answerCardEl.style.transition = prevTransition;
+    if (h > 0) { sceneCardMin = h; }
+  }
+
+  /* Step 87: the sample tag's true height, measured with the
+     sample text in place and the element fully unhidden. The
+     hidden attribute (and the primed state's display:none) made
+     the old inline measure read 8px — margins only — for as
+     long as the stack carried the reservation and the error
+     stayed invisible; now the tag's height feeds the ANSWER
+     card's min-height, so it must be real. Returns 0 when the
+     element cannot be seen at all (the primed display:none
+     defeats even an unhidden measure) — callers treat 0 as
+     "blind: keep the last good value", never as a height. */
+  function measureTagHeight() {
+    if (!sampleTagEl) { return 0; }
+    var prev = sampleTagEl.textContent;
+    var canAttr = typeof sampleTagEl.hasAttribute === "function";
+    var wasHiddenAttr = canAttr ? sampleTagEl.hasAttribute("hidden") : false;
+    var wasHiddenCls = sampleTagEl.classList.contains("is-hidden");
+    if (canAttr) { sampleTagEl.removeAttribute("hidden"); }
+    sampleTagEl.classList.remove("is-hidden");
+    sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+    var h = sampleTagEl.offsetHeight > 0 ? measureLayer(sampleTagEl) : 0;
+    sampleTagEl.textContent = prev;
+    if (wasHiddenAttr && canAttr) { sampleTagEl.setAttribute("hidden", ""); }
+    if (wasHiddenCls) { sampleTagEl.classList.add("is-hidden"); }
+    return h;
+  }
+
+  /* Step 87 — the two cards' heights, one mechanism for both
+     modes. The owner's two verdicts: a short answer left the
+     ANSWER card hollow (status + tag pinned to its bottom across
+     a void), and a one-line question left a dead band in the
+     QUESTION card. The real app's own composition is the fix:
+     the question pane is compact, the answer pane dominates and
+     absorbs. So: the QUESTION card hugs its current question
+     exactly (the scene stack's reservation is gone; the classic
+     stack's height is set to the active layer), and the ANSWER
+     card carries the whole reservation as a min-height — its
+     content stays compact at the top (status follows the points
+     at the normal gap; the reserved space rests BELOW the sample
+     tag, inside the dominant pane) — plus a compensation term:
+     however much shorter the current question is than the
+     tallest, the answer card grows by exactly that, so the
+     WINDOW's outer height never changes between a one-line and
+     a two-line question, and nothing outside the window moves.
+     The compensation is measured, not assumed: qNow is the active
+     question layer's own height (during transcription the layer
+     already occupies its final height — Step 84's words hold
+     their layout — so the cards resize at most once per question,
+     at its start, on the sheet's height glide; never mid-line).
+     Chrome constants (the card's padding, head, status and tag
+     margins, borders, and the scene status floor) were verified
+     against the pre-change card heights to the pixel:
+     scene 109.4, classic 91.0 (the tag enters both bases as
+     its full margin-box, so its margin is not in the chrome). */
+  var answerCardEl = null;
+  try {
+    answerCardEl = answerStack ? answerStack.closest(".app-card--answer") : null;
+  } catch (e) { answerCardEl = null; }
+  var classicAnswerBase = 0, classicQuestionMax = 0, classicMeasured = false;
+  var classicCardMin = 0, classicCardMaxLayer = null;
+  var CLASSIC_MEASURE_STATUSES = [
+    "3 points ready.",
+    "Sample structure — in the real app, points come from your confirmed facts."
+  ];
+  var classicTagH = 0; // Last true tag height (blind measures keep it).
+
+  function activeQuestionLayer() {
+    if (!questionStack) { return null; }
+    var kids = questionStack.children;
+    for (var i = 0; i < kids.length; i++) {
+      if (!kids[i].classList.contains("is-hidden")) { return kids[i]; }
+    }
+    return null;
+  }
+
+  function measureClassicCards() {
+    if (!questionStack) { return; }
+    classicQuestionMax = 0;
+    questionLayers.slice(0, SAMPLE_KEYS.length + 1).forEach(function (l) {
+      classicQuestionMax = Math.max(classicQuestionMax, measureLayer(l));
+    });
+    var maxA = 0;
+    answerLayers.forEach(function (l) {
+      if (l !== dynAnswerLayer) {
+        var lh = measureLayer(l);
+        if (lh > maxA) { maxA = lh; classicCardMaxLayer = l; }
+      }
+    });
+    var tagH = measureTagHeight();
+    if (tagH > 0) { classicTagH = tagH; }
+    /* A blind re-measure (the primed state's display:none reads
+       every layer as 0) must not shrink a base already measured
+       in a seeing state — keep the last good base. */
+    if (maxA > 0) { classicAnswerBase = maxA + (classicTagH || 0); classicCardMin = 0; }
+    classicMeasured = true;
+  }
+
+  /* Step 87: the classic ANSWER card's settled height, measured
+     whole — the same direct method as the scene card. The old
+     hand constant (91.0 over the tallest layer + tag) under-
+     covered the real overhead by 39.1px at 403: the Coach flip
+     row (27px, hidden at layer-measure time) plus the settled
+     status's wrap. The dance assembles the tallest settled
+     classic state — tallest layer, sample tag, flip shown,
+     tallest settled status — and reads the card itself. */
+  function measureClassicCard() {
+    if (!answerCardEl || !classicCardMaxLayer) { return; }
+    if (callStageEl && callStageEl.classList.contains("is-scene")) { return; }
+    if (typeof window.getComputedStyle !== "function") { return; }
+    var shown = null;
+    answerLayers.forEach(function (l) {
+      if (l && !l.classList.contains("is-hidden")) { shown = l; }
+    });
+    var prevMin = answerCardEl.style.minHeight;
+    var prevTransition = answerCardEl.style.transition;
+    answerCardEl.style.transition = "none";
+    answerCardEl.style.minHeight = "";
+    answerLayers.forEach(function (l) {
+      if (l) { l.classList.add("is-hidden"); }
+    });
+    classicCardMaxLayer.classList.remove("is-hidden");
+    var canAttr = sampleTagEl && typeof sampleTagEl.hasAttribute === "function";
+    var wasHiddenAttr = canAttr ? sampleTagEl.hasAttribute("hidden") : false;
+    var wasHiddenCls = sampleTagEl ? sampleTagEl.classList.contains("is-hidden") : false;
+    var prevTagText = sampleTagEl ? sampleTagEl.textContent : "";
+    if (sampleTagEl) {
+      if (canAttr) { sampleTagEl.removeAttribute("hidden"); }
+      sampleTagEl.classList.remove("is-hidden");
+      sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
+    }
+    var prevFlipHidden = flipEl ? flipEl.hidden : null;
+    if (flipEl) { flipEl.hidden = false; }
+    var prevStatus = statusEl ? statusEl.textContent : "";
+    if (statusEl) {
+      var bestStatus = prevStatus, bestStatusH = -1;
+      CLASSIC_MEASURE_STATUSES.forEach(function (s) {
+        statusEl.textContent = s;
+        var sh = statusEl.offsetHeight || 0;
+        if (sh > bestStatusH) { bestStatusH = sh; bestStatus = s; }
+      });
+      statusEl.textContent = bestStatus;
+    }
+    var h = answerCardEl.offsetHeight || 0;
+    if (statusEl) { statusEl.textContent = prevStatus; }
+    if (flipEl && prevFlipHidden !== null) { flipEl.hidden = prevFlipHidden; }
+    if (sampleTagEl) {
+      sampleTagEl.textContent = prevTagText;
+      if (wasHiddenAttr && canAttr) { sampleTagEl.setAttribute("hidden", ""); }
+      if (wasHiddenCls) { sampleTagEl.classList.add("is-hidden"); }
+    }
+    answerLayers.forEach(function (l) {
+      if (l) { l.classList.add("is-hidden"); }
+    });
+    if (shown) { shown.classList.remove("is-hidden"); }
+    answerCardEl.style.minHeight = prevMin;
+    answerCardEl.style.transition = prevTransition;
+    if (h > 0) { classicCardMin = h; }
+  }
+
+  function syncAnswerCard() {
+    if (!answerCardEl) { return; }
+    var q = activeQuestionLayer();
+    var qNow = q ? measureLayer(q) : 0;
+    if (callStageEl && callStageEl.classList.contains("is-scene")) {
+      if (callStageEl.classList.contains("is-primed")) {
+        answerCardEl.style.minHeight = "";
+        if (questionStack) { questionStack.style.height = ""; }
+        return;
+      }
+      var qMax = parseFloat(callStageEl.style.getPropertyValue("--scene-question-min")) || qNow;
+      var comp = Math.max(0, qMax - qNow);
+      /* The question stack's height is set explicitly in scene
+         mode too, so its glide and the answer card's min-height
+         glide run on the same curve and the window's total holds
+         through the swap, not just at rest. */
+      if (qNow && questionStack) { questionStack.style.height = qNow + "px"; }
+      if (!sceneCardMin) { measureSceneCard(); }
+      if (sceneCardMin) {
+        answerCardEl.style.minHeight = (sceneCardMin + comp).toFixed(1) + "px";
+      } else {
+        answerCardEl.style.minHeight =
+          "calc(var(--scene-answer-min, 0px) + var(--scene-tag-min, 0px) + " +
+          (109.4 + comp).toFixed(1) + "px)";
+      }
+      return;
+    }
+    if (!classicMeasured) { measureClassicCards(); }
+    if (qNow) { questionStack.style.height = qNow + "px"; }
+    var ccomp = Math.max(0, classicQuestionMax - qNow);
+    if (!classicCardMin) { measureClassicCard(); }
+    if (classicCardMin) {
+      answerCardEl.style.minHeight = (classicCardMin + ccomp).toFixed(1) + "px";
+    } else if (classicAnswerBase) {
+      answerCardEl.style.minHeight = (classicAnswerBase + 91.0 + ccomp).toFixed(1) + "px";
     }
   }
 
@@ -1600,6 +1996,81 @@ var IA_VARIANTS = {
 
   function setSelfSpeaking(on) {
     if (callSelfEl) { callSelfEl.classList.toggle("is-speaking", !!on); }
+    haloSet(haloSelf, callSelfEl, !!on);
+  }
+
+  /* Step 87 — the halo envelope engine. One smoothed scalar per
+     speaker (--lvl on the tile / the self tile), written per
+     animation frame; the CSS turns it into the frame's breathing
+     glow and the chip meter's dot steps. Sources, honestly:
+     - her voice on the WebAudio graph: the REAL envelope — RMS
+       off the existing AnalyserNode (Step 77 put it on the graph
+       so the sound is measurable, not assumed);
+     - the element fallback path, silent/staged runs and the
+       self view: a staged syllabic envelope, declared ambience
+       (the same class as the presence loops).
+     The smoothing is the calm contract: attack ~80ms, release
+     ~250ms, time-based exponentials — the light swells and
+     settles like breath and can never jitter per-sample. If it
+     ever read nervous in review, the researched fallback (a
+     clean static outline) replaces it, per the Part 2 report.
+     Reduced motion: no loop — a fixed level while speaking,
+     and the CSS reduced block renders the halo static. */
+  var haloHer = { lvl: 0, on: false }, haloSelf = { lvl: 0, on: false };
+  var haloRaf = 0, haloLast = 0, haloBuf = null;
+  function haloRawHer() {
+    if (audioAnalyser && audioCtx && beatNow) {
+      if (!haloBuf || haloBuf.length !== audioAnalyser.fftSize) {
+        haloBuf = new Uint8Array(audioAnalyser.fftSize);
+      }
+      audioAnalyser.getByteTimeDomainData(haloBuf);
+      var sum = 0, i, v;
+      for (i = 0; i < haloBuf.length; i++) { v = (haloBuf[i] - 128) / 128; sum += v * v; }
+      var rms = Math.sqrt(sum / haloBuf.length);
+      return Math.max(0, Math.min(1, (rms - 0.015) * 3.4));
+    }
+    return -1;
+  }
+  function haloStaged(t, seed) {
+    return .38 + .34 * Math.abs(Math.sin(t * .0042 + seed)) * (.6 + .4 * Math.sin(t * .00137 + seed * 2.7));
+  }
+  function haloStep(state, raw, dt) {
+    var tau = raw > state.lvl ? 80 : 250;
+    state.lvl += (raw - state.lvl) * (1 - Math.exp(-dt / tau));
+    if (state.lvl < 0.005 && raw === 0) { state.lvl = 0; }
+    return state.lvl;
+  }
+  function haloFrame(now) {
+    haloRaf = 0;
+    var dt = Math.min(64, now - (haloLast || now));
+    haloLast = now;
+    var live = false;
+    [[haloHer, callTileEl, 0], [haloSelf, callSelfEl, 2.1]].forEach(function (cfg) {
+      var st = cfg[0], el = cfg[1];
+      if (!el) { return; }
+      var raw = 0;
+      if (st.on) {
+        raw = cfg[2] === 0 ? haloRawHer() : -1;
+        if (raw < 0) { raw = haloStaged(now, cfg[2]); }
+        live = true;
+      }
+      var lvl = haloStep(st, raw, dt);
+      el.style.setProperty("--lvl", lvl.toFixed(3));
+      if (lvl > 0) { live = true; }
+    });
+    if (live) { haloRaf = requestAnimationFrame(haloFrame); }
+  }
+  function haloKick() {
+    if (isReducedMotion()) { return; }
+    if (!haloRaf) { haloLast = performance.now(); haloRaf = requestAnimationFrame(haloFrame); }
+  }
+  function haloSet(state, el, on) {
+    state.on = on;
+    if (isReducedMotion()) {
+      if (el) { el.style.setProperty("--lvl", on ? "0.55" : "0"); }
+      return;
+    }
+    haloKick();
   }
 
   /* Step 84 — voice-tracked transcription. The real app streams
@@ -1759,16 +2230,24 @@ var IA_VARIANTS = {
      land at their measured spoken onsets (Step 84) — the clip's
      own rhythm in a voiced run, the staged pacing otherwise —
      the settle beat follows her last word, detection commits
-     the line, and the answer composes in two tenses (Step 85)
-     while the moment is still live. Returns the cursor for the
-     next beat, computed from the composition's own plan so a
-     follow-up can never arrive before the previous answer has
-     settled. */
+     the line, and the answer generates as a word stream
+     (Step 87) while the moment is still live. Returns the
+     cursor for the next beat, computed from the generation's
+     own plan so a follow-up can never arrive before the
+     previous answer has finished generating. */
   function sceneAsk(t, q, aLayer, opts) {
     var speech = sceneClipDuration(opts.clip, opts.speech);
     var pacing = scenePacing(opts.clip, opts.speech);
     var tempo = opts.tempo || "full";
     sceneLater(t * 1000, function () {
+      /* Step 87: the Lean-In's eligibility beat — the first
+         question of a play starts arriving. spotlight.js hears
+         it and performs the discovery hint 900ms later (never
+         on page load, never in the primed state). */
+      if (!sceneFirstAsked) {
+        sceneFirstAsked = true;
+        document.dispatchEvent(new CustomEvent("ia-scene-first-question"));
+      }
       setSpeaking(true);
       // Step 76: publish which line is being spoken and its
       // staged length — the avatar driver lip-syncs to these.
@@ -1776,6 +2255,7 @@ var IA_VARIANTS = {
       callStageEl.setAttribute("data-speak-dur", String(Math.round(speech * 100) / 100));
       setScenePill("Listening", "listening");
       showLayer(questionLayers, q.idx);
+      syncAnswerCard();
       q.layer.classList.add("is-provisional");
       resetQuestionWords(q);
       /* Step 85: the previous answer stays on screen while she
@@ -1800,14 +2280,16 @@ var IA_VARIANTS = {
       setScenePill("Question detected", "detected");
       snapQuestionFinal(q);
       /* The commit: the new answer's layer takes the card, the
-         status starts telling the truth about the composition,
-         and the answer composes — dots in point 1's own row,
-         points pending then landed (full), or the compressed
-         recomposition for the ambush follow-up. */
+         status starts telling the truth about the generation,
+         and the answer streams — dots in point 1's own row until
+         its first words land (full), or the compressed stream
+         for the ambush follow-up. Exactly one answer form is
+         generated per question (Step 87): the layer swapped in
+         here is the only one this beat ever shows. */
       sceneShowAnswer(aLayer);
       hideRows(aLayer);
       if (opts.statusText) { setStatus(opts.statusText); } else { setStatus("Preparing your points…"); }
-      composeRows(aLayer, tempo, sceneSchedule, function () {
+      streamRows(aLayer, tempo, sceneSchedule, function () {
         setScenePill("Answer ready", "ready");
         if (opts.tagOnReady) {
           sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
@@ -1816,7 +2298,7 @@ var IA_VARIANTS = {
         if (opts.readyText) { setStatus(opts.readyText); }
       });
     });
-    return detectedAt + composeDurationMs(aLayer, tempo, false) / 1000 + 0.5;
+    return detectedAt + streamDurationMs(aLayer, tempo, false) / 1000 + 0.5;
   }
 
   /* The candidate answers: the self tile speaks, the status says
@@ -1881,13 +2363,14 @@ var IA_VARIANTS = {
     currentAnswerLayer = layer;
     sceneAnswerShown = null;
     /* Step 85: the settled stage snaps the layer landed — a Skip
-       caught mid-composition must not leave a half-pending point
-       or a thinking-dots residue on the settled card. */
+       caught mid-generation must not leave a half-streamed point
+       or a thinking-dots residue on the settled card (Step 87). */
     snapLayerLanded(layer);
     sampleTagEl.textContent = "Illustrative sample — in the real app, points are built from your confirmed facts: your resume, the job description, your profile.";
     sampleTagEl.classList.remove("is-hidden");
     setStatus(SETTLED_STATUS);
     refreshFlip();
+    syncAnswerCard();
   }
 
   /* Step 77 — the page no longer spends the interview on a
@@ -1926,12 +2409,23 @@ var IA_VARIANTS = {
     hideRows(layer);
     setScenePill("Ready when you are", "");
     setStatus("Press \u201cStart the interview\u201d — the interviewer speaks, the app hears the question, and three short points land, ready to say.");
+    syncAnswerCard();
   }
 
   function playScene(opts) {
-    if (!sceneOn || isReducedMotion()) { settleScene(); setStartBtn("replay"); return; }
+    if (!sceneOn || isReducedMotion()) {
+      /* Step 87: even the instant settle is an eligible play
+         for the Lean-In — spotlight.js performs its static
+         reduced form (whisper only) from the same beat. */
+      if (!sceneFirstAsked) {
+        sceneFirstAsked = true;
+        document.dispatchEvent(new CustomEvent("ia-scene-first-question"));
+      }
+      settleScene(); setStartBtn("replay"); return;
+    }
     sceneVoiced = !!(opts && opts.voice);
     scene.run++;
+    sceneFirstAsked = false;
     clearSceneTimers();
     sceneClipStopAll();
     clearTimers();
@@ -1974,11 +2468,12 @@ var IA_VARIANTS = {
 
     /* The arc, beat by beat (cursor in seconds; a voiced run
        stretches each ask to its clip's real length):
-       1 warm-up (tell) → you answer → 2 ambush follow-up (Concise,
-       then Rapid) → you answer → 3 the difficult-project story →
-       you answer → 4 the closing question (why) → you answer →
-       5 the interviewer's thanks, captioned in his tile, and the
-       window's work is done — the download moment. */
+       1 warm-up (tell) → you answer → 2 ambush follow-up (the
+       shortened answer, generated once, in its final form) → you
+       answer → 3 the difficult-project story → you answer → 4 the
+       closing question (why) → you answer → 5 the interviewer's
+       thanks, captioned in his tile, and the window's work is
+       done — the download moment. */
     // Step 76: a visitor-started run (Start / Replay) first lets
     // the avatar's greeting finish — the first question never
     // talks over it. The autoplay run has no greeting to protect,
@@ -1989,19 +2484,21 @@ var IA_VARIANTS = {
       tagOnReady: true, readyText: "3 points ready — sample."
     });
     t = sceneYou(t + 0.4, 1.8, "You answer — the three points, in your own words.");
-    // The ambush: asked fast, answered shorter, then shorter still.
-    t = sceneAsk(t + 0.35, sceneQ.follow, sceneA.concise, {
+    /* The ambush: asked fast, answered shorter — ONCE (Step 87).
+       The follow-up's answer is the Rapid line itself, generated
+       a single time with the compressed stream, directly in its
+       final form, under the beat's one truthful status line. The
+       old second stage (a Concise answer composed, then wiped
+       0.9s later and replaced by the Rapid line under a second
+       status) is deleted: the owner's phone showed two different
+       answers to one question, which is precisely what the real
+       product never does — its shortening is one answer, formed
+       once. */
+    t = sceneAsk(t + 0.35, sceneQ.follow, sceneA.rapid, {
       clip: "follow", speech: 1.1, tempo: "compressed",
       statusText: "The follow-up came fast — the answer shortened itself."
     });
-    sceneLater((t + 0.9) * 1000, function () {
-      sceneShowAnswer(sceneA.rapid);
-      snapLayerLanded(sceneA.rapid);
-      setScenePill("Answer ready", "ready");
-      setStatus("Faster still — one line. In the real app, this shortening is automatic.");
-    });
-    t = t + 1.4;
-    t = sceneYou(t, 1.4, "You answer — one line, said in seconds.");
+    t = sceneYou(t + 0.4, 1.4, "You answer — one line, said in seconds.");
     t = sceneAsk(t + 0.35, sceneQ.story, sceneA.story, {
       clip: "story", speech: 2.0,
       statusText: "A harder question — its answer was already in the question bank."
@@ -2136,6 +2633,7 @@ var IA_VARIANTS = {
      belongs to a sounding run only (playScene sets it from
      sceneVoiced). Skip and Download keep their existing drivers. */
   var sceneRunStarted = false;
+  var sceneFirstAsked = false;
   function setSceneControls(state) {
     if (sceneReplayBtn) {
       sceneReplayBtn.hidden = !(state === "playing" || state === "complete" ||
@@ -2468,6 +2966,24 @@ var IA_VARIANTS = {
   // the classic default sample, staged on load, exactly as before.
   buildDemoLayers();
   buildSceneLayers();
+  /* Step 87: the classic card measurements behind syncAnswerCard —
+     taken once the layers exist; refreshed when fonts land (wraps
+     change) and on resize (widths change wraps), like the scene's
+     own reservations. */
+  measureClassicCards();
+  syncAnswerCard();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      classicMeasured = false;
+      measureClassicCards();
+      syncAnswerCard();
+    });
+  }
+  window.addEventListener("resize", function () {
+    classicMeasured = false;
+    measureClassicCards();
+    syncAnswerCard();
+  });
   if (sceneOn) {
     if (sceneStartBtn) { sceneStartBtn.hidden = false; }
     if (isReducedMotion()) {

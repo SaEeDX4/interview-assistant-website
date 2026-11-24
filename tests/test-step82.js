@@ -58,8 +58,11 @@ check("the demo module guard does not require the mode buttons",
 
 // 5. The garble fix: registry + a hide at every handoff.
 check("scene answer layers are registered for the classic manager",
+  /* Step 87 re-pin (annotated): the registry drops sceneA.concise
+     — the ambush's intermediate layer is deleted with the
+     two-stage shortening; the follow-up's one answer is Rapid. */
   /var sceneAnswerLayers = \[\];/.test(js) &&
-  /sceneAnswerLayers = \[sceneA\.story, sceneA\.why, sceneA\.concise, sceneA\.rapid\];/.test(js) &&
+  /sceneAnswerLayers = \[sceneA\.story, sceneA\.why, sceneA\.rapid\];/.test(js) &&
   /function hideSceneAnswers\(\)/.test(js));
 check("hideSceneAnswers runs at every scene-to-classic handoff and classic render",
   (js.match(/hideSceneAnswers\(\);/g) || []).length >= 6,

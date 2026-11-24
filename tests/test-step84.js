@@ -105,14 +105,17 @@ check("sceneAsk paces its question by the table, not the uniform wstep",
   ask.length > 0 && !/wstep/.test(ask) && ask.includes("startTranscription(q, opts.clip, pacing)"));
 check("detection lands at speech end + the settle beat (pacing.endMs + SCENE_SETTLE_MS)",
   ask.includes("pacing.endMs + SCENE_SETTLE_MS"));
-check("the commit snaps the question final at detection, before the composition starts",
+check("the commit snaps the question final at detection, before the generation starts",
   /* Step 85 re-pin: the fixed +0.4s points gap is gone — at the
-     commit the answer layer swaps in and composeRows starts (its
-     thinking beat absorbs the breath); the cursor returns from
-     composeDurationMs, not from a pointsAt constant. */
-  ask.includes("snapQuestionFinal(q)") && ask.includes("composeRows(aLayer, tempo, sceneSchedule")
-  && ask.includes("composeDurationMs(aLayer, tempo, false)")
-  && ask.indexOf("snapQuestionFinal(q)") < ask.indexOf("composeRows(aLayer"));
+     commit the answer layer swaps in and the generation starts
+     (its thinking beat absorbs the breath); the cursor returns
+     from the plan, not from a pointsAt constant.
+     Step 87 re-pin: the generation is streamRows and the plan
+     is streamDurationMs (composeRows/composeDurationMs retired
+     with the two tenses). */
+  ask.includes("snapQuestionFinal(q)") && ask.includes("streamRows(aLayer, tempo, sceneSchedule")
+  && ask.includes("streamDurationMs(aLayer, tempo, false)")
+  && ask.indexOf("snapQuestionFinal(q)") < ask.indexOf("streamRows(aLayer"));
 
 /* 4. The interruption snap. */
 check("cancelScene snaps every scene question final (never left half-dim)",

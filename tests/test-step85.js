@@ -1,37 +1,39 @@
 /* Step 85 — answer composition: "Composed, in two tenses".
    Run: node tests/test-step85.js (from
    ~/workspace/interview-assistant-website).
-   The contracts pinned here (research:
-   ~/workspace/answer-motion-idea/report.md, Candidate A; the
-   owner's caught defect on the prototype is FLAW #1 below):
+   STEP 87 RE-PIN (annotated, 2026-11-23): the owner rejected the
+   two-tense motion outright ("first it's faint, then it becomes
+   full… first it shows faint, then a little shake, then full")
+   and Step 87 replaced it with a word-by-word generation stream
+   (streamRows / streamPlan — pinned in test-step87.js). What
+   Step 85 built that SURVIVES, and what this file still pins:
    - FLAW #1 (the dots' seat): there is NO standalone thinking
      element in the demo — the dots live inside point 1's own
      <li>, absolutely placed on its first line while its text
      span keeps the layout (visibility, never display). The
      settled label->point-1 distance therefore equals the card's
-     natural spacing by construction; the Playwright audit in
-     the step workspace asserts the measured equality.
-   - the pending tense is the site's own: .45 opacity (the
-     hero's is-pending), landed with the existing rise; the dots
-     ride the named pulse .9s and crossfade out over .15s (the
-     hero's E2 handoff) as point 1 goes pending. No new motion
-     tokens.
-   - the pending duration SHAPE: 260 + 3.2ms/char, floored and
-     capped (full 300/750; compressed x0.6, 180/450) — monotonic
-     in length. The metronome is gone: no revealRows, no demo
-     STAGE_MS, no pointsAt in sceneAsk.
-   - tempos at the call sites: scene asks compose full (the
+     natural spacing by construction.
+   - the dots ride the named pulse .9s and crossfade out over
+     .15s (the hero's E2 handoff) as point 1 starts streaming.
+   - tempos at the call sites: scene asks generate full (the
      ambush follow-up compressed), prepared/classic answers
-     compressed, a Coach view re-forms (Keywords, Structure
-     +150ms), a live typed answer waits with the dots in point
-     1's slot and composes full on arrival.
+     compressed, a Coach view re-forms, a live typed answer
+     waits with the dots in point 1's slot and generates full
+     on arrival.
    - the previous answer survives a follow-up question until
      the new commit: sceneAsk swaps the answer layer inside
      the detection timer, never at question start.
-   - interruption snaps: hideRows is the full reset (no tense
-     residue), settleScene snaps its layer landed.
-   - the status line accompanies the composition: set before
-     composeRows runs, replaced only by the finished render. */
+   - interruption snaps: hideRows is the full reset, settleScene
+     snaps its layer landed.
+   - the status line accompanies the generation: set before
+     streamRows runs, replaced only by the finished render.
+   What DIED with the two tenses, and is pinned dead here: the
+   pending tense (.45) in the demo, the pendingMs shape, the
+   rise landing on demo points, and the ambush's second stage
+   (the Rapid snap landing). The stream's own contracts
+   (pacing shape, full-colour words, snap-on-interruption,
+   the single ambush landing, the card reservations) live in
+   test-step87.js. */
 const fs = require("fs");
 const path = require("path");
 
@@ -64,49 +66,42 @@ check("showThinkingDots seats the dots in the row and keeps its text in layout (
   sliceFn(demoJs, "function showThinkingDots(", "function clearThinkingDots(").includes('text.style.visibility = "hidden"')
   && sliceFn(demoJs, "function showThinkingDots(", "function clearThinkingDots(").includes("li.appendChild(dots)")
   && !/style\.display/.test(sliceFn(demoJs, "function showThinkingDots(", "function fadeThinkingDots(")));
-check("the handoff crossfades the dots out over .15s as point 1 goes pending (is-out)",
+check("the handoff crossfades the dots out over .15s as point 1 starts streaming (is-out)",
   /\.demo-answer li \.app-thinking-dots \{[^}]*transition: opacity \.15s/.test(clean)
   && /\.demo-answer li \.app-thinking-dots\.is-out \{ opacity: 0; \}/.test(clean)
   && sliceFn(demoJs, "function fadeThinkingDots(", "function listSchedule(").includes('classList.add("is-out")'));
 
-/* 2. The two tenses, on the site's existing vocabulary. */
-check("the pending tense is the hero's own .45 (demo-answer flavour)",
-  /\.demo-answer li\.is-pending \{ opacity: \.45; \}/.test(clean));
+/* 2. The two tenses are gone from the demo; the stream is the
+   one scheduler. (The hero keeps its own .45 — .app-answer —
+   untouched; that is a different module's vocabulary.) */
+check("no pending tense in the demo: no .demo-answer is-pending rule, no demo rise landing",
+  !/\.demo-answer li\.is-pending/.test(clean)
+  && !/\.demo-answer li\.is-new \{/.test(clean)
+  && /\.app-answer li\.is-pending \{ opacity: \.45; \}/.test(clean));
 check("the dots ride the named pulse .9s, like .app-thinking — no new motion token was minted",
   /\.demo-answer li \.app-thinking-dots \{[^}]*animation: pulse \.9s ease-in-out infinite alternate;/.test(clean)
   && !/--motion-5/.test(clean));
-check("composeRows is the one scheduler (full / compressed / reform), reduced motion rests everything",
-  /function composeRows\(layer, tempo, schedule, done, dotsAlready\) \{/.test(demoJs)
-  && sliceFn(demoJs, "function composeRows(", "\n  function finishRender(").indexOf("isReducedMotion()")
-     < sliceFn(demoJs, "function composeRows(", "\n  function finishRender(").indexOf('tempo === "reform"'));
+check("streamRows is the one scheduler (full / compressed / reform), reduced motion rests everything",
+  /function streamRows\(layer, tempo, schedule, done, dotsAlready\) \{/.test(demoJs)
+  && sliceFn(demoJs, "function streamRows(", "\n  function finishRender(").indexOf("isReducedMotion()")
+     < sliceFn(demoJs, "function streamRows(", "\n  function finishRender(").indexOf('tempo === "reform"'));
 
-/* 3. The pending-duration shape (evaluated, not eyeballed). */
+/* 3. Constants: THINK_MS survives at Step 86's 400; the pending
+   shape is deleted, the compressed shape survives. */
 const consts = {};
-["PENDING_BASE", "PENDING_PER_CHAR", "PENDING_MIN", "PENDING_MAX", "COMPRESSED_FACTOR", "COMPRESSED_MIN", "COMPRESSED_MAX", "THINK_MS", "REFORM_GAP_MS"]
+["PENDING_BASE", "PENDING_PER_CHAR", "PENDING_MIN", "PENDING_MAX", "COMPRESSED_FACTOR", "COMPRESSED_MIN", "COMPRESSED_MAX", "THINK_MS"]
   .forEach(function (name) {
     const mm = demoJs.match(new RegExp("(?:var |, )" + name + " = ([0-9.]+)[;,]"));
     consts[name] = mm ? parseFloat(mm[1]) : NaN;
   });
-/* Step 86 re-pin: THINK_MS 500 -> 400 on the owner's explicit order
-   (dots must leave quickly; measured presence 645-655ms beat his
-   ~600ms ceiling). The other constants are unchanged. */
-check("the composition constants are the spec's (400 / 260+3.2 / 300-750 / x0.6 180-450 / 150)",
-  consts.THINK_MS === 400 && consts.PENDING_BASE === 260 && consts.PENDING_PER_CHAR === 3.2
-  && consts.PENDING_MIN === 300 && consts.PENDING_MAX === 750
-  && consts.COMPRESSED_FACTOR === 0.6 && consts.COMPRESSED_MIN === 180 && consts.COMPRESSED_MAX === 450
-  && consts.REFORM_GAP_MS === 150);
-const pendingFn = new Function("PENDING_BASE", "PENDING_PER_CHAR", "PENDING_MIN", "PENDING_MAX", "COMPRESSED_FACTOR", "COMPRESSED_MIN", "COMPRESSED_MAX",
-  sliceFn(demoJs, "function pendingMs(", "function composePlan(") + "\nreturn pendingMs;");
-const pendingMs = pendingFn(consts.PENDING_BASE, consts.PENDING_PER_CHAR, consts.PENDING_MIN, consts.PENDING_MAX,
-  consts.COMPRESSED_FACTOR, consts.COMPRESSED_MIN, consts.COMPRESSED_MAX);
-check("pendingMs is monotonic in length (a longer point composes longer)",
-  pendingMs("x".repeat(30), "full") < pendingMs("x".repeat(80), "full")
-  && pendingMs("x".repeat(80), "full") < pendingMs("x".repeat(120), "full"));
-check("pendingMs respects the floors and caps in both tempos",
-  pendingMs("", "full") === 300 && pendingMs("x".repeat(400), "full") === 750
-  && pendingMs("", "compressed") === 180 && pendingMs("x".repeat(400), "compressed") === 450);
-check("compressed is the full shape at x0.6 in the unclamped middle range",
-  pendingMs("x".repeat(80), "compressed") === Math.round(pendingMs("x".repeat(80), "full") * 0.6));
+check("THINK_MS is 400 (Step 86) and the compressed shape survives (x0.6, 180/450)",
+  consts.THINK_MS === 400
+  && consts.COMPRESSED_FACTOR === 0.6 && consts.COMPRESSED_MIN === 180 && consts.COMPRESSED_MAX === 450);
+check("the pending constants are deleted with the tense (PENDING_BASE/PER_CHAR/MIN/MAX)",
+  isNaN(consts.PENDING_BASE) && isNaN(consts.PENDING_PER_CHAR)
+  && isNaN(consts.PENDING_MIN) && isNaN(consts.PENDING_MAX)
+  && !/function pendingMs\(/.test(demoJs) && !/function composePlan\(/.test(demoJs)
+  && !/function composeRows\(/.test(demoJs) && !/function composeDurationMs\(/.test(demoJs));
 
 /* 4. The metronome is gone. */
 check("no revealRows, no demo STAGE_MS, no pointsAt remain in the demo module",
@@ -115,17 +110,17 @@ check("no revealRows, no demo STAGE_MS, no pointsAt remain in the demo module",
   && !/pointsAt/.test(sliceFn(demoJs, "function sceneAsk(", "function sceneYou(")));
 
 /* 5. Tempos at the call sites. */
-check("classic answers: Coach view re-forms, Answer view composes compressed (showAnswer)",
-  sliceFn(demoJs, "function showAnswer(", "/* Step 57").includes('composeRows(layer, mode === "coach" ? "reform" : "compressed"'));
-check("a matched typed sample composes at the same two tempos (showTypedMatch)",
-  sliceFn(demoJs, "function showTypedMatch(", "// Step 73 — language guard").includes('composeRows(layer, mode === "coach" ? "reform" : "compressed"'));
-check("a live typed answer waits with the dots in point 1's slot, then composes full (showTypedAI)",
+check("classic answers: Coach view re-forms, Answer view generates compressed (showAnswer)",
+  sliceFn(demoJs, "function showAnswer(", "/* Step 57").includes('streamRows(layer, mode === "coach" ? "reform" : "compressed"'));
+check("a matched typed sample generates at the same two tempos (showTypedMatch)",
+  sliceFn(demoJs, "function showTypedMatch(", "// Step 73 — language guard").includes('streamRows(layer, mode === "coach" ? "reform" : "compressed"'));
+check("a live typed answer waits with the dots in point 1's slot, then generates full (showTypedAI)",
   sliceFn(demoJs, "function showTypedAI(", "/* Step 82").includes("showThinkingDots(waitRow)")
-  && sliceFn(demoJs, "function showTypedAI(", "/* Step 82").includes('composeRows(layer, "full"')
+  && sliceFn(demoJs, "function showTypedAI(", "/* Step 82").includes('streamRows(layer, "full"')
   && sliceFn(demoJs, "function showTypedAI(", "/* Step 82").includes("waitRow.children[1].textContent = b"));
-check("the interruption simulator recomposes compressed (showInt)",
-  sliceFn(demoJs, "function showInt(", "intBtns[0].addEventListener").includes('composeRows(layer, "compressed"'));
-check("the scene's ambush follow-up composes compressed; the other asks default to full",
+check("the interruption simulator re-generates compressed (showInt)",
+  sliceFn(demoJs, "function showInt(", "intBtns[0].addEventListener").includes('streamRows(layer, "compressed"'));
+check("the scene's ambush follow-up generates compressed; the other asks default to full",
   js.includes('clip: "follow", speech: 1.1, tempo: "compressed"')
   && sliceFn(demoJs, "function sceneAsk(", "function sceneYou(").includes('var tempo = opts.tempo || "full";'));
 
@@ -134,27 +129,28 @@ const ask = sliceFn(demoJs, "function sceneAsk(", "function sceneYou(");
 const askStart = ask.slice(0, ask.indexOf("var detectedAt"));
 check("the previous answer survives the question: no answer swap at ask start",
   askStart.length > 0 && !/sceneShowAnswer/.test(askStart) && !/hideRows\(aLayer\)/.test(askStart));
-check("at the commit: question snaps final, the layer swaps, status starts, composition runs — in that order",
+check("at the commit: question snaps final, the layer swaps, status starts, generation runs — in that order",
   ask.indexOf("snapQuestionFinal(q)") < ask.indexOf("sceneShowAnswer(aLayer)")
-  && ask.indexOf("sceneShowAnswer(aLayer)") < ask.indexOf("composeRows(aLayer, tempo, sceneSchedule")
+  && ask.indexOf("sceneShowAnswer(aLayer)") < ask.indexOf("streamRows(aLayer, tempo, sceneSchedule")
   && ask.indexOf("setStatus(") > ask.indexOf("sceneShowAnswer(aLayer)")
-  && ask.indexOf("setStatus(") < ask.indexOf("composeRows(aLayer, tempo, sceneSchedule"));
-check("the scene cursor returns from the composition's own plan (composeDurationMs)",
-  ask.includes("return detectedAt + composeDurationMs(aLayer, tempo, false) / 1000 + 0.5;"));
+  && ask.indexOf("setStatus(") < ask.indexOf("streamRows(aLayer, tempo, sceneSchedule"));
+check("the scene cursor returns from the generation's own plan (streamDurationMs)",
+  ask.includes("return detectedAt + streamDurationMs(aLayer, tempo, false) / 1000 + 0.5;"));
 
 /* 7. Interruption snaps and the reset contract. */
-check("hideRows is the full reset: dots cleared, pending removed, rows hidden",
+check("hideRows is the full reset: dots cleared, word spans flattened, rows hidden",
   sliceFn(demoJs, "function hideRows(", "/* The interruption snap").includes("clearThinkingDots(li)")
-  && sliceFn(demoJs, "function hideRows(", "/* The interruption snap").includes('classList.remove("is-pending")'));
-check("settleScene snaps its settled layer landed (no half-pending residue)",
+  && sliceFn(demoJs, "function hideRows(", "/* The interruption snap").includes("flattenWords(li)"));
+check("settleScene snaps its settled layer landed (no half-streamed residue)",
   sliceFn(demoJs, "function settleScene(", "function primeScene(").includes("snapLayerLanded(layer)"));
-check("the Rapid ambush beat lands by snap, not by a reveal",
-  js.includes("snapLayerLanded(sceneA.rapid)") && !/sceneReveal\(/.test(js));
+check("the ambush has no second stage left: no snap landing for Rapid, no 'Faster still' status",
+  !js.includes("snapLayerLanded(sceneA.rapid)") && !js.includes("Faster still")
+  && !/sceneReveal\(/.test(js));
 
-/* 8. The status accompanies the composition. */
-check("showAnswer sets Preparing before composing and schedules no competing status timer",
+/* 8. The status accompanies the generation. */
+check("showAnswer sets Preparing before generating and schedules no competing status timer",
   sliceFn(demoJs, "function showAnswer(", "/* Step 57").indexOf('setStatus("Preparing your points…")')
-    < sliceFn(demoJs, "function showAnswer(", "/* Step 57").indexOf("composeRows(layer")
+    < sliceFn(demoJs, "function showAnswer(", "/* Step 57").indexOf("streamRows(layer")
   && !/setTimeout/.test(sliceFn(demoJs, "function showAnswer(", "/* Step 57")));
 
 console.log(`\n${pass} passed, ${fail} failed`);

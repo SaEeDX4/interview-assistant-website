@@ -98,6 +98,16 @@
      --motion-3 (exits are faster than entrances). Owner
      confirmation pending; pinned by tests/test-spotlight.js. */
   --motion-4: 400ms;
+  /* Step 87 — the second scoped exception, recorded in
+     MOTION.md on the owner's approval of the Lean-In research:
+     --motion-pulse exists for exactly one performance, the
+     Spotlight discovery hint (her frame's lean + the sonar ring
+     around her tile), consumed ONLY by spotlight.js. A discovery
+     performance breathes at Material's tap-target tempo (~1s);
+     it is not an interaction response, it fires at most twice
+     in a visitor's lifetime, and it retires forever on first
+     use. No other rule or script may use this token. */
+  --motion-pulse: 900ms;
   --container: 1120px;
   --shadow-card: 0 12px 32px rgba(0, 0, 0, .28);
   --shadow-lift: 0 20px 48px rgba(0, 0, 0, .38);
@@ -317,17 +327,27 @@ p { margin: 0 0 16px; }
   font-size: 22px; line-height: 1.42; color: var(--text);
 }
 .demo-answer li .app-dot { margin-top: 12px; }
-.demo-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
-/* Step 85 — the demo's answers compose in the product's two tenses
-   (the hero's grammar, Step 21/25, brought to the demo): a point that
-   is still being written rests at the pending opacity, and the
-   thinking dots live INSIDE point 1's own row — absolutely placed on
-   its first line, over the layout-present text — so the dots' seat
-   is the point's own slot: when they crossfade out and the pending
-   point fades in, nothing is left behind and nothing moves. There is
-   deliberately no standalone dots row in the demo (the prototype's
-   reserved band above point 1 was the owner's caught defect). */
-.demo-answer li.is-pending { opacity: .45; }
+/* Step 87 — the demo's answers GENERATE as a word stream (the
+   two tenses of Step 85 — a point resting faint at the pending
+   opacity, then landing with a rise — are deleted on the owner's
+   verdict: "first it's faint, then it becomes full… first it
+   shows faint, then a little shake, then full"). A word is final
+   the moment it appears: unrevealed words are display:none (true
+   append — a placed word never moves, the card grows downward
+   only as lines wrap), and a revealed word materializes with a
+   soft 120 ms fade from nothing to FULL colour — it never sits
+   visibly dim. No transform ever touches a point: there is no
+   rise here anymore. The thinking dots keep Step 85's seat —
+   INSIDE point 1's own row, absolutely placed on its first line,
+   over the layout-present text — so when they crossfade out and
+   the first words stream in, nothing is left behind and nothing
+   moves. There is deliberately no standalone dots row in the
+   demo (the prototype's reserved band above point 1 was the
+   owner's caught defect). The hero keeps its own grammar
+   (.app-answer's is-pending / rise) untouched. */
+.demo-answer .sw.is-hidden { display: none; }
+@keyframes sw-in { from { opacity: 0; } to { opacity: 1; } }
+.demo-answer .sw.is-in { animation: sw-in .12s ease-out both; }
 .demo-answer li.is-thinking { position: relative; }
 .demo-answer li .app-thinking-dots {
   position: absolute; inset-inline-start: 15px; top: 6px;
@@ -899,8 +919,7 @@ html.story-player .story-window {
 .app-answer li { display: flex; gap: 8px; align-items: flex-start; font-size: 19px; line-height: 1.42; color: var(--app-text); }
 .app-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--app-accent); margin-top: 8px; }
 .app-answer li.is-new { animation: rise .25s cubic-bezier(.2,.7,.3,1) both; }
-.app-answer li.is-new .app-dot,
-.demo-answer li.is-new .app-dot { animation: dot-land .15s cubic-bezier(.2,.7,.3,1) both; }
+.app-answer li.is-new .app-dot { animation: dot-land .15s cubic-bezier(.2,.7,.3,1) both; }
 .app-answer li.is-pending { opacity: .45; }
 .app-thinking { color: var(--app-accent); font-size: 12px; line-height: 1.4; letter-spacing: .08em; margin: 0 0 12px; animation: pulse .9s ease-in-out infinite alternate; transition: opacity .15s cubic-bezier(.2,.7,.3,1); /* Step 25 (E2): the dots crossfade out over 150ms as the first bullet lands, instead of vanishing instantly — the Lottie typing-to-message handoff. Opacity only; the row's slot stays reserved. */ }
 
@@ -1581,43 +1600,38 @@ body.cta-visible { padding-bottom: 96px; }
   background: rgba(10, 12, 16, .72); padding: 4px 8px; border-radius: 8px;
 }
 .call-speaking { color: var(--accent-2-light); }
-/* Step 79: the wave exists only while the interviewer is actually
-   speaking — until this step only its animation was state-gated,
-   so a static dotted row sat across the persona's chin in every
-   primed screenshot (owner's phone). The self wave already
-   followed this law; the tile wave now does too. */
-.call-wave {
-  /* Step 81: the wave rides the avatar frame's lower corner —
-     the phone strip's own pattern. It was anchored to the call
-     field's floor (bottom: 52), speaking from 400px below the
-     face it belongs to. Frame bottom is 267; the wave's bottom
-     sits 8px above it, its left 8px inside the frame's left.
-     Under-the-webcam pass (2026-11-22): z-index 2 added — the
-     frame paints at z 1 and the wave, fully inside the frame's
-     box, was painted UNDER the avatar video and invisible at
-     every ≥641 width (found by eye on the band speaking shot;
-     geometry probes cannot see paint order). The phone strip
-     already carried z 2; the base rule now matches it. At band
-     this is also the label's only speaking signal (the "·
-     speaking" span rests there), so it must actually paint. */
-  position: absolute; left: 24px; top: 239px; z-index: 2;
-  display: none; align-items: center; gap: 4px; height: 20px;
+/* Step 87 — the speaking signal, redesigned (the halo and the
+   chip meter; research: ~/workspace/avatar-expand-affordance/
+   report.md Part 2). The teal waveform bars are DELETED: they
+   metered nothing (a canned CSS loop), and they painted across
+   the persona's chin and across the camera button's label
+   (owner's screenshots). The signal now lives where every call
+   app puts it — the frame and the name furniture:
+   (a) THE HALO: while speaking, the frame's border warms to
+   --accent-2 and a soft outer glow breathes with a SMOOTHED
+   REAL envelope — --lvl, one scalar written per animation
+   frame by app.js's halo engine (AnalyserNode RMS on her
+   WebAudio channel; a declared staged envelope where no
+   analyser exists). The glow paints OUTSIDE the border, on
+   the field's air; her face is never touched. The box-shadow
+   rides --motion-1 so the light switches, never cuts.
+   (b) THE CHIP METER: three dots inside the name chip step
+   with the same --lvl (coarse thirds, pure CSS from the one
+   scalar). The chip is bottom-anchored in the band, so the
+   meter rides its last line — its own box can never reach
+   the frame above it, at any width. */
+.call-tile.is-speaking .avatar-frame {
+  border-color: rgba(45, 212, 191, .85);
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, calc(.16 + .38 * var(--lvl, 0))),
+              0 0 22px rgba(45, 212, 191, calc(.35 * var(--lvl, 0)));
 }
-.call-tile.is-speaking .call-wave { display: inline-flex; }
-.call-wave i {
-  width: 3px; height: 16px; border-radius: 2px; background: var(--accent-2);
-  transform: scaleY(.3); transform-origin: center;
-}
-.call-tile.is-speaking .call-wave i { animation: call-wave .9s ease-in-out infinite; }
-.call-tile.is-speaking .call-wave i:nth-child(2) { animation-delay: .1s; animation-duration: .7s; }
-.call-tile.is-speaking .call-wave i:nth-child(3) { animation-delay: .2s; animation-duration: 1.1s; }
-.call-tile.is-speaking .call-wave i:nth-child(4) { animation-delay: .05s; animation-duration: .8s; }
-.call-tile.is-speaking .call-wave i:nth-child(5) { animation-delay: .25s; animation-duration: 1s; }
-.call-tile.is-speaking .call-wave i:nth-child(6) { animation-delay: .15s; animation-duration: .75s; }
-.call-tile.is-speaking .call-wave i:nth-child(7) { animation-delay: .3s; animation-duration: .95s; }
-.call-tile.is-speaking .call-wave i:nth-child(8) { animation-delay: .08s; animation-duration: .85s; }
-.call-tile.is-speaking .call-wave i:nth-child(9) { animation-delay: .22s; animation-duration: 1.05s; }
-@keyframes call-wave { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+.call-dots { display: none; gap: 4px; margin-left: 8px; vertical-align: 1px; }
+.call-tile.is-speaking .call-dots,
+.call-self.is-speaking .call-dots { display: inline-flex; }
+.call-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-2); opacity: .15; }
+.call-dots i:nth-child(1) { opacity: clamp(.15, calc(var(--lvl, 0) * 3), 1); }
+.call-dots i:nth-child(2) { opacity: clamp(.15, calc(var(--lvl, 0) * 3 - 1), 1); }
+.call-dots i:nth-child(3) { opacity: clamp(.15, calc(var(--lvl, 0) * 3 - 2), 1); }
 /* Step 81b: the self tile is the call's picture-in-picture —
    it paints ABOVE the app window (z 3 over the window's z 2;
    DOM order alone put the window on top, since it follows the
@@ -1662,6 +1676,20 @@ body.cta-visible { padding-bottom: 96px; }
 .call-stage.is-scene .demo-answer-stack > .is-hidden,
 .call-stage.is-scene .demo-question-stack > .is-hidden { display: none; }
 
+/* Step 87: in the demo's ANSWER card the inactive layers leave
+   flow entirely in classic mode too, exactly as in scene mode
+   above. The card itself now carries the height reservation
+   (app.js syncAnswerCard sets its min-height from measured
+   layers), so the stack no longer sizes to its tallest layer —
+   and a short answer's status follows its points at the normal
+   gap instead of sitting across a visibility-sized void (the
+   hollow-card defect). Row-level hiding is untouched: inside
+   the active layer, rows still hide by visibility and keep
+   their boxes while the stream runs. The QUESTION stack keeps
+   the grid law — app.js sets its height to the active layer
+   (the hug), so it needs no display switch. */
+.app-card--answer .demo-answer-stack > .is-hidden { display: none; }
+
 .call-main .demo-question { font-size: 16px; margin-bottom: 12px; color: var(--app-text); }
 .call-main .demo-answer { gap: 8px; }
 .call-main .demo-answer li { font-size: 16px; line-height: 1.42; color: var(--app-text); }
@@ -1692,21 +1720,32 @@ body.cta-visible { padding-bottom: 96px; }
    tile, and the scene-end download anchor. The follow-up block is
    gone: every exchange now swaps layers inside the one window, so
    the window never grows mid-scene. */
-.call-self-wave {
-  position: absolute; top: 8px; left: 8px;
-  display: none; align-items: center; gap: 4px; height: 12px;
+/* Step 87: the self tile carries the same halo as hers —
+   border warmed + the breathing glow on the same --lvl scalar
+   (its own envelope instance in app.js). Two truth gates:
+   - CAMERA OFF (cam-ready, not cam-on): the tile's content is
+     the "Use your camera" BUTTON — no speaking indicator of
+     any kind may render on it (the deleted bars struck through
+     its label, and the old ungated border rule outlined the
+     button teal; the owner's screenshot showed both). The
+     "You" label — and with it the chip meter — is already
+     display:none in this state (below), so the dots obey the
+     same law structurally; the border and glow are gated here.
+   - SPOTLIGHT PiP: the demoted self tile keeps the border
+     only — its glow would bleed across her hero frame's
+     corner, which it can overlap. */
+.call-self { transition: border-color var(--motion-1) ease, box-shadow var(--motion-1) ease; }
+.call-self.is-speaking {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, calc(.16 + .38 * var(--lvl, 0))),
+              0 0 18px rgba(45, 212, 191, calc(.35 * var(--lvl, 0)));
 }
-.call-self-wave i {
-  width: 3px; height: 12px; border-radius: 2px; background: var(--accent-2);
-  transform: scaleY(.3); transform-origin: center;
-}
-.call-self.is-speaking { border-color: var(--accent-2); }
-.call-self.is-speaking .call-self-wave { display: inline-flex; }
-.call-self.is-speaking .call-self-wave i { animation: call-wave .8s ease-in-out infinite; }
-.call-self.is-speaking .call-self-wave i:nth-child(2) { animation-delay: .12s; animation-duration: .65s; }
-.call-self.is-speaking .call-self-wave i:nth-child(3) { animation-delay: .22s; animation-duration: .95s; }
-.call-self.is-speaking .call-self-wave i:nth-child(4) { animation-delay: .06s; animation-duration: .75s; }
-.call-self.is-speaking .call-self-wave i:nth-child(5) { animation-delay: .28s; animation-duration: .85s; }
+.call-self.cam-ready:not(.cam-on).is-speaking { border-color: var(--border-strong); box-shadow: none; }
+.call-stage[data-spotlight] .call-self.is-speaking { box-shadow: none; }
+/* Step 87 — the halo system's reduced-motion form lives in
+   the sheet's third reduced-motion block (below, with the
+   other per-feature resets): static halo, single solid dot,
+   and the "· speaking" word restored at every band. */
 .call-caption {
   position: absolute; left: 16px; bottom: 88px; margin: 0; max-width: 300px;
   font-size: 14px; line-height: 1.5; color: var(--text);
@@ -1720,26 +1759,34 @@ body.cta-visible { padding-bottom: 96px; }
 #scene-start[hidden] { display: none; }
 /* Scene-mode height reservations (measured in app.js from the
    scene's own layers): the window holds one height through the
-   whole arc instead of breathing at every exchange. */
-.call-stage.is-scene .demo-question-stack { min-height: var(--scene-question-min, 0px); }
-.call-stage.is-scene .demo-answer-stack { min-height: var(--scene-answer-min, 0px); }
-.call-stage.is-scene .demo-sample-tag { min-height: var(--scene-tag-min, 0px); }
+   whole arc instead of breathing at every exchange.
+   Step 87: the reservation moved from the stacks to the ANSWER
+   card itself — app.js syncAnswerCard sets the card's min-height
+   from --scene-answer-min + --scene-tag-min + the card's chrome
+   + the question compensation. The stacks now hug their content,
+   so on a short answer the status follows the points at the
+   normal gap (no hollow middle), while the card — and with it
+   the window — keeps exactly the height the stacks used to
+   reserve; the reserved space rests below the sample tag,
+   inside the dominant answer pane, as the real app composes it.
+   The QUESTION stack's reservation is gone: the question card
+   hugs its question and the answer card absorbs the difference. */
 .call-stage.is-scene .demo-status { min-height: 40px; }
 /* Step 78 — the primed stage is compact. Before the run starts, the
    scene reservations come off: the window is its natural self (header,
    question, hint) instead of a 579px box with ~265px of empty middle
    (owner's phone, Step C round 2). When the run starts the class comes
-   off and the stacks glide to the scene height on the house curve
+   off and the cards glide to the scene height on the house curve
    (motion-3 token; the sheet's reduced-motion rule makes the swap
    instant). The answer layers leave flow entirely while primed — the
-   scene shows them only once the run begins. */
-.call-stage.is-scene .demo-question-stack,
-.call-stage.is-scene .demo-answer-stack,
-.call-stage.is-scene .demo-sample-tag { transition: min-height var(--motion-3) var(--motion-ease); }
-.call-stage.is-scene.is-primed .demo-question-stack { min-height: 0; }
-.call-stage.is-scene.is-primed .demo-answer-stack { min-height: 0; }
+   scene shows them only once the run begins. Step 87: the gliding
+   quantities are the answer card's min-height (set inline by
+   syncAnswerCard; the primed state clears it, back to the standing
+   min-height: 0) and the question stack's height. */
+.call-main .app-card--answer,
+.demo-body .app-card--answer { transition: min-height var(--motion-3) var(--motion-ease); }
+.demo-question-stack { transition: height var(--motion-3) var(--motion-ease); }
 .call-stage.is-scene.is-primed .demo-answer-stack > * { display: none; }
-.call-stage.is-scene.is-primed .demo-sample-tag { min-height: 0; }
 /* Step 79b: while primed the sample tag is empty, but its 8px
    top margin still took a band under the hint — the last void
    in the primed window (measured: 25px below the hint instead
@@ -1774,10 +1821,10 @@ body.cta-visible { padding-bottom: 96px; }
 /* Cultivation R2: with the camera off, the full-tile toggle IS
    the tile's content — the "You" label stands down (identity is
    carried by the tile's place and the button's label) and
-   returns over the live video. The speaking wave rides above
-   the toggle so "you answer" reads in both states. */
+   returns over the live video. (Step 87: the speaking wave no
+   longer rides above the toggle — it stands down while the
+   toggle shows; see the :has rule at the wave's own block.) */
 .call-self.cam-ready:not(.cam-on) .call-tile-label { display: none; }
-.call-self-wave { z-index: 3; pointer-events: none; }
 .cam-toggle {
   position: absolute; inset: 0; z-index: 2;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
@@ -1966,7 +2013,6 @@ body:has(.call-stage) .page-hero + .section { padding-top: 24px; }
   .call-main .app-meter { display: none; }
   .call-tile { position: relative; inset: auto; height: 80px; flex: none; }
   .call-avatar { left: 12px; top: 12px; width: 36px; height: 36px; padding: 8px; }
-  .call-wave { bottom: 36px; left: 56px; }
   .call-tile > .call-tile-label {
     bottom: 8px; left: 12px; font-size: 12px;
     max-width: calc(100% - 104px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -2253,6 +2299,23 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   /* Step 59: on the chaptered page, reduced motion also means
      instant anchor landings — its jumps are the longest on the site. */
   html:has(.feat-nav) { scroll-behavior: auto; }
+  /* Step 87: the halo system's reduced form — text and steady
+     light carry the signal, nothing breathes. The halo is
+     STATIC (one fixed soft glow), the chip meter collapses to
+     a single solid dot, and the "· speaking" word — hidden at
+     the band and phone widths for space — returns at every
+     band, because with motion off the text is a primary
+     carrier. */
+  .call-tile.is-speaking .avatar-frame {
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, .35), 0 0 22px rgba(45, 212, 191, .18);
+  }
+  .call-self.is-speaking {
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, .35), 0 0 18px rgba(45, 212, 191, .18);
+  }
+  .call-stage[data-spotlight] .call-self.is-speaking { box-shadow: none; }
+  .call-dots i:nth-child(1) { opacity: 1; }
+  .call-dots i:nth-child(2), .call-dots i:nth-child(3) { display: none; }
+  .call-tile .call-speaking:not([hidden]) { display: inline; }
 }
 
 /* ---------- Step 63: How It Works — "One Question, Traced" ----------
@@ -3192,10 +3255,13 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      bottom tile row, under the hanging window. Complete
      state: unit top = 640 − 186 = 454, below the window's
      bottom (448.5); primed: the 404 hug puts it at 218, below
-     the primed window's bottom (207.7). The wave rides the
-     frame's lower corner (its bottom 8 above the frame's
-     bottom edge); the glyph fallback centres in the frame's
-     zone (bottom-offset 76..186, centre 131).
+     the primed window's bottom (207.7). The glyph fallback
+     centres in the frame's zone (bottom-offset 76..186,
+     centre 131). (Step 87: the field/window figures in this
+     comment predate Step 83 — see the window-cap rule below
+     for the current geometry and the measured overlaps that
+     forced it; the speaking signal lives in the frame's halo
+     and the name chip's dot meter now, never on her face.)
      Follow-up (2026-11-22): this block's reach extends past
      the 860 band to 933 — above 860 the desktop top-left unit
      returns, but the centred window does not clear it until
@@ -3213,7 +3279,27 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      head/start-label switches stay at 860. */
   .avatar-frame { left: 12px; top: auto; bottom: 76px; width: 88px; height: 110px; }
   .call-tile > .call-tile-label { left: 12px; top: auto; bottom: 16px; max-width: 104px; font-size: 12px; }
-  .call-wave { left: 20px; top: auto; bottom: 84px; }
+  /* Step 87: the window narrows in this band so its left edge
+     clears the participant unit by an on-scale gap in EVERY
+     state. The staging comment above was composed for a 640px
+     field and a 448.5px window bottom; Step 83's field is 720
+     and the scene window runs far taller, so at scene-end the
+     window's left edge reached INTO the unit (measured on the
+     pre-fix tree: frame∩window overlap 2,151px² at 712, a 5px
+     gap at 768, the label's right edge 11px past the window's
+     left edge — the owner's "glued to the window" screenshot).
+     The cap reserves a side margin (132 per side) around the
+     unit: its widest element, the label (right edge 116),
+     keeps a 16px gap; the frame (100) keeps 32px; and the
+     window stays centred on the lens axis — it narrows
+     symmetrically rather than shifting. Above a ~696px field
+     the cap no longer binds and the window is its full 432
+     again. Spotlight's own window rule (higher specificity)
+     is untouched. The phone block below restores width:auto
+     at ≤640 — without that restoration this rule, later in
+     the sheet at equal specificity, once collapsed the phone
+     window to the cap's remainder (Step 87 probes caught it). */
+  .call-main .app-window { width: min(432px, calc(100% - 264px)); }
   .call-avatar { left: 28px; top: auto; bottom: 103px; }
   /* QC 2026-11-22: the closing caption's base home (left 16,
      bottom 88) was composed when the participant sat top-left;
@@ -3227,10 +3313,17 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 }
 @media (max-width: 640px) {
   /* The phone tile is an 80px strip: the avatar becomes a square
-     thumb at its left, the name label moves right of the thumb, and
-     the speaking wave rides on the thumb's lower corner — the way a
-     real call tile carries its speaking indicator. */
+     thumb at its left and the name chip sits right of the thumb.
+     (Step 87: no speaking furniture rides on the thumb — the
+     signal is the frame's halo + the chip's dot meter; see the
+     Step 87 halo rules at the base .call-tile-label block.) */
   .avatar-frame { left: 12px; top: 8px; width: 64px; height: 64px; border-radius: 8px; }
+  /* Step 87: the phone window is in-flow at its natural width —
+     this restates the earlier phone rule because the band cap
+     in the ≤933 block above sits later in the sheet at equal
+     specificity and would otherwise shrink the phone window
+     to the cap's remainder. */
+  .call-main .app-window { width: auto; }
   /* The band block above bottom-anchors the glyph fallback in
      the frame's zone; the phone strip's glyph keeps its own
      top-left anchor (this block follows it in the sheet). */
@@ -3240,9 +3333,14 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
      two lines in the space right of the thumbnail, clear of the
      "You" tile: full text, no truncation. Step 79: the label is
      vertically centred beside the thumbnail (it was bottom-anchored,
-     reading as a floating chip centred on nothing). */
-  .call-tile > .call-tile-label { left: 88px; top: 50%; bottom: auto; transform: translateY(-50%); max-width: calc(100% - 184px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
-  .call-wave { left: 18px; bottom: auto; top: 50px; z-index: 2; }
+     reading as a floating chip centred on nothing).
+     Step 87: the chip HUGS its content (the owner's crop: a wide
+     dark box, text hugging the left, "simulated" orphaned on line
+     two, the right half empty). fit-content sizes the box to the
+     text — one line when it fits; when it must wrap (narrower
+     fields, the speaking state's longer line) the wrap is balanced
+     and centred, so no line is an orphan and no half is dead. */
+  .call-tile > .call-tile-label { left: 88px; top: 50%; bottom: auto; transform: translateY(-50%); width: fit-content; max-width: calc(100% - 184px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; text-align: center; text-wrap: balance; }
 }
 
 @media (max-width: 860px) {
@@ -3301,16 +3399,36 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 }
 .avatar-toggle[hidden] { display: none; }
 .avatar-toggle:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
-.spotlight-glyph {
-  position: absolute; right: 8px; bottom: 8px; width: 16px; height: 16px;
-  opacity: .45; pointer-events: none;
-  transition: opacity var(--motion-1) ease;
+/* Step 87 — the Lean-In (Spotlight discovery, replacing the
+   deleted expand glyph): at rest the tile carries NOTHING —
+   the resting state of every call app. Two transient elements
+   perform the one-time teaching (spotlight.js positions both
+   from the frame's and label's own boxes at performance time,
+   so they are exact at every band):
+   - the sonar ring: an outline in --accent at her frame's
+     rect, expanding 1 -> 1.5 while fading — on the field's
+     air around the tile, never over her face;
+   - the whisper: one bare line of text under the participant
+     row, no box, no pill, no background, pointer-events: none
+     — zero layout shift, a caption, not a label.
+   Both are WAAPI/class driven; the only CSS here is their
+   resting geometry. */
+.lean-ring {
+  position: absolute; border: 2px solid var(--accent); opacity: 0;
+  pointer-events: none; z-index: 2;
 }
-.avatar-toggle:hover .spotlight-glyph,
-.avatar-toggle:focus-visible .spotlight-glyph { opacity: 1; }
+.spotlight-whisper {
+  position: absolute; margin: 0; z-index: 2;
+  font-size: 13px; color: var(--muted);
+  opacity: 0; transition: opacity var(--motion-2) ease;
+  pointer-events: none;
+}
+.spotlight-whisper.is-shown { opacity: 1; }
 /* The frame's own transitions: the hover/press life (Respond).
-   WAAPI owns the transform during a flight and overrides this. */
-.avatar-frame { transition: border-color var(--motion-1) ease, transform var(--motion-1) ease; }
+   WAAPI owns the transform during a flight and overrides this.
+   Step 87: box-shadow joins the list so the speaking halo
+   switches over --motion-1 instead of cutting. */
+.avatar-frame { transition: border-color var(--motion-1) ease, transform var(--motion-1) ease, box-shadow var(--motion-1) ease; }
 .spotlight-close {
   position: absolute; top: 12px; right: 12px; z-index: 4;
   width: 36px; height: 36px; padding: 0; display: grid; place-items: center;
@@ -3346,10 +3464,6 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   left: calc(50% - 160px); top: 424px; max-width: 320px;
   white-space: nowrap; line-height: 1.3; z-index: 2;
 }
-.call-stage[data-spotlight] .call-wave,
-.call-stage[data-spotlight-prep] .call-wave {
-  left: calc(50% - 152px); top: 388px;
-}
 .call-stage[data-spotlight] .call-main .app-window {
   top: var(--spot-win-top, 453px); left: calc(50% - 180px);
   transform: none; width: 360px;
@@ -3374,10 +3488,6 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
   .call-stage[data-spotlight] .call-tile > .call-tile-label,
   .call-stage[data-spotlight-prep] .call-tile > .call-tile-label {
     left: 50%; transform: translateX(-50%); top: 354px; bottom: auto; width: 264px; max-width: 264px; font-size: 13px;
-  }
-  .call-stage[data-spotlight] .call-wave,
-  .call-stage[data-spotlight-prep] .call-wave {
-    left: calc(50% - 124px); top: 318px; bottom: auto;
   }
   .call-stage[data-spotlight] .call-main .app-window {
     top: var(--spot-win-top, 383px); left: calc(50% - 168px); width: 336px;
@@ -3412,10 +3522,6 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
     position: static; transform: none; order: 2; flex: none;
     width: 248px; max-width: 248px; margin-top: 8px;
     white-space: nowrap; line-height: 1.3; text-align: left;
-  }
-  .call-stage[data-spotlight] .call-wave,
-  .call-stage[data-spotlight-prep] .call-wave {
-    left: calc(50% - 116px); top: 298px; bottom: auto;
   }
   .call-stage[data-spotlight] .call-main .app-window {
     top: auto; left: auto; width: calc(100% - 32px); margin: 12px 0 16px; align-self: center;

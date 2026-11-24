@@ -92,9 +92,14 @@ check("U4: the demo card's border and shadow stand down on phones (call frame ke
   /\.call-stage \{[^}]*border: 1px solid var\(--border\);/.test(clean));
 
 /* ---------- U5: the tile row — wave only when speaking, chip anchored ---------- */
-check("U5: the waveform is display:none until the tile is speaking (all widths)",
-  /\.call-wave \{[^}]*display: none;/.test(clean) &&
-  /\.call-tile\.is-speaking \.call-wave \{ display: inline-flex; \}/.test(clean));
+check("U5: the speaking meter is display:none until the tile is speaking (all widths)",
+  /* Step 87 re-pin (annotated): U5's law — no speaking
+     furniture visible at rest — survives the redesign; the
+     carrier is now the chip's dot meter (the waveform bars
+     are deleted). The display gate is the same shape. */
+  /\.call-dots \{ display: none;/.test(clean) &&
+  /\.call-tile\.is-speaking \.call-dots,\s*\.call-self\.is-speaking \.call-dots \{ display: inline-flex; \}/.test(clean)
+  && !/\.call-wave/.test(clean));
 /* Step 79b re-pin — the owner's eye over the metric: Step 79's
    straddle (chip centred on the window's top border via
    top: 74px) measured exact and read wrong — a stray pill
