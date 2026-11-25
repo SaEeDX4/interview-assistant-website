@@ -14,7 +14,7 @@ one direction only.
 |-------|------|---------|--------|
 | 400px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row with real headroom (Steps 29 + 30 fix-up) | 1 |
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
-| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 15 |
+| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 16 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
 | 933px | Participant-unit threshold | the demo stage's band composition (Step 92: the folded strip's top row — participant unit and self tile as one shared box, the window hung below) holds until the desktop composition takes over — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
@@ -159,3 +159,9 @@ would replace the verified desktop composition at 934–1024px.)
   for 1024px is corrected 4 → 5. The two suites that pin the count
   (test-step26, test-step59) are re-pinned with annotation; the set
   itself is unchanged and `tests/test-step15.js` passes untouched.
+- **Step 95** adds no width. It adds one component block at the
+  admitted 640px width, inside the Download page's `.dlx-*` section
+  (the artifact spec stacks, the meanwhile band goes single-column),
+  per rule B3 the block sits with the Step 95 rules it overrides.
+  The §1 table count for 640px is corrected 15 → 16; the set itself
+  is unchanged and `tests/test-step15.js` passes untouched.

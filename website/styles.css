@@ -4000,3 +4000,38 @@ body.page-404 .nf-hero .lede { margin-left: auto; margin-right: auto; }
 .nf-more { margin: 24px 0 0; color: var(--muted); font-size: 15px; }
 .nf-more a { color: var(--focus); text-decoration: underline; text-underline-offset: 3px; }
 .nf-more a:hover { color: var(--text); }
+
+/* ---------- Step 95: the Download page — "The release desk" ----------
+   The page is restructured as the desk a release will be served
+   from. The recommendation panel gains its artifact spec — the two
+   downloads described where their (disabled) buttons wait, folding
+   in the retired "Two ways to run it" section — the platform board
+   wears the site's status badges (the Platforms vocabulary: first
+   platform / built, not yet published / planned), and the live demo
+   gets a designed meanwhile band between the board and the help
+   block. Page-scoped (.dlx-*); the Step 41 .dl-* contract (ids,
+   card structure, the JS-rendered internals) is untouched, the
+   shared chrome is byte-identical, and app.js is not edited.
+   Spacing on the Step 9 scale; the only media block is at the
+   admitted 640px width. */
+.dlx-artifacts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+.dlx-artifact { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.dlx-artifact-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.dlx-artifact-head h3 { margin: 0; font-size: 16px; }
+.dlx-artifact-icon { width: 36px; height: 36px; flex: none; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-light); }
+.dlx-artifact-icon svg { width: 18px; height: 18px; }
+.dlx-artifact p { color: var(--muted); font-size: 14px; margin: 0; }
+.dlx-board-title { font-size: 28px; margin: 24px 0 12px; }
+.dlx-board-line { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+.dlx-card-badge { margin: 0 0 12px; }
+.dlx-meanwhile { display: flex; gap: 32px; align-items: center; justify-content: space-between; background: var(--accent-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-top: 24px; }
+.dlx-meanwhile-copy { min-width: 0; }
+.dlx-meanwhile-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-light); margin: 0 0 12px; }
+.dlx-meanwhile-title { font-size: 24px; margin: 0 0 8px; }
+.dlx-meanwhile-line { color: var(--muted); font-size: 16px; margin: 0; max-width: 60ch; }
+.dlx-meanwhile-actions { display: flex; flex-direction: column; gap: 12px; flex: none; }
+@media (max-width: 640px) {
+  .dlx-artifacts { grid-template-columns: 1fr; }
+  .dlx-meanwhile { flex-direction: column; align-items: stretch; padding: 24px; }
+  .dlx-meanwhile-actions { flex-direction: column; }
+}

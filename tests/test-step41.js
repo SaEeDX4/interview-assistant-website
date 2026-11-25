@@ -55,10 +55,18 @@ check("dl: panel keeps the two disabled Windows buttons",
 check("dl: all four cards are status-only statically",
   cards.every((c) => !/<a\s/.test(c) && !/<button/.test(c)));
 
-// 6. Unreleased statuses mirror platforms.html wording.
-check("dl: planned statuses mirror the platforms page",
-  html.includes("Planned — Phase 3. No APK, no date.") &&
-  (html.match(/feasibility still being researched\. No date\./g) || []).length === 2);
+// 6. Platform statuses state each platform's current fact.
+//    Step 95 re-pin (annotated): the Step 41 strings mirrored a
+//    superseded plan ("Planned — Phase 3", "feasibility still being
+//    researched"). The owner's current facts: the Android app is
+//    BUILT and awaits publication; iOS and Mac are decided plans
+//    (a native iOS app after Android; a dedicated native Mac app).
+//    The pins now assert those truths instead.
+check("dl: platform statuses state the current facts",
+  html.includes("The Android app is built.") &&
+  html.includes("there is no APK to download") &&
+  html.includes("No date, and no TestFlight promise.") &&
+  html.includes("Planned — a dedicated native Mac app. No date."));
 
 // 7. app.js: endpoint declared empty (wiring is Step 41c), the IIFE
 //    exists, validates hard, and renders without innerHTML.

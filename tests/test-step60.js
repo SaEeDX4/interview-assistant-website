@@ -110,7 +110,17 @@ check("hero: the lead names product, platform and occasion in its first sentence
 
 /* ---------- 7. Phone wayfinding + bento ---------- */
 {
-  const m640 = css.slice(css.lastIndexOf("@media (max-width: 640px)"));
+  /* Step 95 re-pin (annotated): this slice previously ran from the
+     sheet's LAST 640px block; Step 95 appends its own admitted
+     640px block (the Download page's .dlx-*) after Step 60's, so
+     the slice is now anchored on Step 60's own phone block —
+     located by the .feat-bento rule it must contain, the same
+     anchoring test-step62 uses — and bounded at the next media
+     block. The asserted rules are unchanged. */
+  const bentoAt = css.indexOf(".feat-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }");
+  const m640End = css.indexOf("@media", bentoAt);
+  const m640 = css.slice(css.lastIndexOf("@media (max-width: 640px)", bentoAt),
+    m640End === -1 ? undefined : m640End);
   check("css60: the chapter nav is no longer static on phones; its links are 44px-family",
     !m640.includes(".feat-nav { position: static; }")
     && m640.includes(".feat-nav-link { padding-top: 12px; padding-bottom: 12px; }"));

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>Download — Interview Assistant</title>
-<meta name="description" content="Download Interview Assistant. Windows is the first platform; Android, iOS and Mac are planned. This page only links files that actually exist.">
+<meta name="description" content="Get Interview Assistant. Nothing is published yet — this page shows exactly where each platform stands, and it links only files that actually exist.">
 <meta property="og:title" content="Download — Interview Assistant">
-<meta property="og:description" content="Download Interview Assistant. Windows is the first platform; Android, iOS and Mac are planned. This page only links files that actually exist.">
+<meta property="og:description" content="Get Interview Assistant. Nothing is published yet — this page shows exactly where each platform stands, and it links only files that actually exist.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -72,7 +72,7 @@
     <div class="container narrow">
       <p class="eyebrow">Download</p>
       <h1>Get Interview Assistant.</h1>
-      <p class="lead">Windows is the first platform. This page recommends the right build for the device you are on — and says so plainly when yours is not out yet.</p>
+      <p class="lead">The first signed release is not published yet — on any platform. This page is connected to our release service, so the moment a release is real, its download appears here: version, size and SHA-256 included. Until then, this is exactly where each platform stands.</p>
     </div>
   </section>
   <section class="section" aria-label="Download Interview Assistant">
@@ -88,6 +88,22 @@
           <button class="btn btn-secondary" type="button" id="dl-portable" disabled aria-disabled="true">Portable ZIP</button>
         </p>
         <p class="download-note" id="download-note" role="status">Download links go live with the first signed release — this page has no installer yet.</p>
+        <div class="dlx-artifacts">
+          <div class="dlx-artifact">
+            <div class="dlx-artifact-head">
+              <span class="dlx-artifact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M4 19h16"/></svg></span>
+              <h3>Installer</h3>
+            </div>
+            <p>Per-user install, no admin needed. Code-signed — and its SHA-256 will be published on this page, so you can verify the file you got is the file we released.</p>
+          </div>
+          <div class="dlx-artifact">
+            <div class="dlx-artifact-head">
+              <span class="dlx-artifact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M3 8l2-4h14l2 4M10 13h4"/></svg></span>
+              <h3>Portable ZIP</h3>
+            </div>
+            <p>Unzip and run, no install. The same app with the same features — for machines where you cannot, or do not want to, install anything.</p>
+          </div>
+        </div>
       </div>
 
       <div class="dl-after" id="dl-after" hidden>
@@ -97,43 +113,62 @@
         <p class="dl-after-steps">Next: run the file, sign in, import your resume, confirm the facts — the full first-run list is <a href="#after-install">below</a>.</p>
       </div>
 
+      <h2 class="dlx-board-title">Every platform, as it stands</h2>
+      <p class="dlx-board-line">Four platforms, four different states — and no dates we cannot keep.</p>
+
       <div class="grid grid-2 dl-cards" id="dl-platforms">
         <article class="card dl-card" data-platform="windows">
+          <p class="dlx-card-badge"><span class="badge badge-now">First platform</span></p>
           <div class="dl-card-head">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></span>
             <h3>Windows</h3>
           </div>
           <p class="dl-card-req">Windows 10 or 11, 64-bit · per-user install, no admin needed</p>
-          <p class="dl-card-status">First platform — signed installer not yet published.</p>
+          <p class="dl-card-status">The signed installer is not published yet. When it lands, this card carries its download buttons and its SHA-256.</p>
           <div class="dl-card-live" hidden></div>
         </article>
         <article class="card dl-card" data-platform="android">
+          <p class="dlx-card-badge"><span class="badge badge-current">Built — not yet published</span></p>
           <div class="dl-card-head">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
             <h3>Android</h3>
           </div>
-          <p class="dl-card-req">Companion first: preparation and practise on the go</p>
-          <p class="dl-card-status">Planned — Phase 3. No APK, no date.</p>
+          <p class="dl-card-req">The full app for Android phones — the same features as Windows</p>
+          <p class="dl-card-status">The Android app is built. It is not published yet: there is no APK to download, and none will be offered until the release is real.</p>
           <div class="dl-card-live" hidden></div>
         </article>
         <article class="card dl-card" data-platform="ios">
+          <p class="dlx-card-badge"><span class="badge badge-plan">Planned</span></p>
           <div class="dl-card-head">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 5h4"/></svg></span>
             <h3>iOS</h3>
           </div>
-          <p class="dl-card-req">Companion first: preparation and practise on the go</p>
-          <p class="dl-card-status">Planned — feasibility still being researched. No date.</p>
+          <p class="dl-card-req">A native app for iPhone and iPad</p>
+          <p class="dl-card-status">Planned — iOS follows Android, as its own native app. No date, and no TestFlight promise.</p>
           <div class="dl-card-live" hidden></div>
         </article>
         <article class="card dl-card" data-platform="mac">
+          <p class="dlx-card-badge"><span class="badge badge-plan">Planned</span></p>
           <div class="dl-card-head">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 20h20"/></svg></span>
             <h3>Mac</h3>
           </div>
           <p class="dl-card-req">A dedicated native app — not a port</p>
-          <p class="dl-card-status">Planned — feasibility still being researched. No date.</p>
+          <p class="dl-card-status">Planned — a dedicated native Mac app. No date.</p>
           <div class="dl-card-live" hidden></div>
         </article>
+      </div>
+
+      <div class="dlx-meanwhile">
+        <div class="dlx-meanwhile-copy">
+          <p class="dlx-meanwhile-eyebrow">In the meantime</p>
+          <h2 class="dlx-meanwhile-title">You can run it right now — here, in the browser.</h2>
+          <p class="dlx-meanwhile-line">The live demo is the app answering interview questions as they are asked — the same window, the same three speakable points, no install. It is the closest thing to the release that exists, and it works today.</p>
+        </div>
+        <div class="dlx-meanwhile-actions">
+          <a class="btn btn-primary" href="demo.html">Try the live demo</a>
+          <a class="btn btn-secondary" href="how-it-works.html">How it works</a>
+        </div>
       </div>
 
       <div class="help-block" id="download-help">
@@ -159,18 +194,6 @@
 
   <section class="section" aria-label="About the download">
     <div class="container narrow">
-      <h2>Two ways to run it</h2>
-      <div class="grid grid-2">
-        <article class="card">
-          <h3>Installer</h3>
-          <p>Per-user install, no admin needed. The installer will be code-signed, and its SHA-256 hash will be published on this page so you can verify the file you downloaded is the file we released.</p>
-        </article>
-        <article class="card">
-          <h3>Portable ZIP</h3>
-          <p>Unzip and run, no install. Same app, same features — for machines where you cannot or do not want to install anything.</p>
-        </article>
-      </div>
-
       <h2>You’ll need</h2>
       <div class="req-grid">
         <div class="req-item">
