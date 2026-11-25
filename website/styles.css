@@ -3974,3 +3974,29 @@ body:has(.feat-nav) { overflow-anchor: none; }
    flex rows — its values are 1–2 words inside a fixed stage. */
 .feat-report-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 
+
+/* ---------- Step 94: the 404 page — "The app answers its own 404" ----------
+   The lost visitor's question is fielded by the canonical two-box
+   window itself (QUESTION over ANSWER, the same window as everywhere
+   else); each answer point carries a real route out. All rules are
+   page-scoped (.nf-*); the shared chrome is untouched and the window's
+   own rules are reused, not forked — the only window override is the
+   answer card's min-height, zeroed in a page context exactly as the
+   call stage and the demo body already zero it in theirs (the settled
+   answer hugs its three points instead of reserving the live stage's
+   240px). The hero composition centres: eyebrow, headline and lede
+   over a 680px window, one quiet second-tier line below it; the
+   section clips its glows exactly as .hero does (overflow: hidden),
+   so the 340px halo can never widen the page on a phone. */
+.nf-hero { text-align: center; overflow: hidden; }
+body.page-404 .nf-hero .lede { margin-left: auto; margin-right: auto; }
+.nf-visual { max-width: 680px; margin: 32px auto 0; text-align: left; }
+.nf-window .app-card--answer { min-height: 0; }
+.nf-window .app-question { overflow-wrap: anywhere; }
+.nf-window .app-answer a {
+  color: var(--app-accent); text-decoration: underline; text-underline-offset: 3px;
+}
+.nf-window .app-answer a:hover { color: var(--app-text); }
+.nf-more { margin: 24px 0 0; color: var(--muted); font-size: 15px; }
+.nf-more a { color: var(--focus); text-decoration: underline; text-underline-offset: 3px; }
+.nf-more a:hover { color: var(--text); }

@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cybervalida.online/og-image.png">
 </head>
-<body>
+<body class="page-404">
   <div id="ia-growth-bar" hidden></div>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
@@ -51,17 +51,53 @@
   </div>
 </header>
 <main id="main" tabindex="-1">
-  <section class="page-hero">
+  <section class="page-hero nf-hero">
     <div class="container narrow">
       <p class="eyebrow">404 — Page not found</p>
       <h1>This page doesn&rsquo;t exist.</h1>
-      <p class="lede">It may have moved, or the link may be wrong. The site itself is fine — start again from one of these.</p>
+      <p class="lede">The address is wrong, or the page has moved. Everything else is where it should be — so we put the question to the app:</p>
       <h2 class="visually-hidden">Where to go next</h2>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="index.html">Back to home</a>
-        <a class="btn btn-secondary" href="demo.html">Try the live demo</a>
-        <a class="btn btn-secondary" href="support.html">Get help</a>
+      <!-- Step 94 — the app answers its own 404: the canonical two-box
+           window (QUESTION over ANSWER, the same window as everywhere
+           else on the site) fields the lost visitor's question, and
+           each answer point carries a real route out. The header is
+           decorative chrome, exactly as in the hero's depiction; the
+           cards are live content. Without JS the settled answer is
+           simply there; with JS and motion allowed, the window plays
+           the product's own beat once (question lands, thinking dots
+           for the Step 86 budget, points land one by one). -->
+      <div class="hero-visual nf-visual">
+        <span class="glow glow-violet" aria-hidden="true"></span>
+        <span class="glow glow-teal" aria-hidden="true"></span>
+        <div class="app-window nf-window" role="group" aria-label="The Interview Assistant app window answers the question: where is this page?">
+          <div class="app-header" aria-hidden="true">
+            <p class="app-pill"><span class="app-pill-dot"></span><span>Answer ready</span><span class="app-meter"><i></i></span></p>
+            <span class="app-header-controls">
+              <span class="app-start"><span class="app-start-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l8-5z" fill="currentColor"/></svg></span><span class="app-start-label">Start listening</span></span>
+              <span class="app-stop"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
+              <span class="app-win-btn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 L11.8 11.8 M11.8 4.2 L4.2 11.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+            </span>
+          </div>
+          <div class="app-window-body">
+            <section class="app-card">
+              <div class="app-card-head"><span class="app-card-label">Question</span><span class="app-card-detail">This address · not on the site</span></div>
+              <p class="app-question" id="nf-question">Where is <span id="nf-path">this page</span>?</p>
+            </section>
+            <section class="app-card app-card--answer">
+              <div class="app-card-head"><span class="app-card-label">Answer</span></div>
+              <div class="app-answer-stack">
+                <p class="app-thinking is-hidden" id="nf-thinking" aria-hidden="true">● ● ●</p>
+                <ul class="app-answer" id="nf-points">
+                  <li><span class="app-dot" aria-hidden="true"></span><span>Start again from <a href="index.html">home</a> — every page on the site is one click from there.</span></li>
+                  <li><span class="app-dot" aria-hidden="true"></span><span>See the <a href="demo.html">live demo</a> — a full interview, answered as it happens.</span></li>
+                  <li><span class="app-dot" aria-hidden="true"></span><span>Still stuck? Tell <a href="support.html">support</a> — if this link should work, we will fix it.</span></li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
+      <p class="nf-more">Also here: <a href="pricing.html">Pricing</a> · <a href="download.html">Download</a> · <a href="features.html">Features</a></p>
     </div>
   </section>
 </main>
@@ -97,6 +133,60 @@
     </div>
   </div>
 </footer>
+<script>
+/* Step 94 — the 404 page's own small script (progressive enhancement
+   only; the page is complete without it).
+   1. Deep-path repair: GitHub Pages serves this file at the requested
+      URL, so on a nested bogus path every relative reference would
+      resolve against the bogus directory and break. When the served
+      directory is not the site root, rewrite relative hrefs/srcs to
+      root-relative ones (production is served from the domain root —
+      see the CNAME file). Top-level paths and a direct /404.html
+      visit are untouched.
+   2. The question names the address that was actually asked for.
+   3. The answer beat: question lands, thinking dots for the Step 86
+      budget (400ms), points land one by one — the site's existing
+      keyframes only, skipped entirely under reduced motion. */
+(function () {
+  var path = location.pathname || "/";
+  var dir = path.slice(0, path.lastIndexOf("/") + 1);
+  if (dir !== "/") {
+    var rel = /^(?![a-z][a-z0-9+.-]*:|\/|#)/i;
+    document.querySelectorAll("[href], [src]").forEach(function (el) {
+      var attr = el.hasAttribute("href") ? "href" : "src";
+      var v = el.getAttribute(attr);
+      if (v && rel.test(v)) el.setAttribute(attr, "/" + v);
+    });
+  }
+  var slot = document.getElementById("nf-path");
+  if (slot && path !== "/" && path !== "/404.html") {
+    var shown = path;
+    try { shown = decodeURIComponent(path); } catch (e) { /* keep raw */ }
+    slot.textContent = shown;
+  }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var q = document.getElementById("nf-question");
+  var dots = document.getElementById("nf-thinking");
+  var list = document.getElementById("nf-points");
+  if (!q || !dots || !list) return;
+  var points = list.querySelectorAll("li");
+  points.forEach(function (li) { li.style.visibility = "hidden"; });
+  list.classList.add("is-hidden");
+  dots.classList.remove("is-hidden");
+  q.classList.add("is-landing");
+  setTimeout(function () {
+    dots.classList.add("is-hidden");
+    list.classList.remove("is-hidden");
+    points.forEach(function (li, i) {
+      setTimeout(function () {
+        li.style.visibility = "";
+        li.classList.add("is-new");
+        setTimeout(function () { li.classList.remove("is-new"); }, 300);
+      }, i * 150);
+    });
+  }, 400);
+})();
+</script>
 <script src="app.js"></script>
 </body>
 </html>
