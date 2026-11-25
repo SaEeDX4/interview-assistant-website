@@ -109,6 +109,10 @@
      use. No other rule or script may use this token. */
   --motion-pulse: 900ms;
   --container: 1120px;
+  --paper: #fff; /* Step 93: print only */
+  --ink: #000; /* Step 93: print only */
+  --ink-soft: #222; /* Step 93: print only */
+  --print-rule: #999; /* Step 93: print only */
   --shadow-card: 0 12px 32px rgba(0, 0, 0, .28);
   --shadow-lift: 0 20px 48px rgba(0, 0, 0, .38);
 }
@@ -161,7 +165,6 @@ p { margin: 0 0 16px; }
 
 .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 .narrow { max-width: 960px; } /* Step 4: was 760px — content pages felt sparse at 1919px */
-.narrow-legal { max-width: 760px; } /* legal prose stays narrow for readability */
 .section { padding: 72px 0; }
 .section + .section { padding-top: 0; }
 .page-hero + .section { padding-top: 40px; }
@@ -650,7 +653,6 @@ code { overflow-wrap: anywhere; }
 }
 .callout p:last-child { margin-bottom: 0; }
 .callout-warn { border-left-color: var(--warn); }
-.callout-draft { border-left-color: var(--coach); }
 .table-wrap { overflow-x: auto; margin: 0 0 16px; }
 table.compare { width: 100%; border-collapse: collapse; font-size: 15px; }
 table.compare th, table.compare td {
@@ -2295,25 +2297,185 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
 .acc-panel p { color: var(--muted); margin: 0; padding: 0 20px 20px; }
 .acc-panel p a { color: var(--focus); }
 
-/* Terms document styling (terms.html) — minimal, clean */
-.doc { font-size: 17px; }
-.doc h2 { padding-top: 28px; border-top: 1px solid var(--border); margin-top: 32px; }
-.doc h2:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
-/* Step 39: on terms.html the summary card's h2 is first-of-type in
-   its own parent, so "1 · The service" — first-of-type in .doc —
-   also lost its divider. Restore it for the h2 that follows the
-   summary; privacy.html has no .doc-summary and is untouched. */
-.doc .doc-summary + h2 { border-top: 1px solid var(--border); padding-top: 28px; margin-top: 32px; }
-.doc-summary {
+/* Terms document styling (terms.html) — Step 93: "The Reading Room".
+   The final Terms (v1.0) as a dual-layer document: a sticky contents
+   rail with scrollspy + reading-progress hairline on desktop, a sticky
+   contents bar at <=1024px, a non-binding "In short" summary atop each
+   section, §2's plans as a table + cap stat blocks, §3 as paired
+   may/must-not lists, and the site's first print stylesheet. All rules
+   are page-scoped (.doc*); header/footer and every other page are
+   untouched. The Step 39/40 .doc-summary rules are retired with the
+   summary card they served — their tests are re-pinned in Step 93. */
+.doc-meta {
+  display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 24px;
+  font-size: 13px; color: var(--muted);
+}
+.doc-meta strong { color: var(--text); font-weight: 600; }
+.doc-layout {
+  display: grid; grid-template-columns: 232px minmax(0, 760px);
+  gap: 48px; max-width: 1040px; margin: 0 auto; align-items: start;
+}
+.doc-rail { position: sticky; top: 100px; }
+.doc-rail-title {
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted-2); margin: 0; padding-left: 12px;
+}
+.doc-rail-current { display: none; }
+.doc-toc-toggle { display: none; }
+.doc-progress {
+  height: 2px; background: var(--border); margin: 12px 0 16px;
+}
+.doc-progress-fill {
+  display: block; height: 100%; background: var(--accent);
+  transform: scaleX(0); transform-origin: 0 50%;
+}
+.doc-toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.doc-toc a {
+  display: block; padding: 8px 12px; color: var(--muted);
+  text-decoration: none; font-size: 14px; line-height: 1.4;
+  transition: color var(--motion-1) ease;
+}
+.doc-toc a:hover { color: var(--text); }
+.doc-toc a[aria-current="true"] {
+  color: var(--accent-light); font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.doc-rail-card {
+  margin-top: 24px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px; font-size: 14px; color: var(--muted);
+}
+.doc-rail-card strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 4px; }
+.doc-rail-card p { margin: 0 0 8px; }
+.doc { font-size: 17px; min-width: 0; }
+/* Anchor landings: the sheet's global scroll-padding-top (84px) adds
+   to a target's scroll-margin, so these margins are the *extra* room
+   above the header zone — 16px on desktop, 64px under the sticky
+   contents bar (84 + 64 = 148 total). The [id] keeps the rule ahead
+   of the global section[id] margin. */
+.doc-sec[id] { scroll-margin-top: 16px; }
+.doc-intro {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 20px; margin: 0 0 8px;
-  display: grid; gap: 8px;
 }
-/* Step 40: the !important trio removed — this rule already follows
-   the .doc h2 rules at equal specificity, so source order wins. */
-.doc-summary h2 { border: 0; padding: 0; margin: 0 0 8px; font-size: 18px; }
-.doc-summary ul { margin: 0; padding-left: 20px; color: var(--muted); display: grid; gap: 8px; font-size: 15px; }
-.doc-summary ul strong { color: var(--text); }
+.doc-intro h2 { border: 0; padding: 0; margin: 0 0 8px; font-size: 18px; }
+.doc-intro p { margin: 0; color: var(--muted); font-size: 15px; }
+.doc-intro p strong { color: var(--text); }
+.doc-sec h2 {
+  font-size: 24px; padding-top: 28px; border-top: 1px solid var(--border);
+  margin-top: 32px; margin-bottom: 12px;
+}
+.doc-sec:first-of-type h2 { border-top: 0; padding-top: 0; margin-top: 24px; }
+.doc-short {
+  font-size: 15px; color: var(--muted); border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 16px; margin: 0 0 16px;
+}
+.doc-short strong { color: var(--text); }
+.doc-short-warn { border-left-color: var(--warn); }
+.doc h3 { font-size: 17px; font-weight: 700; margin: 20px 0 8px; }
+.doc-list { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 8px; }
+.doc-list li::marker { color: var(--muted-2); }
+.doc-may, .doc-mustnot { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.doc-may li, .doc-mustnot li { position: relative; padding-left: 28px; }
+.doc-may li::before, .doc-mustnot li::before {
+  position: absolute; left: 0; top: 0; font-weight: 700;
+}
+.doc-may li::before { content: "✓"; color: var(--accent-2); }
+.doc-mustnot li::before { content: "✕"; color: var(--warn); }
+.doc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 16px; }
+.doc-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 20px;
+}
+.doc-stat b {
+  display: block; font-size: 28px; font-weight: 800; line-height: 1.12;
+  letter-spacing: -.02em; color: var(--text); margin-bottom: 4px;
+}
+.doc-stat span { font-size: 13px; color: var(--muted); }
+.doc-foot {
+  border-top: 1px solid var(--border); margin-top: 40px; padding-top: 20px;
+  font-size: 13px; color: var(--muted);
+}
+.doc-foot p { margin: 0; }
+@media (max-width: 1024px) {
+  .doc-layout { grid-template-columns: minmax(0, 760px); justify-content: center; gap: 0; }
+  .doc-rail {
+    top: 84px; z-index: 40; margin-bottom: 24px;
+    background: rgba(10, 12, 16, .88); backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .doc-rail-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 12px 16px;
+  }
+  .doc-rail-title { display: none; }
+  .doc-rail-current {
+    display: block; font-size: 14px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .doc-toc-toggle {
+    display: inline-flex; align-items: center; flex-shrink: 0;
+    background: var(--surface-2); border: 1px solid var(--border-strong);
+    border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 13px;
+    color: var(--text); cursor: pointer;
+  }
+  .doc-progress { margin: 0; }
+  /* The panel overlays the document (never in flow): closing it after
+     a link tap must not shift the page under the anchor landing. */
+  .doc-toc-wrap {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 41;
+    border: 0 solid var(--border); border-radius: var(--radius);
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows var(--motion-3) ease;
+  }
+  .doc-toc-wrap > nav { overflow: hidden; min-height: 0; }
+  .doc-rail.open .doc-toc-wrap {
+    grid-template-rows: 1fr; background: var(--surface);
+    border-width: 1px; box-shadow: var(--shadow-card);
+    max-height: calc(100vh - 240px);
+  }
+  .doc-rail.open .doc-toc-wrap > nav { overflow-y: auto; }
+  .doc-toc { padding: 8px 16px 12px; }
+  .doc-rail-card { display: none; }
+  .doc-sec[id] { scroll-margin-top: 64px; }
+}
+@media (max-width: 640px) {
+  .doc-stats { grid-template-columns: 1fr; }
+}
+/* Print: the Terms as a clean paper document — white, black, no chrome.
+   Scoped to this page via body.page-terms so no other page's printout
+   changes. Summaries print: they are part of the document's honesty. */
+@media print {
+  body.page-terms { background: var(--paper); color: var(--ink); }
+  body.page-terms .site-header, body.page-terms .site-footer,
+  body.page-terms .sticky-cta, body.page-terms .next-band,
+  body.page-terms .doc-rail, body.page-terms .skip-link,
+  body.page-terms #ia-growth-bar { display: none; }
+  body.page-terms .page-hero { padding: 0 0 8px; }
+  body.page-terms .page-hero h1, body.page-terms .doc h2,
+  body.page-terms .doc h3, body.page-terms .doc-stat b { color: var(--ink); }
+  body.page-terms .lead, body.page-terms .doc-meta,
+  body.page-terms .doc p, body.page-terms .doc li,
+  body.page-terms .doc-short, body.page-terms .doc-intro p,
+  body.page-terms .doc-stat span, body.page-terms .doc-foot { color: var(--ink-soft); }
+  body.page-terms .doc-intro, body.page-terms .doc-stat {
+    background: var(--paper); border-color: var(--print-rule);
+  }
+  body.page-terms .doc-short { border-left-color: var(--ink); }
+  body.page-terms .doc-short strong, body.page-terms .doc-intro p strong,
+  body.page-terms .doc-meta strong { color: var(--ink); }
+  body.page-terms .doc-layout { display: block; max-width: none; }
+  body.page-terms .doc-sec h2 { border-top-color: var(--print-rule); break-after: avoid; }
+  body.page-terms .doc a { color: var(--ink); text-decoration: underline; }
+  body.page-terms .doc a[href^="http"]::after,
+  body.page-terms .doc a[href$=".html"]::after {
+    content: " (" attr(href) ")"; font-size: 12px;
+  }
+  body.page-terms table.compare th, body.page-terms table.compare td {
+    border-bottom-color: var(--print-rule); color: var(--ink-soft);
+  }
+  body.page-terms table.compare tbody td strong { color: var(--ink); }
+}
 
 /* ---------- Step 4: honest strip + pricing teaser (home) ---------- */
 .honest-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 28px 0; background: var(--bg-soft); }

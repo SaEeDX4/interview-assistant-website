@@ -34,9 +34,13 @@ check("exception: eyebrow + h2 keeps 0",
   /\.eyebrow\s*\+\s*h2[^{]*\{[^}]*margin-top:\s*0/s.test(css));
 
 // 3. Terms doc rule untouched (its own 32px + border rhythm).
-check("terms .doc h2 rule still 32px + border-top",
-  /\.doc h2\s*\{[^}]*margin-top:\s*32px/s.test(css)
-  && /\.doc h2\s*\{[^}]*border-top:\s*1px solid var\(--border\)/s.test(css));
+/* Step 93 re-pin: the rule's seat moved with the redesign — the
+   contract (the terms document keeps its own 32px + border rhythm,
+   independent of the section rhythm) now lives on .doc-sec h2,
+   which carries the same margin-top and border-top at 24px. */
+check("terms section h2 rule still 32px + border-top (Step 93 seat)",
+  /\.doc-sec h2\s*\{[^}]*margin-top:\s*32px/s.test(css)
+  && /\.doc-sec h2\s*\{[^}]*border-top:\s*1px solid var\(--border\)/s.test(css));
 
 // 4. The reported defect is covered: download "You'll need" h2 is a direct
 //    child of the section container, so the rhythm rule applies to it.

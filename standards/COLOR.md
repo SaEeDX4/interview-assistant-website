@@ -145,3 +145,9 @@ token hues — the standard locks that in so no new hue can creep in.)
   ≥4.5:1, computed. The caption and counter reuse the site tokens already
   verified in the Step 12 inventory. No new colors; the player header sheds
   the decorative buttons at ≤860px but keeps every visible state in-token.
+- **Step 93** adds four print-only tokens — `--paper` (#fff), `--ink`
+  (#000), `--ink-soft` (#222), `--print-rule` (#999) — consumed only by
+  the Terms page's `@media print` block (the site's first print
+  stylesheet). They exist so the print rules obey this standard's
+  no-hex-outside-:root rule; they are never used on screen and take no
+  part in the contrast table.

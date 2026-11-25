@@ -68,8 +68,8 @@ deployed from this repo.
 ## Standards and tests
 
 Every standard in `standards/` is enforced by a test in `tests/`
-(71 suites, `test-step6.js` … `test-step41.js` plus the Step 46, 48,
-50 and 53–87, 89, 90 and 92 suites and the Spotlight suite — 1400 checks, all passing; the count grows with
+(72 suites, `test-step6.js` … `test-step41.js` plus the Step 46, 48,
+50 and 53–87, 89, 90, 92 and 93 suites and the Spotlight suite — 1425 checks, all passing; the count grows with
 each step). From the repo root:
 
 ```bash

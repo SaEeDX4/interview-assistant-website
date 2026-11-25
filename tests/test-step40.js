@@ -34,8 +34,14 @@ check(".visually-hidden has exactly one definition",
   (css.match(/\.visually-hidden[, ]/g) || []).length === 1 &&
   (css.match(/\.visually-hidden \{/g) || []).length === 0 &&
   css.includes(".visually-hidden, .demo-title-visually-hidden {"));
-check(".doc-summary h2 carries no !important (source order suffices)",
-  /\.doc-summary h2 \{ border: 0; padding: 0; margin: 0 0 8px; font-size: 18px; \}/.test(css));
+/* Step 93 re-pin: .doc-summary was retired with the draft terms page.
+   The check's contract — the summary layer's heading needs no
+   !important because source order suffices — now seats on the "How to
+   read" intro panel's heading rule, pinned exactly, with the retired
+   rule asserted gone. */
+check("terms intro heading carries no !important (source order suffices)",
+  /\.doc-intro h2 \{ border: 0; padding: 0; margin: 0 0 8px; font-size: 18px; \}/.test(css) &&
+  !/\.doc-summary h2/.test(css));
 check("no inline style attributes anywhere (design system is class-based)",
   pages.every((h) => !/ style="/.test(h)) &&
   demo.includes('<div class="grid grid-3 demo-modes">') &&

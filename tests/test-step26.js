@@ -74,8 +74,12 @@ check(".hero still clips overflow (guard stays; content now fits)",
 // 8. No new breakpoint: the fix lives in the existing 1024px block —
 // there were four 1024px blocks before this step (hero, nav, + two
 // later ones) and there are still four.
-check("no new breakpoint added (still four 1024px blocks)",
-  (clean.match(/@media \(max-width: 1024px\) \{/g) || []).length === 4);
+/* Step 93 re-pin: the count is five, not four — the Terms page's
+   contents-bar mode is a fifth component block at the same admitted
+   1024px width (no new width enters the set; BREAKPOINTS.md's table
+   and audit log record the correction). */
+check("no new breakpoint added (1024px blocks: five since Step 93)",
+  (clean.match(/@media \(max-width: 1024px\) \{/g) || []).length === 5);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

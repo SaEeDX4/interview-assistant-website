@@ -18,7 +18,7 @@ one direction only.
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
 | 933px | Participant-unit threshold | the demo stage's band composition (Step 92: the folded strip's top row — participant unit and self tile as one shared box, the window hung below) holds until the desktop composition takes over — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
-| 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten | 4 |
+| 1024px | Tablet landscape | mobile nav dropdown (hamburger), app-window 3D tilt off, wide layouts tighten, terms contents rail collapses to the sticky bar (Step 93) | 5 |
 
 No other width may appear in a media query. 480px, 900px and 933px are
 single-block, component-specific breakpoints — they stay, because folding
@@ -151,3 +151,11 @@ would replace the verified desktop composition at 934–1024px.)
   861 / 900 / 933 / 934 / 935 / 950 / 1000px in the primed and
   complete states, and the 403 / 712 / 768 / 1440px geometry is
   unchanged. Enforced by `tests/test-step15.js` (set updated).
+- **Step 93** adds no width. It adds a fifth component block at the
+  admitted 1024px width: the Terms page's contents rail (the base,
+  desktop-first layout) collapses at ≤1024px into the sticky contents
+  bar (current-section label + Contents disclosure), per rule B3 the
+  block sits with the `.doc` rules it overrides. The §1 table count
+  for 1024px is corrected 4 → 5. The two suites that pin the count
+  (test-step26, test-step59) are re-pinned with annotation; the set
+  itself is unchanged and `tests/test-step15.js` passes untouched.

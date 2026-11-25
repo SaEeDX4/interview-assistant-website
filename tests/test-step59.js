@@ -322,8 +322,10 @@ check("privacy: the never list (5 items) + never pills in the bento tile only",
     && css.includes(".feat-tile:hover { transform: none; }"));
   check("css59: tile hover lives in the existing (hover: hover) and (pointer: fine) block",
     css.includes("/* Step 59: the features bento tiles lift on hover (fine pointers only). */"));
-  check("css59: no new breakpoint family (1024px blocks still four)",
-    (css.match(/@media \(max-width: 1024px\) \{/g) || []).length === 4);
+  /* Step 93 re-pin: five since the Terms contents-bar block joined
+     the admitted 1024px width (see test-step26's note). */
+  check("css59: no new breakpoint family (1024px blocks: five since Step 93)",
+    (css.match(/@media \(max-width: 1024px\) \{/g) || []).length === 5);
 }
 
 /* ---------- 10. JS module discipline ---------- */

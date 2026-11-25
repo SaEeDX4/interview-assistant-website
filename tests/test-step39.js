@@ -26,8 +26,15 @@ function check(name, ok) {
 check("card grids stretch by default (ragged-bottom family)",
   /\.grid \{ display: grid; gap: 20px; align-items: stretch; \}/.test(css) &&
   /\.two-col \{[^}]*align-items: start/.test(css));
-check("terms: the h2 after the summary card keeps its divider",
-  /\.doc \.doc-summary \+ h2 \{ border-top: 1px solid var\(--border\); padding-top: 28px; margin-top: 32px; \}/.test(css));
+/* Step 93 re-pin: the terms summary card and its divider rule were
+   retired with the draft page — the final Terms (v1.0) open with the
+   "How to read" intro panel, and the divider contract now lives on
+   the section rule: the first section carries no top divider, every
+   later section does. The pin follows the contract to its new seat. */
+check("terms: the first section carries no divider, later sections do (Step 93 seat)",
+  /\.doc-sec:first-of-type h2 \{ border-top: 0; padding-top: 0; margin-top: 24px; \}/.test(css) &&
+  /\.doc-sec h2 \{[^}]*border-top: 1px solid var\(--border\)/.test(css) &&
+  !/\.doc \.doc-summary \+ h2/.test(css));
 check("stacked roadmap keeps its thread (segment per node, text padded clear)",
   /@media \(max-width: 860px\) \{[\s\S]*?\.roadmap-node \{ padding-top: 0; padding-left: 48px; \}[\s\S]*?\.roadmap-node:not\(:last-child\)::after \{[^}]*left: 13px;[^}]*height: calc\(100% \+ 28px\)/.test(css));
 check("support runbook CTAs use the standard cta-row (12px gap)",
