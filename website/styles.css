@@ -4035,3 +4035,41 @@ body.page-404 .nf-hero .lede { margin-left: auto; margin-right: auto; }
   .dlx-meanwhile { flex-direction: column; align-items: stretch; padding: 24px; }
   .dlx-meanwhile-actions { flex-direction: column; }
 }
+
+/* ---------- Step 96: the Pricing page — "The plan ledger" ----------
+   The page gains the genre's primary object, which it never had:
+   the two plans as cards, each carrying its price with its status
+   attached — Trial $0 (real today), Pro with the reference price
+   and its label inside the price block itself, so no screenshot of
+   the figure can crop the caveat away (the hero states the state
+   once, up top: checkout is not open). The meter, the comparison
+   table (Terms §2 verbatim), the finder and the calculator keep
+   their shared classes and contracts; the caps become stat blocks,
+   as on the Terms page. Page-scoped (.prx-*); the shared chrome is
+   byte-identical, and app.js is not edited. Spacing on the Step 9
+   scale; the only media block is at the admitted 640px width. */
+.prx-state { margin: 24px 0 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--warn); border-radius: var(--radius); color: var(--muted); font-size: 15px; }
+.prx-state strong { color: var(--text); }
+.prx-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.prx-plan { display: flex; flex-direction: column; }
+.prx-plan-pro { border-color: var(--border-strong); }
+.prx-price { margin: 0 0 8px; }
+.prx-amount { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); }
+.prx-per { color: var(--muted); font-size: 16px; }
+.prx-ref { margin: 0 0 16px; padding-left: 12px; border-left: 3px solid var(--warn); color: var(--muted); font-size: 14px; }
+.prx-ref strong { color: var(--text); }
+.prx-plan-line { color: var(--muted); margin: 0 0 16px; }
+.prx-facts { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 8px; }
+.prx-facts li { color: var(--muted); padding-top: 8px; border-top: 1px solid var(--border); }
+.prx-facts li:first-child { padding-top: 0; border-top: 0; }
+.prx-facts strong { color: var(--text); }
+.prx-plan-cta { margin: auto 0 12px; }
+.prx-plan-note { color: var(--muted); font-size: 14px; margin: 0; }
+.prx-caps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.prx-cap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.prx-cap-num { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); margin: 0 0 4px; }
+.prx-cap-label { color: var(--muted); font-size: 14px; margin: 0; }
+@media (max-width: 640px) {
+  .prx-plans { grid-template-columns: 1fr; }
+  .prx-caps { grid-template-columns: 1fr; }
+}

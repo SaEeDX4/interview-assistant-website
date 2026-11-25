@@ -14,7 +14,7 @@ one direction only.
 |-------|------|---------|--------|
 | 400px | Very narrow phones | the app header sheds the level meter + tightens, so the longest status word keeps it one row with real headroom (Steps 29 + 30 fix-up) | 1 |
 | 480px | Small phones | sticky bar goes compact (secondary button hidden, primary stretches) | 1 |
-| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 16 |
+| 640px | Phones | the mobile breakpoint: stacked cards, single-column grids, wrapped controls | 17 |
 | 860px | Tablet portrait | two-column grids go single-column, roadmap stacks, story layout + mobile player | 5 |
 | 900px | Sticky text | sticky bar's text hides (the bar's content would crowd below this) | 1 |
 | 933px | Participant-unit threshold | the demo stage's band composition (Step 92: the folded strip's top row — participant unit and self tile as one shared box, the window hung below) holds until the desktop composition takes over — a computed threshold (Step 81 follow-up, 2026-11-22) | 1 |
@@ -165,3 +165,9 @@ would replace the verified desktop composition at 934–1024px.)
   per rule B3 the block sits with the Step 95 rules it overrides.
   The §1 table count for 640px is corrected 15 → 16; the set itself
   is unchanged and `tests/test-step15.js` passes untouched.
+- **Step 96** adds no width. It adds one component block at the
+  admitted 640px width, inside the Pricing page's `.prx-*` section
+  (the two plan cards and the cap stat blocks stack), per rule B3
+  the block sits with the Step 96 rules it overrides. The §1 table
+  count for 640px is corrected 16 → 17; the set itself is unchanged
+  and `tests/test-step15.js` passes untouched.

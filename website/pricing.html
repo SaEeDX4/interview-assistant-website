@@ -73,13 +73,44 @@
       <p class="eyebrow">Pricing</p>
       <h1>Start free. Pay only when it earns its keep.</h1>
       <p class="lead">Two plans, priced in live minutes — the minutes you actually spend in a live session. Preparation, practise, and reports never use live minutes.</p>
+      <p class="prx-state"><strong>Paid checkout is not open yet — nobody can pay today.</strong> This page sets out both plans in full, exactly as the Terms state them, so the day checkout opens there is nothing new to learn and nothing to re-check.</p>
     </div>
   </section>
   <section class="section" aria-label="Plans">
     <div class="container">
       <div id="ia-growth-pricing" hidden></div>
-      <div class="callout callout-warn">
-        <p><strong>About the Pro price:</strong> USD 19.99 / month is the Paddle <strong>sandbox reference price</strong> from the product’s plan catalog. It has not been validated against a real Paddle account, and the final live price will be confirmed before paid checkout opens. There is no checkout on this website yet — do not treat this as a final price.</p>
+      <div class="prx-plans">
+        <article class="card prx-plan">
+          <p class="eyebrow">Trial</p>
+          <p class="prx-price"><span class="prx-amount">$0</span></p>
+          <p class="prx-plan-line">Free, and included with the app — for your first interviews, and for as long as the minutes last.</p>
+          <ul class="prx-facts">
+            <li><strong>30 live minutes</strong> — one lifetime allowance</li>
+            <li>1 candidate profile</li>
+            <li>2 preparation runs a month</li>
+            <li>1 device</li>
+            <li>Reports kept 14 days</li>
+            <li>Coach Mode and all 10 languages included</li>
+          </ul>
+          <p class="prx-plan-cta"><a class="btn btn-primary" href="demo.html">Try the live demo</a></p>
+          <p class="prx-plan-note">The demo runs the same window in your browser — no install, nothing to pay, working today.</p>
+        </article>
+        <article class="card prx-plan prx-plan-pro">
+          <p class="eyebrow">Pro</p>
+          <p class="prx-price"><span class="prx-amount">$19.99</span> <span class="prx-per">/ month</span></p>
+          <p class="prx-ref"><strong>Reference price.</strong> USD 19.99 / month is the Paddle sandbox figure from the plan catalog — not confirmed for launch, and checkout is not open. The price that binds is the one shown at checkout before you confirm; any increase gets at least 30 days’ notice (Terms §2).</p>
+          <p class="prx-plan-line">For a serious job search — several interviews a month, several roles in play.</p>
+          <ul class="prx-facts">
+            <li><strong>600 live minutes</strong> per billing period</li>
+            <li>3 candidate profiles</li>
+            <li>20 preparation runs a month</li>
+            <li>2 devices</li>
+            <li>Reports kept 365 days</li>
+            <li>Coach Mode and all 10 languages included</li>
+          </ul>
+          <p class="prx-plan-cta"><a class="btn btn-secondary" href="download.html">See the release status</a></p>
+          <p class="prx-plan-note">Pro opens with the first signed release. The download page is wired to the release service — when Pro can be bought, it will say so there, and here.</p>
+        </article>
       </div>
       <div class="card meter-card" aria-labelledby="meter-title">
         <p class="eyebrow">Live minutes, at a glance</p>
@@ -104,15 +135,16 @@
             <tr><td>Live minutes</td><td data-label="Trial — $0"><strong>30 lifetime</strong></td><td data-label="Pro — $19.99 / month *"><strong>600 per billing period</strong></td></tr>
             <tr><td>Candidate profiles</td><td data-label="Trial — $0">1</td><td data-label="Pro — $19.99 / month *">3</td></tr>
             <tr><td>Preparation runs / month</td><td data-label="Trial — $0">2</td><td data-label="Pro — $19.99 / month *">20</td></tr>
-            <tr><td>Concurrent live sessions</td><td data-label="Trial — $0">1</td><td data-label="Pro — $19.99 / month *">1</td></tr>
             <tr><td>Devices</td><td data-label="Trial — $0">1</td><td data-label="Pro — $19.99 / month *">2</td></tr>
-            <tr><td>Report retention</td><td data-label="Trial — $0">14 days</td><td data-label="Pro — $19.99 / month *">365 days</td></tr>
+            <tr><td>Reports kept</td><td data-label="Trial — $0">14 days</td><td data-label="Pro — $19.99 / month *">365 days</td></tr>
+            <tr><td>Question bank — 50–150 questions from your resume + job description</td><td data-label="Trial — $0">Included</td><td data-label="Pro — $19.99 / month *">Included</td></tr>
             <tr><td>Coach Mode</td><td data-label="Trial — $0">Included</td><td data-label="Pro — $19.99 / month *">Included</td></tr>
             <tr><td>10 languages, incl. RTL</td><td data-label="Trial — $0">Included</td><td data-label="Pro — $19.99 / month *">Included</td></tr>
+            <tr><td>Safety caps — the same for everyone</td><td data-label="Trial — $0">240 min/day · 120 min/session</td><td data-label="Pro — $19.99 / month *">240 min/day · 120 min/session</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="fineprint">* Sandbox reference price — final live price to be confirmed before checkout opens.</p>
+      <p class="fineprint">* Sandbox reference price — final live price to be confirmed before checkout opens. The plan limits above are the Terms (§2) figures.</p>
       <p class="cta-row">
         <a class="btn btn-primary" href="demo.html">Try the live demo</a>
         <a class="btn btn-secondary" href="download.html">Download for Windows</a>
@@ -184,12 +216,22 @@
     <div class="container narrow">
       <p class="eyebrow">Live minutes, explained</p>
       <h2 id="minutes-title">What a “live minute” actually is</h2>
-      <p>A live minute is a minute you spend in a <strong>live listening session</strong> — the time the app is actively listening and transcribing in an interview. Minutes are metered by the server (a heartbeat every 30 seconds, with billed seconds per heartbeat capped at twice the interval, so sleep or offline time is not billed).</p>
+      <p>A live minute is a minute you spend in a <strong>live listening session</strong> — the time the app is actively listening and transcribing in an interview. Live minutes are metered by our server, as the Terms (§2) put it.</p>
       <p>Preparation, practise, and reading reports do not use live minutes at all — they have their own quota (preparation runs per month, above).</p>
       <h3>Safety caps</h3>
-      <p>To stop abuse and runaway cost, the service caps live use at <strong>240 live minutes per account per day</strong> and <strong>120 minutes per single live session</strong>. These are operator-level caps, not selling points — but we state them honestly so there are no surprises.</p>
+      <p>To stop abuse and runaway cost, the service caps live use for every account — Trial and Pro alike. These are operator-level caps, not selling points — but we state them honestly so there are no surprises.</p>
+      <div class="prx-caps">
+        <div class="prx-cap">
+          <p class="prx-cap-num">240</p>
+          <p class="prx-cap-label">live minutes per account per day — reaching the daily cap pauses live assist until the next day</p>
+        </div>
+        <div class="prx-cap">
+          <p class="prx-cap-num">120</p>
+          <p class="prx-cap-label">minutes in a single live session — a session that reaches the cap ends there</p>
+        </div>
+      </div>
       <h3>What happens when minutes run out</h3>
-      <p>When your Trial’s 30 lifetime minutes are used, live listening stops until you move to Pro. Your prepared question banks and reports stay available. Upgrading to Pro resets live minutes to the Pro allowance for the billing period, once payment is processed.</p>
+      <p>When your Trial’s 30 lifetime minutes are used, live listening stops until you move to Pro. Your prepared question banks and reports stay available. When you move to Pro, the Pro allowance — 600 minutes per billing period — applies from that period.</p>
     </div>
   </section>
 
@@ -199,16 +241,21 @@
       <h2 id="billing-title">Billed by Paddle — the Merchant of Record</h2>
       <p>Paddle collects the payment, calculates and remits VAT and sales tax, issues invoices, and handles refunds and chargebacks. <strong>Card data never touches the desktop app or the backend</strong> — checkout and the customer portal are Paddle-hosted pages opened in your browser.</p>
       <h3>Cancel, downgrade, refunds</h3>
+      <p>None of this can happen yet — paid checkout is not open, so there is no live subscription to cancel and nobody has been charged. When paid plans open, these are the rules, exactly as the Terms (§5) state them:</p>
       <ul class="check-list">
-        <li><strong>Cancel</strong> — paid checkout is not open yet, so there is no live subscription to cancel. When it opens, you will cancel in the Paddle customer portal. You keep Pro until the end of your paid period — access is not cut off immediately — then fall back to Trial.</li>
-        <li><strong>Downgrade</strong> (Pro → Trial) will also go through the Paddle portal once paid checkout opens; the exact effective date is the one shown in the portal — we do not invent a downgrade date here.</li>
-        <li><strong>Refunds</strong> are handled by Paddle as Merchant of Record. Refund terms will be stated in the final Terms; the draft on this site points to Paddle for the same reason — we do not write refund rules we cannot enforce.</li>
+        <li><strong>Cancel</strong> — at any time in the Paddle customer portal. You keep Pro until the end of your paid period — access is not cut off immediately — no further payments are taken, and your account then falls back to Trial.</li>
+        <li><strong>Downgrade</strong> (Pro → Trial) also goes through the Paddle portal, and takes effect on the date shown there — we do not invent a downgrade date here.</li>
+        <li><strong>Refunds — statutory rights first.</strong> Nothing here limits any refund, withdrawal, or cancellation right that the law or Paddle’s Buyer Terms give you; where they give you more than this policy, they prevail.</li>
+        <li><strong>First payment.</strong> Ask within 14 days of your first Pro payment and that payment is refunded in full.</li>
+        <li><strong>Renewals.</strong> Fees for a billing period that has already begun are not refundable, except where the law requires it.</li>
+        <li><strong>If we end it.</strong> If we discontinue the service, or terminate your account other than for a breach of the Terms, the unused part of your current paid period is refunded, pro-rated.</li>
+        <li><strong>How refunds are made.</strong> Request one through Paddle (the link on your receipt, or paddle.net) or by emailing support@cybervalida.online. Approved refunds are issued by Paddle to the original payment method — and a refund ends the Pro access it paid for.</li>
       </ul>
       <h2>Pricing FAQ</h2>
       <div class="acc">
         <div class="acc-item">
           <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp1" id="faq-pb1">Do unused Pro minutes roll over?<span class="chev" aria-hidden="true">＋</span></button>
-          <div class="acc-panel" id="faq-pp1" role="region" aria-labelledby="faq-pb1"><div><p>The plan catalog gives 600 live minutes per billing period. The source does not state a rollover rule, so we do not claim one — the final Terms will say so explicitly.</p></div></div>
+          <div class="acc-panel" id="faq-pp1" role="region" aria-labelledby="faq-pb1"><div><p>No. The Terms give Pro 600 live minutes per billing period, and make no provision for unused minutes to roll into the next period — each period stands on its own.</p></div></div>
         </div>
         <div class="acc-item">
           <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp2" id="faq-pb2">Can I use Pro on two computers?<span class="chev" aria-hidden="true">＋</span></button>
@@ -222,8 +269,12 @@
           <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp4" id="faq-pb4">When can I actually pay?<span class="chev" aria-hidden="true">＋</span></button>
           <div class="acc-panel" id="faq-pp4" role="region" aria-labelledby="faq-pb4"><div><p>Not yet. Paid checkout opens only after the Paddle live price is confirmed and the checkout flow is tested end to end. Until then, the price on this page is a sandbox reference, and the Trial is the way in.</p></div></div>
         </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button" aria-expanded="true" aria-controls="faq-pp5" id="faq-pb5">Is $19.99 the final price?<span class="chev" aria-hidden="true">＋</span></button>
+          <div class="acc-panel" id="faq-pp5" role="region" aria-labelledby="faq-pb5"><div><p>It is the current reference price, from Paddle’s sandbox catalog — not a promise. The price that binds is the one shown at checkout before you confirm (Terms §2). If the Pro price ever increases, you get at least 30 days’ notice — by email and on this page — before it takes effect, and it applies only from the first billing period that begins after the notice period ends.</p></div></div>
+        </div>
       </div>
-      <p><a href="terms.html">Read the draft Terms →</a></p>
+      <p><a href="terms.html">Read the Terms — §2 plans and prices, §5 payment and refunds →</a></p>
     </div>
   </section>
 
