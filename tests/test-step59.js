@@ -263,14 +263,19 @@ check("privacy: the never list (5 items) + never pills in the bento tile only",
     return out;
   };
   const feat = rowsOf(html), price = rowsOf(pricing);
-  const shared = ["Live minutes", "Preparation runs / month", "Report retention", "Coach Mode", "10 languages, incl. RTL"];
+  /* Bucket-A fix run re-pin (annotated): the shared row's label is
+     "Reports kept" on both pages now — the finalized Terms §2's own
+     wording, which Pricing adopted in Step 96; Features' older
+     "Report retention" label was the divergence the 2026-11-25
+     audit caught as A3. The values never diverged (14 / 365). */
+  const shared = ["Live minutes", "Preparation runs / month", "Reports kept", "Coach Mode", "10 languages, incl. RTL"];
   check("matrix: every row shared with pricing.html matches pricing's values exactly",
     shared.every((k) => feat[k] && price[k] && feat[k][0] === price[k][0] && feat[k][1] === price[k][1]),
     JSON.stringify({ feat, price }));
   check("matrix: the headline numbers (30 vs 600, 2 vs 20, 14 vs 365)",
     feat["Live minutes"] && feat["Live minutes"][0].includes("30") && feat["Live minutes"][1].includes("600")
     && feat["Preparation runs / month"][0] === "2" && feat["Preparation runs / month"][1] === "20"
-    && feat["Report retention"][0] === "14 days" && feat["Report retention"][1] === "365 days");
+    && feat["Reports kept"][0] === "14 days" && feat["Reports kept"][1] === "365 days");
   check("datasheet: shortcuts + evidence with caveats + requirements",
     html.includes("Ctrl+Alt+C") && html.includes("Ctrl+Alt+R")
     && html.includes("201 / 201") && html.includes("44 / 44") && html.includes("28 / 28")

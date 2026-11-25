@@ -205,8 +205,13 @@ function answerLayer() { return visibleChild(answerStackEl); }
 
   if (!REDUCED) {
     await sleep(250);
-    check("initial play mid-stream: 1 of 3 bullets revealed, status Preparing",
-      rows(answerLayer()).length === 1 && els["demo-status"].textContent === "Preparing your points…");
+    /* Bucket-A fix run re-pin (annotated): mid-stream the status
+       is "Writing your points…" now — A5: "Preparing…" yields at
+       the stream's first landed word (streamRows' onFirstWord
+       hook), so the status never claims preparation while words
+       are visibly landing. The 1-of-3-bullets shape is unchanged. */
+    check("initial play mid-stream: 1 of 3 bullets revealed, status Writing",
+      rows(answerLayer()).length === 1 && els["demo-status"].textContent === "Writing your points…");
     await sleep(1200);
     // Step 73 re-pin: the next-step card is gated on a real visitor
     // interaction — the auto-played sample no longer reveals it.

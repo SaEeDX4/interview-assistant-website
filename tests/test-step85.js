@@ -27,6 +27,10 @@
      snaps its layer landed.
    - the status line accompanies the generation: set before
      streamRows runs, replaced only by the finished render.
+     (Bucket-A fix run, A5: one refinement — "Preparing…" now
+     yields to "Writing…" at the stream's first word, via the
+     onFirstWord hook; the finished render still lands the
+     final line.)
    What DIED with the two tenses, and is pinned dead here: the
    pending tense (.45) in the demo, the pendingMs shape, the
    rise landing on demo points, and the ambush's second stage
@@ -82,7 +86,9 @@ check("the dots ride the named pulse .9s, like .app-thinking — no new motion t
   /\.demo-answer li \.app-thinking-dots \{[^}]*animation: pulse \.9s ease-in-out infinite alternate;/.test(clean)
   && !/--motion-5/.test(clean));
 check("streamRows is the one scheduler (full / compressed / reform), reduced motion rests everything",
-  /function streamRows\(layer, tempo, schedule, done, dotsAlready\) \{/.test(demoJs)
+  /* Bucket-A fix run re-pin (annotated): the signature gains the
+     onFirstWord hook (A5 — the status reflects the stream start). */
+  /function streamRows\(layer, tempo, schedule, done, dotsAlready, onFirstWord\) \{/.test(demoJs)
   && sliceFn(demoJs, "function streamRows(", "\n  function finishRender(").indexOf("isReducedMotion()")
      < sliceFn(demoJs, "function streamRows(", "\n  function finishRender(").indexOf('tempo === "reform"'));
 

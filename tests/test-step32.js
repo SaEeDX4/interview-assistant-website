@@ -57,10 +57,13 @@ check("Platforms is the mobile-only restore; Privacy is only in the menu's legal
 // Every other page keeps the standard demo CTA; the shape (one
 // full-width menu CTA, exactly one header CTA) is unchanged.
 check("the menu foot carries the full-width CTA and the legal row",
+  /* Bucket-A fix run re-pin (annotated): the legal row's Terms link
+     drops its "(draft)" label — the Terms are final (Step 93);
+     audit finding A14. The row's shape is unchanged. */
   htmls.every((h, i) => PAGES[i] === "demo.html"
     ? /<a class="btn btn-primary nav-menu-cta" href="download\.html">Download for Windows<\/a>/.test(navOf(h))
     : /<a class="btn btn-primary nav-menu-cta" href="demo\.html">Try the live demo<\/a>/.test(navOf(h))) &&
-  htmls.every((h) => /<a href="terms\.html"( aria-current="page")?>Terms \(draft\)<\/a>/.test(navOf(h))));
+  htmls.every((h) => /<a href="terms\.html"( aria-current="page")?>Terms<\/a>/.test(navOf(h))));
 check("exactly one header CTA button, at the far right of the bar",
   htmls.every((h, i) => {
     const head = (h.match(/<header class="site-header">[\s\S]*?<\/header>/) || [""])[0];

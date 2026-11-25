@@ -39,15 +39,27 @@ def build_minified(tmp):
     web = ROOT / "website"
     app = Path(tmp, "app.js")
     css = Path(tmp, "styles.css")
+    avatar = Path(tmp, "avatar.js")
+    spotlight = Path(tmp, "spotlight.js")
     subprocess.run(
         ["npx", "--yes", "terser@5.51.2", str(web / "app.js"),
          "--compress", "--mangle", "-o", str(app)],
+        check=True, capture_output=True)
+    # Bucket-A fix run (A11): avatar.js and spotlight.js deploy
+    # minified too, so they are rebuilt and byte-compared as well.
+    subprocess.run(
+        ["npx", "--yes", "terser@5.51.2", str(web / "avatar.js"),
+         "--compress", "--mangle", "-o", str(avatar)],
+        check=True, capture_output=True)
+    subprocess.run(
+        ["npx", "--yes", "terser@5.51.2", str(web / "spotlight.js"),
+         "--compress", "--mangle", "-o", str(spotlight)],
         check=True, capture_output=True)
     subprocess.run(
         ["npx", "--yes", "clean-css-cli@5.6.3",
          "-o", str(css), str(web / "styles.css")],
         check=True, capture_output=True)
-    return app.read_bytes(), css.read_bytes()
+    return app.read_bytes(), css.read_bytes(), avatar.read_bytes(), spotlight.read_bytes()
 
 
 def main():
@@ -57,13 +69,19 @@ def main():
         local = (ROOT / "website" / (name + ".html")).read_bytes()
         checks.append((f"{name}.html byte-identical to source", live == local))
     with tempfile.TemporaryDirectory() as tmp:
-        min_app, min_css = build_minified(tmp)
+        min_app, min_css, min_avatar, min_spotlight = build_minified(tmp)
     live_app = fetch("app.js")
     live_css = fetch("styles.css")
+    live_avatar = fetch("avatar.js")
+    live_spotlight = fetch("spotlight.js")
     checks.append(("live app.js byte-identical to the local minified build",
                    sha(live_app) == sha(min_app)))
     checks.append(("live styles.css byte-identical to the local minified build",
                    sha(live_css) == sha(min_css)))
+    checks.append(("live avatar.js byte-identical to the local minified build",
+                   sha(live_avatar) == sha(min_avatar)))
+    checks.append(("live spotlight.js byte-identical to the local minified build",
+                   sha(live_spotlight) == sha(min_spotlight)))
     css_text = live_css.decode("utf-8", "replace")
     js_text = live_app.decode("utf-8", "replace")
     checks.append(("story nav radius survives minification (12px)",

@@ -116,7 +116,14 @@ check("D5: the stall watchdog watches every swap (resume, then format switch, th
   /watchAdvance\(back, file, opts\);/.test(av) &&
   /v\.dataset\.stallFile !== file/.test(av) &&
   /probe\.failed\[opts\.speakKey \|\| opts\.label \|\| file\] = "stalled";/.test(av));
-check("D5: presence loops are warmed at takeover (no cold seam swaps)",
+check("D5: presence loops are warmed before the run (no cold seam swaps)",
+  /* Bucket-A fix run re-pin (annotated): the warming calls are
+     unchanged, but they no longer fire at takeover — A9 defers
+     them to the first interaction (or 12 idle seconds) so the
+     page stops transferring ~2.9 MB before any gesture. The
+     contract this check protects — the loops are in cache
+     before a spoken beat needs them — is preserved by the
+     interaction-first trigger: the Start gesture itself warms. */
   /function warmPresence\(\)/.test(av) && /warmPresence\(\);/.test(av));
 
 // D6 — the honesty label wraps whole at phone widths.
@@ -131,9 +138,14 @@ check("D6: tile label wraps cleanly at <=640 (no nowrap/ellipsis cap)",
      the owner's crop showed a wide box with the text hugging
      the left and an orphaned second line. The D6 contract —
      full text, wraps, no nowrap/ellipsis cap — is unchanged
-     and strengthened. */
+     and strengthened.
+     Step 89 re-pin (annotated): the chip's text is now the
+     persona's name over her role (#call-name / #call-role,
+     written by avatar.js) — the "AI interviewer — simulated"
+     plate is deleted on the owner's order; the wrap contract
+     this check pins is unchanged. */
   /\.call-tile > \.call-tile-label \{ left: 88px; top: 50%; bottom: auto; transform: translateY\(-50%\); width: fit-content; max-width: calc\(100% - 184px\); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1\.3; text-align: center; text-wrap: balance; \}/.test(clean) &&
-  demo.includes("AI interviewer — simulated"));
+  demo.includes('id="call-name"') && demo.includes('id="call-role"') && !demo.includes("AI interviewer"));
 
 // D7 — Step 73/74/77 contracts survive.
 check("D7: primed state, one-context engine and rotation pins intact",
