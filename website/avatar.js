@@ -116,6 +116,10 @@
     why:    { file: "avatar/" + pid + "-speaking-why",    clipFile: "scene-why.mp3",      voice: "avatar/" + pid + "-voice-why.mp3" },
     thanks: { file: "avatar/" + pid + "-speaking-thanks", clipFile: "scene-thanks.mp3",   voice: "avatar/" + pid + "-voice-thanks.mp3" }
   };
+  /* The chosen persona's poster — and only hers — is ever
+     requested (Bucket-A fix run, A9: demo.html no longer
+     hardcodes p1's poster, which every other persona's load
+     used to download and discard). */
   vids.forEach(function (v) { v.poster = "avatar/" + pid + "-poster.webp"; });
 
   /* The one-take performance (p1 only): segment map in seconds.
@@ -689,6 +693,37 @@
     });
   }
 
+  /* Bucket-A fix run (A9) — deferred warming. At takeover only
+     the chosen persona's poster and the idle loop load: the
+     poster is the first paint and the idle loop is the resting
+     presence. Everything the performance needs later — the
+     other presence loops, the speaking renders (or p1's one
+     take), the voice probe — used to fetch immediately at load
+     (~2.9 MB inside ~4 s for p1, before the visitor had done
+     anything). It now warms on the first real interaction: a
+     pointer press or a key press anywhere (the Start gesture
+     itself begins with one, and the scene's own timeline then
+     leaves seconds before the first spoken beat), or after
+     12 idle seconds for a visitor who is still reading. A beat
+     that somehow arrives before its render is cached degrades
+     exactly as a cold cache always has here — the presence
+     loop holds the beat; nothing freezes, nothing is faked. */
+  var warmed = false;
+  function warmNow() {
+    if (warmed) { return; }
+    warmed = true;
+    document.removeEventListener("pointerdown", warmNow, true);
+    document.removeEventListener("keydown", warmNow, true);
+    swapVoice();
+    warmSpeaking();
+    warmPresence();
+  }
+  function armWarming() {
+    document.addEventListener("pointerdown", warmNow, true);
+    document.addEventListener("keydown", warmNow, true);
+    setTimeout(warmNow, 12000);
+  }
+
   /* Take over: the poster carries the first paint; the idle loop
      takes over from it. Reduced motion keeps the still poster. */
   frame.hidden = false;
@@ -700,8 +735,6 @@
   } else {
     setState("idle");
     api.active = true;
-    swapVoice();
-    warmSpeaking();
-    warmPresence();
+    armWarming();
   }
 })();

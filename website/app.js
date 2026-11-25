@@ -982,6 +982,14 @@ var IA_VARIANTS = {
       list.push(setTimeout(function () { if (!isStale()) { fn(); } }, ms));
     };
   }
+  /* Bucket-A fix run (A5): the status tells the truth about the
+     generation's phase. "Preparing your points…" is honest only
+     until the first word lands; from that moment the points are
+     being written, and the status says so until finishRender
+     lands the final line. streamRows reports the first revealed
+     word through its onFirstWord hook (below). */
+  function streamStartedStatus() { setStatus("Writing your points…"); }
+
   /* Step 87 — the generation stream. Each row, at its plan start:
      unhide, split its text into word spans, then reveal the words
      one by one at the row's interval — every word final at full
@@ -992,7 +1000,7 @@ var IA_VARIANTS = {
      A stale schedule (interruption, a new question) simply never
      fires, and the caller's reset (hideRows / snapLayerLanded)
      flattens whatever partial stream remains. */
-  function streamRows(layer, tempo, schedule, done, dotsAlready) {
+  function streamRows(layer, tempo, schedule, done, dotsAlready, onFirstWord) {
     var plan = streamPlan(layer, tempo, dotsAlready);
     var rows = plan.rows;
     if (isReducedMotion() || !rows.length) {
@@ -1002,10 +1010,12 @@ var IA_VARIANTS = {
         li.classList.remove("is-hidden");
         li.classList.remove("is-new");
       });
+      if (onFirstWord && rows.length) { onFirstWord(); }
       if (done) { done(); }
       return;
     }
     if (tempo === "full" && !dotsAlready) { showThinkingDots(rows[0]); }
+    var streamStarted = false;
     rows.forEach(function (li, i) {
       var last = i === rows.length - 1;
       schedule(function () {
@@ -1018,6 +1028,10 @@ var IA_VARIANTS = {
         words.forEach(function (w, k) {
           schedule(function () {
             w.classList.remove("is-hidden");
+            if (!streamStarted) {
+              streamStarted = true;
+              if (onFirstWord) { onFirstWord(); }
+            }
             w.classList.add("is-in");
             if (k === words.length - 1 && last && done) { done(); }
           }, k * iv);
@@ -1088,13 +1102,18 @@ var IA_VARIANTS = {
        follows the view: a Coach view is the product's back-to-back
        re-form (reform); an Answer view is a prepared answer
        (compressed). The generic structure's honest label lands
-       once, with the finished render. */
+       once, with the finished render. Bucket-A fix run (A5):
+       "Preparing" now covers only the wait before the first
+       word — streamStartedStatus takes over the moment the
+       stream starts, so the status never claims preparation
+       while words are visibly landing. */
     var finalStatus = !sample
       ? "Sample structure — in the real app, points come from your confirmed facts."
       : (mode === "coach" ? "Coach points ready." : "3 points ready.");
     streamRows(layer, mode === "coach" ? "reform" : "compressed",
       listSchedule(timers, function () { return myRun !== runId; }),
-      function () { finishRender(myRun, finalStatus); });
+      function () { finishRender(myRun, finalStatus); },
+      false, streamStartedStatus);
   }
 
   // A typed question, answered live by the AI proxy (Step 30
@@ -1177,7 +1196,8 @@ var IA_VARIANTS = {
       listSchedule(timers, function () { return myRun !== runId; }),
       function () {
         finishRender(myRun, mode === "coach" ? "Coach points ready." : "3 points ready.");
-      });
+      },
+      false, streamStartedStatus);
   }
 
   // Step 73 — language guard for the typed path (client side; the
@@ -1254,7 +1274,7 @@ var IA_VARIANTS = {
         listSchedule(timers, function () { return myRun !== runId; }),
         function () {
           finishRender(myRun, "Live answer — generated for this question.");
-        }, true);
+        }, true, streamStartedStatus);
       },
       function () {
       if (myRun !== runId) { return; }
@@ -1449,7 +1469,8 @@ var IA_VARIANTS = {
         listSchedule(intTimers, function () { return myRun !== intRun; }),
         function () {
           intStatus.textContent = label + " ready — simulated.";
-        });
+        },
+        false, function () { intStatus.textContent = "Writing the shorter version…"; });
     }
     intBtns[0].addEventListener("click", function () { showInt("normal", "Normal (3 points)"); });
     intBtns[1].addEventListener("click", function () { showInt("concise", "Concise (2 points)"); });
@@ -1705,6 +1726,7 @@ var IA_VARIANTS = {
      the literals in the scene script, so the two cannot drift. */
   var SCENE_MEASURE_STATUSES = [
     "Preparing your points…",
+    "Writing your points…",
     "3 points ready — sample.",
     "The follow-up came fast — the answer shortened itself.",
     "A harder question — its answer was already in the question bank.",
@@ -2481,7 +2503,7 @@ var IA_VARIANTS = {
           sampleTagEl.classList.remove("is-hidden");
         }
         if (opts.readyText) { setStatus(opts.readyText); }
-      });
+      }, false, opts.statusText ? null : streamStartedStatus);
     });
     return detectedAt + streamDurationMs(aLayer, tempo, false) / 1000 + 0.5;
   }
@@ -5050,8 +5072,8 @@ var IA_VARIANTS = {
   var ORDER = ["windows", "android", "ios", "mac"];
   var NAMES = { windows: "Windows", android: "Android", ios: "iOS", mac: "Mac" };
   var PLANNED = {
-    android: "Interview Assistant for Android is planned — a companion first, with no date yet.",
-    ios: "Interview Assistant for iOS is planned — whether it can capture meeting audio is still being researched.",
+    android: "Interview Assistant for Android is built — the full app, mirroring Windows — but it is not published yet, and there is no date yet.",
+    ios: "Interview Assistant for iOS is planned as a native app that follows Android, with no date yet.",
     mac: "Interview Assistant for Mac is planned as a dedicated native app, with no date yet."
   };
   var MONTHS = ["January", "February", "March", "April", "May", "June",
@@ -5686,7 +5708,7 @@ var IA_VARIANTS = {
       arKeys: ["ماك", "أندرويد", "آيفون"],
       nodes: [
         {
-          say: ["Windows is the only platform today. Android is planned as a companion first; iOS and a dedicated Mac app are separate research phases. No dates and no downloads for those platforms yet."],
+          say: ["Windows is the first platform. The Android app is built — a full mirror of Windows — but it is not published yet; iOS and a dedicated Mac app are planned native apps. No dates and no downloads for those platforms yet."],
           link: { href: "platforms.html", label: "Platforms & roadmap" },
           choices: [
             { label: "That answers it", exit: "resolved" },
@@ -5767,7 +5789,7 @@ var IA_VARIANTS = {
     "demo": "The demo is a labelled simulation: ten sample questions in Answer and Coach modes.",
     "privacy": "Five steps: submit, identity check, field-by-field trace, export or erase, scoped confirmation.",
     "pricing": "Trial is free; Pro shows $19.99/month as a Paddle sandbox reference — checkout is not open.",
-    "platforms": "Windows only today; Android is planned as a companion, iOS and Mac are research phases.",
+    "platforms": "Windows first; the Android app is built but not yet published; iOS and Mac are planned native apps.",
     "offline": "Prepared answers work offline with a cached entitlement; live answers need a connection.",
     "ethics": "Only facts you confirmed are ever used — it never presents experience that is not yours.",
     "human": "Support is the developer personally, by email — the prepared email carries this conversation."
@@ -6452,7 +6474,7 @@ var IA_VARIANTS = {
     },
     {
       q: "Does it work on Mac or Android?",
-      a: ["Not yet. Windows is the only platform today. Android is planned as a companion first, and iOS and a dedicated Mac app are separate research phases. No dates, no downloads for those platforms yet."],
+      a: ["Not yet. Windows is the first platform. The Android app is built but not yet published, and iOS and a dedicated Mac app are planned native apps. No dates, no downloads for those platforms yet."],
       link: { href: "platforms.html", label: "Platforms & roadmap" },
       keys: ["mac", "android", "ios", "iphone", "platform"],
       phrases: ["on mac", "on android", "mac or android", "work on mac"]
@@ -6478,7 +6500,7 @@ var IA_VARIANTS = {
     "What do I get after the interview?": "An honest report of the questions and suggestions — no scores, no hiring predictions.",
     "Does it work offline?": "Live transcription and AI answers need internet; prepared answers keep working offline.",
     "How do I cancel Pro?": "Checkout is not open yet, so there is no live subscription to cancel.",
-    "Does it work on Mac or Android?": "Windows only today — Android is planned as a companion; iOS and Mac are research phases.",
+    "Does it work on Mac or Android?": "Windows first — the Android app is built but not yet published; iOS and Mac are planned native apps.",
     "Can it help me cheat?": "No — a preparation and practice coach that never presents experience that is not yours.",
     "How do I delete my data?": "Export or delete from the app; Paddle keeps its own payment records under its legal retention."
   };

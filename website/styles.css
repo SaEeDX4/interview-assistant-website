@@ -645,14 +645,12 @@ code { overflow-wrap: anywhere; }
 .badge-now { background: rgba(45,212,191,.14); border-color: var(--accent-2); color: var(--accent-2-light); }
 .badge-current { background: rgba(124,108,255,.16); border-color: var(--accent); color: var(--accent-light); }
 .badge-plan { background: rgba(245,185,78,.12); border-color: var(--coach); color: var(--coach-light); }
-.badge-unknown { background: var(--surface-2); border-color: var(--warn); color: var(--warn-light); }
 .callout {
   border: 1px solid var(--border); border-left: 4px solid var(--accent);
   border-radius: var(--radius); background: var(--surface);
   padding: 20px; margin: 0 0 28px;
 }
 .callout p:last-child { margin-bottom: 0; }
-.callout-warn { border-left-color: var(--warn); }
 .table-wrap { overflow-x: auto; margin: 0 0 16px; }
 table.compare { width: 100%; border-collapse: collapse; font-size: 15px; }
 table.compare th, table.compare td {
@@ -2477,6 +2475,40 @@ html.js-acc .acc-panel.open { grid-template-rows: 1fr; }
   body.page-terms table.compare tbody td strong { color: var(--ink); }
 }
 
+/* Print: Privacy & ethics as a clean paper document — the Terms
+   treatment extended to the site's second legal document
+   (Bucket-A fix run, A8). Scoped via body.page-privacy so no
+   other page's printout changes. */
+@media print {
+  body.page-privacy { background: var(--paper); color: var(--ink); }
+  body.page-privacy .site-header, body.page-privacy .site-footer,
+  body.page-privacy .sticky-cta, body.page-privacy .next-band,
+  body.page-privacy .skip-link,
+  body.page-privacy #ia-growth-bar { display: none; }
+  body.page-privacy .page-hero { padding: 0 0 8px; }
+  body.page-privacy .section, body.page-privacy .section-soft {
+    background: var(--paper);
+  }
+  body.page-privacy .page-hero h1, body.page-privacy h2,
+  body.page-privacy h3 { color: var(--ink); }
+  body.page-privacy .lead, body.page-privacy p, body.page-privacy li,
+  body.page-privacy .muted, body.page-privacy .flow-node,
+  body.page-privacy .vs-col { color: var(--ink-soft); }
+  body.page-privacy .flow-node, body.page-privacy .vs-col {
+    background: var(--paper); border-color: var(--print-rule);
+  }
+  body.page-privacy strong { color: var(--ink); }
+  body.page-privacy a { color: var(--ink); text-decoration: underline; }
+  body.page-privacy a[href^="http"]::after,
+  body.page-privacy a[href$=".html"]::after {
+    content: " (" attr(href) ")"; font-size: 12px;
+  }
+  body.page-privacy table.compare th, body.page-privacy table.compare td {
+    border-bottom-color: var(--print-rule); color: var(--ink-soft);
+  }
+  body.page-privacy table.compare tbody td strong { color: var(--ink); }
+}
+
 /* ---------- Step 4: honest strip + pricing teaser (home) ---------- */
 .honest-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 28px 0; background: var(--bg-soft); }
 .honest-strip p { margin: 0; color: var(--muted); font-size: 17px; max-width: 68ch; }
@@ -3488,6 +3520,14 @@ body:has(.feat-nav) main > section.section { padding-bottom: 56px; }
 .avatar-video { opacity: 0; transition: opacity .25s ease; }
 .avatar-video.is-front { opacity: 1; }
 .avatar-frame.is-static .avatar-video { display: none; }
+/* Bucket-A fix run (A4): in static (reduced-motion) mode the FRONT
+   video stays rendered-but-paused, so its poster — the persona's
+   still portrait, assigned by avatar.js — paints the tile instead
+   of an empty frame. avatar.js's design always said "reduced
+   motion keeps the still poster"; the blanket display:none above
+   hid the only element that could paint it. The back element
+   stays hidden; nothing plays in static mode. */
+.avatar-frame.is-static .avatar-video.is-front { display: block; }
 .call-tile.has-avatar .call-avatar { display: none; }
 @media (max-width: 933px) {
   /* Step 92 (owner's order, 2026-11-24, from his own screenshot
