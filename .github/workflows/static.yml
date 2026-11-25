@@ -40,9 +40,16 @@ jobs:
         # tests/reverify46.py rebuilds the same artifacts and compares
         # them against the live files. If this step fails, the deploy
         # stops and the previous version stays live.
+        # Bucket-A fix run (A11): avatar.js and spotlight.js are
+        # minified too — they used to deploy as readable sources
+        # (~53 KB combined) while app.js beside them was minified.
         run: |
           npx --yes terser@5.51.2 website/app.js --compress --mangle -o website/app.min.js
           mv website/app.min.js website/app.js
+          npx --yes terser@5.51.2 website/avatar.js --compress --mangle -o website/avatar.min.js
+          mv website/avatar.min.js website/avatar.js
+          npx --yes terser@5.51.2 website/spotlight.js --compress --mangle -o website/spotlight.min.js
+          mv website/spotlight.min.js website/spotlight.js
           npx --yes clean-css-cli@5.6.3 -o website/styles.min.css website/styles.css
           mv website/styles.min.css website/styles.css
       - name: Upload artifact
