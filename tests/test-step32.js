@@ -112,6 +112,10 @@ check("no Legal column anywhere; the footer grid is brand + Product + Resources"
   htmls.every((h) => !/<h3>Legal<\/h3>/.test(footOf(h))) &&
   /\.footer-grid \{ display: grid; grid-template-columns: 2fr 1fr 1fr;/.test(clean) &&
   htmls.every((h) => /<h3>Product<\/h3>/.test(footOf(h)) && /<h3>Resources<\/h3>/.test(footOf(h))));
+/* Step 98 re-pin (annotated): the Billing link was retargeted from the
+   cancel FAQ (support.html#faq-b9) to pricing.html, where billing via
+   Paddle is actually explained; the old target answered "How do I
+   cancel Pro?", which the label never promised. */
 check("legal lives in the bottom bar: © sentence, then Billing, then the identity line",
   htmls.every((h) => {
     const foot = footOf(h);
@@ -119,7 +123,7 @@ check("legal lives in the bottom bar: © sentence, then Billing, then the identi
     const bill = foot.indexOf("Billing — via Paddle");
     const made = foot.indexOf("Made for candidates, in 10 languages.");
     return copy >= 0 && bill > copy && made > bill &&
-      /<div class="footer-bottom-right">\s*<a href="support\.html#faq-b9">Billing — via Paddle<\/a>/.test(foot);
+      /<div class="footer-bottom-right">\s*<a href="pricing\.html">Billing — via Paddle<\/a>/.test(foot);
   }));
 
 console.log(`\n${pass} passed, ${fail} failed`);
